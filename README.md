@@ -15,14 +15,15 @@ und beim lokalen Öffnen per Doppelklick.
 
 ## 🌐 Wo es landet
 
-| Umgebung | Adresse |
-| --- | --- |
-| t-bk.de | `https://t-bk.de/unterrichtsmaterial/` |
-| GitHub Pages | `https://cmonebk.github.io/tbk-lernsituationen-uebungen/` |
+| Umgebung | Adresse | |
+| --- | --- | --- |
+| t-bk.de | `https://t-bk.de/unterrichtsmaterial/` | **live** |
+| GitHub Pages | `https://cmonebk.github.io/tbk-lernsituationen-uebungen/` | nicht aktiviert, vorbereitet |
 
-Der Weg auf den Server: `git push` → GitHub → `deploy.sh` im Repo
-[tbk-webseite](https://github.com/CmoneBK/tbk-webseite) holt den neuen Stand und
-spiegelt ihn nach `/unterrichtsmaterial/`. Siehe [Deployment](#-deployment).
+Der Weg auf die Seite: `git push` → GitHub → `deploy.sh` im Repo
+[tbk-webseite](https://github.com/CmoneBK/tbk-webseite) zieht `main` per Cron
+alle ~5 Minuten und spiegelt den Stand nach `/unterrichtsmaterial/`. Nach
+spätestens fünf Minuten ist die Änderung online. Siehe [Deployment](#-deployment).
 
 ## 📂 Ordnerstruktur
 
@@ -234,9 +235,11 @@ Ein Paket braucht den Link nicht in jeder Übung zu wiederholen: Was in
 
 ## 🚀 Deployment
 
-`deploy.sh` im Repo [tbk-webseite](https://github.com/CmoneBK/tbk-webseite) läuft
-auf dem Server, holt bei jedem Lauf die beteiligten Repos ab und spiegelt sie
-nur bei Änderungen:
+**`git push` genügt.** Ein `deploy.sh` im Repo
+[tbk-webseite](https://github.com/CmoneBK/tbk-webseite) läuft auf dem Server per
+Cron alle ~5 Minuten, zieht `main` und spiegelt den Stand nach
+`/unterrichtsmaterial/`. Die Einrichtung ist abgeschlossen – am Server ist
+nichts mehr zu tun.
 
 ```
 tbk-webseite/public          → DocumentRoot
@@ -245,19 +248,28 @@ dieses Repo                  → /unterrichtsmaterial/
 valis, bk-e-plan             → /projekte/…
 ```
 
-Für diesen Bereich ist das ein reines `rsync` – die fertige `index.html` liegt
-ja schon im Repo. Ausgenommen werden nur die Dateien, die im Web nichts zu
-suchen haben (`.git/`, `.github/`, `build/`, `vorlagen/`, `README.md`,
-`DEPLOYMENT.md`, `package.json`).
+Der Server **baut nichts**: kein Jekyll, keine Actions, kein Node. Gespiegelt
+wird 1:1, was hier committet ist. Deshalb gilt:
 
-**Einmalig auf dem Server einzurichten** (siehe `DEPLOYMENT.md` in diesem Repo):
+* **Erzeugte Dateien mitcommitten.** Nach jeder inhaltlichen Änderung
+  `node build/build.mjs`, dann committen. `--check` sagt, ob etwas fehlt.
+* **Nicht veröffentlicht** werden `.git/`, `.github/`, `.claude/`, `build/`,
+  `vorlagen/`, `README.md`, `DEPLOYMENT.md`, `package.json`. Entwürfe und
+  Quellen gehören genau dorthin.
+* `/unterrichtsmaterial/` wird mit `rsync --delete` gespiegelt und ist damit
+  faktisch schreibgeschützt – dort keine Laufzeitdaten ablegen.
 
-```bash
-git clone https://github.com/CmoneBK/tbk-lernsituationen-uebungen.git \
-  /home/users/ctnutzerone/git/tbk-lernsituationen-uebungen
-```
+Einzelheiten und die Regeln zum Server: [DEPLOYMENT.md](DEPLOYMENT.md).
 
-Danach genügt `git push` – der nächste Cron-Lauf von `deploy.sh` zieht nach.
+## 🔒 Trackingfrei – ohne Ausnahme
+
+t-bk.de kommt ohne Werbung und ohne Tracking aus. Für jede Seite in diesem Repo
+heißt das: **keine externen Ressourcen.** Keine Google Fonts, keine CDNs, keine
+Analytics, keine Fremdskripte, keine fremdgehosteten Videos. Alles liegt im Repo
+und wird relativ eingebunden.
+
+Systemschriften (`system-ui`, `-apple-system`, `Segoe UI`, …) sind ausdrücklich
+erwünscht – sie laden nichts nach. `assets/uebung.css` nutzt genau die.
 
 ## 🔧 Fehlerbehebung
 

@@ -1,92 +1,90 @@
-# Inbetriebnahme
+# Wie dieses Repo live geht
 
-Alle Schritte sind **einmalig**. Danach reicht `git push`.
+Der Bereich https://t-bk.de/unterrichtsmaterial/ wird aus diesem Repo gespeist.
+Die Einrichtung ist abgeschlossen – **am Server ist nichts mehr zu tun.**
 
-## 1. GitHub-Repository anlegen und befüllen
-
-Vorausgesetzter Name: **`tbk-lernsituationen-uebungen`** unter dem Account `CmoneBK`.
-Ein anderer Name ist möglich – dann aber an drei Stellen anpassen:
-`deploy.sh` (Variable `LERN_DIR`) im Repo `tbk-webseite`, der `git clone`-Befehl
-unter Punkt 3 und die Links in der `README.md`.
+## Der einzige Weg zum Live-Gang
 
 ```bash
-cd "K:/OneDrive/VSCode Projects/LernsituationenÜbungenTrainings"
-gh repo create CmoneBK/tbk-lernsituationen-uebungen --public --source=. --remote=origin --push
-```
-
-Ohne `gh`: Repository auf github.com anlegen, dann
-
-```bash
-git remote add origin https://github.com/CmoneBK/tbk-lernsituationen-uebungen.git
-git push -u origin main
-```
-
-## 2. GitHub Pages einschalten (optional, aber praktisch zum Vorschauen)
-
-*Settings → Pages → Build and deployment*
-
-* **Source:** „Deploy from a branch“
-* **Branch:** `main`, Ordner `/ (root)`
-
-Kein Jekyll-Build nötig – `.nojekyll` im Repo sorgt dafür, dass GitHub die
-Dateien unverändert ausliefert. Ergebnis:
-`https://cmonebk.github.io/tbk-lernsituationen-uebungen/`
-
-Damit der Workflow `.github/workflows/uebersicht.yml` zurückcommitten darf:
-*Settings → Actions → General → Workflow permissions* → **Read and write permissions**.
-
-## 3. Repo auf dem Server klonen
-
-Als Benutzer `ctnutzerone`:
-
-```bash
-git clone https://github.com/CmoneBK/tbk-lernsituationen-uebungen.git \
-  /home/users/ctnutzerone/git/tbk-lernsituationen-uebungen
-```
-
-Mehr ist nicht zu tun – `deploy.sh` erkennt das Repo am vorhandenen `.git`
-und legt `/unterrichtsmaterial/` beim nächsten Lauf selbst an.
-
-## 4. Geänderte `deploy.sh` ausrollen
-
-Im Repo [tbk-webseite](https://github.com/CmoneBK/tbk-webseite) sind bereits
-vorbereitet:
-
-* `deploy.sh` – neuer Schritt 3 spiegelt dieses Repo nach `/unterrichtsmaterial/`
-* `public/index.html` – die Kachel „Unterrichtsmaterial“ ist jetzt ein Link
-  statt „in Vorbereitung“
-
-Committen und pushen:
-
-```bash
-cd "K:/OneDrive/Webseiten/TBK"
-git add deploy.sh public/index.html
-git commit -m "Unterrichtsmaterial-Repo nach /unterrichtsmaterial/ ausspielen"
+node build/build.mjs        # erzeugte Dateien aktualisieren
+git add -A && git commit -m "…"
 git push
 ```
 
-`deploy.sh` aktualisiert sich beim nächsten Cron-Lauf selbst und startet dann
-mit der neuen Fassung neu (`TBK_REEXEC`), der neue Bereich ist also
-spätestens einen Lauf später online.
+Das war es. Ein `deploy.sh` im Repo [tbk-webseite](https://github.com/CmoneBK/tbk-webseite)
+läuft auf dem Server per Cron alle ~5 Minuten, zieht `main` und spiegelt den
+Stand nach `/unterrichtsmaterial/`. Nach spätestens fünf Minuten ist die
+Änderung online.
 
-## 5. Kontrolle
+## Was der Server tut – und was nicht
+
+| | |
+| --- | --- |
+| Build ausführen | **nein** |
+| Jekyll | **nein** |
+| GitHub Actions oder Pages nutzen | **nein** |
+| committete Dateien 1:1 spiegeln | ja, mit `rsync --delete` |
+
+Daraus folgen vier Regeln, die man nicht verletzen darf:
+
+1. **Erzeugte Dateien gehören in den Commit.** Ausgeliefert wird die
+   `index.html`, die hier liegt – nicht eine, die jemand baut. Nach jeder
+   inhaltlichen Änderung also `node build/build.mjs` laufen lassen und das
+   Ergebnis mitcommitten. `node build/build.mjs --check` sagt, ob etwas fehlt.
+2. **Alles Sichtbare liegt außerhalb der ausgeschlossenen Pfade.** Nicht
+   veröffentlicht werden `.git/`, `.github/`, `.claude/`, `build/`, `vorlagen/`,
+   `README.md`, `DEPLOYMENT.md` und `package.json`. Entwürfe und Quellen gehören
+   genau dorthin – Vorlagen nach `vorlagen/`, Generator und Design nach `build/`.
+3. **Keine Laufzeitdaten im Zielverzeichnis.** `rsync --delete` macht
+   `/unterrichtsmaterial/` faktisch schreibgeschützt; alles, was dort nicht aus
+   dem Repo stammt, ist beim nächsten Lauf weg.
+4. **Pfade relativ halten.** Der Bereich liegt unter `/unterrichtsmaterial/`,
+   auf GitHub Pages unter einem anderen Präfix und lokal unter gar keinem.
+   Absolute Pfade brechen mindestens einen dieser Fälle. Für Links auf die
+   Werkzeuge gibt es `assets/werkzeug-link.js`, für den Rücklink
+   `assets/back-nav.js` – beide leiten ihr Ziel selbst ab.
+
+## Trackingfrei – ohne Ausnahme
+
+t-bk.de kommt ohne Werbung und ohne Tracking aus. Für dieses Repo heißt das:
+**keine externen Ressourcen.** Keine Google Fonts, keine CDNs, keine Analytics,
+keine Fremdskripte, keine eingebetteten Videos von anderswo. Alles, was eine
+Seite braucht, liegt im Repo und wird relativ eingebunden.
+
+Systemschriften (`system-ui`, `-apple-system`, `Segoe UI`, …) sind ausdrücklich
+erwünscht – sie laden nichts nach und sehen auf jedem Gerät passend aus.
+
+Prüfen lässt sich das mit einem Blick:
 
 ```bash
-runuser -u ctnutzerone -- bash /home/users/ctnutzerone/git/tbk-webseite/deploy.sh
+grep -rInoE '(src|href)="(https?:)?//[^"]*"' --include="*.html" --include="*.css" \
+  index.html assets/ lernsituationen/ uebungen/ trainings/ | grep -v 't-bk.de'
 ```
 
-Die Ausgabezeile nennt jetzt fünf Stände:
+Kommt nichts zurück, ist alles in Ordnung.
 
-```
-2026-09-12 08:00:00 deployed site=… werkzeuge=… material=… valis=… eplan=…
-```
+## Zugriff auf den Server
 
-Danach muss `https://t-bk.de/unterrichtsmaterial/` die Übersicht zeigen und die
-Startseite die Kachel verlinken.
+SSH als `ctnutzerone` ist **absichtlich deaktiviert** – ein abgelehnter Schlüssel
+ist kein Fehler. Server-Operationen laufen als root über
+`runuser -u ctnutzerone` und gehören in den Website-/Infra-Kontext, nicht hierher.
 
-## Was der Server nicht bekommt
+Insbesondere darf der Server-Klon unter
+`/home/users/ctnutzerone/git/tbk-lernsituationen-uebungen` **nicht** als root neu
+geklont oder angefasst werden: Git würde ihn danach als *dubious ownership*
+verweigern und der Cron-Sync bliebe stehen.
 
-`rsync` lässt beim Spiegeln aus: `.git/`, `.github/`, `.claude/`, `build/`,
-`vorlagen/`, `README.md`, `DEPLOYMENT.md`, `package.json`. Auf dem Server liegt
-also nur das, was ausgeliefert werden soll – inklusive `assets/`, `daten/` und
-der fertigen `index.html`.
+## GitHub Actions und Pages
+
+Beides ist für den Live-Betrieb **nicht nötig** und rein optional:
+
+* `.github/workflows/uebersicht.yml` baut die Übersicht nach, wenn Material
+  einmal direkt über die GitHub-Oberfläche oder per API landet statt über einen
+  lokalen Build. Solange erzeugte Dateien mitcommittet werden (Regel 1), hat der
+  Workflow nichts zu tun und endet ohne Commit. Damit er im Bedarfsfall
+  zurückschreiben kann, bräuchte er unter *Settings → Actions → General →
+  Workflow permissions* **Read and write**; aktuell steht dort *read*.
+* **GitHub Pages** wäre eine Vorschau unter
+  `https://cmonebk.github.io/tbk-lernsituationen-uebungen/` und ist nicht
+  aktiviert. Das Repo ist darauf vorbereitet (`.nojekyll`, relative Pfade), falls
+  es einmal gewünscht ist.
