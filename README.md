@@ -36,6 +36,7 @@ assets/zeichnen.js       Bausteine für Zeichnungen (Maße, Schraffur, Diagramme
 assets/baukasten.js      Übungen zuschneiden und als Link weitergeben
 assets/qr.js             QR-Code für diesen Link
 assets/export.js         Ausgabe als PDF und als Word-Datei
+assets/pdf.js            schlanker PDF-Schreiber für den Direkt-Download
 assets/back-nav.js       Rücklink „← Übersicht“ – einzige Quelle
 assets/werkzeug-link.js  löst Links auf die Werkzeuge je nach Umgebung auf
 daten/kategorien.csv     Reihenfolge der Bereiche und Unterkategorien
@@ -173,8 +174,14 @@ Neben *Übung anpassen* steht **„Herunterladen"**. Wählbar ist, ob die Lösun
 
 | | |
 | --- | --- |
-| **PDF** | über den Druckdialog des Browsers („Als PDF speichern"). Die Zeichnungen bleiben gestochen scharf, weil der Browser die SVG direkt setzt. |
-| **Word** | als HTML-Dokument mit der Endung `.doc`, das Word öffnet und weiterbearbeitet. Die Zeichnungen werden dafür in Bilder umgewandelt – Word stellt SVG in diesem Format nicht zuverlässig dar. |
+| **Drucken / als PDF** | über den Druckdialog des Browsers. Das gibt das **schönste Ergebnis**: der Browser setzt die Seite mit ihrem eigenen Layout, Zeichnungen bleiben gestochen scharf, farbige Balken und Bänder kommen mit. Im Dialog als Ziel „Als PDF speichern" wählen. |
+| **PDF herunterladen** | ohne Dialog, direkt als Datei. Gesetzt wird schlichter: Überschriften, Absätze, Listen, Tabellen als Zeilen, Zeichnungen als Bild. Was allein aus HTML-Kästen besteht (etwa das Streuband), ist hier nur als Zahl dabei, nicht als Bild. |
+| **Word** | als **Web-Archiv** (MHTML) mit der Endung `.doc`. Word öffnet es und bearbeitet es weiter. Die Zeichnungen liegen als eigene Teile bei – Word lädt keine Bilder aus `data:`-Adressen, wohl aber Teile eines Archivs. |
+
+Der PDF-Schreiber (`assets/pdf.js`) nutzt nur die Standardschriften des
+PDF-Formats und bettet Bilder als JPEG ein. So braucht er weder eine
+Fremdbibliothek noch eine eingebaute Breitentabelle: Gemessen wird im Browser
+mit derselben Schrift, die das PDF später setzt.
 
 Ausgegeben wird **genau der Stand, der gerade auf dem Bildschirm steht**: die
 Auswahl aus *Übung anpassen*, die Werte in den Rechnern, der erreichte Schritt
@@ -193,12 +200,19 @@ steuern das aus der Übung heraus, falls die Vorgabe nicht passt:
 | --- | --- |
 | `data-druck="text"` an einer Schaltfläche | Ihre Beschriftung ist Inhalt und bleibt (z. B. die anklickbaren Bausteine einer Schraubenbezeichnung). |
 | `data-druck="weg"` an einem Element | Fällt in PDF und Word weg (z. B. „Noch nichts ausgewählt"). |
+| `data-druck="ankreuzen"` an einem Auswahlfeld | Wird zu einer Liste zum Ankreuzen. Gedacht für Felder, die eine **Antwort** verlangen – Felder für Gewinde oder Festigkeitsklasse tragen dagegen nur einen eingestellten Wert und bleiben Text. |
 
 Eine Schaltfläche, in der eine Zeichnung steckt, behält ihren Inhalt von selbst
 – sie wird nur ihrer Hülle entledigt.
 
+Leere Eingabefelder werden zur Schreiblinie – auf Papier soll man sie
+ausfüllen können, statt eine Lücke zu sehen.
+
 Für die Ausgabe schaltet die Seite auf die helle Farbpalette um. Sonst kämen
-bei jemandem, der im dunklen Modus liest, weiße Striche auf weißem Papier heraus.
+bei jemandem, der im dunklen Modus liest, weiße Striche auf weißem Papier
+heraus. Beim Drucken sorgt zusätzlich `print-color-adjust: exact` dafür, dass
+Hintergrundfarben mitkommen – ohne das lassen Browser sie weg, und damit genau
+die Information, die in gefärbten Balken und Bändern steckt.
 
 ## ➕ Neues Material anlegen
 

@@ -15,9 +15,10 @@
  *   PDF   über den Druckdialog des Browsers ("Als PDF speichern"). Das gibt
  *         gestochen scharfe Zeichnungen, weil der Browser die SVG direkt setzt,
  *         und braucht keine mitgelieferte Fremdbibliothek.
- *   Word  als HTML-Dokument mit der Endung .doc, das Word öffnet und weiter
- *         bearbeitet. Die Zeichnungen werden dafür in Bilder umgewandelt -
- *         Word stellt SVG in diesem Format nicht zuverlässig dar.
+ *   Word  als Web-Archiv (MHTML) mit der Endung .doc, das Word öffnet und
+ *         weiterbearbeitet. Die Zeichnungen werden dafür in Bilder umgewandelt
+ *         und als eigene Teile mitgeschickt: Word lädt keine Bilder aus
+ *         data:-Adressen, wohl aber Teile eines Archivs.
  *
  * Die Lösungen lassen sich unter die Aufgaben setzen oder ans Ende sammeln.
  */
@@ -63,9 +64,38 @@
     return nr ? 'Teil ' + nr.textContent : '';
   }
 
+  /* Auswahlfelder, die eine Antwort verlangen, werden auf Papier zu Kästchen
+     zum Ankreuzen. Erkennbar an data-druck="ankreuzen" an der Auswahl selbst -
+     die Felder für Gewinde, Festigkeitsklasse und dergleichen bleiben davon
+     unberührt, sie tragen nur einen eingestellten Wert. */
+  function ankreuzen() {
+    var zurueck = [];
+    sichtbar(haupt().querySelectorAll('select[data-druck="ankreuzen"]'))
+      .forEach(function (sel) {
+        var liste = document.createElement('ul');
+        liste.className = 'ex-ankreuzen';
+        [].slice.call(sel.options).forEach(function (o) {
+          /* Ein Platzhalter ohne Wert ist keine Antwortmöglichkeit. */
+          if (!o.value) return;
+          var li = document.createElement('li');
+          var kasten = document.createElement('span');
+          kasten.className = 'ex-kasten' + (o.selected ? ' an' : '');
+          li.appendChild(kasten);
+          li.appendChild(document.createTextNode(o.text));
+          liste.appendChild(li);
+        });
+
+        var platz = document.createElement('span');
+        sel.replaceWith(platz);
+        platz.replaceWith(liste);
+        zurueck.push(function () { liste.replaceWith(sel); });
+      });
+    return function () { zurueck.forEach(function (f) { f(); }); };
+  }
+
   /* Baut die Seite für die Ausgabe um und liefert die Umkehrung zurück. */
   function aufbereiten(modus) {
-    var zurueck = [];
+    var zurueck = [ankreuzen()];
     var offene = sichtbar(haupt().querySelectorAll('details'));
 
     offene.forEach(function (d) {
@@ -160,7 +190,7 @@
     return kopie;
   }
 
-  function svgZuBild(svg, breite) {
+  function svgZuBild(svg, breite, art) {
     return new Promise(function (fertig) {
       var vb = (svg.getAttribute('viewBox') || '0 0 100 100').split(/\s+/).map(Number);
       var w = breite, h = Math.round(breite * vb[3] / vb[2]);
@@ -178,8 +208,12 @@
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, c.width, c.height);
         ctx.drawImage(bild, 0, 0, c.width, c.height);
-        try { fertig({ daten: c.toDataURL('image/png'), w: w, h: h }); }
-        catch (e) { fertig(null); }
+        try {
+          fertig({
+            daten: art === 'jpeg' ? c.toDataURL('image/jpeg', 0.88) : c.toDataURL('image/png'),
+            w: c.width, h: c.height
+          });
+        } catch (e) { fertig(null); }
       };
       bild.onerror = function () { fertig(null); };
       bild.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(text);
@@ -254,7 +288,10 @@
         ? (e.options[e.selectedIndex] || {}).text || ''
         : (e.value != null ? e.value : e.textContent);
       var span = document.createElement('strong');
-      span.textContent = wert;
+      /* Ein leeres Feld wird zur Schreiblinie - auf Papier soll man es
+         ausfüllen können, statt eine Lücke zu sehen. */
+      span.textContent = wert || '\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0';
+      if (!wert) span.style.borderBottom = '1px solid #999';
       e.replaceWith(span);
     });
     /* Aus dem Aufklapp-Element wird eine schlichte Überschrift. */
@@ -275,35 +312,96 @@
     return wurzel;
   }
 
+  /* Base64 in Zeilen zu 76 Zeichen - so will es MIME. */
+  function base64Zeilen(b64) {
+    return (b64.match(/.{1,76}/g) || []).join('\r\n');
+  }
+
+  function textAlsBase64(text) {
+    return base64Zeilen(btoa(unescape(encodeURIComponent(text))));
+  }
+
+  /* Ein Web-Archiv aus dem HTML und den Bildern. Die Bilder stehen als eigene
+     Teile darin; das HTML verweist mit einfachen Dateinamen darauf, die sich
+     gegen die Adresse des HTML-Teils auflösen. Genau so legt Word seine
+     eigenen "Webseite, einzelne Datei" an. */
+  function webArchiv(html, bilder) {
+    var grenze = '----=_TBK_Unterrichtsmaterial';
+    var basis = 'file:///C:/tbk/';
+    var teile = [
+      'MIME-Version: 1.0',
+      'Content-Type: multipart/related; type="text/html"; boundary="' + grenze + '"',
+      '',
+      'Dieses Dokument ist ein Web-Archiv. Es öffnet sich in Word und in jedem Browser.',
+      ''
+    ];
+
+    function teil(kopf, inhalt) {
+      teile.push('--' + grenze);
+      kopf.forEach(function (z) { teile.push(z); });
+      teile.push('');
+      teile.push(inhalt);
+      teile.push('');
+    }
+
+    teil([
+      'Content-Type: text/html; charset="utf-8"',
+      'Content-Transfer-Encoding: base64',
+      'Content-Location: ' + basis + 'uebung.htm'
+    ], textAlsBase64(html));
+
+    bilder.forEach(function (b) {
+      teil([
+        'Content-Type: image/png',
+        'Content-Transfer-Encoding: base64',
+        'Content-Location: ' + basis + b.name
+      ], base64Zeilen(b.b64));
+    });
+
+    teile.push('--' + grenze + '--');
+    teile.push('');
+    return teile.join('\r\n');
+  }
+
   function wordDatei(modus, melden) {
     var auf = aufbereiten(modus);
     var quelle = haupt();
     var svgs = sichtbar(quelle.querySelectorAll('svg'));
 
-    /* Wer die Seite im dunklen Modus liest, bekaeme sonst weisse Striche auf
-       weissem Papier: Die Zeichnungen uebernehmen beim Rastern die Farben, die
-       gerade gelten. Also fuer die Dauer der Umwandlung auf hell schalten. */
+    /* Wer die Seite im dunklen Modus liest, bekäme sonst weiße Striche auf
+       weißem Papier: Die Zeichnungen übernehmen beim Rastern die Farben, die
+       gerade gelten. Also für die Dauer der Umwandlung auf hell schalten. */
     document.documentElement.classList.add('ex-hell');
 
     melden('Zeichnungen werden umgewandelt …');
 
     Promise.all(svgs.map(function (s) { return svgZuBild(s, 620); }))
-      .then(function (bilder) {
+      .then(function (rohbilder) {
         document.documentElement.classList.remove('ex-hell');
+
+        var bilder = [];
         var kopie = quelle.cloneNode(true);
-        /* Dieselbe Reihenfolge wie oben: die sichtbaren SVG der Kopie
-           durchgehen und durch die Bilder ersetzen. */
         var kopien = [].slice.call(kopie.querySelectorAll('svg'));
         var roh = [].slice.call(quelle.querySelectorAll('svg'));
+
         roh.forEach(function (s, i) {
           var stelle = kopien[i];
           if (!stelle) return;
           var k = svgs.indexOf(s);
-          if (k === -1 || !bilder[k]) { stelle.remove(); return; }
+          if (k === -1 || !rohbilder[k]) { stelle.remove(); return; }
+
+          var name = 'bild' + (bilder.length + 1) + '.png';
+          bilder.push({
+            name: name,
+            b64: rohbilder[k].daten.replace(/^data:image\/png;base64,/, '')
+          });
+
           var img = document.createElement('img');
-          img.src = bilder[k].daten;
-          img.width = bilder[k].w;
-          img.height = bilder[k].h;
+          img.setAttribute('src', name);
+          /* Gerastert wird doppelt so fein wie dargestellt - im Dokument zählt
+             die halbe Größe, sonst sprengt das Bild die Seite. */
+          img.setAttribute('width', Math.round(rohbilder[k].w / 2));
+          img.setAttribute('height', Math.round(rohbilder[k].h / 2));
           stelle.replaceWith(img);
         });
 
@@ -315,7 +413,7 @@
         var html = '<html xmlns:o="urn:schemas-microsoft-com:office:office" '
           + 'xmlns:w="urn:schemas-microsoft-com:office:word" '
           + 'xmlns="http://www.w3.org/TR/REC-html40"><head>'
-          + '<meta charset="utf-8">'
+          + '<meta http-equiv="Content-Type" content="text/html; charset=utf-8">'
           + '<title>' + document.title.replace(/</g, '&lt;') + '</title>'
           + '<style>' + WORD_CSS + '</style></head><body>'
           + kopfHtml
@@ -327,23 +425,190 @@
           + '</body></html>';
 
         auf();
-
-        var blob = new Blob(['﻿', html], { type: 'application/msword' });
-        var a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = dateiname() + '.doc';
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(function () {
-          URL.revokeObjectURL(a.href);
-          a.remove();
-        }, 4000);
+        speichern(webArchiv(html, bilder), 'application/msword', '.doc');
         melden('');
       })
       .catch(function () {
         document.documentElement.classList.remove('ex-hell');
         auf();
         melden('Die Datei konnte nicht erzeugt werden.');
+      });
+  }
+
+  /* Datei anbieten. Der Umweg über einen Link ist der einzige Weg, dem Browser
+     einen Dateinamen mitzugeben. */
+  function speichern(inhalt, typ, endung) {
+    /* Kein BOM davor: Ein Web-Archiv beginnt mit seinen MIME-Kopfzeilen,
+       sonst erkennt Word es nicht. Die Textteile darin tragen ihre
+       Codierung selbst. */
+    var blob = inhalt instanceof Blob ? inhalt : new Blob([inhalt], { type: typ });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = dateiname() + endung;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function () {
+      URL.revokeObjectURL(a.href);
+      a.remove();
+    }, 4000);
+  }
+
+  /* ---------- PDF als Datei ---------- */
+
+  /* Aus einer data:-Adresse die reinen Bytes holen. */
+  function bytesAusDatenUrl(url) {
+    var roh = atob(url.split(',')[1]);
+    var b = new Uint8Array(roh.length);
+    for (var i = 0; i < roh.length; i++) b[i] = roh.charCodeAt(i);
+    return b;
+  }
+
+  /* Einen Block in Textläufe zerlegen; fett und kursiv bleiben erhalten. */
+  function laeufe(el) {
+    var aus = [];
+    (function gehe(k, fett, kursiv) {
+      [].slice.call(k.childNodes).forEach(function (n) {
+        if (n.nodeType === 3) {
+          var t = n.nodeValue.replace(/\s+/g, ' ');
+          if (t) aus.push({ text: t, fett: fett, kursiv: kursiv });
+          return;
+        }
+        if (n.nodeType !== 1 || n.hidden) return;
+        var name = n.tagName;
+        if (name === 'BR') { aus.push({ text: ' ', fett: fett, kursiv: kursiv }); return; }
+        gehe(n,
+          fett || name === 'STRONG' || name === 'B' || name === 'TH',
+          kursiv || name === 'EM' || name === 'I');
+      });
+    })(el, false, false);
+    return aus;
+  }
+
+  var BLOECKE = 'H1,H2,H3,P,LI,TABLE,IMG,HR,FIGCAPTION';
+
+  /* Die aufbereitete Seite einmal von oben nach unten durchgehen und in das
+     PDF schreiben. Bewusst schlicht: Überschriften, Absätze, Listen, Tabellen,
+     Zeichnungen. Für ein Arbeitsblatt reicht das. */
+  function pdfAufbauen(p, wurzel, bilderNachSvg) {
+    var gesehen = [];
+
+    function tabelle(tab) {
+      var zeilen = [].slice.call(tab.rows);
+      zeilen.forEach(function (r) {
+        var zellen = [].slice.call(r.cells);
+        var text = zellen.map(function (c) {
+          return c.textContent.replace(/\s+/g, ' ').trim();
+        }).filter(Boolean).join('  ·  ');
+        if (!text) return;
+        p.absatz([{ text: text, fett: r.parentNode.tagName === 'THEAD' }],
+                 { groesse: 9.5, abstand: 2, einzug: 10 });
+      });
+      p.abstand(4);
+    }
+
+    [].slice.call(wurzel.querySelectorAll(BLOECKE)).forEach(function (el) {
+      if (versteckt(el)) return;
+      /* Nichts doppelt setzen, was schon in einem erledigten Block steckt. */
+      for (var i = 0; i < gesehen.length; i++) {
+        if (gesehen[i].contains(el)) return;
+      }
+
+      var name = el.tagName;
+      if (name === 'TABLE') { gesehen.push(el); tabelle(el); return; }
+
+      if (name === 'IMG') {
+        var nr = Number(el.getAttribute('data-bild'));
+        var b = bilderNachSvg[nr];
+        if (b) p.bild(b.bytes, b.w, b.h, 430);
+        return;
+      }
+
+      if (name === 'HR') { p.linie(); return; }
+
+      var stuecke = laeufe(el);
+      if (!stuecke.length) return;
+
+      if (name === 'H1') { p.ueberschrift(stuecke.map(function (x) { return x.text; }).join(''), 1); return; }
+      if (name === 'H2') { p.ueberschrift(stuecke.map(function (x) { return x.text; }).join(''), 2); return; }
+      if (name === 'H3') { p.ueberschrift(stuecke.map(function (x) { return x.text; }).join(''), 3); return; }
+      if (name === 'LI') {
+        var kasten = el.querySelector('.ex-kasten');
+        p.absatz(stuecke, { einzug: 16, zeichen: kasten ? '[  ]' : '\u00b7', abstand: 2 });
+        return;
+      }
+      if (name === 'FIGCAPTION') {
+        p.absatz(stuecke, { groesse: 8.5, abstand: 6, einzug: 10 });
+        return;
+      }
+      p.absatz(stuecke);
+    });
+  }
+
+  function pdfDatei(modus, melden) {
+    if (typeof window.tbkPdf !== 'function') {
+      melden('Der PDF-Baustein fehlt.');
+      return;
+    }
+    var auf = aufbereiten(modus);
+    var quelle = haupt();
+    var svgs = sichtbar(quelle.querySelectorAll('svg'));
+
+    document.documentElement.classList.add('ex-hell');
+    melden('Das PDF wird gebaut …');
+
+    Promise.all(svgs.map(function (s) { return svgZuBild(s, 620, 'jpeg'); }))
+      .then(function (rohbilder) {
+        document.documentElement.classList.remove('ex-hell');
+
+        /* Die Zeichnungen in der Arbeitskopie durch Platzhalter ersetzen, die
+           auf das jeweilige Bild verweisen. */
+        var kopie = quelle.cloneNode(true);
+        var kopien = [].slice.call(kopie.querySelectorAll('svg'));
+        var roh = [].slice.call(quelle.querySelectorAll('svg'));
+        var bilder = {};
+
+        roh.forEach(function (s, i) {
+          var stelle = kopien[i];
+          if (!stelle) return;
+          var k = svgs.indexOf(s);
+          if (k === -1 || !rohbilder[k]) { stelle.remove(); return; }
+          var nr = Object.keys(bilder).length;
+          bilder[nr] = {
+            bytes: bytesAusDatenUrl(rohbilder[k].daten),
+            w: rohbilder[k].w, h: rohbilder[k].h
+          };
+          var platz = document.createElement('img');
+          platz.setAttribute('data-bild', String(nr));
+          stelle.replaceWith(platz);
+        });
+
+        /* Bedienelemente heraus, Eingaben zu Text - wie bei Word. */
+        saeubern(kopie);
+
+        var p = window.tbkPdf();
+        var kopf = document.querySelector('header');
+        if (kopf) {
+          var h1 = kopf.querySelector('h1');
+          if (h1) p.ueberschrift(h1.textContent.trim(), 1);
+          var lead = kopf.querySelector('.lead');
+          if (lead) p.absatz([{ text: lead.textContent.replace(/\s+/g, ' ').trim(), kursiv: true }]);
+        }
+        p.absatz([{ text: 'Ausdruck aus dem Unterrichtsmaterial von t-bk.de. Die Übung '
+          + 'ist eigentlich interaktiv – Schieberegler, Eingabefelder und Schrittfolgen '
+          + 'stehen hier so, wie sie beim Erzeugen dieser Datei eingestellt waren.',
+          kursiv: true }], { groesse: 8.5 });
+        p.linie();
+
+        pdfAufbauen(p, kopie, bilder);
+
+        auf();
+        speichern(p.fertig(), 'application/pdf', '.pdf');
+        melden('');
+      })
+      .catch(function (e) {
+        document.documentElement.classList.remove('ex-hell');
+        auf();
+        melden('Das PDF konnte nicht erzeugt werden.');
       });
   }
 
@@ -389,6 +654,10 @@
     + '@media print{'
     + ':root{--bg:#fff;--fg:#111;--muted:#555;--card:#fff;--border:#bbb;'
     + '--border-stark:#888;--accent:#164e8a;--accent-fg:#fff;--shadow:none}'
+    /* Ohne diese Angabe lassen Browser Hintergrundfarben beim Drucken weg -
+       und damit genau die Information, die in gefärbten Balken und Bändern
+       steckt (Streuband, Drehmomentaufteilung, Zonen). */
+    + '*{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}'
     + 'body{background:#fff;color:#111}'
     + '#ex-tafel,#tbk-leiste,.schritte{display:none!important}'
     + 'header{padding-top:0!important}'
@@ -402,6 +671,12 @@
     + '.ex-nur-aufgabe>*:not(summary){display:none!important}'
     + '}'
     + '.ex-nur-aufgabe>*:not(summary){display:none}'
+    + '.ex-ankreuzen{list-style:none;margin:6px 0 0;padding:0}'
+    + '.ex-ankreuzen li{display:flex;gap:9px;align-items:flex-start;margin:0 0 5px}'
+    + '.ex-kasten{flex:0 0 auto;width:13px;height:13px;margin-top:3px;'
+    + 'border:1.4px solid currentColor;border-radius:2px;position:relative}'
+    + '.ex-kasten.an::after{content:"";position:absolute;left:2px;top:2px;'
+    + 'right:2px;bottom:2px;background:currentColor}'
     /* Nur waehrend des Rasterns gesetzt; hoehere Spezifitaet als :root, damit
        sie die Vorgaben aus assets/uebung.css sicher ueberschreibt. */
     + 'html.ex-hell{--bg:#fff;--fg:#111;--muted:#555;--card:#fff;--border:#bbb;'
@@ -442,9 +717,14 @@
       + 'nicht bedienen; sie erscheinen mit den zuletzt eingestellten Werten. '
       + 'Teile, die noch ausgeblendet sind, kommen nicht mit.</p>'
       + '<div class="ex-knoepfe">'
-      + '<button type="button" id="ex-pdf">Als PDF</button>'
+      + '<button type="button" id="ex-pdf-datei">PDF herunterladen</button>'
+      + '<button type="button" id="ex-pdf" class="leise">Drucken / als PDF</button>'
       + '<button type="button" id="ex-word" class="leise">Als Word</button>'
       + '</div>'
+      + '<p class="bk-hinweis" style="margin:10px 0 0">Der Weg über den '
+      + 'Druckdialog gibt das schönere Ergebnis &ndash; dort als Ziel '
+      + '„Als PDF speichern“ wählen. Der Download kommt ohne Dialog aus und '
+      + 'setzt schlichter.</p>'
       + '<p id="ex-stand"></p>';
 
     leiste().appendChild(knopf);
@@ -455,6 +735,9 @@
     }
     function melden(text) { tafel.querySelector('#ex-stand').textContent = text; }
 
+    tafel.querySelector('#ex-pdf-datei').addEventListener('click', function () {
+      pdfDatei(modus(), melden);
+    });
     tafel.querySelector('#ex-pdf').addEventListener('click', function () {
       melden('Der Druckdialog öffnet sich – dort „Als PDF speichern“ wählen.');
       drucken(modus());

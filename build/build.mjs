@@ -58,6 +58,7 @@ const BACK_NAV = 'assets/back-nav.js';
 const WZ_LINK = 'assets/werkzeug-link.js';
 const QR = 'assets/qr.js';
 const BAUKASTEN = 'assets/baukasten.js';
+const PDF = 'assets/pdf.js';
 const EXPORT = 'assets/export.js';
 
 /* ---------- kleine Helfer ---------- */
@@ -120,6 +121,7 @@ async function seiteLesen(datei, { imPaket = false, baukasten = false } = {}) {
   if (baukasten) {
     noetig.push({ pfad: QR, attr: '' });
     noetig.push({ pfad: BAUKASTEN, attr: '' });
+    noetig.push({ pfad: PDF, attr: '' });
     noetig.push({ pfad: EXPORT, attr: '' });
   }
 
