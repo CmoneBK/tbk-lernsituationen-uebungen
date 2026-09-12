@@ -44,6 +44,8 @@
   .l-ueber{background:rgba(220,38,38,.6)} .l-bruch{background:rgba(127,29,29,.85)}
   .l-band{background:rgba(43,108,176,.45); border:1px solid var(--accent)}
 
+  .schritte{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:12px 0 0}
+  .schritt-zahl{font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums}
   .bild{margin:16px 0 4px}
   .bild svg{width:100%; height:auto; display:block}
   .bild figcaption{font-size:13px; color:var(--muted); margin-top:6px; text-align:center}
@@ -263,7 +265,48 @@
           Dehnschrauben, die planmäßig bis zur Streckgrenze angezogen werden
           (Zylinderkopf, Pleuel), steht deshalb in jeder Reparaturanleitung:
           <em>einmalig verwendbar</em>.</p>
+        <div class="box" style="margin-top:18px">
+          <p><strong>Wenn du so ein Schaubild zum ersten Mal siehst:</strong> Es
+            zeigt <em>eine einzelne Schraube</em> beim Ziehen. Waagerecht steht,
+            wie weit sie sich gelängt hat (die Dehnung &epsilon; in Prozent ihrer
+            Länge), senkrecht, wie stark sie dabei beansprucht ist (die Spannung
+            &sigma; = Kraft geteilt durch Spannungsquerschnitt).</p>
+          <p>Man liest es wie einen Weg: Je weiter rechts, desto länger die
+            Schraube. Je weiter oben, desto größer die Kraft darin.</p>
+        </div>
+
         <figure class="bild" id="bildUeberdehnt"></figure>
+
+        <div class="schritte">
+          <button type="button" class="knopf" id="btnSchritt">Abspielen</button>
+          <button type="button" class="knopf leise" id="btnZurueck">Zurück</button>
+          <span class="schritt-zahl" id="schrittZahl"></span>
+        </div>
+        <div class="rueckmeldung" id="schrittText"></div>
+
+        <div class="tabellenrahmen">
+          <table>
+            <thead>
+              <tr><th>Im Bild</th><th>heißt</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>R<sub>p0,2</sub></strong> &ndash; untere gestrichelte Linie</td>
+                  <td><strong>Streckgrenze.</strong> Bis hierher federt die Schraube
+                      zurück wie ein Gummiband. Darüber bleibt sie gelängt.
+                      Bei 8.8 sind das 640 N/mm².</td></tr>
+              <tr><td><strong>R<sub>m</sub></strong> &ndash; obere gestrichelte Linie</td>
+                  <td><strong>Zugfestigkeit.</strong> Die höchste Spannung, die die
+                      Schraube überhaupt erträgt. Danach schnürt sie ein und reißt.
+                      Bei 8.8 sind das 800 N/mm².</td></tr>
+              <tr><td>gerader Anstieg links</td>
+                  <td><strong>elastisch.</strong> Doppelte Kraft, doppelte Längung
+                      &ndash; und beim Lösen ist alles wie vorher.</td></tr>
+              <tr><td>flacher Bogen rechts</td>
+                  <td><strong>plastisch.</strong> Die Schraube gibt nach, ohne dass
+                      die Kraft nennenswert steigt.</td></tr>
+            </tbody>
+          </table>
+        </div>
       </details>
 
       <div class="merksatz">
@@ -549,62 +592,157 @@ function bildVerfahren(){
    daran liegt die bleibende Längung ab. */
 function bildUeberdehnt(){
   var svg = bild("bildUeberdehnt", 452, 300,
-    "Spannungs-Dehnungs-Schaubild einer Schraube: elastische Gerade bis zur " +
-    "Streckgrenze, dann flacher Anstieg bis zur Zugfestigkeit. Wird über die " +
-    "Streckgrenze hinaus belastet und wieder entlastet, bleibt eine dauerhafte " +
-    "Längung zurück",
-    "Entlastet wird immer parallel zur elastischen Geraden &ndash; was " +
-    "rechts davon liegt, bleibt.");
+    "Spannungs-Dehnungs-Schaubild einer Schraube: elastische Gerade bis zur "
+    + "Streckgrenze, dann flacher Anstieg bis zur Zugfestigkeit. Wird \u00fcber die "
+    + "Streckgrenze hinaus belastet und wieder entlastet, bleibt eine dauerhafte "
+    + "L\u00e4ngung zur\u00fcck",
+    "Entlastet wird immer parallel zur elastischen Geraden \u2013 was "
+    + "rechts davon liegt, bleibt.");
 
   var RP = 640, RM = 800, YMAX = 900;
   var d = achsenkreuz(svg, {x:56, y:224, breite:340, hoehe:180,
     xMax:10, yMax:YMAX,
-    xText:"Dehnung ε in %", yText:"Spannung σ in N/mm²"});
+    xText:"Dehnung \u03b5 in %", yText:"Spannung \u03c3 in N/mm\u00b2"});
 
-  /* Kennlinie: Hooke bis Rp0,2, dann Verfestigung bis Rm, dann Einschnürung. */
-  var eEl = 1.2;                                  /* Dehnung an der Streckgrenze */
+  /* Kennlinie: Hooke bis Rp0,2, dann Verfestigung bis Rm, dann Einschn\u00fcrung. */
+  var eEl = 1.2;
   kurve(d.g, d, [[0, 0], [eEl, RP]]);
   kurve(d.g, d, [[eEl, RP], [2.6, 720], [5.0, RM], [7.2, 770], [8.4, 700]]);
   svgEl("circle", {cx:d.px(8.4), cy:d.py(700), r:4, fill:"currentColor"}, d.g);
-  txt(d.g, d.px(8.4), d.py(700) + 18, "Bruch", {groesse:10.5, deckung:.85});
+  txt(d.g, d.px(8.4) + 6, d.py(700) + 30, "Bruch", {anker:"start", groesse:10.5, deckung:.85});
 
-  [[RP, "Rₚ₀,₂"], [RM, "Rₘ"]].forEach(function(k){
+  [[RP, "R\u209a\u2080,\u2082"], [RM, "R\u2098"]].forEach(function(k){
     linie(d.g, d.px(0), d.py(k[0]), d.px(10), d.py(k[0]), SCHMAL,
           {strich:"6 4", deckung:.45});
     txt(d.g, d.px(10), d.py(k[0]) - 6, k[1], {anker:"end", groesse:10.5, deckung:.8});
   });
 
-  /* Anziehen bis über die Streckgrenze und wieder lösen. */
   var eA = 4.0, sA = 770;
-  var gR = svgEl("g", {style:"color:var(--bad)"}, svg);
-  svgEl("circle", {cx:d.px(eA), cy:d.py(sA), r:4, fill:"currentColor"}, gR);
-  txt(gR, d.px(eA) - 6, d.py(sA) - 10, "zu fest angezogen",
-      {anker:"end", groesse:10.5});
-
-  /* Entlastung parallel zur Hooke'schen Geraden: die elastische Dehnung
-     sA/E geht zurueck, der Rest bleibt. E entspricht hier RP/eEl. */
   var eBleib = eA - sA * eEl / RP;
-  kurve(gR, d, [[eA, sA], [eBleib, 0]], {strich:"5 4"});
-  massV(gR, d.py(0), d.py(sA), d.px(eA) + 12, "entlasten", d.px(eA) + 2);
-  mass(gR, d.px(0), d.px(eBleib), d.py(0) + 30, "bleibende Längung", d.py(0) + 4);
+  var eOk = 0.9, sOk = RP / eEl * eOk;
 
+  /* Die drei Hinweise geh\u00f6ren zur Schrittfolge und bleiben zun\u00e4chst verborgen. */
   var gO = svgEl("g", {style:"color:var(--ok)"}, svg);
-  var eOk = 0.9;
-  var sOk = RP / eEl * eOk;
-  svgEl("circle", {cx:d.px(eOk), cy:d.py(sOk), r:4, fill:"currentColor"}, gO);
-  txt(gO, d.px(eOk) + 10, d.py(sOk) + 16, "richtig angezogen",
-      {anker:"start", groesse:10.5});
+  var pOk = svgEl("circle", {cx:d.px(eOk), cy:d.py(sOk), r:4, fill:"currentColor"}, gO);
+  var tOk = txt(gO, d.px(eOk) + 10, d.py(sOk) + 16, "richtig angezogen",
+                {anker:"start", groesse:10.5});
 
-  txt(svg, 56, 278, "Beim zweiten Anziehen beginnt die Schraube rechts vom Nullpunkt.",
+  var gR = svgEl("g", {style:"color:var(--bad)"}, svg);
+  var pA = svgEl("circle", {cx:d.px(eA), cy:d.py(sA), r:4, fill:"currentColor"}, gR);
+  var tA = txt(gR, d.px(eA) - 6, d.py(sA) - 10, "zu fest angezogen",
+               {anker:"end", groesse:10.5});
+  var entlasten = kurve(gR, d, [[eA, sA], [eBleib, 0]], {strich:"5 4"});
+  var mEnt = massV(gR, d.py(0), d.py(sA), d.px(eA) + 12, "entlasten", d.px(eA) + 2);
+  var mBleib = mass(gR, d.px(0), d.px(eBleib), d.py(0) + 30, "bleibende L\u00e4ngung",
+                    d.py(0) + 4);
+
+  /* Das Fazit gehoert zum letzten Schritt und wird erst dort eingeblendet. */
+  var fazit1 = txt(svg, 56, 278, "Beim zweiten Anziehen beginnt die Schraube rechts vom Nullpunkt.",
       {anker:"start", groesse:10.5, deckung:.8});
-  txt(svg, 56, 292, "Die Reserve bis zur Streckgrenze ist aufgebraucht.",
+  var fazit2 = txt(svg, 56, 292, "Die Reserve bis zur Streckgrenze ist aufgebraucht.",
       {anker:"start", groesse:10.5, deckung:.8});
 
-  return svg;
+  /* Ein wandernder Punkt zeigt, wo man sich gerade befindet. */
+  var laeufer = svgEl("circle", {cx:d.px(0), cy:d.py(0), r:6,
+    fill:"var(--accent)", stroke:"var(--bg)", "stroke-width":2}, svg);
+
+  return {
+    svg:svg, d:d, laeufer:laeufer,
+    teile:{ok:[pOk, tOk], zuFest:[pA, tA], entlasten:[entlasten, mEnt],
+           bleibt:[mBleib, fazit1, fazit2]},
+    bahn:{eEl:eEl, RP:RP, eA:eA, sA:sA, eOk:eOk, sOk:sOk, eBleib:eBleib}
+  };
 }
 
 bildVerfahren();
-bildUeberdehnt();
+
+/* ---------- Schritt f\u00fcr Schritt durch das Schaubild ----------
+   Ein Spannungs-Dehnungs-Schaubild sieht man irgendwann zum ersten Mal. Statt
+   alles auf einmal zu zeigen, wandert ein Punkt die Kennlinie entlang und
+   blendet die Hinweise nacheinander ein. */
+var UB = bildUeberdehnt();
+
+var SCHRITTE = [
+  {text:"<strong>Am Anfang.</strong> Die Schraube ist eingesetzt, aber noch nicht "
+       + "angezogen: keine L\u00e4ngung, keine Spannung. Wir stehen im Nullpunkt.",
+   zu:[0, 0], zeigen:[]},
+  {text:"<strong>Richtig angezogen.</strong> Die Schraube l\u00e4ngt sich, die Spannung "
+       + "steigt gleichm\u00e4\u00dfig mit \u2013 der gerade Teil der Kennlinie. W\u00fcrde man jetzt "
+       + "l\u00f6sen, ginge der Punkt denselben Weg zur\u00fcck bis zur Null.",
+   zu:"ok", zeigen:["ok"]},
+  {text:"<strong>Zu fest angezogen.</strong> Oberhalb der Streckgrenze R<sub>p0,2</sub> "
+       + "knickt die Kennlinie ab: Die Schraube gibt nach, ohne dass die Spannung "
+       + "noch nennenswert steigt. Sie flie\u00dft.",
+   zu:"zuFest", zeigen:["ok", "zuFest"]},
+  {text:"<strong>Entlasten.</strong> Jetzt wird die Verbindung gel\u00f6st. Der Punkt "
+       + "l\u00e4uft nicht die Kennlinie zur\u00fcck, sondern <em>parallel zur elastischen "
+       + "Geraden</em> nach unten \u2013 nur der federnde Anteil geht zur\u00fcck.",
+   zu:"bleibt", zeigen:["ok", "zuFest", "entlasten"]},
+  {text:"<strong>Was bleibt.</strong> Die Schraube ist ohne jede Last l\u00e4nger als "
+       + "vorher. Beim zweiten Anziehen startet sie rechts vom Nullpunkt \u2013 die "
+       + "Reserve bis zur Streckgrenze ist aufgebraucht. Deshalb geh\u00f6rt so eine "
+       + "Schraube in den M\u00fcll, nicht zur\u00fcck ins Bauteil.",
+   zu:"bleibt", zeigen:["ok", "zuFest", "entlasten", "bleibt"]}
+];
+
+var schritt = 0;
+var laeuft = null;
+
+function punktVon(ziel){
+  var b = UB.bahn, d = UB.d;
+  if(ziel === "ok")     return [d.px(b.eOk), d.py(b.sOk)];
+  if(ziel === "zuFest") return [d.px(b.eA), d.py(b.sA)];
+  if(ziel === "bleibt") return [d.px(b.eBleib), d.py(0)];
+  return [d.px(ziel[0]), d.py(ziel[1])];
+}
+
+/* Der Punkt bewegt sich in kleinen Schritten dorthin. Wer Bewegung nicht mag
+   oder mag sie nicht sehen kann, bekommt den Sprung. */
+function laufeZu(ziel){
+  var z = punktVon(ziel);
+  var ruhig = window.matchMedia &&
+              window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(laeuft){ clearInterval(laeuft); laeuft = null; }
+  if(ruhig){
+    UB.laeufer.setAttribute("cx", z[0]);
+    UB.laeufer.setAttribute("cy", z[1]);
+    return;
+  }
+  var von = [parseFloat(UB.laeufer.getAttribute("cx")),
+             parseFloat(UB.laeufer.getAttribute("cy"))];
+  var i = 0, n = 24;
+  laeuft = setInterval(function(){
+    i++;
+    var t = i / n;
+    t = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;   /* weich ein und aus */
+    UB.laeufer.setAttribute("cx", von[0] + (z[0] - von[0]) * t);
+    UB.laeufer.setAttribute("cy", von[1] + (z[1] - von[1]) * t);
+    if(i >= n){ clearInterval(laeuft); laeuft = null; }
+  }, 20);
+}
+
+function schrittZeigen(){
+  var sch = SCHRITTE[schritt];
+  Object.keys(UB.teile).forEach(function(k){
+    var an = sch.zeigen.indexOf(k) !== -1;
+    UB.teile[k].forEach(function(e){ e.style.display = an ? "" : "none"; });
+  });
+  laufeZu(sch.zu);
+  el("schrittText").className = "rueckmeldung";
+  el("schrittText").innerHTML = sch.text;
+  el("schrittZahl").textContent = "Schritt " + (schritt + 1) + " von " + SCHRITTE.length;
+  el("btnSchritt").textContent = schritt === SCHRITTE.length - 1 ? "Von vorn" : "Weiter";
+  el("btnZurueck").disabled = schritt === 0;
+}
+
+el("btnSchritt").addEventListener("click", function(){
+  schritt = schritt === SCHRITTE.length - 1 ? 0 : schritt + 1;
+  schrittZeigen();
+});
+el("btnZurueck").addEventListener("click", function(){
+  if(schritt > 0){ schritt--; schrittZeigen(); }
+});
+schrittZeigen();
 
 el("btnAufloesen").addEventListener("click", function(){
   var z = lage();
@@ -639,5 +777,7 @@ el("btnAufloesen").addEventListener("click", function(){
 
 <script src="../../assets/back-nav.js" data-ziel="./"></script>
 <script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
 </body>
 </html>

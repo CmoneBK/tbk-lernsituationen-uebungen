@@ -512,8 +512,11 @@ function bildAusgangslage(){
 
   /* Trennfuge hervorheben - dort entsteht die Haltekraft. */
   var gT = svgEl("g", {style:"color:var(--accent)"}, svg);
-  linie(gT, 58, 36, 58, 212, SCHMAL, {strich:"5 4"});
-  txt(gT, 58, 26, "Trennfuge – hier wirkt μ", {groesse:10.5});
+  linie(gT, 58, 24, 58, 212, SCHMAL, {strich:"5 4"});
+  /* Rechts neben der Linie und ueber allem anderen: mittig gesetzt haengt die
+     Unterlaenge des g sonst im Gestell. */
+  txt(gT, 64, 18, "Trennfuge – hier wirkt μ",
+      {anker:"start", groesse:10.5});
 
   /* Querkraft am freien Ende */
   var gF = svgEl("g", {style:"color:var(--bad)"}, svg);
@@ -613,62 +616,67 @@ function bildTrennfugen(){
 
 /* Weg 4: Formschluss nimmt die Querkraft direkt auf. */
 function bildFormschluss(){
-  var svg = bild("bildFormschluss", 452, 252,
-    "Links wird die Querkraft nur über die Reibung in der Trennfuge " +
-    "übertragen, rechts zusätzlich formschlüssig über einen Passstift, der " +
-    "die Trennfuge kreuzt",
-    "Mit Formschluss ist die Reibungszahl gleichgültig \u2013 die Last hat " +
-    "einen festen Weg.");
+  var svg = bild("bildFormschluss", 452, 278,
+    "Links wird die Querkraft nur über die Reibung in der Trennfuge "
+    + "übertragen, rechts zusätzlich formschlüssig über einen Passstift, "
+    + "der die Trennfuge kreuzt",
+    "Mit Formschluss ist die Reibungszahl gleichgültig – die Last hat "
+    + "einen festen Weg.");
 
   function seite(x0, mitStift, titel, hinweis, farbe){
     var mA = schraffur(svg, "fs" + x0 + "a", 45);
     var mB = schraffur(svg, "fs" + x0 + "b", -45);
-    var y = 128, dick = 30, h = 46;
+    var y = 132, dick = 34, h = 48;
 
-    txt(svg, x0 + dick, 26, titel, {fett:true});
+    txt(svg, x0, 26, titel, {fett:true});
 
+    /* Zwei Bauteile, Trennfuge genau bei x0. */
     [[x0 - dick, mA], [x0, mB]].forEach(function(l){
       [[y - h, h - 7], [y + 7, h - 7]].forEach(function(p){
         kasten(svg, l[0], p[0], dick, p[1], {fuell:l[1]});
       });
     });
-    kasten(svg, x0 - dick - 14, y - 16, 14, 32, {fuell:"var(--card)"});
-    kasten(svg, x0 - dick, y - 5, 2 * dick + 13, 10, {fuell:"var(--card)"});
-    kasten(svg, x0 + dick + 13, y - 16, 14, 32, {fuell:"var(--card)"});
 
-    /* Die Last hängt am rechten Bauteil und will nach unten. */
+    /* Schraube: Kopf und Mutter liegen am Bauteil an, nicht daneben. */
+    kasten(svg, x0 - dick - 15, y - 16, 15, 32, {fuell:"var(--card)"});
+    kasten(svg, x0 - dick, y - 5, 2 * dick, 10, {fuell:"var(--card)"});
+    kasten(svg, x0 + dick, y - 16, 15, 32, {fuell:"var(--card)"});
+
+    /* Die Last haengt am rechten Bauteil - der Pfeil setzt deshalb an dessen
+       Unterkante an und nicht an der Mutter. */
+    var xL = x0 + dick / 2;
     var gL = svgEl("g", {style:"color:var(--bad)"}, svg);
-    linie(gL, x0 + dick + 34, y - 20, x0 + dick + 34, y + 24, BREIT);
-    linie(gL, x0 + dick + 29, y + 16, x0 + dick + 34, y + 26, BREIT);
-    linie(gL, x0 + dick + 39, y + 16, x0 + dick + 34, y + 26, BREIT);
-    txt(gL, x0 + dick + 34, y + 44, "F", {groesse:11, fett:true});
+    linie(gL, xL, y + h - 4, xL, y + h + 28, BREIT);
+    linie(gL, xL - 5, y + h + 20, xL, y + h + 30, BREIT);
+    linie(gL, xL + 5, y + h + 20, xL, y + h + 30, BREIT);
+    txt(gL, xL, y + h + 48, "Querkraft", {groesse:11, fett:true});
 
     if(mitStift){
-      /* Der Stift liegt wie die Schraube quer zur Trennfuge und spielfrei im
-         Loch - er nimmt die Querkraft unmittelbar auf. */
+      /* Der Stift sitzt vollstaendig im Werkstoff: keine Kopf, keine Mutter,
+         die Enden liegen buendig in den Bohrungen. */
       var gS = svgEl("g", {style:"color:var(--ok)"}, svg);
-      kasten(gS, x0 - 24, y - h + 14, 48, 15, {fuell:"var(--card)"});
-      txt(gS, x0, y - h - 6, "Passstift", {groesse:10.5});
-      linie(gS, x0, y - h + 33, x0, y - h + 45, BREIT);
-      linie(gS, x0 - 5, y - h + 39, x0, y - h + 45, BREIT);
-      linie(gS, x0 + 5, y - h + 39, x0, y - h + 45, BREIT);
+      kasten(gS, x0 - 26, y - h + 12, 52, 16, {fuell:"var(--card)"});
+      txt(gS, x0, y - h - 8, "Passstift", {groesse:10.5});
+      linie(gS, x0, y - h + 32, x0, y - h + 44, BREIT);
+      linie(gS, x0 - 5, y - h + 38, x0, y - h + 44, BREIT);
+      linie(gS, x0 + 5, y - h + 38, x0, y - h + 44, BREIT);
     } else {
-      /* Ohne Formschluss haelt nur die Reibung entlang der Trennfuge. */
+      /* Ohne Formschluss haelt nur die Reibung laengs der Trennfuge. */
       var gR = svgEl("g", {style:"color:var(--warn)"}, svg);
       [-1, 1].forEach(function(v){
-        linie(gR, x0, y + v * 16, x0, y + v * 36, BREIT);
-        linie(gR, x0 - 5, y + v * 30, x0, y + v * 36, BREIT);
-        linie(gR, x0 + 5, y + v * 30, x0, y + v * 36, BREIT);
+        linie(gR, x0, y + v * 18, x0, y + v * 38, BREIT);
+        linie(gR, x0 - 5, y + v * 32, x0, y + v * 38, BREIT);
+        linie(gR, x0 + 5, y + v * 32, x0, y + v * 38, BREIT);
       });
-      txt(gR, x0, y - h - 6, "nur Reibung", {groesse:10.5});
+      txt(gR, x0, y - h - 8, "nur Reibung", {groesse:10.5});
     }
 
     var g = svgEl("g", {style:"color:var(--" + farbe + ")"}, svg);
-    txt(g, x0 + dick, 226, hinweis, {groesse:11, fett:true});
+    txt(g, x0, 258, hinweis, {groesse:11, fett:true});
   }
 
-  seite(100, false, "nur Schrauben", "h\u00e4ngt an \u03bc", "warn");
-  seite(330, true,  "mit Passstift", "\u03bc ist egal",       "ok");
+  seite(120, false, "nur Schrauben", "hängt an μ", "warn");
+  seite(340, true,  "mit Passstift", "μ ist egal",     "ok");
 
   return svg;
 }
@@ -676,54 +684,46 @@ function bildFormschluss(){
 /* Teil 4, Frage 1: Warum die Schraube im Durchgangsloch nicht auf Abscheren
    gerechnet werden darf - und was die Passschraube anders macht. */
 function bildSpiel(){
-  var svg = bild("bildSpiel", 452, 244,
-    "Links eine Durchgangsschraube M10 in einem Loch von 11 Millimetern mit " +
-    "0,5 Millimeter Spiel je Seite, rechts eine spielfrei sitzende " +
-    "Passschraube",
-    "Solange die Verbindung hält, berührt die Durchgangsschraube die " +
-    "Lochwand gar nicht. Das Spiel ist &uuml;berh&ouml;ht gezeichnet.");
+  var svg = bild("bildSpiel", 452, 292,
+    "Links eine Durchgangsschraube M10 in einem Loch von 11 Millimetern mit "
+    + "Spiel, rechts eine spielfrei sitzende Passschraube",
+    "Solange die Verbindung hält, berührt die Durchgangsschraube die "
+    + "Lochwand gar nicht. Das Spiel ist &uuml;berh&ouml;ht gezeichnet.");
 
-  function fall(x0, spiel, titel, hinweis, farbe){
+  function fall(x0, spiel, titel, unterzeile, hinweis, farbe){
     var m = schraffur(svg, "sp" + x0, 45);
-    var y = 116, dick = 74, rLoch = 30, rSchaft = 30 - spiel;
+    var y = 150, dick = 74, rLoch = 32, rSchaft = rLoch - spiel;
 
-    txt(svg, x0 + dick / 2, 26, titel, {fett:true});
+    /* Ueberschrift, darunter die Bemassung als eigene Zeile - beides hatte
+       sich vorher dieselbe Hoehe geteilt. */
+    txt(svg, x0 + dick / 2, 24, titel, {fett:true});
+    txt(svg, x0 + dick / 2, 44, unterzeile, {groesse:10.5, deckung:.8});
 
-    /* Bauteil im Schnitt mit Durchgangsloch */
-    [[y - 74, 74 - rLoch], [y + rLoch, 74 - rLoch]].forEach(function(p){
+    [[y - 72, 72 - rLoch], [y + rLoch, 72 - rLoch]].forEach(function(p){
       kasten(svg, x0, p[0], dick, p[1], {fuell:m});
     });
-
-    /* Schraubenschaft mittig im Loch */
     kasten(svg, x0 - 26, y - rSchaft, dick + 52, 2 * rSchaft, {fuell:"var(--card)"});
     achse(svg, x0 - 34, x0 + dick + 34, y);
 
+    var g = svgEl("g", {style:"color:var(--" + farbe + ")"}, svg);
     if(spiel > 0){
-      var g = svgEl("g", {style:"color:var(--" + farbe + ")"}, svg);
       [-1, 1].forEach(function(v){
-        var a = y + v * rSchaft, b = y + v * rLoch;
-        linie(g, x0 + dick + 8, a, x0 + dick + 8, b, SCHMAL);
-        linie(g, x0 + dick + 5, a, x0 + dick + 11, a, SCHMAL);
-        linie(g, x0 + dick + 5, b, x0 + dick + 11, b, SCHMAL);
+        var von = y + v * rSchaft, bis = y + v * rLoch;
+        linie(g, x0 + dick + 10, von, x0 + dick + 10, bis, SCHMAL);
+        linie(g, x0 + dick + 6, von, x0 + dick + 14, von, SCHMAL);
+        linie(g, x0 + dick + 6, bis, x0 + dick + 14, bis, SCHMAL);
       });
-      txt(g, x0 + dick / 2, y + 92, "0,5 mm Spiel je Seite", {groesse:10.5});
-      txt(svg, x0 + dick / 2, y - 92, "Schaft 10 mm im Loch 11 mm",
-          {groesse:10.5, deckung:.8});
+      txt(g, x0 + dick / 2, y + 94, "0,5 mm Spiel je Seite", {groesse:10.5});
     } else {
-      txt(svg, x0 + dick / 2, y - 92, "Schaft geschliffen, spielfrei",
-          {groesse:10.5, deckung:.8});
-      var gO = svgEl("g", {style:"color:var(--ok)"}, svg);
-      txt(gO, x0 + dick / 2, y + 92, "liegt an der Lochwand an", {groesse:10.5});
+      txt(g, x0 + dick / 2, y + 94, "liegt an der Lochwand an", {groesse:10.5});
     }
-
-    var gH = svgEl("g", {style:"color:var(--" + farbe + ")"}, svg);
-    txt(gH, x0 + dick / 2, 228, hinweis, {groesse:10.5, fett:true});
+    txt(g, x0 + dick / 2, 278, hinweis, {groesse:11, fett:true});
   }
 
-  /* Das Spiel ist ueberhoeht gezeichnet - 0,5 mm auf 10 mm waeren sonst kaum
-     zu sehen. Die Bildunterschrift sagt das dazu. */
-  fall(70,  7, "Durchgangsschraube", "nur Reibschluss", "bad");
-  fall(288, 0, "Passschraube",       "darf abscheren",  "ok");
+  fall(70,  7, "Durchgangsschraube", "Schaft 10 mm im Loch 11 mm",
+       "nur Reibschluss", "bad");
+  fall(288, 0, "Passschraube",       "Schaft geschliffen, spielfrei",
+       "darf abscheren", "ok");
 
   return svg;
 }
@@ -737,5 +737,7 @@ bildSpiel();
 
 <script src="../../assets/back-nav.js" data-ziel="./"></script>
 <script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
 </body>
 </html>

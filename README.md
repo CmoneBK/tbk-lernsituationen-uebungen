@@ -33,6 +33,8 @@ uebungen/<paket>/                   Übungspaket   – index.html wird ERZEUGT
 trainings/<paket>/                  Trainingspaket – index.html wird ERZEUGT
 assets/uebung.css        gemeinsames Aussehen aller Übungen und Trainings
 assets/zeichnen.js       Bausteine für Zeichnungen (Maße, Schraffur, Diagramme)
+assets/baukasten.js      Übungen zuschneiden und als Link weitergeben
+assets/qr.js             QR-Code für diesen Link
 assets/back-nav.js       Rücklink „← Übersicht“ – einzige Quelle
 assets/werkzeug-link.js  löst Links auf die Werkzeuge je nach Umgebung auf
 daten/kategorien.csv     Reihenfolge der Bereiche und Unterkategorien
@@ -131,6 +133,37 @@ Zwei Festlegungen gelten dabei überall:
 
 Schraffur-IDs gelten dokumentweit – jedes Bild braucht eigene, sonst zeigen
 alle dasselbe Muster.
+
+## ✂️ Übungen zuschneiden
+
+Nicht jeder Teil einer Übung passt zu jeder Lerngruppe oder jedem Bildungsgang.
+Deshalb trägt jede Übung unten rechts die Schaltfläche **„Übung anpassen"**.
+Dahinter lassen sich einzelne Teile und Aufgaben abwählen; daraus entsteht ein
+Link und ein QR-Code, die die Übung genau so öffnen.
+
+Die Datei selbst bleibt dabei unverändert – die Auswahl steckt allein in der
+Adresse:
+
+```
+…/03-wohin-geht-das-drehmoment.html?ohne=k3fa.9x2m
+```
+
+Zwei Eigenschaften, die man kennen sollte:
+
+* **Die Kennungen kommen aus den Überschriften, nicht aus ihrer Reihenfolge.**
+  Wird eine Übung später umgestellt, zeigen alte Links weiterhin auf dasselbe.
+* **Wird eine Überschrift umformuliert, greift der alte Link dort nicht mehr.**
+  Dann erscheint der Teil wieder, statt dass ein falscher verschwindet – die
+  harmlosere der beiden Richtungen.
+
+Eingebunden werden `assets/qr.js` und `assets/baukasten.js`; beides trägt der
+Build in jede Übung und jedes Training selbst ein. Zu tun ist dafür nichts –
+außer die Gliederung mit `h2` und `details` aufzubauen, wie es die Vorlage
+ohnehin vormacht.
+
+Der QR-Code entsteht im Browser, ohne Dienst und ohne Fremdbibliothek
+(`assets/qr.js`, Byte-Modus, Fehlerkorrektur M, bis Version 10). Das ist
+Bedingung, weil die Seite [nichts von fremden Servern lädt](#-trackingfrei--ohne-ausnahme).
 
 ## ➕ Neues Material anlegen
 

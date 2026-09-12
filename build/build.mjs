@@ -56,6 +56,8 @@ const TYPEN = [
 
 const BACK_NAV = 'assets/back-nav.js';
 const WZ_LINK = 'assets/werkzeug-link.js';
+const QR = 'assets/qr.js';
+const BAUKASTEN = 'assets/baukasten.js';
 
 /* ---------- kleine Helfer ---------- */
 
@@ -92,7 +94,7 @@ const metaWert = (text, name) => {
  *      einen Werkzeug-Link (data-werkzeug) enthaelt.
  * Mit --check wird nur gemeldet, nicht geschrieben.
  */
-async function seiteLesen(datei, { imPaket = false } = {}) {
+async function seiteLesen(datei, { imPaket = false, baukasten = false } = {}) {
   let text = await readFile(datei, 'utf8');
   const rel = relPfad(datei);
   const tiefe = rel.split('/').length - 1;          // uebungen/paket/x.html -> 2
@@ -112,6 +114,9 @@ async function seiteLesen(datei, { imPaket = false } = {}) {
   // Pakets zur Paketuebersicht, sonst zur Startseite des Materialbereichs.
   const noetig = [{ pfad: BACK_NAV, attr: imPaket ? ' data-ziel="./"' : '' }];
   if (/data-werkzeug=/.test(text)) noetig.push({ pfad: WZ_LINK, attr: '' });
+  // Uebungen und Trainings lassen sich fuer eine Lerngruppe zuschneiden. Der
+  // QR-Code gehoert dazu, deshalb beide Bausteine und in dieser Reihenfolge.
+  if (baukasten) { noetig.push({ pfad: QR, attr: '' }); noetig.push({ pfad: BAUKASTEN, attr: '' }); }
 
   for (const { pfad, attr } of noetig) {
     if (text.includes(pfad)) continue;
@@ -201,7 +206,7 @@ async function typSammeln(typ) {
 
     // a) Einzelstueck direkt im Typ-Ordner
     if (e.isFile() && e.name.toLowerCase().endsWith('.html')) {
-      const s = await seiteLesen(join(basis, e.name));
+      const s = await seiteLesen(join(basis, e.name), { baukasten: typ.paket });
       eintraege.push({ typ: typ.id, ...titelZerlegen(s.titel), ...s, werkzeuge: [], inhalt: [] });
       continue;
     }
@@ -243,7 +248,7 @@ async function typSammeln(typ) {
 
     const inhalt = [];
     for (const f of paketReihenfolge(dateien, info.reihenfolge)) {
-      const s = await seiteLesen(join(ordner, f), { imPaket: true });
+      const s = await seiteLesen(join(ordner, f), { imPaket: true, baukasten: true });
       inhalt.push({ ...s, datei: f });
     }
 
