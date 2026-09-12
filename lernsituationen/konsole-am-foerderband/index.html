@@ -157,8 +157,8 @@
     <p class="schritt">Schritt 3 &middot; Planen</p>
     <h2><span class="nr">3</span>Die Kräfte ausrechnen</h2>
 
-    <p>Rechnet die vier Werte aus und tragt sie ein. Geprüft wird auf 3 % genau
-      &ndash; Rundungsunterschiede sind also kein Problem.</p>
+    <p>Rechnet die fünf Werte der Reihe nach aus und tragt sie ein. Geprüft wird
+      auf 3 % genau &ndash; Rundungsunterschiede sind also kein Problem.</p>
 
     <div class="box auftrag">
       <p><strong>Womit ihr rechnen dürft</strong> &ndash; diese Annahmen gelten für
@@ -168,9 +168,12 @@
         <li><strong>Der Drehpunkt liegt in der unteren Schraubenreihe.</strong>
           Das Kippmoment wird als Kräftepaar zwischen oberer und unterer Reihe
           aufgenommen; der Hebelarm ist damit der Reihenabstand h = 120 mm.</li>
-        <li><strong>Alle vier Schrauben klemmen gleich stark</strong>, und es gibt
-          genau <strong>eine Reibfläche</strong> (i = 1) &ndash; die Trennfuge
-          zwischen Konsole und Stütze.</li>
+        <li><strong>Alle vier Schrauben klemmen gleich stark.</strong> Die
+          Querkraft verteilt sich also gleichmäßig &ndash; jede Schraube trägt ein
+          Viertel.</li>
+        <li><strong>Es gibt genau eine Reibfläche</strong> &ndash; die Trennfuge
+          zwischen Konsole und Stütze. Nur deshalb gilt die Formel aus dem
+          Tabellenbuch unverändert.</li>
         <li><strong>Die Zugkraft aus dem Moment kommt vollständig bei den oberen
           Schrauben an.</strong> Das Kraftverhältnis der Verbindung bleibt außen
           vor.</li>
@@ -179,7 +182,7 @@
         <li><strong>&mu; = 0,12 gilt für die ganze Fuge</strong> &ndash; Stahl auf
           Stahl, leicht geölt.</li>
       </ol>
-      <p style="margin-bottom:6px">Gerechnet wird mit vier Formeln:</p>
+      <p style="margin-bottom:6px">Gerechnet wird mit fünf Formeln, in dieser Reihenfolge:</p>
       <div class="tabellenrahmen">
         <table>
           <tbody>
@@ -188,20 +191,27 @@
             <tr><td>Zugkraft aus dem Moment</td>
                 <td>F<sub>Z</sub> = M / h</td>
                 <td class="fussnote">für die obere Reihe zusammen</td></tr>
-            <tr><td>nötige Klemmkraft</td>
-                <td>F<sub>erf</sub> = &phi; &middot; F<sub>B</sub> / &mu;</td>
-                <td class="fussnote">F<sub>B</sub> = Querkraft je Schraube,
-                  &phi; = Rutschsicherheit</td></tr>
-            <tr><td>nötige Vorspannkraft</td>
-                <td>F<sub>V,erf</sub> = F<sub>Kl</sub> + F<sub>Z</sub></td>
+            <tr><td>Querkraft je Schraube</td>
+                <td>F<sub>B</sub> = F<sub>Q</sub> / n</td>
+                <td class="fussnote">n = Anzahl der Schrauben</td></tr>
+            <tr><td>Vorspannkraft gegen das Rutschen</td>
+                <td>F<sub>verf</sub> = &phi; &middot; F<sub>B</sub> / &mu;</td>
+                <td class="fussnote">&phi; = Rutschsicherheit &ndash; genau so im
+                  Tabellenbuch</td></tr>
+            <tr><td>Vorspannkraft insgesamt</td>
+                <td>F<sub>V,erf</sub> = F<sub>verf</sub> + F<sub>Z</sub></td>
                 <td class="fussnote">danach 10 % für das Setzen</td></tr>
           </tbody>
         </table>
       </div>
-      <p class="fussnote" style="margin-top:10px">Die dritte Formel steht im
-        Tabellenbuch unter <em>Vereinfachte Berechnung von Schrauben</em>
-        (Abschnitt 5.2 Schrauben). Dort heißt die Rutschsicherheit &phi; und die
-        Betriebskraft F<sub>B</sub> &ndash; dieselbe Rechnung, andere Buchstaben.</p>
+      <p class="fussnote" style="margin-top:10px">Die dritte und die vierte Formel
+        stehen im Tabellenbuch unter <em>Vereinfachte Berechnung von Schrauben</em>
+        &ndash; dort im Beispiel der Scheibenkupplung: erst die Betriebskraft
+        F<sub>B</sub> je Schraube, dann F<sub>verf</sub> = &phi; &middot;
+        F<sub>B</sub> / &mu;. Unser Fall ist derselbe, nur dass die Betriebskraft
+        hier nicht aus einem Drehmoment kommt, sondern aus der Last am
+        Konsolenende. Die fünfte Formel steht dort nicht: Bei der Kupplung zieht
+        nichts an den Schrauben, bei uns schon.</p>
     </div>
 
     <div class="box">
@@ -209,13 +219,16 @@
         <label class="feld">Kippmoment M in N&middot;m
           <input type="number" id="aM" step="1" min="0" inputmode="decimal">
         </label>
-        <label class="feld">Zugkraft je oberer Schraube in kN
+        <label class="feld">Zugkraft F<sub>Z</sub> je oberer Schraube in kN
           <input type="number" id="aFZ" step="0.1" min="0" inputmode="decimal">
         </label>
-        <label class="feld">Klemmkraft gegen Rutschen je Schraube in kN
+        <label class="feld">Querkraft F<sub>B</sub> je Schraube in kN
+          <input type="number" id="aFB" step="0.1" min="0" inputmode="decimal">
+        </label>
+        <label class="feld">Vorspannkraft F<sub>verf</sub> gegen Rutschen in kN
           <input type="number" id="aFK" step="0.1" min="0" inputmode="decimal">
         </label>
-        <label class="feld">nötige Vorspannkraft je oberer Schraube in kN
+        <label class="feld">Vorspannkraft F<sub>V,erf</sub> insgesamt in kN
           <input type="number" id="aFV" step="0.1" min="0" inputmode="decimal">
         </label>
       </div>
@@ -226,7 +239,7 @@
       <div class="rueckmeldung" id="rueck" hidden></div>
     </div>
 
-    <p>Der Rechenweg steht in vier Schritten daneben &ndash; jeder einzeln zum
+    <p>Der Rechenweg steht in fünf Schritten daneben &ndash; jeder einzeln zum
       Aufklappen. Wer nur an einer Stelle hängt, muss sich den Rest nicht
       verderben.</p>
 
@@ -252,36 +265,60 @@
     </details>
 
     <details>
-      <summary>Schritt 3: Die Klemmkraft gegen das Abrutschen</summary>
-      <p>Die Querkraft verteilt sich auf alle vier Schrauben; gehalten wird sie
-        von der Reibung in der einen Trennfuge:</p>
-      <p class="merksatz" style="margin:8px 0">F<sub>Kl,erf</sub> =
-        &phi; &middot; F<sub>Q</sub> / (&mu; &middot; n &middot; i)
-        = 1,3 &middot; 2,4 kN / (0,12 &middot; 4 &middot; 1)
-        = <strong>6,5 kN je Schraube</strong></p>
-      <p class="fussnote">Gleichwertig: erst die Querkraft je Schraube
-        (2,4 kN / 4 = 0,6 kN), dann F<sub>erf</sub> = &phi; &middot;
-        F<sub>B</sub> / &mu; = 1,3 &middot; 0,6 kN / 0,12 = 6,5 kN. So steht es
-        im Tabellenbuch.</p>
+      <summary>Schritt 3: Die Querkraft je Schraube</summary>
+      <p>Die Formel im Tabellenbuch rechnet mit der Betriebskraft, die an
+        <em>einer</em> Schraube hängt. Also wird zuerst geteilt &ndash; nach
+        Annahme 2 gleichmäßig auf alle vier:</p>
+      <p class="merksatz" style="margin:8px 0">F<sub>B</sub> = F<sub>Q</sub> / n
+        = 2,4 kN / 4 = <strong>0,6 kN je Schraube</strong></p>
+      <p>Genau diesen Schritt macht das Tabellenbuch im Beispiel der
+        Scheibenkupplung auch, nur mit einem Drehmoment als Ausgangspunkt:
+        F<sub>B</sub> = M<sub>K</sub> / (n &middot; d/2). Bei uns liegt die
+        Betriebskraft schon als Kraft vor, deshalb genügt das Teilen durch die
+        Anzahl der Schrauben.</p>
+      <p class="fussnote">Das ist auch die Stelle, an der eine zweite Reibfläche
+        eingehen würde: Bei zwei Fugen (etwa mit einer Lasche auf beiden Seiten)
+        hält jede Schraube zweimal, die Betriebskraft je Reibfläche wäre dann
+        noch einmal halb so groß. Hier ist es eine Fuge &ndash; es bleibt bei
+        0,6 kN.</p>
     </details>
 
     <details>
-      <summary>Schritt 4: Die nötige Vorspannkraft</summary>
+      <summary>Schritt 4: Die Vorspannkraft gegen das Rutschen</summary>
+      <p>Jetzt passt die Formel aus dem Tabellenbuch, Zeichen für Zeichen:</p>
+      <p class="merksatz" style="margin:8px 0">F<sub>verf</sub> =
+        &phi; &middot; F<sub>B</sub> / &mu;
+        = 1,3 &middot; 0,6 kN / 0,12 = <strong>6,5 kN je Schraube</strong></p>
+      <p>So viel muss jede Schraube mindestens klemmen, damit die Konsole nicht
+        abrutscht &ndash; mit der geforderten Sicherheit &phi; = 1,3 gegen das
+        Rutschen.</p>
+      <p>Im Beispiel des Tabellenbuchs endet die Rechnung hier: An der
+        Scheibenkupplung zieht nichts an den Schrauben, dort ist
+        F<sub>verf</sub> schon die gesuchte Vorspannkraft. Bei uns fehlt noch
+        das, was das Kippmoment macht.</p>
+    </details>
+
+    <details>
+      <summary>Schritt 5: Die Vorspannkraft insgesamt</summary>
       <p>Die oberen Schrauben müssen beides können: klemmen <em>und</em> die
         Zugkraft aus dem Moment aufnehmen, ohne dass die Klemmkraft darunter
-        leidet:</p>
+        leidet. Nach Annahme 4 wird beides schlicht addiert:</p>
       <p class="merksatz" style="margin:8px 0">F<sub>V,erf</sub> =
-        F<sub>Kl,erf</sub> + F<sub>Z,oben</sub> = 6,5 kN + 2,5 kN
+        F<sub>verf</sub> + F<sub>Z,oben</sub> = 6,5 kN + 2,5 kN
         = <strong>9,0 kN</strong></p>
-      <p>Mit dem Zuschlag von 10 % für das Setzen (Annahme 4) sind das
+      <p>Mit dem Zuschlag von 10 % für das Setzen (Annahme 5) sind das
         <strong>rund 10 kN</strong>, die jede obere Schraube nach der Montage
         noch aufbringen muss. Das ist der Wert, an dem sich die Schraubenwahl
         entscheidet.</p>
+      <p class="fussnote">Für die unteren Schrauben reicht F<sub>verf</sub> =
+        6,5 kN &ndash; sie werden vom Moment nicht gezogen. Angezogen wird
+        trotzdem überall gleich: vier Schrauben, ein Drehmoment, keine
+        Verwechslung auf der Baustelle.</p>
     </details>
 
     <details>
       <summary>Was die Annahmen bedeuten &ndash; und wo sie enden</summary>
-      <p>Die fünf Annahmen von oben sind nicht willkürlich. Drei davon rechnet
+      <p>Die sechs Annahmen von oben sind nicht willkürlich. Drei davon rechnet
         die Praxis genauer, und man sollte wissen, in welche Richtung sie
         wirken:</p>
       <ul>
@@ -838,8 +875,9 @@ bildKraefte();
 var SOLL = [
   {id:"aM",  wert:600, einheit:"N·m", name:"Kippmoment"},
   {id:"aFZ", wert:2.5, einheit:"kN",  name:"Zugkraft je oberer Schraube"},
-  {id:"aFK", wert:6.5, einheit:"kN",  name:"Klemmkraft gegen Rutschen"},
-  {id:"aFV", wert:9.0, einheit:"kN",  name:"nötige Vorspannkraft"}
+  {id:"aFB", wert:0.6, einheit:"kN",  name:"Querkraft je Schraube"},
+  {id:"aFK", wert:6.5, einheit:"kN",  name:"Vorspannkraft gegen Rutschen"},
+  {id:"aFV", wert:9.0, einheit:"kN",  name:"Vorspannkraft insgesamt"}
 ];
 
 function zahl(x){
@@ -865,7 +903,7 @@ el("btnPruefen").addEventListener("click", function(){
       + "der Rechenweg steht darunter zum Aufklappen.";
   } else if(!daneben.length && !offen.length){
     r.className = "rueckmeldung ja";
-    text = "<strong>Alle vier stimmen.</strong>Damit steht, was jede obere "
+    text = "<strong>Alle fünf stimmen.</strong>Damit steht, was jede obere "
       + "Schraube können muss: rund 9 kN, mit dem Zuschlag fürs Setzen rund "
       + "10 kN. Weiter zur Schraubenwahl.";
   } else {
@@ -882,8 +920,12 @@ el("btnPruefen").addEventListener("click", function(){
       text += "Beim Moment: Die Last steht 0,25 m vor der Fuge, nicht 250.";
     } else if(daneben.some(function(s){ return s.id === "aFZ"; })){
       text += "Bei der Zugkraft: Das Moment teilt sich auf zwei obere Schrauben auf.";
+    } else if(daneben.some(function(s){ return s.id === "aFB"; })){
+      text += "Bei der Querkraft: Sie verteilt sich auf alle vier Schrauben – "
+        + "die Formel im Tabellenbuch rechnet mit der Kraft an einer.";
     } else if(daneben.some(function(s){ return s.id === "aFK"; })){
-      text += "Bei der Klemmkraft: Es tragen alle vier Schrauben, aber nur eine Reibfläche.";
+      text += "Bei der Vorspannkraft gegen Rutschen: φ mal Betriebskraft, "
+        + "geteilt durch die Reibungszahl – mit F_B aus dem Schritt davor.";
     }
   }
   r.innerHTML = text;
