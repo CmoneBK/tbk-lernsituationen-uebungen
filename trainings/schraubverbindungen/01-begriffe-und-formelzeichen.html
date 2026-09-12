@@ -31,6 +31,19 @@
   .zaehler{display:flex; justify-content:space-between; font-size:13px;
     color:var(--muted); margin:0 0 6px}
   .bilanz{font-size:19px; font-weight:700; margin:0 0 8px}
+
+  /* Der Schalter ueber dem Durchgang. */
+  .stellkopf{margin:0 0 12px; font-size:15px}
+  .stellkopf .fussnote{margin-left:8px}
+
+  /* Warnschild vor der Tafel, solange der Durchgang noch laeuft. */
+  .warnschild{
+    display:flex; gap:12px; align-items:flex-start;
+    border:1px solid var(--warn); border-left-width:4px; border-radius:10px;
+    background:var(--card); padding:12px 16px; margin:0 0 14px; font-size:15px;
+  }
+  .warnschild::before{content:"\26A0"; font-size:20px; line-height:1.1; color:var(--warn)}
+  .warnschild strong{display:block}
   @media (prefers-reduced-motion:reduce){.fortschritt i{transition:none}}
 </style>
 </head>
@@ -48,11 +61,45 @@
       <p><strong>Worum es geht:</strong> Jeder Begriff hat drei Ebenen &ndash;
         wie man ihn <em>sagt</em>, wie er <em>heißt</em> und wie er in der Formel
         <em>steht</em>. Gefragt wird immer nach einer davon.</p>
-      <p>Falsch beantwortete Begriffe kommen am Ende noch einmal. Ein Durchgang
-        dauert etwa fünf Minuten.</p>
+      <p>Schwierigkeit, Richtung und Umfang stellst du unten selbst ein.
+        Falsch beantwortete Begriffe kommen am Ende noch einmal; ein Durchgang
+        dauert je nach Umfang etwa fünf Minuten.</p>
     </div>
 
     <h2><span class="nr">1</span>Durchgang</h2>
+
+    <div class="box">
+      <p class="stellkopf"><strong>So wird gefragt</strong>
+        <span class="fussnote">Jede Änderung beginnt einen neuen Durchgang.</span></p>
+      <div class="felder">
+        <label class="feld">Schwierigkeit
+          <select id="wahlStufe">
+            <option value="einfach">Einfach</option>
+            <option value="mittel">Mittel</option>
+            <option value="schwer">Schwer</option>
+          </select>
+        </label>
+        <label class="feld">Woran üben
+          <select id="wahlModus">
+            <option value="mix">Mix</option>
+            <option value="begriffe">Nur Bedeutung</option>
+            <option value="zeichen">Nur Formelzeichen</option>
+          </select>
+        </label>
+        <label class="feld">Umfang
+          <input type="number" id="wahlUmfang" min="5" max="16" step="1" value="16">
+          <span class="fussnote" id="umfangMax">5 bis 16 Begriffe</span>
+        </label>
+      </div>
+      <p class="fussnote" style="margin:12px 0 0">
+        <strong>Einfach:</strong> die falschen Antworten kommen aus dem ganzen Feld.
+        <strong>Mittel:</strong> teils naheliegende Verwechslungen.
+        <strong>Schwer:</strong> nur noch Begriffe, die dasselbe meinen könnten &ndash;
+        aber etwas anderes bedeuten. &ndash;
+        <strong>Mix</strong> fragt Bedeutung und Formelzeichen,
+        die beiden anderen jeweils nur das eine.
+      </p>
+    </div>
 
     <div class="box">
       <div class="zaehler">
@@ -87,26 +134,48 @@
     </div>
 
     <h2><span class="nr">2</span>Die Tafel</h2>
-    <p>Zum Nachschlagen &ndash; und zum Ausdrucken, falls die Begriffe noch neu sind.</p>
+    <p>Zum Nachschlagen &ndash; und zum Ausdrucken, falls die Begriffe noch neu sind.
+      Nach dem Durchgang steht sie von selbst offen.</p>
 
-    <div class="tabellenrahmen">
-      <table>
-        <thead>
-          <tr><th>So sagt man es</th><th>So heißt es</th><th>So steht es in der Formel</th></tr>
-        </thead>
-        <tbody id="tafel"></tbody>
-      </table>
+    <p id="tafelSchalter">
+      <button type="button" class="knopf leise" id="btnTafel">Tafel einblenden</button>
+    </p>
+
+    <div id="tafelBox" hidden>
+      <div class="warnschild" id="tafelWarnung" hidden>
+        <span><strong>Der Durchgang läuft noch.</strong>
+          Wer jetzt hier nachsieht, übt das Nachschlagen statt des Erinnerns &ndash;
+          und das Ergebnis sagt hinterher wenig. Wenn du nicht weiterweißt, ist
+          es oft lehrreicher, falsch zu tippen: Der Begriff kommt am Ende noch
+          einmal.</span>
+      </div>
+
+      <div class="tabellenrahmen">
+        <table>
+          <thead>
+            <tr><th>So sagt man es</th><th>So heißt es</th><th>So steht es in der Formel</th></tr>
+          </thead>
+          <tbody id="tafel"></tbody>
+        </table>
+      </div>
     </div>
 
     <h2><span class="nr">3</span>Warum drei Ebenen?</h2>
 
     <details>
       <summary>1. Reicht die Alltagssprache nicht?</summary>
-      <p>Für das Gespräch am Schraubstock ja. Sobald aber gerechnet oder
-        geschrieben wird, nicht mehr: „Wie fest die Schraube zieht" kann die
-        Vorspannkraft meinen, das Anziehdrehmoment oder die Spannung im
-        Gewinde &ndash; drei verschiedene Größen mit drei verschiedenen Einheiten.
-        Der Fachbegriff macht eindeutig, wovon die Rede ist.</p>
+      <p>Unter Kollegen, die dieselbe Arbeit nebeneinander machen, kommt man
+        damit durch. Im Betrieb hört das schnell auf: „Wie fest die Schraube
+        zieht" kann die Vorspannkraft meinen, das Anziehdrehmoment oder die
+        Spannung im Gewinde &ndash; drei Größen mit drei Einheiten. Wer so
+        berichtet, zwingt sein Gegenüber zum Raten.</p>
+      <p>Das trifft nicht nur Prüfung und Rechnung, sondern den Arbeitsalltag:
+        die Rückfrage beim Meister, die Übergabe an die nächste Schicht, die
+        Notiz im Wartungsbericht, das Gespräch mit der Arbeitsvorbereitung oder
+        dem Kunden. Wer sagt „die war ordentlich fest", hat nichts gesagt, was
+        jemand nachprüfen oder wiederholen könnte &ndash; wer sagt „mit 45 N·m
+        angezogen", schon. Der Fachbegriff macht eindeutig, wovon die Rede ist;
+        wer ihn benutzt, kann seine Arbeit auch vertreten.</p>
     </details>
 
     <details>
@@ -149,24 +218,125 @@
 
 /* Die Begriffe in drei Ebenen. Sie decken sich mit dem Sprachumschalter des
    Werkzeugs "Maschinenelemente: Schrauben - Schraubverbindungen", damit beides
-   dieselbe Sprache spricht. Ein leeres Zeichen heißt: dafür gibt es keines. */
+   dieselbe Sprache spricht. Ein leeres Zeichen heißt: dafür gibt es keines.
+
+   "nah" sammelt je Ebene die naheliegenden Verwechslungen: Ausdrücke, die vom
+   Wortlaut oder von der Bedeutung her dasselbe meinen könnten, es aber nicht
+   tun. Sie tragen die Schwierigkeitsgrade Mittel und Schwer. Wer die Liste
+   erweitert, sollte hier mitziehen - sonst füllt der Durchgang mit Ablenkern
+   aus dem ganzen Feld auf, und die schwere Stufe wird stellenweise leicht. */
 var BEGRIFFE = [
-  {alltag:"wie fest die Schraube die Teile zusammenzieht", fach:"Vorspannkraft",        zeichen:"F(V)"},
-  {alltag:"die Kraft, auf die beim Anziehen ausgelegt wird", fach:"Montagevorspannkraft", zeichen:"F(M,zul)"},
-  {alltag:"wie fest man mit dem Schlüssel dreht",          fach:"Anziehdrehmoment",     zeichen:"M(A)"},
-  {alltag:"die seitliche Last auf die Verbindung",         fach:"Querkraft",            zeichen:"F(Q)"},
-  {alltag:"die Stelle, an der die Bauteile aufeinanderliegen", fach:"Trennfuge",        zeichen:""},
-  {alltag:"wie rutschig die Flächen sind",                 fach:"Reibungszahl",         zeichen:"µ"},
-  {alltag:"wie weit das Gewinde je Umdrehung vorrückt",    fach:"Steigung",             zeichen:"P"},
-  {alltag:"der tragende Querschnitt der Schraube",         fach:"Spannungsquerschnitt", zeichen:"A(S)"},
-  {alltag:"ab wann die Schraube bleibend länger wird",     fach:"Streckgrenze",         zeichen:"R(p0,2)"},
-  {alltag:"wieviel die Schraube überhaupt aushält",        fach:"Zugfestigkeit",        zeichen:"R(m)"},
-  {alltag:"wie weit die Streckgrenze ausgenutzt wird",     fach:"Ausnutzungsgrad",      zeichen:"ν"},
-  {alltag:"der Teil der Schraube ohne Gewinde",            fach:"Schaft",               zeichen:""},
-  {alltag:"die Fläche, mit der der Kopf aufliegt",         fach:"Kopfauflagefläche",    zeichen:""},
-  {alltag:"wie stark die Schraube gegen Rutschen sichert", fach:"Rutschsicherheit",     zeichen:"S(R)"},
-  {alltag:"wie sehr die Schraube nachgibt",                fach:"Nachgiebigkeit",       zeichen:"δ"},
-  {alltag:"das Einebnen der Rauheitsspitzen im Betrieb",   fach:"Setzen",               zeichen:""}
+  {alltag:"wie fest die Schraube die Teile zusammenzieht", fach:"Vorspannkraft", zeichen:"F(V)",
+   nah:{fach:["Klemmkraft", "Anzugskraft", "Haltekraft"],
+        alltag:["wie fest man mit dem Schlüssel dreht",
+                "wie fest die Flächen aneinander haften",
+                "wie stark der Kopf auf die Auflage drückt"],
+        zeichen:["F(M,zul)", "F(K)", "F(Q)"]}},
+
+  {alltag:"die Kraft, auf die beim Anziehen ausgelegt wird", fach:"Montagevorspannkraft", zeichen:"F(M,zul)",
+   nah:{fach:["Vorspannkraft", "Restklemmkraft", "Montagekraft"],
+        alltag:["die Kraft, die nach dem Setzen übrig bleibt",
+                "die Kraft, bei der die Schraube reißt",
+                "die Kraft, die im Betrieb von außen angreift"],
+        zeichen:["F(V)", "F(M)", "F(V,zul)"]}},
+
+  {alltag:"wie fest man mit dem Schlüssel dreht", fach:"Anziehdrehmoment", zeichen:"M(A)",
+   nah:{fach:["Losbrechmoment", "Gewindemoment", "Kopfreibungsmoment"],
+        alltag:["wie fest die Schraube die Teile zusammenzieht",
+                "wie schwer sich die Schraube wieder lösen lässt",
+                "wie viele Umdrehungen der Schlüssel macht"],
+        zeichen:["M(G)", "M(K)", "M(L)"]}},
+
+  {alltag:"die seitliche Last auf die Verbindung", fach:"Querkraft", zeichen:"F(Q)",
+   nah:{fach:["Scherkraft", "Schubkraft", "Axialkraft"],
+        alltag:["die Last, die längs an der Schraube zieht",
+                "die Kraft, mit der die Teile zusammengepresst werden",
+                "die Kraft, die den Kopf auf die Fläche drückt"],
+        zeichen:["F(A)", "F(S)", "F(V)"]}},
+
+  {alltag:"die Stelle, an der die Bauteile aufeinanderliegen", fach:"Trennfuge", zeichen:"",
+   nah:{fach:["Fügefläche", "Passfläche", "Dichtfläche"],
+        alltag:["die Fläche, mit der der Kopf aufliegt",
+                "die Bohrung, durch die die Schraube geht",
+                "der Spalt, der beim Anziehen zugeht"],
+        zeichen:[]}},
+
+  {alltag:"wie rutschig die Flächen sind", fach:"Reibungszahl", zeichen:"µ",
+   nah:{fach:["Reibungskraft", "Haftbeiwert", "Rauheitswert"],
+        alltag:["wie stark die Flächen aneinander haften",
+                "wie rau die Oberfläche bearbeitet ist",
+                "wie stark die Flächen gegeneinander gedrückt werden"],
+        zeichen:["η", "ρ", "ν"]}},
+
+  {alltag:"wie weit das Gewinde je Umdrehung vorrückt", fach:"Steigung", zeichen:"P",
+   nah:{fach:["Teilung", "Gangzahl", "Flankendurchmesser"],
+        alltag:["wie groß der Abstand zweier Gewindeflanken ist",
+                "wie tief das Gewinde geschnitten ist",
+                "wie viele Gänge auf einen Zoll kommen"],
+        zeichen:["p", "S", "d(2)"]}},
+
+  {alltag:"der tragende Querschnitt der Schraube", fach:"Spannungsquerschnitt", zeichen:"A(S)",
+   nah:{fach:["Kernquerschnitt", "Nennquerschnitt", "Schaftquerschnitt"],
+        alltag:["der Querschnitt am Kerndurchmesser",
+                "der Querschnitt des glatten Schafts",
+                "die Fläche, mit der der Kopf aufliegt"],
+        zeichen:["A(K)", "A(N)", "A(0)"]}},
+
+  {alltag:"ab wann die Schraube bleibend länger wird", fach:"Streckgrenze", zeichen:"R(p0,2)",
+   nah:{fach:["Zugfestigkeit", "Bruchdehnung", "Elastizitätsmodul"],
+        alltag:["ab wann die Schraube reißt",
+                "wie weit sich die Schraube federnd dehnt",
+                "wie viel Last die Verbindung im Betrieb sieht"],
+        zeichen:["R(m)", "R(p0,1)", "R(z)"]}},
+
+  {alltag:"wieviel die Schraube überhaupt aushält", fach:"Zugfestigkeit", zeichen:"R(m)",
+   nah:{fach:["Streckgrenze", "Bruchkraft", "Druckfestigkeit"],
+        alltag:["ab wann die Schraube bleibend länger wird",
+                "wie viel Kraft das Anziehen kostet",
+                "wie zäh das Material beim Bruch ist"],
+        zeichen:["R(p0,2)", "F(m)", "R(z)"]}},
+
+  {alltag:"wie weit die Streckgrenze ausgenutzt wird", fach:"Ausnutzungsgrad", zeichen:"ν",
+   nah:{fach:["Wirkungsgrad", "Sicherheitsbeiwert", "Anziehfaktor"],
+        alltag:["wie viel Sicherheit bis zum Rutschen bleibt",
+                "wie genau der Schlüssel die Kraft trifft",
+                "wie viel der aufgewendeten Kraft verloren geht"],
+        zeichen:["η", "α(A)", "S(F)"]}},
+
+  {alltag:"der Teil der Schraube ohne Gewinde", fach:"Schaft", zeichen:"",
+   nah:{fach:["Kern", "Bund", "Zapfen"],
+        alltag:["der Teil, der im Gewinde der Mutter steckt",
+                "der dünnste Punkt der Schraube",
+                "der Ansatz unter dem Kopf, der aufliegt"],
+        zeichen:[]}},
+
+  {alltag:"die Fläche, mit der der Kopf aufliegt", fach:"Kopfauflagefläche", zeichen:"",
+   nah:{fach:["Trennfuge", "Sitzfläche", "Bundfläche"],
+        alltag:["die Stelle, an der die Bauteile aufeinanderliegen",
+                "die Fläche des Gewindes, die die Last trägt",
+                "die Unterlegscheibe unter der Mutter"],
+        zeichen:[]}},
+
+  {alltag:"wie stark die Schraube gegen Rutschen sichert", fach:"Rutschsicherheit", zeichen:"S(R)",
+   nah:{fach:["Haftsicherheit", "Klemmsicherheit", "Bruchsicherheit"],
+        alltag:["wie rutschig die Flächen sind",
+                "wie viel Reserve bis zum Bruch bleibt",
+                "wie fest die Mutter auf dem Gewinde sitzt"],
+        zeichen:["S(F)", "S(G)", "µ(R)"]}},
+
+  {alltag:"wie sehr die Schraube nachgibt", fach:"Nachgiebigkeit", zeichen:"δ",
+   nah:{fach:["Steifigkeit", "Federkonstante", "Dehnung"],
+        alltag:["wie stark sich die Schraube dem Dehnen widersetzt",
+                "wie weit sich die Schraube bleibend längt",
+                "wie viel Kraft die Schraube aushält, ohne zu brechen"],
+        zeichen:["c", "ε", "λ"]}},
+
+  {alltag:"das Einebnen der Rauheitsspitzen im Betrieb", fach:"Setzen", zeichen:"",
+   nah:{fach:["Kriechen", "Relaxation", "Lockern"],
+        alltag:["das langsame Nachlassen der Spannung im Material",
+                "das Losdrehen der Schraube durch Erschütterung",
+                "das Dehnen der Schraube beim Anziehen"],
+        zeichen:[]}}
 ];
 
 /* Formelzeichen lesbar machen: F(M,zul) wird zu F mit tiefgestelltem M,zul. */
@@ -194,35 +364,87 @@ el("tafel").innerHTML = BEGRIFFE.map(function(b){
 
 /* ---------- Der Durchgang ---------- */
 
-/* Drei Fragerichtungen. Gefragt wird nie nach einem leeren Formelzeichen -
-   sonst wäre die Frage nicht beantwortbar. */
+/* Vier Fragerichtungen. Die ersten beiden drehen sich um die Bedeutung, die
+   letzten beiden um das Formelzeichen - daran entscheidet der Schalter
+   "Woran üben", was drankommt. Gefragt wird nie nach einem leeren
+   Formelzeichen, sonst wäre die Frage nicht beantwortbar. */
 var RICHTUNGEN = [
-  {von:"alltag", nach:"fach",
+  {von:"alltag",  nach:"fach",    art:"begriffe",
    frage:"Wie heißt das im Fachbegriff?"},
-  {von:"fach", nach:"alltag",
+  {von:"fach",    nach:"alltag",  art:"begriffe",
    frage:"Was ist damit gemeint?"},
-  {von:"fach", nach:"zeichen",
-   frage:"Welches Formelzeichen gehört dazu?"}
+  {von:"fach",    nach:"zeichen", art:"zeichen",
+   frage:"Welches Formelzeichen gehört dazu?"},
+  {von:"zeichen", nach:"fach",    art:"zeichen",
+   frage:"Welcher Begriff steht hinter diesem Zeichen?"}
 ];
+
+/* Wie viele der drei falschen Antworten naheliegende Verwechslungen sind.
+   Einfach: keine - die Ablenker kommen aus dem ganzen Feld und lassen sich oft
+   schon dem Thema nach ausschließen. Schwer: alle drei, dann hilft nur noch,
+   den Begriff wirklich zu kennen. Mittel liegt dazwischen. */
+var STUFEN = {einfach:0, mittel:2, schwer:3};
 
 var runde = [];
 var nr = 0;
 var richtig = 0;
 var fehler = [];
+var jeFertig = false;
+
+function stufe(){ return STUFEN[el("wahlStufe").value] || 0; }
+
+function richtungen(){
+  var m = el("wahlModus").value;
+  return RICHTUNGEN.filter(function(r){ return m === "mix" || r.art === m; });
+}
+
+function passt(b, r){ return !!b[r.von] && !!b[r.nach]; }
+
+/* Welche Begriffe kommen im gewählten Modus überhaupt in Frage? Nach dem
+   Formelzeichen eines Begriffs zu fragen, der keines hat, geht nicht. */
+function vorrat(){
+  var rs = richtungen();
+  return BEGRIFFE.filter(function(b){
+    return rs.some(function(r){ return passt(b, r); });
+  });
+}
+
+/* Drei falsche Antworten: erst so viele naheliegende, wie die Stufe vorsieht,
+   dann auffüllen aus dem ganzen Feld - und falls das nicht reicht (kleiner
+   Vorrat), doch wieder mit naheliegenden. */
+function ablenker(begriff, ebene, wieviel){
+  var genommen = [begriff[ebene]];
+  var aus = [];
+
+  function dazu(liste, bis){
+    mischen(liste).forEach(function(text){
+      if(aus.length >= bis || !text) return;
+      if(genommen.indexOf(text) !== -1) return;
+      genommen.push(text);
+      aus.push(text);
+    });
+  }
+
+  var nah = (begriff.nah && begriff.nah[ebene]) || [];
+  var feld = BEGRIFFE.filter(function(b){ return b !== begriff && b[ebene]; })
+    .map(function(b){ return b[ebene]; });
+
+  dazu(nah, Math.min(wieviel, 3));
+  dazu(feld, 3);
+  dazu(nah, 3);
+  return aus;
+}
 
 function aufgabeBauen(begriff){
-  var moeglich = RICHTUNGEN.filter(function(r){
-    return begriff[r.nach] && (r.nach !== "zeichen" || begriff.zeichen);
-  });
+  var moeglich = richtungen().filter(function(r){ return passt(begriff, r); });
   var r = moeglich[Math.floor(Math.random() * moeglich.length)];
 
-  /* Ablenker: andere Begriffe, die in derselben Ebene etwas anzubieten haben. */
-  var andere = BEGRIFFE.filter(function(b){
-    return b !== begriff && b[r.nach];
+  var optionen = ablenker(begriff, r.nach, stufe()).map(function(text){
+    return {text:text, richtig:false};
   });
-  var auswahl = mischen(andere).slice(0, 3).concat([begriff]);
+  optionen.push({text:begriff[r.nach], richtig:true});
 
-  return {richtung:r, begriff:begriff, auswahl:mischen(auswahl)};
+  return {richtung:r, begriff:begriff, optionen:mischen(optionen)};
 }
 
 function standZeigen(){
@@ -243,11 +465,11 @@ function zeigen(){
     : a.begriff[a.richtung.von];
 
   el("auswahl").innerHTML = "";
-  a.auswahl.forEach(function(b){
+  a.optionen.forEach(function(o){
     var k = document.createElement("button");
     k.type = "button";
-    k.innerHTML = a.richtung.nach === "zeichen" ? zeichenHtml(b.zeichen) : b[a.richtung.nach];
-    k.addEventListener("click", function(){ antwort(a, b, k); });
+    k.innerHTML = a.richtung.nach === "zeichen" ? zeichenHtml(o.text) : o.text;
+    k.addEventListener("click", function(){ antwort(a, o, k); });
     el("auswahl").appendChild(k);
   });
 
@@ -259,12 +481,12 @@ function antwort(a, gewaehlt, knopf){
   var knoepfe = [].slice.call(el("auswahl").children);
   knoepfe.forEach(function(k){ k.disabled = true; });
 
-  var stimmt = gewaehlt === a.begriff;
+  var stimmt = gewaehlt.richtig;
   knopf.className = stimmt ? "richtig" : "falsch";
   if(!stimmt){
     /* Die richtige Antwort mit markieren - sonst bleibt offen, was gestimmt hätte. */
     knoepfe.forEach(function(k, i){
-      if(a.auswahl[i] === a.begriff) k.className = "richtig";
+      if(a.optionen[i].richtig) k.className = "richtig";
     });
     fehler.push(a.begriff);
   } else {
@@ -310,6 +532,13 @@ function abschluss(){
     : "";
   el("btnFehler").hidden = !einzeln.length;
   el("btnWeiter").hidden = true;
+
+  /* Jetzt darf die Tafel offen stehen - nachgeschlagen wird danach, nicht
+     mittendrin. Nur wenn dieser Teil weggeschnitten wurde (Baukasten), bleibt
+     alles, wie es ist. */
+  jeFertig = true;
+  if(!el("tafelSchalter").hidden) tafelZeigen(true);
+
   el("ende").scrollIntoView({behavior:"smooth", block:"start"});
 }
 
@@ -322,16 +551,63 @@ function starten(liste){
   zeigen();
 }
 
+/* ---------- Einstellungen ---------- */
+
+/* Der Umfang richtet sich nach dem Vorrat: "Nur Formelzeichen" hat weniger
+   Begriffe zu bieten als der Mix, weil vier von ihnen keines haben. */
+function umfangGrenzen(hoechstens){
+  var f = el("wahlUmfang");
+  f.max = String(hoechstens);
+  var wert = Number(f.value);
+  if(!wert || wert > hoechstens) f.value = String(hoechstens);
+  else if(wert < 5) f.value = String(Math.min(5, hoechstens));
+  el("umfangMax").textContent = "5 bis " + hoechstens + " Begriffe";
+}
+
+function neuerDurchgang(){
+  var v = vorrat();
+  umfangGrenzen(v.length);
+  starten(mischen(v).slice(0, Number(el("wahlUmfang").value)));
+}
+
+/* Beim Tippen und beim Drehen am Mausrad kommt eine Änderung nach der anderen.
+   Ein kurzer Aufschub sorgt dafür, dass daraus ein neuer Durchgang wird und
+   nicht zehn. */
+var wartend = null;
+function baldNeu(){
+  clearTimeout(wartend);
+  wartend = setTimeout(neuerDurchgang, 250);
+}
+
+el("wahlStufe").addEventListener("change", neuerDurchgang);
+el("wahlModus").addEventListener("change", neuerDurchgang);
+el("wahlUmfang").addEventListener("change", baldNeu);
+
+/* ---------- Die Tafel ---------- */
+
+/* Sie steht nicht von vornherein offen: Wer beim Durchgang danebenschaut, übt
+   das Nachschlagen statt des Erinnerns. Abrufbar ist sie trotzdem jederzeit -
+   dann aber mit Warnschild. */
+function tafelZeigen(an){
+  el("tafelBox").hidden = !an;
+  el("btnTafel").textContent = an ? "Tafel ausblenden" : "Tafel einblenden";
+  el("tafelWarnung").hidden = !an || jeFertig;
+}
+
+el("btnTafel").addEventListener("click", function(){
+  tafelZeigen(el("tafelBox").hidden);
+});
+
 el("btnWeiter").addEventListener("click", zeigen);
-el("btnNeu").addEventListener("click", function(){ starten(BEGRIFFE); });
-el("btnNochmal").addEventListener("click", function(){ starten(BEGRIFFE); });
+el("btnNeu").addEventListener("click", neuerDurchgang);
+el("btnNochmal").addEventListener("click", neuerDurchgang);
 el("btnFehler").addEventListener("click", function(){
   var einzeln = [];
   fehler.forEach(function(b){ if(einzeln.indexOf(b) === -1) einzeln.push(b); });
   starten(einzeln);
 });
 
-starten(BEGRIFFE);
+neuerDurchgang();
 </script>
 
 <script src="../../assets/back-nav.js" data-ziel="./"></script>
@@ -340,5 +616,6 @@ starten(BEGRIFFE);
 <script src="../../assets/baukasten.js"></script>
 <script src="../../assets/pdf.js"></script>
 <script src="../../assets/export.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
 </body>
 </html>
