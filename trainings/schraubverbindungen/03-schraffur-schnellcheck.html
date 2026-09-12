@@ -7,6 +7,7 @@
 <meta name="description" content="Zwanzig Aussagen zur Schnittdarstellung, richtig oder falsch – mit Uhr und sofortiger Begründung.">
 <meta name="dauer" content="10 min">
 <link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/zeichnen.js"></script>
 <style>
   /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
   .aussage{
@@ -33,6 +34,9 @@
   .fortschritt{height:8px; border-radius:999px; background:var(--border); overflow:hidden; margin:0 0 16px}
   .fortschritt i{display:block; height:100%; background:var(--accent); transition:width .2s ease}
   .bilanz{font-size:19px; font-weight:700; margin:0 0 8px}
+  .bild{margin:2px 0 14px}
+  .bild svg{width:100%; height:auto; display:block}
+  .bild figcaption{font-size:13px; color:var(--muted); margin-top:4px; text-align:center}
   .rueckblick{list-style:none; margin:12px 0 0; padding:0}
   .rueckblick li{
     border-left:3px solid var(--bad); padding:4px 0 4px 12px; margin:0 0 10px;
@@ -55,6 +59,9 @@
       <p><strong>Worum es geht:</strong> Die Regeln der Schnittdarstellung sitzen
         oder sie sitzen nicht. Wer bei jeder Linie überlegen muss, verliert beim
         Zeichnen und beim Lesen Zeit.</p>
+      <p>Zu jeder Aussage steht ein Bild. Wo es zwei zeigt, ist eines davon
+        normgerecht und eines nicht &ndash; welches, sagt die Beschriftung nicht.
+        Sie sagt nur, welches der beiden die Aussage meint.</p>
       <p>Die Uhr läuft mit, begrenzt aber nichts. Sie ist zum Vergleichen da:
         beim zweiten Durchgang sollte dieselbe Zahl in weniger Zeit stehen.</p>
     </div>
@@ -68,6 +75,7 @@
       </div>
       <div class="fortschritt"><i id="balken" style="width:0%"></i></div>
 
+      <figure class="bild" id="bildAussage"></figure>
       <p class="aussage" id="aussage">&ndash;</p>
       <div class="jn">
         <button type="button" id="btnJa">Richtig</button>
@@ -155,65 +163,507 @@
 var AUSSAGEN = [
   {satz:"Eine Schraube wird im Längsschnitt nicht geschnitten dargestellt.",
    stimmt:true,
-   grund:"Sie ist ein Vollkörper – ein Schnitt zeigt nichts Neues."},
+   grund:"Sie ist ein Vollkörper – ein Schnitt zeigt nichts Neues.",
+   bild:{szene:"verschraubung", meint:"B",
+         a:{schraubeSchraffiert:true}, lA:"Schraube schraffiert",
+         b:{},                         lB:"Schraube in Ansicht"}},
   {satz:"Die Mutter bekommt im Längsschnitt eine Schraffur.",
    stimmt:false,
-   grund:"Mutter, Scheibe und Schraube bleiben ohne Schraffur."},
+   grund:"Mutter, Scheibe und Schraube bleiben ohne Schraffur.",
+   bild:{szene:"verschraubung", meint:"A",
+         a:{mutterSchraffiert:true}, lA:"Mutter schraffiert",
+         b:{},                       lB:"Mutter in Ansicht"}},
   {satz:"Zwei aneinandergrenzende Bauteile dürfen dieselbe Schraffurrichtung haben.",
    stimmt:false,
-   grund:"Dann verschwindet die Trennfuge im Bild – Nachbarn schraffiert man unterschiedlich."},
+   grund:"Dann verschwindet die Trennfuge im Bild – Nachbarn schraffiert man unterschiedlich.",
+   bild:{szene:"verschraubung", meint:"A",
+         a:{gleicheSchraffur:true}, lA:"beide Platten gleich schraffiert",
+         b:{},                      lB:"Platten gegenläufig schraffiert"}},
   {satz:"Dasselbe Bauteil hat in allen Schnitten einer Zeichnung dieselbe Schraffur.",
    stimmt:true,
-   grund:"Nur so erkennt man es wieder."},
+   grund:"Nur so erkennt man es wieder.",
+   bild:{szene:"zweiSchnitte", meint:"B",
+         a:{gleich:false}, lA:"in jedem Schnitt anders",
+         b:{gleich:true},  lB:"in beiden Schnitten gleich"}},
   {satz:"Beim Außengewinde ist der Außendurchmesser die breite Vollinie.",
    stimmt:true,
-   grund:"Und der Kerndurchmesser die schmale."},
+   grund:"Und der Kerndurchmesser die schmale.",
+   bild:{szene:"aussengewinde", meint:"A",
+         a:{breitAussen:true},  lA:"breite Linie außen (d)",
+         b:{breitAussen:false}, lB:"breite Linie innen (d₃)"}},
   {satz:"Beim Innengewinde ist der Kerndurchmesser die breite Vollinie.",
    stimmt:true,
-   grund:"Dort dreht sich das Verhältnis um – die breite Linie liegt innen."},
+   grund:"Dort dreht sich das Verhältnis um – die breite Linie liegt innen.",
+   bild:{szene:"innengewinde", meint:"B",
+         a:{breitInnen:false}, lA:"breite Linie außen (d)",
+         b:{breitInnen:true},  lB:"breite Linie innen (d₃)"}},
   {satz:"Die Schraffur endet immer an der schmalen Linie.",
    stimmt:false,
-   grund:"An der breiten. Beim Innengewinde läuft sie über die schmale hinweg."},
+   grund:"An der breiten. Beim Innengewinde läuft sie über die schmale hinweg.",
+   bild:{szene:"innengewinde", meint:"A",
+         a:{schraffurBis:"schmal"}, lA:"Schraffur endet an der schmalen Linie",
+         b:{schraffurBis:"breit"},  lB:"Schraffur läuft bis zur breiten Linie"}},
   {satz:"Eine Welle, die längs in der Schnittebene liegt, wird schraffiert.",
    stimmt:false,
-   grund:"Längs nicht – quer geschnitten dagegen schon."},
+   grund:"Längs nicht – quer geschnitten dagegen schon.",
+   bild:{szene:"welleLaengs", meint:"B",
+         a:{},                  lA:"Welle ohne Schraffur",
+         b:{schraffiert:true},  lB:"Welle schraffiert"}},
   {satz:"Ein Querschnitt durch eine Welle wird schraffiert.",
    stimmt:true,
-   grund:"Dort zeigt der Schnitt etwas Neues, etwa eine Passfedernut."},
+   grund:"Dort zeigt der Schnitt etwas Neues, etwa eine Passfedernut.",
+   bild:{szene:"welleQuer", meint:"A",
+         a:{schraffiert:true}, lA:"Querschnitt schraffiert",
+         b:{},                 lB:"Querschnitt ohne Schraffur"}},
   {satz:"Ein Stift wird im Längsschnitt geschnitten dargestellt.",
    stimmt:false,
-   grund:"Stifte, Niete und Keile gehören zu den Teilen, die man nicht schneidet."},
+   grund:"Stifte, Niete und Keile gehören zu den Teilen, die man nicht schneidet.",
+   bild:{szene:"stift", meint:"B",
+         a:{},                 lA:"Stift in Ansicht",
+         b:{schraffiert:true}, lB:"Stift geschnitten"}},
   {satz:"Eine Rippe wird längs geschnitten schraffiert.",
    stimmt:false,
-   grund:"Rippen und Speichen bleiben längs ungeschnitten, sonst wirkt das Bauteil massiv."},
-  {satz:"Das Gewindeende wird mit einer schmalen Vollinie quer zur Achse gezeichnet.",
+   grund:"Rippen und Speichen bleiben längs ungeschnitten, sonst wirkt das Bauteil massiv.",
+   bild:{szene:"rippe", meint:"A",
+         a:{schraffiert:true}, lA:"Rippe schraffiert",
+         b:{},                 lB:"Rippe ohne Schraffur"}},
+  {satz:"Das Gewindeende wird mit einer breiten Vollinie quer zur Achse gezeichnet.",
    stimmt:true,
-   grund:"Sie markiert, wo das ausgeführte Gewinde aufhört."},
+   grund:"Sie begrenzt das nutzbare Gewinde. Schmal gezeichnet wird nur der schräge Gewindeauslauf.",
+   bild:{szene:"aussengewinde", meint:"B",
+         a:{ende:"schmal"}, lA:"Gewindeende schmal",
+         b:{ende:"breit"},  lB:"Gewindeende breit"}},
   {satz:"In einer Durchsteckschraubung bekommt das Durchgangsloch denselben Durchmesser wie die Schraube.",
    stimmt:false,
-   grund:"Es ist größer – M10 sitzt üblicherweise in einem Loch von 11 mm."},
+   grund:"Es ist größer – M10 sitzt üblicherweise in einem Loch von 11 mm.",
+   bild:{szene:"verschraubung", meint:"A",
+         a:{masse:true, lochGleich:true}, lA:"Loch so groß wie der Schaft",
+         b:{masse:true},                  lB:"Loch größer als der Schaft"}},
   {satz:"Die Schraffurlinien werden schmal und unter 45° gezeichnet.",
    stimmt:true,
-   grund:"45° ist der Regelfall; abweichend nur, wenn 45° mit einer Kontur zusammenfiele."},
+   grund:"45° ist der Regelfall; abweichend nur, wenn 45° mit einer Kontur zusammenfiele.",
+   bild:{szene:"winkel", meint:"B",
+         a:{winkel:30}, lA:"Schraffur unter 30°",
+         b:{winkel:45}, lB:"Schraffur unter 45°"}},
   {satz:"Sehr schmale Flächen dürfen ganz geschwärzt werden.",
    stimmt:true,
-   grund:"Bei dünnen Blechen und Dichtungen ist eine Schraffur nicht mehr lesbar."},
+   grund:"Bei dünnen Blechen und Dichtungen ist eine Schraffur nicht mehr lesbar.",
+   bild:{szene:"blech", meint:"A",
+         a:{geschwaerzt:true}, lA:"Dichtung geschwärzt",
+         b:{},                 lB:"Dichtung schraffiert"}},
   {satz:"Eine Scheibe unter der Mutter wird geschnitten dargestellt.",
    stimmt:false,
-   grund:"Auch sie bleibt ohne Schraffur."},
+   grund:"Auch sie bleibt ohne Schraffur.",
+   bild:{szene:"verschraubung", meint:"B",
+         a:{},                       lA:"Scheibe in Ansicht",
+         b:{scheibeSchraffiert:true}, lB:"Scheibe schraffiert"}},
   {satz:"Im Grundloch wird die Bohrtiefe größer gezeichnet als die Gewindetiefe.",
    stimmt:true,
-   grund:"Der Bohrer braucht Auslauf – sonst käme das Gewinde nicht tief genug."},
+   grund:"Der Bohrer braucht Auslauf – sonst käme das Gewinde nicht tief genug.",
+   bild:{szene:"grundloch", meint:"A",
+         a:{bohrungTiefer:true}, lA:"Bohrung tiefer als das Gewinde",
+         b:{},                   lB:"Bohrung und Gewinde gleich tief"}},
   {satz:"Die Trennfuge zwischen zwei Bauteilen wird als breite Vollinie gezeichnet.",
    stimmt:true,
-   grund:"Sie ist eine sichtbare Kante. Erkennbar wird sie aber erst durch die unterschiedliche Schraffur."},
+   grund:"Sie ist eine sichtbare Kante. Erkennbar wird sie aber erst durch die unterschiedliche Schraffur.",
+   bild:{szene:"verschraubung", meint:"B",
+         a:{fugeZeigen:true},                  lA:"Trennfuge schmal",
+         b:{fugeZeigen:true, fugeBreit:true},  lB:"Trennfuge breit"}},
   {satz:"Wenn die Schnittebene durch eine Schraube geht, zeichnet man sie trotzdem in Ansicht.",
    stimmt:true,
-   grund:"Genau das ist die Regel – geschnitten wird nur, was etwas zeigt."},
+   grund:"Genau das ist die Regel – geschnitten wird nur, was etwas zeigt.",
+   bild:{szene:"verschraubung", meint:"A",
+         a:{schnitt:true},                            lA:"Schraube in Ansicht",
+         b:{schnitt:true, schraubeSchraffiert:true},  lB:"Schraube geschnitten"}},
   {satz:"Eine Schraffur darf über eine Maßlinie hinweggezeichnet werden.",
    stimmt:false,
-   grund:"An Maßzahlen wird die Schraffur unterbrochen, sonst wird die Zahl unlesbar."}
+   grund:"An Maßzahlen wird die Schraffur unterbrochen, sonst wird die Zahl unlesbar.",
+   bild:{szene:"massLinie", meint:"B",
+         a:{},                  lA:"Schraffur an der Maßzahl unterbrochen",
+         b:{durchgehend:true},  lB:"Schraffur durchgehend"}}
 ];
+
+/* ---------- Zeichnungen zu den Aussagen ----------
+
+   Jede Aussage bekommt ein Bild, die meisten deren zwei: A und B zeigen
+   dieselbe Stelle einmal so und einmal anders gezeichnet. Welche der beiden
+   normgerecht ist, verrät die Beschriftung nicht - nur, welche die Aussage
+   meint. Wer sich das Bild ansieht, entscheidet also weiterhin selbst.
+
+   Gezeichnet wird mit den Bausteinen aus assets/zeichnen.js; die Strichstärke
+   steht immer am Element, weil sie hier die eigentliche Aussage trägt. */
+
+var BILDNR = 0;                        /* Schraffur-IDs je Bild eindeutig */
+function muster(svg, winkel){ return schraffur(svg, "sr" + (++BILDNR), winkel); }
+
+/* Engere, kräftigere Schraffur für Teile, die hier (fälschlich) mitgeschnitten
+   sind. Sie sind schmal - mit dem normalen Abstand von 7 Pixeln lägen darin
+   zwei blasse Striche, und der Unterschied zwischen den beiden Darstellungen
+   wäre nicht zu sehen. Nebenbei stimmt so auch die Regel, dass Nachbarn
+   verschieden schraffiert werden. */
+function musterEng(svg, winkel){
+  var defs = svg.querySelector("defs") || svgEl("defs", {}, svg);
+  var id = "se" + (++BILDNR);
+  var p = svgEl("pattern", {id:id, width:5, height:5,
+    patternUnits:"userSpaceOnUse",
+    patternTransform:"rotate(" + winkel + ")"}, defs);
+  svgEl("line", {x1:0, y1:0, x2:0, y2:5, stroke:"currentColor",
+    "stroke-width":1, opacity:0.9}, p);
+  return "url(#" + id + ")";
+}
+
+/* Wo der Unterschied zwischen breiter und schmaler Vollinie die Frage selbst
+   ist, wird er überzeichnet: 2,0 gegen 0,85 Pixel sieht man auf einem Handy
+   nicht mehr. In der Zeichnung gilt weiterhin das Verhältnis 2:1. */
+var DICK = 3.2, DUENN = 0.9;
+
+/* --- Durchsteckschraubung im Schnitt: zwei Platten, Schraube, Scheibe, Mutter.
+   Alles im selben Maßstab (4,2 Pixel je Millimeter): eine M10 zwischen zwei
+   12er Platten, Kopf und Mutter mit Schlüsselweite 17, Scheibe ⌀ 20. Ohne
+   gemeinsamen Maßstab sieht die Schraube aus wie ein Draht. */
+function szeneVerschraubung(svg, g, o){
+  var s = 4.2, y = 68;
+  var rd = 5 * s;                      /* Schaft ⌀ 10 */
+  var rk = 8.5 * s;                    /* Kopf SW 17 */
+  var rm = 8.5 * s;                    /* Mutter SW 17 */
+  var rs = 10 * s;                     /* Scheibe ⌀ 20 */
+  var loch = (o.lochGleich ? 5 : 5.5) * s;
+  var halb = 13 * s;                   /* halbe Höhe der Platten */
+  var oben = y - halb, unten = y + halb;
+  var stark = o.fugeZeigen ? DICK : BREIT;
+
+  var kopfX = 30, kopfB = 6.4 * s;
+  var p1x = kopfX + kopfB, pb = 12 * s;
+  var p2x = p1x + pb;
+  var schX = p2x + pb, schB = 2.5 * s;
+  var muX = schX + schB, muB = 8 * s;
+  var ende = muX + muB + 3.5 * s;
+
+  var m1 = muster(svg, 45);
+  var m2 = muster(svg, o.gleicheSchraffur ? 45 : -45);
+  var mT = musterEng(svg, 60);
+
+  /* Platte als zwei Felder ober- und unterhalb des Lochs. Die Kanten werden
+     einzeln gezogen: Nur so lässt sich die Trennfuge schmal zeichnen. */
+  function platte(x, m, links, rechts){
+    [[oben, y - loch], [y + loch, unten]].forEach(function(p){
+      kasten(g, x, p[0], pb, p[1] - p[0], {fuell:m, ohneRand:true});
+      linie(g, x, p[0], x + pb, p[0], stark);
+      linie(g, x, p[1], x + pb, p[1], stark);
+      if(links)  linie(g, x, p[0], x, p[1], links);
+      if(rechts) linie(g, x + pb, p[0], x + pb, p[1], rechts);
+    });
+  }
+  platte(p1x, m1, stark, o.fugeZeigen && !o.fugeBreit ? DUENN : stark);
+  platte(p2x, m2, null, stark);
+
+  /* Schraube: Schaft, Kopf, Gewinde. Gefüllt, damit die Schraffur der Platten
+     nicht durchscheint - sie liegt ja dahinter. */
+  var fS = o.schraubeSchraffiert ? mT : "var(--card)";
+  kasten(g, p1x, y - rd, ende - p1x, 2 * rd, {fuell:fS});
+  kasten(g, kopfX, y - rk, kopfB, 2 * rk, {fuell:fS});
+  var r3 = rd - 3.4;                   /* Kerndurchmesser, schmale Linie */
+  var gewVon = p2x + pb * 0.35;
+  [y - r3, y + r3].forEach(function(yy){
+    linie(g, gewVon, yy, ende - 1.5, yy, SCHMAL);
+  });
+
+  kasten(g, schX, y - rs, schB, 2 * rs,
+    {fuell:o.scheibeSchraffiert ? mT : "var(--card)"});
+  kasten(g, muX, y - rm, muB, 2 * rm,
+    {fuell:o.mutterSchraffiert ? mT : "var(--card)"});
+  /* Fasen an Kopf und Mutter, damit beide als Sechskant zu lesen sind. */
+  [[kopfX, kopfB, rk], [muX, muB, rm]].forEach(function(k){
+    [-1, 1].forEach(function(v){
+      linie(g, k[0], y + v * k[2] * 0.62, k[0] + k[1], y + v * k[2] * 0.62,
+        SCHMAL, {deckung:.6});
+    });
+  });
+
+  achse(g, kopfX - 14, ende + 14, y);
+
+  if(o.fugeZeigen){
+    linie(g, p2x, unten + 4, p2x, unten + 15, SCHMAL, {deckung:.7});
+    txt(g, p2x, unten + 27, "Trennfuge", {groesse:11, deckung:.85});
+  }
+
+  if(o.masse){
+    /* Zwei Hinweise statt zweier Maßlinien: Die Maßlinie für das Loch müsste
+       quer durch Scheibe und Mutter laufen. */
+    linie(g, p1x + 16, y - loch, p1x + 16, oben - 12, SCHMAL, {deckung:.7});
+    txt(g, p1x + 16, oben - 16, "Loch ⌀ " + (o.lochGleich ? "10" : "11"),
+      {groesse:11, deckung:.9});
+    linie(g, ende - 14, y + rd, ende - 14, unten + 15, SCHMAL, {deckung:.7});
+    txt(g, ende - 14, unten + 27, "Schaft ⌀ 10", {groesse:11, deckung:.9});
+  }
+
+  if(o.schnitt){
+    achse(g, kopfX - 14, ende + 14, y);
+    txt(g, 165, unten + 27, "Die Schnittebene liegt in der Schraubenachse",
+      {groesse:11, deckung:.8});
+  }
+}
+
+/* --- Welle laengs in der Schnittebene, Nabe geschnitten */
+function szeneWelleLaengs(svg, g, o){
+  var y = 70, rw = 16, rn = 44;
+  var mN = muster(svg, 45), mW = muster(svg, -45);
+
+  [[y - rn, y - rw], [y + rw, y + rn]].forEach(function(p){
+    kasten(g, 106, p[0], 96, p[1] - p[0], {fuell:mN, ohneRand:true});
+    kasten(g, 106, p[0], 96, p[1] - p[0], {strich:BREIT});
+  });
+  kasten(g, 34, y - rw, 246, 2 * rw,
+    {fuell:o.schraffiert ? mW : "var(--card)", strich:BREIT});
+  achse(g, 22, 292, y);
+  txt(g, 60, y - rw - 10, "Welle", {groesse:11, deckung:.85});
+  txt(g, 154, y - rn - 8, "Nabe", {groesse:11, deckung:.85});
+}
+
+/* --- Querschnitt durch dieselbe Welle, mit Passfedernut */
+function szeneWelleQuer(svg, g, o){
+  var cx = 165, cy = 68, r = 46;
+  var mW = muster(svg, 45);
+  svgEl("circle", {cx:cx, cy:cy, r:r, fill:o.schraffiert ? mW : "var(--card)",
+    stroke:"currentColor", "stroke-width":BREIT}, g);
+  /* Passfedernut oben - der Grund, warum der Querschnitt ueberhaupt gezeichnet
+     wird. Sie ist eingeschnitten: Der Kreisbogen wird dort zugedeckt und die
+     drei Kanten der Nut werden gezogen. */
+  var nb = 12, nt = 14;
+  var ny = cy - Math.sqrt(r * r - nb * nb);      /* wo die Nut den Kreis trifft */
+  kasten(g, cx - nb, cy - r - 3, 2 * nb, (cy - r - 3 < ny ? ny - (cy - r - 3) : 0) + 1,
+    {fuell:"var(--card)", ohneRand:true});
+  kasten(g, cx - nb, ny, 2 * nb, nt, {fuell:"var(--card)", ohneRand:true});
+  linie(g, cx - nb, ny, cx - nb, ny + nt, BREIT);
+  linie(g, cx + nb, ny, cx + nb, ny + nt, BREIT);
+  linie(g, cx - nb, ny + nt, cx + nb, ny + nt, BREIT);
+  achse(g, cx - r - 14, cx + r + 14, cy);
+  linie(g, cx, cy - r - 14, cx, cy + r + 14, SCHMAL, {strich:"10 3 2 3", deckung:.5});
+  txt(g, cx, cy + r + 30, "Schnitt B–B (quer zur Welle)", {groesse:11, deckung:.85});
+}
+
+/* --- Dasselbe Bauteil in zwei Schnitten derselben Zeichnung */
+function szeneZweiSchnitte(svg, g, o){
+  var m1 = muster(svg, 45);
+  var m2 = muster(svg, o.gleich ? 45 : -45);
+  function stueck(x, m, titel){
+    kasten(g, x, 30, 96, 62, {fuell:m, ohneRand:true});
+    kasten(g, x, 30, 96, 62, {strich:BREIT});
+    kasten(g, x + 34, 30, 28, 62, {fuell:"var(--card)", strich:BREIT});
+    txt(g, x + 48, 112, titel, {groesse:11.5, deckung:.9});
+  }
+  stueck(22, m1, "Schnitt A–A");
+  stueck(186, m2, "Schnitt B–B");
+  txt(g, 165, 18, "ein und dasselbe Bauteil", {groesse:11, deckung:.75});
+}
+
+/* --- Aussengewinde: welche Linie ist breit, und wie endet das Gewinde? */
+function szeneAussengewinde(svg, g, o){
+  var y = 64, rd = 42, r3 = 27, x1 = 22, x2 = 232, xEnde = 168;
+  var aussenStark = o.breitAussen === false ? DUENN : DICK;
+  var innenStark = o.breitAussen === false ? DICK : DUENN;
+
+  kasten(g, x1, y - rd, x2 - x1, 2 * rd, {fuell:"var(--card)", ohneRand:true});
+  [y - rd, y + rd].forEach(function(yy){
+    linie(g, x1, yy, x2, yy, aussenStark);
+  });
+  [y - r3, y + r3].forEach(function(yy){
+    linie(g, x1 + 1, yy, (o.ende ? xEnde : x2) - 1, yy, innenStark);
+  });
+  linie(g, x1, y - rd, x1, y + rd, BREIT);
+  linie(g, x2, y - rd, x2, y + rd, BREIT);
+  achse(g, x1 - 12, x2 + 16, y);
+
+  /* Beide Durchmesser auf ihrer eigenen Höhe beschriften - nebeneinander
+     stünden die Bezeichnungen sonst übereinander. */
+  [[rd, "d"], [r3, "d₃"]].forEach(function(m){
+    linie(g, x2, y - m[0], x2 + 22, y - m[0], SCHMAL, {deckung:.45});
+    txt(g, x2 + 26, y - m[0] + 4, m[1], {anker:"start", groesse:12, deckung:.9});
+  });
+
+  if(o.ende){
+    linie(g, xEnde, y - rd, xEnde, y + rd, o.ende === "breit" ? DICK : DUENN);
+    linie(g, xEnde, y + rd + 4, xEnde, y + rd + 16, SCHMAL, {deckung:.7});
+    txt(g, xEnde, y + rd + 28, "Gewindeende", {groesse:11, deckung:.85});
+  }
+  txt(g, x1, y - rd - 10, "Außengewinde (Schraubenschaft)",
+    {anker:"start", groesse:11, deckung:.75});
+}
+
+/* --- Innengewinde im Schnitt: breite Linie innen, Schraffur bis wohin? */
+function szeneInnengewinde(svg, g, o){
+  var y = 66, aussen = 54, rD = 34, rD1 = 20, x1 = 46, x2 = 252;
+  var m = muster(svg, 45);
+  var bis = o.schraffurBis === "schmal" ? rD : rD1;
+
+  [[y - aussen, y - bis], [y + bis, y + aussen]].forEach(function(p){
+    kasten(g, x1, p[0], x2 - x1, p[1] - p[0], {fuell:m, ohneRand:true});
+  });
+  [-1, 1].forEach(function(v){
+    linie(g, x1, y + v * aussen, x2, y + v * aussen, BREIT);
+    linie(g, x1, y + v * rD1, x2, y + v * rD1, o.breitInnen === false ? DUENN : DICK);
+    linie(g, x1, y + v * rD, x2, y + v * rD, o.breitInnen === false ? DICK : DUENN);
+  });
+  linie(g, x1, y - aussen, x1, y + aussen, BREIT);
+  linie(g, x2, y - aussen, x2, y + aussen, BREIT);
+  achse(g, x1 - 12, x2 + 12, y);
+  txt(g, x2 + 4, y - rD + 4, "d", {anker:"start", groesse:11, deckung:.85});
+  txt(g, x2 + 4, y + rD1 + 4, "d₃", {anker:"start", groesse:11, deckung:.85});
+  txt(g, (x1 + x2) / 2, y + aussen + 22, "Innengewinde (geschnitten)",
+    {groesse:11, deckung:.75});
+}
+
+/* --- Grundloch mit Gewinde: Bohrtiefe gegen Gewindetiefe */
+function szeneGrundloch(svg, g, o){
+  var y = 58, oben = 12, unten = 104, x1 = 54, x2 = 268;
+  var rD1 = 17, rD = 25;
+  var xGew = 132;
+  var xBohr = o.bohrungTiefer ? 104 : xGew;
+  var m = muster(svg, 45);
+
+  kasten(g, x1, oben, x2 - x1, unten - oben, {fuell:m, ohneRand:true});
+  /* Das Loch ist leer - die Schraffur wird dort wieder zugedeckt. */
+  kasten(g, xBohr, y - rD1, x2 - xBohr, 2 * rD1, {fuell:"var(--card)", ohneRand:true});
+  kasten(g, xGew, y - rD, x2 - xGew, 2 * rD, {fuell:"var(--card)", ohneRand:true});
+
+  kasten(g, x1, oben, x2 - x1, unten - oben, {strich:BREIT});
+  [-1, 1].forEach(function(v){
+    linie(g, xBohr, y + v * rD1, x2, y + v * rD1, DICK);
+    linie(g, xGew, y + v * rD, x2, y + v * rD, DUENN);
+  });
+  linie(g, xGew, y - rD, xGew, y + rD, DICK);           /* Gewindeende */
+  /* Bohrerspitze, rund 118 Grad */
+  linie(g, xBohr, y - rD1, xBohr - 11, y, BREIT);
+  linie(g, xBohr, y + rD1, xBohr - 11, y, BREIT);
+  achse(g, xBohr - 22, x2 + 12, y);
+
+  mass(g, xBohr, x2, unten + 16, "Bohrtiefe", y + rD1);
+  mass(g, xGew, x2, unten + 38, "Gewindetiefe", y + rD);
+}
+
+/* --- Passstift durch zwei geschnittene Bauteile */
+function szeneStift(svg, g, o){
+  var m1 = muster(svg, 45), m2 = muster(svg, -45), mS = muster(svg, 60);
+  var x1 = 46, x2 = 284, sx = 150, sb = 24;
+  [[26, m1], [72, m2]].forEach(function(p){
+    kasten(g, x1, p[0], x2 - x1, 46, {fuell:p[1], ohneRand:true});
+    kasten(g, x1, p[0], x2 - x1, 46, {strich:BREIT});
+  });
+  kasten(g, sx, 32, sb, 80,
+    {fuell:o.schraffiert ? mS : "var(--card)", strich:BREIT});
+  linie(g, sx + sb / 2, 24, sx + sb / 2, 120, SCHMAL, {strich:"10 3 2 3", deckung:.5});
+  linie(g, sx + sb / 2, 32, sx + sb / 2, 16, SCHMAL, {deckung:.6});
+  txt(g, sx + sb / 2, 12, "Passstift", {groesse:11, deckung:.9});
+  txt(g, (x1 + x2) / 2, 134, "Bauteile quer geschnitten, Stift längs",
+    {groesse:11, deckung:.75});
+}
+
+/* --- Rippe an einem Winkel: laengs in der Schnittebene */
+function szeneRippe(svg, g, o){
+  var m = muster(svg, 45), mR = muster(svg, -45);
+  /* Fuss und Wand als ein Bauteil, die Rippe dazwischen. */
+  kasten(g, 44, 96, 226, 26, {fuell:m, ohneRand:true});
+  kasten(g, 44, 26, 34, 70, {fuell:m, ohneRand:true});
+  svgEl("polygon", {points:"78,96 78,46 160,96",
+    fill:o.schraffiert ? mR : "var(--card)", stroke:"none"}, g);
+
+  linie(g, 44, 26, 78, 26, BREIT);
+  linie(g, 78, 26, 78, 46, BREIT);
+  linie(g, 78, 46, 160, 96, BREIT);
+  linie(g, 160, 96, 270, 96, BREIT);
+  linie(g, 270, 96, 270, 122, BREIT);
+  linie(g, 270, 122, 44, 122, BREIT);
+  linie(g, 44, 122, 44, 26, BREIT);
+  linie(g, 78, 96, 160, 96, SCHMAL, {deckung:.55});
+  txt(g, 104, 88, "Rippe", {groesse:11, deckung:.9});
+  txt(g, 214, 66, "Bauteil geschnitten", {groesse:11, deckung:.75});
+}
+
+/* --- Schraffurwinkel */
+function szeneWinkel(svg, g, o){
+  var m = muster(svg, o.winkel);
+  kasten(g, 74, 24, 182, 84, {fuell:m, ohneRand:true});
+  kasten(g, 74, 24, 182, 84, {strich:BREIT});
+  /* Winkel am unteren Rand andeuten: Bezugslinie und eine Schraffurlinie. */
+  var x0 = 100, y0 = 96, l = 54;
+  var b = o.winkel * Math.PI / 180;
+  linie(g, x0, y0, x0 + l, y0, SCHMAL, {deckung:.8});
+  linie(g, x0, y0, x0 + l * Math.cos(b), y0 - l * Math.sin(b), SCHMAL, {deckung:.8});
+  txt(g, x0 + 30, y0 - 8, o.winkel + "°", {groesse:11.5, fett:true});
+  txt(g, 165, 124, "geschnittenes Bauteil", {groesse:11, deckung:.75});
+}
+
+/* --- Sehr schmale Flaeche: Dichtung zwischen zwei Platten */
+function szeneBlech(svg, g, o){
+  var m1 = muster(svg, 45), m2 = muster(svg, -45), mD = musterEng(svg, 45);
+  var x1 = 46, x2 = 284;
+  kasten(g, x1, 20, x2 - x1, 44, {fuell:m1, ohneRand:true});
+  kasten(g, x1, 20, x2 - x1, 44, {strich:BREIT});
+  kasten(g, x1, 71, x2 - x1, 44, {fuell:m2, ohneRand:true});
+  kasten(g, x1, 71, x2 - x1, 44, {strich:BREIT});
+  kasten(g, x1, 63, x2 - x1, 9,
+    {fuell:o.geschwaerzt ? "currentColor" : mD, strich:BREIT});
+  linie(g, 165, 72, 165, 124, SCHMAL, {deckung:.6});
+  txt(g, 165, 136, "dünne Dichtung zwischen zwei Platten",
+    {groesse:11, deckung:.75});
+}
+
+/* --- Schraffur und Masszahl */
+function szeneMassLinie(svg, g, o){
+  var m = muster(svg, 45);
+  var x1 = 50, x2 = 280, oben = 26, unten = 104;
+  kasten(g, x1, oben, x2 - x1, unten - oben, {fuell:m, ohneRand:true});
+  kasten(g, x1, oben, x2 - x1, unten - oben, {strich:BREIT});
+  var y = 66;
+  /* Die Masslinie laeuft quer durch das schraffierte Feld. */
+  if(!o.durchgehend){
+    /* Rund um die Maßzahl wird die Schraffur ausgespart. */
+    kasten(g, 138, y - 19, 54, 26, {fuell:"var(--card)", ohneRand:true});
+  }
+  mass(g, x1, x2, y, "28", undefined);
+  txt(g, 165, 126, "Maß im schraffierten Feld", {groesse:11, deckung:.75});
+}
+
+var SZENEN = {
+  verschraubung: szeneVerschraubung,
+  welleLaengs: szeneWelleLaengs,
+  welleQuer: szeneWelleQuer,
+  zweiSchnitte: szeneZweiSchnitte,
+  aussengewinde: szeneAussengewinde,
+  innengewinde: szeneInnengewinde,
+  grundloch: szeneGrundloch,
+  stift: szeneStift,
+  rippe: szeneRippe,
+  winkel: szeneWinkel,
+  blech: szeneBlech,
+  massLinie: szeneMassLinie
+};
+
+/* Baut das Bild zur Aussage: zwei Felder nebeneinander, darunter je eine
+   Beschriftung. Die Bildunterschrift sagt, welches Feld die Aussage meint -
+   nicht, welches richtig ist. */
+function bildZeichnen(a){
+  var b = a.bild;
+  var ziel = document.getElementById("bildAussage");
+  if(!b){ ziel.textContent = ""; ziel.hidden = true; return; }
+  ziel.hidden = false;
+
+  var breit = 700, hoch = 200, feld = 330;
+  var svg = bild("bildAussage", breit, hoch, a.satz,
+    "Die Aussage beschreibt <strong>" + b.meint + "</strong>. Welche der beiden "
+    + "Darstellungen der Norm entspricht, sagt das Bild nicht.");
+
+  [[8, b.a, "A", b.lA], [362, b.b, "B", b.lB]].forEach(function(f){
+    var g = svgEl("g", {transform:"translate(" + f[0] + ",0)"}, svg);
+    SZENEN[b.szene](svg, g, f[1]);
+    txt(g, feld / 2, hoch - 24, f[2], {fett:true, groesse:14});
+    txt(g, feld / 2, hoch - 7, f[3], {groesse:11.5, deckung:.85});
+  });
+
+  /* Trennstrich zwischen den beiden Feldern. */
+  linie(svg, 350, 10, 350, hoch - 40, SCHMAL, {strich:"5 5", deckung:.35});
+}
+
 
 function el(id){ return document.getElementById(id); }
 
@@ -247,6 +697,7 @@ function zeigen(){
   el("stand").textContent = "Aussage " + (nr + 1) + " von " + runde.length;
   el("balken").style.width = (100 * nr / runde.length) + "%";
   el("aussage").textContent = runde[nr].satz;
+  bildZeichnen(runde[nr]);
   ["btnJa", "btnNein"].forEach(function(id){
     el(id).disabled = false;
     el(id).className = "";
