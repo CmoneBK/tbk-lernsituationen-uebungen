@@ -160,6 +160,50 @@
     <p>Rechnet die vier Werte aus und tragt sie ein. Geprüft wird auf 3 % genau
       &ndash; Rundungsunterschiede sind also kein Problem.</p>
 
+    <div class="box auftrag">
+      <p><strong>Womit ihr rechnen dürft</strong> &ndash; diese Annahmen gelten für
+        die ganze Aufgabe. Sie stehen hier, <em>bevor</em> ihr rechnet, weil man
+        sonst gar nicht anfangen kann:</p>
+      <ol>
+        <li><strong>Der Drehpunkt liegt in der unteren Schraubenreihe.</strong>
+          Das Kippmoment wird als Kräftepaar zwischen oberer und unterer Reihe
+          aufgenommen; der Hebelarm ist damit der Reihenabstand h = 120 mm.</li>
+        <li><strong>Alle vier Schrauben klemmen gleich stark</strong>, und es gibt
+          genau <strong>eine Reibfläche</strong> (i = 1) &ndash; die Trennfuge
+          zwischen Konsole und Stütze.</li>
+        <li><strong>Die Zugkraft aus dem Moment kommt vollständig bei den oberen
+          Schrauben an.</strong> Das Kraftverhältnis der Verbindung bleibt außen
+          vor.</li>
+        <li><strong>Für das Setzen werden pauschal 10 % aufgeschlagen</strong>,
+          statt die Setzbeträge einzeln anzusetzen.</li>
+        <li><strong>&mu; = 0,12 gilt für die ganze Fuge</strong> &ndash; Stahl auf
+          Stahl, leicht geölt.</li>
+      </ol>
+      <p style="margin-bottom:6px">Gerechnet wird mit vier Formeln:</p>
+      <div class="tabellenrahmen">
+        <table>
+          <tbody>
+            <tr><td>Kippmoment</td>
+                <td>M = F &middot; a</td><td class="fussnote">Last mal Hebelarm</td></tr>
+            <tr><td>Zugkraft aus dem Moment</td>
+                <td>F<sub>Z</sub> = M / h</td>
+                <td class="fussnote">für die obere Reihe zusammen</td></tr>
+            <tr><td>nötige Klemmkraft</td>
+                <td>F<sub>erf</sub> = &phi; &middot; F<sub>B</sub> / &mu;</td>
+                <td class="fussnote">F<sub>B</sub> = Querkraft je Schraube,
+                  &phi; = Rutschsicherheit</td></tr>
+            <tr><td>nötige Vorspannkraft</td>
+                <td>F<sub>V,erf</sub> = F<sub>Kl</sub> + F<sub>Z</sub></td>
+                <td class="fussnote">danach 10 % für das Setzen</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="fussnote" style="margin-top:10px">Die dritte Formel steht im
+        Tabellenbuch unter <em>Vereinfachte Berechnung von Schrauben</em>
+        (Abschnitt 5.2 Schrauben). Dort heißt die Rutschsicherheit &phi; und die
+        Betriebskraft F<sub>B</sub> &ndash; dieselbe Rechnung, andere Buchstaben.</p>
+    </div>
+
     <div class="box">
       <div class="felder">
         <label class="feld">Kippmoment M in N&middot;m
@@ -182,38 +226,64 @@
       <div class="rueckmeldung" id="rueck" hidden></div>
     </div>
 
+    <p>Der Rechenweg steht in vier Schritten daneben &ndash; jeder einzeln zum
+      Aufklappen. Wer nur an einer Stelle hängt, muss sich den Rest nicht
+      verderben.</p>
+
     <details>
-      <summary>Rechenweg, Schritt für Schritt</summary>
-      <p><strong>1. Kippmoment.</strong> Die Last greift 250 mm vor der Trennfuge an:</p>
-      <p class="merksatz" style="margin:8px 0">M = F &middot; a = 2,4 kN &middot; 0,25 m
-        = <strong>0,6 kN&middot;m = 600 N&middot;m</strong></p>
-      <p><strong>2. Zugkraft aus dem Moment.</strong> Vereinfacht wird
-        angenommen, dass das Moment als Kräftepaar zwischen der oberen und der
-        unteren Schraubenreihe aufgenommen wird &ndash; Hebelarm ist der
-        Reihenabstand h:</p>
-      <p class="merksatz" style="margin:8px 0">F<sub>Z,oben</sub> = M / h
-        = 600 N&middot;m / 0,12 m = 5,0 kN für beide oberen Schrauben zusammen,
-        also <strong>2,5 kN je Schraube</strong></p>
-      <p><strong>3. Klemmkraft gegen das Abrutschen.</strong> Alle vier Schrauben
-        pressen mit, die Trennfuge hat eine Reibfläche:</p>
-      <p class="merksatz" style="margin:8px 0">F<sub>Kl,erf</sub> =
-        F<sub>Q</sub> &middot; S<sub>R</sub> / (&mu; &middot; n &middot; i)
-        = 2,4 kN &middot; 1,3 / (0,12 &middot; 4 &middot; 1)
-        = <strong>6,5 kN je Schraube</strong></p>
-      <p><strong>4. Nötige Vorspannkraft.</strong> Die oberen Schrauben müssen
-        beides können: klemmen <em>und</em> die Zugkraft aus dem Moment
-        aufnehmen, ohne dass die Klemmkraft darunter leidet:</p>
-      <p class="merksatz" style="margin:8px 0">F<sub>V,erf</sub> =
-        F<sub>Kl,erf</sub> + F<sub>Z,oben</sub> = 6,5 kN + 2,5 kN
-        = <strong>9,0 kN</strong></p>
-      <p>Mit einem Zuschlag von rund 10 % für das Setzen der Verbindung sind das
-        <strong>rund 10 kN</strong>, die jede obere Schraube nach der Montage
-        noch aufbringen muss.</p>
+      <summary>Schritt 1: Das Kippmoment</summary>
+      <p>Die Last greift 250 mm vor der Trennfuge an. In Metern gerechnet, damit
+        N&middot;m herauskommen:</p>
+      <p class="merksatz" style="margin:8px 0">M = F &middot; a
+        = 2,4 kN &middot; 0,25 m = 0,6 kN&middot;m = <strong>600 N&middot;m</strong></p>
+      <p class="fussnote">Häufigster Fehler: mit 250 statt 0,25 gerechnet. Dann
+        steht das Tausendfache da.</p>
     </details>
 
     <details>
-      <summary>Was wir dabei vereinfacht haben</summary>
-      <p>Drei Dinge rechnet die Praxis genauer, und man sollte wissen, welche:</p>
+      <summary>Schritt 2: Die Zugkraft in den oberen Schrauben</summary>
+      <p>Nach Annahme 1 dreht die Konsole um die untere Schraubenreihe. Das
+        Moment wird von einem Kräftepaar mit dem Hebelarm h aufgenommen:</p>
+      <p class="merksatz" style="margin:8px 0">F<sub>Z,oben</sub> = M / h
+        = 600 N&middot;m / 0,12 m = 5,0 kN für die obere Reihe,
+        also <strong>2,5 kN je Schraube</strong></p>
+      <p>Die unteren Schrauben werden durch das Moment nicht zusätzlich gezogen
+        &ndash; dort drückt die Konsole gegen die Stütze.</p>
+    </details>
+
+    <details>
+      <summary>Schritt 3: Die Klemmkraft gegen das Abrutschen</summary>
+      <p>Die Querkraft verteilt sich auf alle vier Schrauben; gehalten wird sie
+        von der Reibung in der einen Trennfuge:</p>
+      <p class="merksatz" style="margin:8px 0">F<sub>Kl,erf</sub> =
+        &phi; &middot; F<sub>Q</sub> / (&mu; &middot; n &middot; i)
+        = 1,3 &middot; 2,4 kN / (0,12 &middot; 4 &middot; 1)
+        = <strong>6,5 kN je Schraube</strong></p>
+      <p class="fussnote">Gleichwertig: erst die Querkraft je Schraube
+        (2,4 kN / 4 = 0,6 kN), dann F<sub>erf</sub> = &phi; &middot;
+        F<sub>B</sub> / &mu; = 1,3 &middot; 0,6 kN / 0,12 = 6,5 kN. So steht es
+        im Tabellenbuch.</p>
+    </details>
+
+    <details>
+      <summary>Schritt 4: Die nötige Vorspannkraft</summary>
+      <p>Die oberen Schrauben müssen beides können: klemmen <em>und</em> die
+        Zugkraft aus dem Moment aufnehmen, ohne dass die Klemmkraft darunter
+        leidet:</p>
+      <p class="merksatz" style="margin:8px 0">F<sub>V,erf</sub> =
+        F<sub>Kl,erf</sub> + F<sub>Z,oben</sub> = 6,5 kN + 2,5 kN
+        = <strong>9,0 kN</strong></p>
+      <p>Mit dem Zuschlag von 10 % für das Setzen (Annahme 4) sind das
+        <strong>rund 10 kN</strong>, die jede obere Schraube nach der Montage
+        noch aufbringen muss. Das ist der Wert, an dem sich die Schraubenwahl
+        entscheidet.</p>
+    </details>
+
+    <details>
+      <summary>Was die Annahmen bedeuten &ndash; und wo sie enden</summary>
+      <p>Die fünf Annahmen von oben sind nicht willkürlich. Drei davon rechnet
+        die Praxis genauer, und man sollte wissen, in welche Richtung sie
+        wirken:</p>
       <ul>
         <li><strong>Das Kraftverhältnis &Phi;.</strong> In Wirklichkeit landet
           nur ein Teil der Betriebskraft auf der Schraube, der Rest entlastet die
@@ -256,8 +326,89 @@
       </table>
     </div>
     <p class="fussnote">Werte mit dem Werkzeug Schraubverbindungen gerechnet
-      (&nu; = 0,9, Kopfreibung gleich Gewindereibung). Im Tabellenbuch stehen
-      dieselben Größenordnungen.</p>
+      (&nu; = 0,9, Kopfreibung gleich Gewindereibung).</p>
+
+    <details>
+      <summary>Im Tabellenbuch steht eine andere Zahl &ndash; welche gilt?</summary>
+      <p>Die Tabelle <em>Maximale Vorspannkräfte und Anziehdrehmomente</em>
+        (Abschnitt <em>Montage hochbeanspruchter Schraubenverbindungen</em>)
+        nennt für M10, Festigkeitsklasse 8.8, &mu; = 0,12:</p>
+      <p class="merksatz" style="margin:8px 0">F<sub>V</sub> = 29,6 kN und
+        M<sub>A</sub> = <strong>48 N&middot;m</strong></p>
+      <p>Das Werkzeug rechnet mit 27,4 kN und 45 N&middot;m &ndash; rund 6 %
+        vorsichtiger. Beide Werte stehen für dieselbe Aussage: die Schraube
+        ist bis rund 90 % ihrer Streckgrenze ausgenutzt. Sie unterscheiden
+        sich darin, wie viel von der Verdrehbeanspruchung beim Anziehen
+        mitgerechnet wird.</p>
+      <p><strong>Für die Werkstatt ist der Unterschied klein</strong> gegen das,
+        was die Reibung anrichtet: Zwischen &mu; = 0,10 und &mu; = 0,14 ändert
+        sich das nötige Drehmoment um mehr als &plusmn; 10 %. Wer 45 statt
+        48 N&middot;m anzieht, liegt innerhalb dieser Streuung; wer das Gewinde
+        trocken statt geölt verschraubt, nicht mehr.</p>
+      <p>Angezogen wird nach der Vorgabe, die im Betrieb gilt. Hier: die Zahl
+        aus dem Tabellenbuch, also <strong>48 N&middot;m</strong>. Wichtig ist,
+        dass im Protokoll steht, <em>woher</em> sie stammt.</p>
+    </details>
+
+    <details>
+      <summary>Gegenprobe: der Erfahrungswert</summary>
+      <p>Das Tabellenbuch nennt unter <em>Vereinfachte Berechnung von
+        Schrauben</em> Erfahrungswerte für die Vorspannkraft &ndash; die Kraft,
+        die bei einer von Hand angezogenen Schraube ungefähr ankommt. Für M10
+        sind das rund <strong>16 kN</strong>.</p>
+      <p>Nötig sind 10 kN. Die Verbindung ist also nicht grenzwertig: Selbst
+        ohne Drehmomentschlüssel läge man darüber. Das ist kein Freibrief,
+        sondern eine Plausibilitätsprüfung &ndash; wenn die Rechnung eine Kraft
+        verlangt, die weit über dem Erfahrungswert liegt, hat man sich
+        vertan oder die Verbindung ist zu klein gewählt.</p>
+    </details>
+
+    <details>
+      <summary>Hält die Auflagefläche das überhaupt aus?</summary>
+      <p>Die Vorspannkraft drückt über den Schraubenkopf auf die Konsole. Wird
+        die Fläche darunter überlastet, gräbt sich der Kopf ein &ndash; und genau
+        diese Einsenkung ist später der Verlust an Vorspannkraft. Das
+        Tabellenbuch rechnet das im Abschnitt <em>Flächenpressung an
+        Schraubenkopf- und Mutterauflageflächen</em>:</p>
+      <p class="merksatz" style="margin:8px 0">A<sub>P</sub> = &pi;/4 &middot;
+        (d<sub>K(w)</sub>² &minus; d<sub>h</sub>²) &nbsp;&middot;&nbsp;
+        p<sub>vorh</sub> = F<sub>V</sub> / A<sub>P</sub> &nbsp;&middot;&nbsp;
+        p<sub>max</sub> = p<sub>vorh</sub> &middot; 1,4 &nbsp;&middot;&nbsp;
+        S<sub>P</sub> = p<sub>G</sub> / p<sub>max</sub> &ge; 1</p>
+
+      <p><strong>Ohne Scheibe.</strong> Der Sechskantkopf einer M10 liegt auf
+        d<sub>K(w)</sub> = 14,6 mm auf, das Loch ist 11 mm:</p>
+      <div class="tabellenrahmen">
+        <table>
+          <tbody>
+            <tr><td>Auflagefläche</td><td class="zahl">A<sub>P</sub> = 72 mm²</td></tr>
+            <tr><td>vorhandene Pressung</td><td class="zahl">p<sub>vorh</sub> = 29 600 N / 72 mm² = 409 N/mm²</td></tr>
+            <tr><td>maximale Pressung</td><td class="zahl">p<sub>max</sub> = 409 &middot; 1,4 = 573 N/mm²</td></tr>
+            <tr><td>Grenze für S235JR</td><td class="zahl">p<sub>G</sub> = 490 N/mm²</td></tr>
+            <tr class="summe"><td>Sicherheit</td><td class="zahl">S<sub>P</sub> = 490 / 573 = 0,86 &ndash; <strong>zu wenig</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Die Schraube hält also mehr aus als das Blech, auf dem sie sitzt.
+        Voll vorgespannt würde sich der Kopf in die Konsole eindrücken.</p>
+
+      <p><strong>Mit Scheibe</strong> (ISO 7089, &oslash; 20 außen) verteilt sich
+        dieselbe Kraft auf die dreifache Fläche:</p>
+      <div class="tabellenrahmen">
+        <table>
+          <tbody>
+            <tr><td>Auflagefläche</td><td class="zahl">A<sub>P</sub> = &pi;/4 &middot; (20² &minus; 11²) = 219 mm²</td></tr>
+            <tr><td>vorhandene Pressung</td><td class="zahl">p<sub>vorh</sub> = 135 N/mm²</td></tr>
+            <tr class="summe"><td>Sicherheit</td><td class="zahl">S<sub>P</sub> = 490 / 189 = 2,6 &ndash; <strong>in Ordnung</strong></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Damit ist entschieden, was sonst Gewohnheit wäre: <strong>Scheiben unter
+        Kopf und Mutter</strong> &ndash; nicht als Sicherung, sondern weil S235
+        die Pressung sonst nicht aushält. Und es ist das beste Argument gegen
+        „nimm einfach die stärkere Schraube": Eine 10.9 bringt noch mehr
+        Vorspannkraft auf dasselbe Blech.</p>
+    </details>
 
     <details>
       <summary>Welche Schraube nehmt ihr &ndash; und warum?</summary>
@@ -269,6 +420,10 @@
           Mit M8 hätte die Schraube 3 mm Luft im Loch &ndash; die Konsole ließe
           sich beim Anziehen kaum genau ausrichten, und bei Rutschen käme die
           Schraube schlagartig zur Anlage.</li>
+        <li><strong>Die Auflagefläche.</strong> Je kleiner die Schraube, desto
+          kleiner der Kopf &ndash; und desto höher die Pressung auf der Konsole
+          aus S235. Schon M10 braucht dafür Scheiben – die Rechnung dazu steht
+          im Abschnitt darüber.</li>
         <li><strong>Reserve für die Wirklichkeit.</strong> Verzinkte Flächen,
           Farbreste, eine Palette, die härter aufsetzt als gedacht: Mit 36 %
           Ausnutzung bleibt Luft, mit 58 % weniger.</li>
@@ -312,11 +467,12 @@
 
     <details>
       <summary>1. Mit welchem Drehmoment wird angezogen?</summary>
-      <p>Für M10 8.8 bei &mu; = 0,12: <strong>M<sub>A</sub> = 45 N&middot;m</strong>
-        (gerundet von 44,8). Das gilt für die zulässige Montagevorspannkraft,
-        also für die volle Ausnutzung &ndash; und genau so wird angezogen. Man
-        zieht <em>nicht</em> nur so fest, wie die Rechnung mindestens verlangt:
-        Je höher die Vorspannkraft, desto sicherer hält die Reibung, solange
+      <p>Für M10 8.8 bei &mu; = 0,12: <strong>M<sub>A</sub> = 48 N&middot;m</strong>
+        nach Tabellenbuch (das Werkzeug rechnet 45 N&middot;m &ndash; siehe Teil 4).
+        Das gilt für die zulässige Montagevorspannkraft, also für die volle
+        Ausnutzung &ndash; und genau so wird angezogen. Man zieht <em>nicht</em>
+        nur so fest, wie die Rechnung mindestens verlangt: Je höher die
+        Vorspannkraft, desto sicherer hält die Reibung, solange
         F<sub>M,zul</sub> nicht überschritten wird.</p>
       <p>Wichtig ist, dass die Reibungszahl stimmt. Die 45 N&middot;m gelten für
         leicht geölte Gewinde. Trocken und verzinkt kann &mu; deutlich höher
@@ -332,7 +488,7 @@
           kosten Vorspannkraft, sobald sie sich setzen.</li>
         <li>Konsole ausrichten, alle vier Schrauben handfest eindrehen.</li>
         <li><strong>Über Kreuz</strong> in zwei Stufen anziehen: erst rund
-          50 % (etwa 22 N&middot;m), dann auf 45 N&middot;m.</li>
+          50 % (etwa 24 N&middot;m), dann auf 48 N&middot;m.</li>
         <li>Drehmomentschlüssel, kein Schlagschrauber. Der Schlagschrauber
           trifft die Vorspannkraft nur auf gut ein Drittel genau.</li>
         <li>Nach dem ersten Belasten der Bahn nachziehen und das Ergebnis
@@ -349,9 +505,9 @@
         selbst: Solange die Vorspannkraft steht, kann sich nichts losdrehen.
         Federringe bringen bei hochfesten Schrauben nichts &ndash; sie sind
         weicher als die Schraube und flachen unter der Vorspannkraft ab.</p>
-      <p>Sinnvoll sind hier: saubere Auflageflächen, eine Scheibe unter der
-        Mutter (die Konsole ist nur gestanzt), Anziehen mit Drehmoment und das
-        Nachziehen. Wer zusätzlich sichern will, nimmt Sperrzahnschrauben oder
+      <p>Sinnvoll sind hier: saubere Auflageflächen, Scheiben unter Kopf und
+        Mutter (nötig wegen der Flächenpressung, siehe Teil 4), Anziehen mit
+        Drehmoment und das Nachziehen. Wer zusätzlich sichern will, nimmt Sperrzahnschrauben oder
         Klebstoff &ndash; und weiß, dass beides die Demontage erschwert.</p>
     </details>
 
@@ -383,10 +539,10 @@
           </thead>
           <tbody>
             <tr><td>Schraubengröße und Klasse</td><td>M10 &middot; 8.8</td><td></td><td></td></tr>
-            <tr><td>Anziehdrehmoment</td><td>45 N&middot;m</td><td></td><td></td></tr>
+            <tr><td>Anziehdrehmoment</td><td>48 N&middot;m (Tabellenbuch)</td><td></td><td></td></tr>
             <tr><td>Anzahl Schrauben</td><td>4</td><td></td><td></td></tr>
             <tr><td>Trennfuge sauber, Konsole plan an</td><td>ja</td><td></td><td></td></tr>
-            <tr><td>Scheibe unter der Mutter</td><td>ja</td><td></td><td></td></tr>
+            <tr><td>Scheiben unter Kopf und Mutter</td><td>ja, &oslash; 20</td><td></td><td></td></tr>
             <tr><td>Nachgezogen nach Erstbelastung</td><td>ja, mit Datum</td><td></td><td></td></tr>
           </tbody>
         </table>
@@ -483,10 +639,33 @@
       </table>
     </div>
 
-    <p class="fussnote" style="margin-top:16px">Im Tabellenbuch gebraucht werden:
-      Spannungsquerschnitte und Festigkeitsklassen, Reibungszahlen für Stahl auf
-      Stahl, Anziehdrehmomente, Durchgangslöcher nach DIN EN 20273.
-      Darstellung nach DIN ISO 6410.</p>
+    <h3>Im Tabellenbuch</h3>
+    <p>Alles, was hier gerechnet wird, steht im Abschnitt <em>Schrauben</em>:</p>
+    <div class="tabellenrahmen">
+      <table>
+        <thead>
+          <tr><th>Abschnitt</th><th>gebraucht für</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Vereinfachte Berechnung von Schrauben</td>
+              <td>F<sub>erf</sub> = &phi; &middot; F<sub>B</sub> / &mu;,
+                  Erfahrungswerte der Vorspannkraft</td></tr>
+          <tr><td>Montage hochbeanspruchter Schraubenverbindungen</td>
+              <td>Anziehdrehmoment nach VDI 2230, Anziehfaktoren,
+                  Verspannungsdiagramm</td></tr>
+          <tr><td>Maximale Vorspannkräfte und Anziehdrehmomente</td>
+              <td>F<sub>V</sub> und M<sub>A</sub> je Gewinde, Festigkeitsklasse
+                  und Reibungszahl</td></tr>
+          <tr><td>Flächenpressung an Schraubenkopf- und Mutterauflageflächen</td>
+              <td>Grenzflächenpressung p<sub>G</sub>, Auflagefläche A<sub>P</sub></td></tr>
+          <tr><td>Durchgangslöcher, Schraubenmaße</td>
+              <td>d<sub>h</sub> nach DIN EN 20273, Spannungsquerschnitte</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="fussnote" style="margin-top:12px">Seitenzahlen unterscheiden sich
+      je nach Auflage &ndash; im Europa-Tabellenbuch Metall liegt der Abschnitt
+      bei 5.2. Darstellung nach DIN ISO 6410.</p>
 
   </main>
 
