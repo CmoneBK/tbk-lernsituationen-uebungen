@@ -22,6 +22,12 @@
 
   var PARAM = 'ohne';
 
+  /* Ob die Seite eine Übung oder ein Training ist, steht im Pfad. Das ist
+     unabhängig davon, wie die Seite selbst überschrieben ist, und stimmt auch
+     lokal und auf GitHub Pages. */
+  var TYP = /\/trainings\//.test(location.pathname) ? 'Training' : 'Übung';
+
+
   /* ---------- Kennungen ---------- */
 
   /* Kurzer Streuwert (FNV-1a) über den Text der Überschrift. Vier Zeichen
@@ -112,13 +118,34 @@
     return aus;
   }
 
+  /* Welche Knoten dieser Baustein selbst verborgen hat. Nur die darf er wieder
+     einblenden: Mehrere Seiten verbergen Teile von sich aus, bis jemand eine
+     Aufgabe geloest hat. Wuerde hier stumpf hidden = false gesetzt, stuende die
+     Aufloesung sofort da. */
+  var vonUns = [];
+
+  function verbergen(k, weg) {
+    if (weg) {
+      if (!k.hidden) {
+        k.hidden = true;
+        if (vonUns.indexOf(k) === -1) vonUns.push(k);
+      }
+      return;
+    }
+    var i = vonUns.indexOf(k);
+    if (i !== -1) {
+      k.hidden = false;
+      vonUns.splice(i, 1);
+    }
+  }
+
   function anwenden(teile, aus) {
     var nr = 0;
     teile.forEach(function (t) {
       var wegTeil = !!aus[t.id];
-      t.knoten.forEach(function (k) { k.hidden = wegTeil; });
+      t.knoten.forEach(function (k) { verbergen(k, wegTeil); });
       t.fragen.forEach(function (f) {
-        f.knoten.forEach(function (k) { k.hidden = wegTeil || !!aus[f.id]; });
+        f.knoten.forEach(function (k) { verbergen(k, wegTeil || !!aus[f.id]); });
       });
 
       /* Die Nummern der übrigen Teile wieder lückenlos zählen. */
@@ -266,13 +293,13 @@
     knopf.innerHTML = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" '
       + 'stroke="currentColor" stroke-width="2.4" stroke-linecap="round" '
       + 'aria-hidden="true"><path d="M4 7h16M4 12h10M4 17h7"/></svg>'
-      + '<span>Übung anpassen</span>';
+      + '<span>' + TYP + ' anpassen</span>';
 
     var tafel = document.createElement('div');
     tafel.id = 'bk-tafel';
     tafel.hidden = true;
     tafel.setAttribute('role', 'dialog');
-    tafel.setAttribute('aria-label', 'Übung anpassen');
+    tafel.setAttribute('aria-label', TYP + ' anpassen');
 
     var liste = teile.map(function (t) {
       var kinder = t.fragen.map(function (f) {
@@ -289,7 +316,7 @@
 
     tafel.innerHTML =
       '<button type="button" id="bk-schliessen" aria-label="Schließen">&times;</button>'
-      + '<h2>Übung anpassen</h2>'
+      + '<h2>' + TYP + ' anpassen</h2>'
       + '<p class="bk-hinweis">Häkchen entfernen, um Teile wegzulassen. Die Auswahl '
       + 'wirkt sofort auf der Seite hinter diesem Fenster.</p>'
       + '<ul class="bk-liste">' + liste + '</ul>'
@@ -339,8 +366,8 @@
 
       var weg = Object.keys(aus).length;
       knopf.querySelector('span').textContent = weg
-        ? 'Übung anpassen (' + weg + ' weniger)'
-        : 'Übung anpassen';
+        ? TYP + ' anpassen (' + weg + ' weniger)'
+        : TYP + ' anpassen';
     }
 
     function aendern(id, an) {

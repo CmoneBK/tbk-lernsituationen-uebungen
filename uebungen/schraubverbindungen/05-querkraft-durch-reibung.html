@@ -10,27 +10,8 @@
 <style>
   /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
 
-  /* Ergebnis als Spanne: die Reibungszahl ist kein Wert, sondern ein Bereich -
-     also ist auch die übertragbare Querkraft einer. */
-  .spanne{position:relative; height:78px; margin:20px 0 4px}
-  .spanne .spur{
-    position:absolute; left:0; right:0; top:30px; height:24px;
-    background:var(--bg); border:1px solid var(--border-stark); border-radius:6px;
-  }
-  .spanne .band{
-    position:absolute; top:26px; height:32px;
-    border:2px solid var(--accent); border-radius:6px;
-    background:rgba(43,108,176,.18); transition:left .2s ease, width .2s ease;
-  }
-  .spanne .ziel{position:absolute; top:14px; bottom:18px; width:2px; background:var(--bad)}
-  .spanne .ziel span{
-    position:absolute; top:-18px; left:50%; transform:translateX(-50%);
-    font-size:11px; font-weight:700; white-space:nowrap; color:var(--bad);
-  }
-  .spanne .fuss{
-    position:absolute; left:0; right:0; top:60px;
-    display:flex; justify-content:space-between; font-size:11px; color:var(--muted);
-  }
+  /* Die Spanne ist eine Zeichnung (siehe spanneZeichnen im Skript). Als
+     Kästen käme sie weder in den Ausdruck noch in die Word-Datei. */
 
   .formel{
     background:var(--bg); border:1px solid var(--border); border-radius:10px;
@@ -141,12 +122,7 @@
           <span class="v" id="rQmax">&ndash;</span> <span class="e">kN</span></div>
       </div>
 
-      <div class="spanne" id="spanne">
-        <div class="spur"></div>
-        <div class="band" id="band"></div>
-        <div class="ziel" id="ziel"><span>gefordert</span></div>
-        <div class="fuss"><span>0 kN</span><span id="spanneEnde">&ndash;</span></div>
-      </div>
+      <figure class="bild" id="bildSpanne"></figure>
 
       <div class="rueckmeldung" id="urteil"></div>
     </div>
@@ -381,6 +357,34 @@ function grenze(wert, min, max, ersatz){
   return Math.min(max, Math.max(min, x));
 }
 
+/* Die übertragbare Querkraft als Bereich, dazu die geforderte Kraft als Marke.
+   Liegt die Marke im Bereich, ist das Ergebnis ein Vielleicht - genau darum
+   geht es in dieser Übung. */
+function spanneZeichnen(qMin, qMax, soll){
+  var ende = Math.max(qMax, soll) * 1.15;
+  var x0 = 44, breite = 368, y = 44, h = 26;
+  var px = function(f){ return x0 + breite * Math.max(0, Math.min(1, f / ende)); };
+
+  var svg = bild("bildSpanne", 452, 104,
+    "Balken mit dem Bereich der übertragbaren Querkraft und einer Marke für "
+    + "die geforderte Querkraft",
+    "Der Bereich kommt daher, dass die Reibungszahl streut.");
+
+  kasten(svg, x0, y, breite, h, {strich:SCHMAL});
+  var gB = svgEl("g", {style:"color:var(--accent)"}, svg);
+  svgEl("rect", {x:px(qMin), y:y - 6, width:Math.max(2, px(qMax) - px(qMin)),
+    height:h + 12, fill:"currentColor", opacity:0.20,
+    stroke:"currentColor", "stroke-width":2, rx:3}, gB);
+
+  var gZ = svgEl("g", {style:"color:var(--bad)"}, svg);
+  linie(gZ, px(soll), y - 16, px(soll), y + h + 6, BREIT);
+  txt(gZ, px(soll), 22, "gefordert", {groesse:10.5, fett:true});
+
+  txt(svg, x0, y + h + 20, "0 kN", {anker:"start", groesse:10, deckung:.75});
+  txt(svg, x0 + breite, y + h + 20, zahl(ende / 1000, 0) + " kN",
+      {anker:"end", groesse:10, deckung:.75});
+}
+
 function neuRechnen(){
   /* Entweder ein Bereich aus der Tabelle oder ein einzelner Wert von Hand.
      Beim Einzelwert fallen von und bis zusammen - das Ergebnis ist dann eine
@@ -416,12 +420,7 @@ function neuRechnen(){
   el("rQmin").textContent = zahl(qMin / 1000);
   el("rQmax").textContent = zahl(qMax / 1000);
 
-  var ende = Math.max(qMax, soll) * 1.15;
-  var p = function(f){ return Math.max(0, Math.min(100, 100 * f / ende)); };
-  el("spanneEnde").textContent = zahl(ende / 1000, 0) + " kN";
-  el("band").style.left  = p(qMin) + "%";
-  el("band").style.width = Math.max(0.8, p(qMax) - p(qMin)) + "%";
-  el("ziel").style.left  = p(soll) + "%";
+  spanneZeichnen(qMin, qMax, soll);
 
   var u = el("urteil");
   if(qMin >= soll){

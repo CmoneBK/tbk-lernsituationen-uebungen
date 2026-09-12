@@ -24,19 +24,12 @@
     min-width:4.2em; text-align:right;
   }
 
-  /* Aufteilung des Anziehdrehmoments als gestapelter Balken. */
-  .balken{
-    display:flex; height:44px; border-radius:10px; overflow:hidden;
-    border:1px solid var(--border-stark); margin:16px 0 12px;
-  }
-  .balken span{
-    display:flex; align-items:center; justify-content:center;
-    font-size:13px; font-weight:700; color:#fff; white-space:nowrap;
-    transition:flex-basis .25s ease;
-  }
-  .balken .b-spann{background:var(--spann)}
-  .balken .b-gewinde{background:var(--gewinde); color:#1a1a1a}
-  .balken .b-kopf{background:var(--kopf)}
+  /* Der gestapelte Balken ist eine Zeichnung (siehe balkenZeichnen im Skript).
+     Als Kästen käme er weder in den Ausdruck noch in die Word-Datei: Gerastert
+     werden kann nur SVG. */
+  .bild{margin:16px 0 4px}
+  .bild svg{width:100%; height:auto; display:block}
+  .bild figcaption{font-size:13px; color:var(--muted); margin-top:6px; text-align:center}
 
   .punkt{display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:8px}
   .p-spann{background:var(--spann)} .p-gewinde{background:var(--gewinde)} .p-kopf{background:var(--kopf)}
@@ -88,11 +81,7 @@
       <h2><span class="nr">2</span>Die Auflösung</h2>
       <p>So verteilt sich das Anziehdrehmoment tatsächlich:</p>
 
-      <div class="balken" id="balken1" role="img" aria-labelledby="tab1-bu">
-        <span class="b-spann"   id="b1s"></span>
-        <span class="b-gewinde" id="b1g"></span>
-        <span class="b-kopf"    id="b1k"></span>
-      </div>
+      <figure class="bild" id="bild1"></figure>
       <table id="tab1">
         <caption id="tab1-bu" class="fussnote bu">
           M12, Klasse 8.8, &mu;<sub>G</sub> = &mu;<sub>K</sub> = 0,12
@@ -132,11 +121,7 @@
           </label>
         </div>
 
-        <div class="balken" id="balken2" role="img" aria-labelledby="tab2-bu">
-          <span class="b-spann"   id="b2s"></span>
-          <span class="b-gewinde" id="b2g"></span>
-          <span class="b-kopf"    id="b2k"></span>
-        </div>
+        <figure class="bild" id="bild2"></figure>
         <table id="tab2">
           <caption id="tab2-bu" class="fussnote bu">
             Aktuelle Einstellung
@@ -254,6 +239,7 @@
     &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
   </footer>
 
+<script src="../../assets/zeichnen.js"></script>
 <script>
 "use strict";
 
@@ -332,6 +318,30 @@ function rechne(groesse, klasse, myG, myK){
 function el(id){ return document.getElementById(id); }
 function zahl(x, n){ return x.toFixed(n === undefined ? 1 : n).replace(".", ","); }
 
+var FARBEN = {spann:"#16a34a", gewinde:"#ca8a04", kopf:"#dc2626"};
+
+/* Der gestapelte Balken als Zeichnung. */
+function balkenZeichnen(zielId, teile, unterschrift){
+  var x0 = 24, breite = 404, y = 16, h = 42;
+  var svg = bild(zielId, 452, 74,
+    "Gestapelter Balken: Anteile von Steigung, Gewindereibung und Kopfreibung "
+    + "am Anziehdrehmoment", unterschrift);
+
+  var x = x0;
+  teile.forEach(function(t){
+    var b = breite * t.p / 100;
+    svgEl("rect", {x:x, y:y, width:b, height:h, fill:FARBEN[t.k]}, svg);
+    /* Unter etwa 9 % wird die Beschriftung im Balken unleserlich. */
+    if(t.p >= 9){
+      txt(svg, x + b / 2, y + h / 2 + 5, Math.round(t.p) + " %",
+          {fett:true, groesse:12.5}).setAttribute("fill",
+            t.k === "gewinde" ? "#1a1a1a" : "#ffffff");
+    }
+    x += b;
+  });
+  kasten(svg, x0, y, breite, h, {strich:SCHMAL});
+}
+
 /* Balken und Tabelle eines Abschnitts fuellen. */
 function darstellen(r, ids){
   var teile = [
@@ -340,12 +350,7 @@ function darstellen(r, ids){
     {k:"kopf",    name:"Kopfreibung",                             m:r.Mkopf,  p:r.pKopf}
   ];
 
-  teile.forEach(function(t, i){
-    var s = el(ids.balken[i]);
-    s.style.flex = "0 0 " + t.p + "%";
-    /* Unter etwa 12 % wird die Beschriftung im Balken unleserlich. */
-    s.textContent = t.p >= 12 ? Math.round(t.p) + " %" : "";
-  });
+  balkenZeichnen(ids.bild, teile, ids.unterschrift);
 
   var html = "";
   teile.forEach(function(t){
@@ -396,7 +401,8 @@ el("btnAufloesen").addEventListener("click", function(){
   el("aufloesung").hidden = false;
   el("teil3").hidden = false;
 
-  darstellen(ergebnisStart, {balken:["b1s","b1g","b1k"], body:"tab1Body"});
+  darstellen(ergebnisStart, {bild:"bild1", body:"tab1Body",
+    unterschrift:"M12, Klasse 8.8, \u03bc = 0,12 im Gewinde und unter dem Kopf"});
   el("aufloesung").scrollIntoView({behavior:"smooth", block:"start"});
 });
 
@@ -426,7 +432,8 @@ function neuZeichnen(){
     grenze(el("eMyG").value, 0.04, 0.35, START.myG),
     grenze(el("eMyK").value, 0.04, 0.35, START.myK)
   );
-  darstellen(r, {balken:["b2s","b2g","b2k"], body:"tab2Body"});
+  darstellen(r, {bild:"bild2", body:"tab2Body",
+    unterschrift:"Aktuelle Einstellung"});
   el("eFM").textContent = zahl(r.FM / 1000);
   el("eAs").textContent = zahl(r.As);
 }

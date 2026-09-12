@@ -25,6 +25,12 @@
 (function () {
   'use strict';
 
+
+  /* Ob die Seite eine Übung oder ein Training ist, steht im Pfad. Das ist
+     unabhängig davon, wie die Seite selbst überschrieben ist, und stimmt auch
+     lokal und auf GitHub Pages. */
+  var TYP = /\/trainings\//.test(location.pathname) ? 'Training' : 'Übung';
+
   /* Dieselbe Leiste wie der Baukasten; wer zuerst kommt, legt sie an. */
   function leiste() {
     var l = document.getElementById('tbk-leiste');
@@ -418,7 +424,7 @@
           + '<style>' + WORD_CSS + '</style></head><body>'
           + kopfHtml
           + '<p class="ex-hinweis">Ausdruck aus dem Unterrichtsmaterial von t-bk.de. '
-          + 'Die Übung ist eigentlich interaktiv &ndash; Schieberegler, Eingabefelder '
+          + 'Diese Seite ist eigentlich interaktiv &ndash; Schieberegler, Eingabefelder '
           + 'und Schrittfolgen stehen hier so, wie sie beim Erzeugen dieser Datei '
           + 'eingestellt waren.</p>'
           + kopie.innerHTML
@@ -593,9 +599,10 @@
           var lead = kopf.querySelector('.lead');
           if (lead) p.absatz([{ text: lead.textContent.replace(/\s+/g, ' ').trim(), kursiv: true }]);
         }
-        p.absatz([{ text: 'Ausdruck aus dem Unterrichtsmaterial von t-bk.de. Die Übung '
-          + 'ist eigentlich interaktiv – Schieberegler, Eingabefelder und Schrittfolgen '
-          + 'stehen hier so, wie sie beim Erzeugen dieser Datei eingestellt waren.',
+        p.absatz([{ text: 'Ausdruck aus dem Unterrichtsmaterial von t-bk.de. Diese '
+          + 'Seite ist eigentlich interaktiv – Schieberegler, Eingabefelder und '
+          + 'Schrittfolgen stehen hier so, wie sie beim Erzeugen dieser Datei '
+          + 'eingestellt waren.',
           kursiv: true }], { groesse: 8.5 });
         p.linie();
 
@@ -701,7 +708,7 @@
     tafel.id = 'ex-tafel';
     tafel.hidden = true;
     tafel.setAttribute('role', 'dialog');
-    tafel.setAttribute('aria-label', 'Übung herunterladen');
+    tafel.setAttribute('aria-label', TYP + ' herunterladen');
     tafel.innerHTML =
       '<button type="button" id="ex-schliessen" aria-label="Schließen">&times;</button>'
       + '<h2>Herunterladen</h2>'
@@ -712,7 +719,7 @@
       + '<span>gesammelt am Ende, auf eigener Seite</span></label>'
       + '</fieldset>'
       + '<p class="ex-warnung">Ausgegeben wird genau der Stand, der gerade auf dem '
-      + 'Bildschirm steht &ndash; auch die Auswahl aus <em>Übung anpassen</em>. '
+      + 'Bildschirm steht &ndash; auch die Auswahl aus <em>' + TYP + ' anpassen</em>. '
       + 'Schieberegler, Eingabefelder und Schrittfolgen lassen sich auf Papier '
       + 'nicht bedienen; sie erscheinen mit den zuletzt eingestellten Werten. '
       + 'Teile, die noch ausgeblendet sind, kommen nicht mit.</p>'

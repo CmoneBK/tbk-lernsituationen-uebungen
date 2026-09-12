@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Begriffe und Formelzeichen</title>
+<meta name="description" content="Alltagssprache, Fachbegriff, Formelzeichen – dieselbe Sache, drei Ebenen. Mit Rückmeldung und Wiederholung der Fehler.">
+<meta name="dauer" content="10 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .frage{font-size:15px; color:var(--muted); margin:0 0 4px}
+  .gefragt{font-size:23px; font-weight:700; margin:0 0 16px; line-height:1.3}
+  .auswahl{display:grid; gap:10px; grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+  .auswahl button{
+    font:600 15px/1.4 inherit; text-align:left; cursor:pointer;
+    background:var(--bg); color:var(--fg);
+    border:1px solid var(--border-stark); border-radius:10px; padding:12px 14px;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .auswahl button:hover:not(:disabled){border-color:var(--accent)}
+  .auswahl button:disabled{cursor:default}
+  .auswahl button.richtig{border-color:var(--ok); background:rgba(22,163,74,.14)}
+  .auswahl button.falsch{border-color:var(--bad); background:rgba(220,38,38,.12)}
+
+  .fortschritt{
+    height:8px; border-radius:999px; background:var(--border);
+    overflow:hidden; margin:0 0 14px;
+  }
+  .fortschritt i{display:block; height:100%; background:var(--accent); transition:width .2s ease}
+  .zaehler{display:flex; justify-content:space-between; font-size:13px;
+    color:var(--muted); margin:0 0 6px}
+  .bilanz{font-size:19px; font-weight:700; margin:0 0 8px}
+  @media (prefers-reduced-motion:reduce){.fortschritt i{transition:none}}
+</style>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Schraubverbindungen</p>
+    <h1>Begriffe und Formelzeichen</h1>
+    <p class="lead">Dieselbe Sache heißt in der Werkstatt anders als in der
+      Formel. Wer zwischen den Ebenen springen kann, versteht beide Seiten.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Worum es geht:</strong> Jeder Begriff hat drei Ebenen &ndash;
+        wie man ihn <em>sagt</em>, wie er <em>heißt</em> und wie er in der Formel
+        <em>steht</em>. Gefragt wird immer nach einer davon.</p>
+      <p>Falsch beantwortete Begriffe kommen am Ende noch einmal. Ein Durchgang
+        dauert etwa fünf Minuten.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Durchgang</h2>
+
+    <div class="box">
+      <div class="zaehler">
+        <span id="stand">&ndash;</span>
+        <span id="punkte"></span>
+      </div>
+      <div class="fortschritt"><i id="balken" style="width:0%"></i></div>
+
+      <p class="frage" id="frage">&ndash;</p>
+      <p class="gefragt" id="gefragt">&ndash;</p>
+      <div class="auswahl" id="auswahl"></div>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+
+      <p style="margin-top:16px">
+        <button type="button" class="knopf" id="btnWeiter" hidden>Weiter</button>
+        <button type="button" class="knopf leise" id="btnNeu">Von vorn</button>
+      </p>
+    </div>
+
+    <div id="ende" hidden>
+      <h3>Ergebnis</h3>
+      <div class="box">
+        <p class="bilanz" id="bilanz">&ndash;</p>
+        <p id="urteil"></p>
+        <div id="fehlerliste"></div>
+        <p style="margin-top:14px">
+          <button type="button" class="knopf" id="btnFehler" hidden>Nur die Fehler wiederholen</button>
+          <button type="button" class="knopf leise" id="btnNochmal">Ganzen Durchgang wiederholen</button>
+        </p>
+      </div>
+    </div>
+
+    <h2><span class="nr">2</span>Die Tafel</h2>
+    <p>Zum Nachschlagen &ndash; und zum Ausdrucken, falls die Begriffe noch neu sind.</p>
+
+    <div class="tabellenrahmen">
+      <table>
+        <thead>
+          <tr><th>So sagt man es</th><th>So heißt es</th><th>So steht es in der Formel</th></tr>
+        </thead>
+        <tbody id="tafel"></tbody>
+      </table>
+    </div>
+
+    <h2><span class="nr">3</span>Warum drei Ebenen?</h2>
+
+    <details>
+      <summary>1. Reicht die Alltagssprache nicht?</summary>
+      <p>Für das Gespräch am Schraubstock ja. Sobald aber gerechnet oder
+        geschrieben wird, nicht mehr: „Wie fest die Schraube zieht" kann die
+        Vorspannkraft meinen, das Anziehdrehmoment oder die Spannung im
+        Gewinde &ndash; drei verschiedene Größen mit drei verschiedenen Einheiten.
+        Der Fachbegriff macht eindeutig, wovon die Rede ist.</p>
+    </details>
+
+    <details>
+      <summary>2. Und wozu dann noch Formelzeichen?</summary>
+      <p>Weil eine Formel sonst unlesbar würde. <em>F</em><sub>M,zul</sub> ist
+        kürzer als „zulässige Montagevorspannkraft" &ndash; und international
+        verständlich. Die Indizes sind dabei kein Zierrat: M steht für Montage,
+        zul für zulässig. Wer sie liest, weiß, welche der vielen Kräfte gemeint ist.</p>
+    </details>
+
+    <details>
+      <summary>3. Muss man alles auswendig können?</summary>
+      <p>Nein. Was man können muss, ist der <strong>Weg zwischen den Ebenen</strong>:
+        Aus einer Aufgabenstellung in Alltagssprache die richtige Größe erkennen,
+        sie im Tabellenbuch unter ihrem Fachbegriff finden und in der Formel unter
+        ihrem Zeichen einsetzen. Dieses Training übt genau diesen Weg.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Der Fachbegriff sagt, <em>was</em> gemeint ist.
+      Das Formelzeichen sagt, <em>wo</em> es in der Rechnung steht.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>Das Werkzeug kann alle drei Ebenen umschalten &ndash; ein Schalter oben
+      stellt zwischen Alltagssprache, Fachbegriff und Formelzeichen um.</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="maschinenelemente-schrauben-schraubverbindungen.html"
+         data-fach="1" data-sym="1">Werkzeug Schraubverbindungen öffnen</a>
+    </p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Die Begriffe in drei Ebenen. Sie decken sich mit dem Sprachumschalter des
+   Werkzeugs "Maschinenelemente: Schrauben - Schraubverbindungen", damit beides
+   dieselbe Sprache spricht. Ein leeres Zeichen heißt: dafür gibt es keines. */
+var BEGRIFFE = [
+  {alltag:"wie fest die Schraube die Teile zusammenzieht", fach:"Vorspannkraft",        zeichen:"F(V)"},
+  {alltag:"die Kraft, auf die beim Anziehen ausgelegt wird", fach:"Montagevorspannkraft", zeichen:"F(M,zul)"},
+  {alltag:"wie fest man mit dem Schlüssel dreht",          fach:"Anziehdrehmoment",     zeichen:"M(A)"},
+  {alltag:"die seitliche Last auf die Verbindung",         fach:"Querkraft",            zeichen:"F(Q)"},
+  {alltag:"die Stelle, an der die Bauteile aufeinanderliegen", fach:"Trennfuge",        zeichen:""},
+  {alltag:"wie rutschig die Flächen sind",                 fach:"Reibungszahl",         zeichen:"µ"},
+  {alltag:"wie weit das Gewinde je Umdrehung vorrückt",    fach:"Steigung",             zeichen:"P"},
+  {alltag:"der tragende Querschnitt der Schraube",         fach:"Spannungsquerschnitt", zeichen:"A(S)"},
+  {alltag:"ab wann die Schraube bleibend länger wird",     fach:"Streckgrenze",         zeichen:"R(p0,2)"},
+  {alltag:"wieviel die Schraube überhaupt aushält",        fach:"Zugfestigkeit",        zeichen:"R(m)"},
+  {alltag:"wie weit die Streckgrenze ausgenutzt wird",     fach:"Ausnutzungsgrad",      zeichen:"ν"},
+  {alltag:"der Teil der Schraube ohne Gewinde",            fach:"Schaft",               zeichen:""},
+  {alltag:"die Fläche, mit der der Kopf aufliegt",         fach:"Kopfauflagefläche",    zeichen:""},
+  {alltag:"wie stark die Schraube gegen Rutschen sichert", fach:"Rutschsicherheit",     zeichen:"S(R)"},
+  {alltag:"wie sehr die Schraube nachgibt",                fach:"Nachgiebigkeit",       zeichen:"δ"},
+  {alltag:"das Einebnen der Rauheitsspitzen im Betrieb",   fach:"Setzen",               zeichen:""}
+];
+
+/* Formelzeichen lesbar machen: F(M,zul) wird zu F mit tiefgestelltem M,zul. */
+function zeichenHtml(z){
+  return z.replace(/\(([^)]*)\)/g, "<sub>$1</sub>");
+}
+
+function el(id){ return document.getElementById(id); }
+
+function mischen(liste){
+  var a = liste.slice();
+  for(var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var h = a[i]; a[i] = a[j]; a[j] = h;
+  }
+  return a;
+}
+
+/* ---------- Die Tafel zum Nachschlagen ---------- */
+
+el("tafel").innerHTML = BEGRIFFE.map(function(b){
+  return "<tr><td>" + b.alltag + "</td><td><strong>" + b.fach + "</strong></td>"
+       + "<td>" + (b.zeichen ? zeichenHtml(b.zeichen) : "&ndash;") + "</td></tr>";
+}).join("");
+
+/* ---------- Der Durchgang ---------- */
+
+/* Drei Fragerichtungen. Gefragt wird nie nach einem leeren Formelzeichen -
+   sonst wäre die Frage nicht beantwortbar. */
+var RICHTUNGEN = [
+  {von:"alltag", nach:"fach",
+   frage:"Wie heißt das im Fachbegriff?"},
+  {von:"fach", nach:"alltag",
+   frage:"Was ist damit gemeint?"},
+  {von:"fach", nach:"zeichen",
+   frage:"Welches Formelzeichen gehört dazu?"}
+];
+
+var runde = [];
+var nr = 0;
+var richtig = 0;
+var fehler = [];
+
+function aufgabeBauen(begriff){
+  var moeglich = RICHTUNGEN.filter(function(r){
+    return begriff[r.nach] && (r.nach !== "zeichen" || begriff.zeichen);
+  });
+  var r = moeglich[Math.floor(Math.random() * moeglich.length)];
+
+  /* Ablenker: andere Begriffe, die in derselben Ebene etwas anzubieten haben. */
+  var andere = BEGRIFFE.filter(function(b){
+    return b !== begriff && b[r.nach];
+  });
+  var auswahl = mischen(andere).slice(0, 3).concat([begriff]);
+
+  return {richtung:r, begriff:begriff, auswahl:mischen(auswahl)};
+}
+
+function standZeigen(){
+  el("stand").textContent = "Begriff " + Math.min(nr + 1, runde.length)
+    + " von " + runde.length;
+  el("punkte").textContent = nr ? richtig + " richtig" : "";
+  el("balken").style.width = (100 * nr / runde.length) + "%";
+}
+
+function zeigen(){
+  if(nr >= runde.length) return abschluss();
+
+  var a = aufgabeBauen(runde[nr]);
+  standZeigen();
+  el("frage").textContent = a.richtung.frage;
+  el("gefragt").innerHTML = a.richtung.von === "zeichen"
+    ? zeichenHtml(a.begriff.zeichen)
+    : a.begriff[a.richtung.von];
+
+  el("auswahl").innerHTML = "";
+  a.auswahl.forEach(function(b){
+    var k = document.createElement("button");
+    k.type = "button";
+    k.innerHTML = a.richtung.nach === "zeichen" ? zeichenHtml(b.zeichen) : b[a.richtung.nach];
+    k.addEventListener("click", function(){ antwort(a, b, k); });
+    el("auswahl").appendChild(k);
+  });
+
+  el("rueck").hidden = true;
+  el("btnWeiter").hidden = true;
+}
+
+function antwort(a, gewaehlt, knopf){
+  var knoepfe = [].slice.call(el("auswahl").children);
+  knoepfe.forEach(function(k){ k.disabled = true; });
+
+  var stimmt = gewaehlt === a.begriff;
+  knopf.className = stimmt ? "richtig" : "falsch";
+  if(!stimmt){
+    /* Die richtige Antwort mit markieren - sonst bleibt offen, was gestimmt hätte. */
+    knoepfe.forEach(function(k, i){
+      if(a.auswahl[i] === a.begriff) k.className = "richtig";
+    });
+    fehler.push(a.begriff);
+  } else {
+    richtig++;
+  }
+
+  var r = el("rueck");
+  r.className = "rueckmeldung " + (stimmt ? "ja" : "nein");
+  r.innerHTML = "<strong>" + (stimmt ? "Richtig." : "Nicht ganz.") + "</strong>"
+    + a.begriff.alltag.charAt(0).toUpperCase() + a.begriff.alltag.slice(1)
+    + " heißt <strong>" + a.begriff.fach + "</strong>"
+    + (a.begriff.zeichen ? " und steht als " + zeichenHtml(a.begriff.zeichen)
+        + " in der Formel." : ". Ein eigenes Formelzeichen hat der Begriff nicht.");
+  r.hidden = false;
+
+  nr++;
+  standZeigen();
+  el("btnWeiter").hidden = false;
+  el("btnWeiter").textContent = nr >= runde.length ? "Ergebnis" : "Weiter";
+  el("btnWeiter").focus();
+}
+
+function abschluss(){
+  el("ende").hidden = false;
+  el("balken").style.width = "100%";
+  el("bilanz").textContent = richtig + " von " + runde.length + " richtig";
+
+  var anteil = richtig / runde.length;
+  el("urteil").textContent = anteil === 1
+    ? "Vollständig. Die Begriffe sitzen."
+    : anteil >= 0.8
+      ? "Fast vollständig – die wenigen offenen Begriffe lohnen eine Wiederholung."
+      : anteil >= 0.5
+        ? "Die Hälfte sitzt. Geh die Tafel unten einmal durch und wiederhole dann."
+        : "Noch wacklig. Die Tafel unten hat alle Begriffe – und danach noch einmal.";
+
+  var einzeln = [];
+  fehler.forEach(function(b){ if(einzeln.indexOf(b) === -1) einzeln.push(b); });
+  el("fehlerliste").innerHTML = einzeln.length
+    ? "<p>Offen geblieben: <strong>"
+      + einzeln.map(function(b){ return b.fach; }).join("</strong>, <strong>")
+      + "</strong></p>"
+    : "";
+  el("btnFehler").hidden = !einzeln.length;
+  el("btnWeiter").hidden = true;
+  el("ende").scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+function starten(liste){
+  runde = mischen(liste);
+  nr = 0;
+  richtig = 0;
+  fehler = [];
+  el("ende").hidden = true;
+  zeigen();
+}
+
+el("btnWeiter").addEventListener("click", zeigen);
+el("btnNeu").addEventListener("click", function(){ starten(BEGRIFFE); });
+el("btnNochmal").addEventListener("click", function(){ starten(BEGRIFFE); });
+el("btnFehler").addEventListener("click", function(){
+  var einzeln = [];
+  fehler.forEach(function(b){ if(einzeln.indexOf(b) === -1) einzeln.push(b); });
+  starten(einzeln);
+});
+
+starten(BEGRIFFE);
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

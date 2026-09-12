@@ -1,0 +1,15 @@
+{
+  "titel": "Maschinenelemente: Schrauben - Schraubverbindungen",
+  "lead": "Wiederholung mit Rückmeldung – Begriffe, Rechenweg und die Regeln der Schnittdarstellung.",
+  "werkzeuge": [
+    {
+      "datei": "maschinenelemente-schrauben-schraubverbindungen.html",
+      "name": "Werkzeug Schraubverbindungen"
+    }
+  ],
+  "reihenfolge": [
+    "01-begriffe-und-formelzeichen.html",
+    "02-anziehdrehmoment-rechnen.html",
+    "03-schraffur-schnellcheck.html"
+  ]
+}

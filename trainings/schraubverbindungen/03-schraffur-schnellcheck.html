@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schraffur-Schnellcheck</title>
+<meta name="description" content="Zwanzig Aussagen zur Schnittdarstellung, richtig oder falsch – mit Uhr und sofortiger Begründung.">
+<meta name="dauer" content="10 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .aussage{
+    font-size:19px; line-height:1.5; font-weight:600;
+    margin:0 0 18px; min-height:3.2em;
+  }
+  .jn{display:flex; gap:10px; flex-wrap:wrap}
+  .jn button{
+    flex:1 1 140px; font:700 16px/1 inherit; cursor:pointer; padding:15px 18px;
+    border-radius:10px; border:1px solid var(--border-stark);
+    background:var(--bg); color:var(--fg);
+  }
+  .jn button:hover:not(:disabled){border-color:var(--accent)}
+  .jn button:disabled{cursor:default; opacity:.6}
+  .jn button.war{opacity:1}
+  .jn button.war.ok{border-color:var(--ok); background:rgba(22,163,74,.14)}
+  .jn button.war.nein{border-color:var(--bad); background:rgba(220,38,38,.12)}
+
+  .uhr{
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:13px; color:var(--muted); margin:0 0 10px;
+    font-variant-numeric:tabular-nums;
+  }
+  .fortschritt{height:8px; border-radius:999px; background:var(--border); overflow:hidden; margin:0 0 16px}
+  .fortschritt i{display:block; height:100%; background:var(--accent); transition:width .2s ease}
+  .bilanz{font-size:19px; font-weight:700; margin:0 0 8px}
+  .rueckblick{list-style:none; margin:12px 0 0; padding:0}
+  .rueckblick li{
+    border-left:3px solid var(--bad); padding:4px 0 4px 12px; margin:0 0 10px;
+    font-size:14.5px;
+  }
+  @media (prefers-reduced-motion:reduce){.fortschritt i{transition:none}}
+</style>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Schraubverbindungen</p>
+    <h1>Schraffur-Schnellcheck</h1>
+    <p class="lead">Zwanzig Aussagen, richtig oder falsch. Ohne langes Überlegen &ndash;
+      die Regeln muss man im Kopf haben, nicht nachschlagen.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Worum es geht:</strong> Die Regeln der Schnittdarstellung sitzen
+        oder sie sitzen nicht. Wer bei jeder Linie überlegen muss, verliert beim
+        Zeichnen und beim Lesen Zeit.</p>
+      <p>Die Uhr läuft mit, begrenzt aber nichts. Sie ist zum Vergleichen da:
+        beim zweiten Durchgang sollte dieselbe Zahl in weniger Zeit stehen.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Durchgang</h2>
+
+    <div class="box">
+      <div class="uhr">
+        <span id="stand">Aussage 1 von 20</span>
+        <span id="zeit">0:00</span>
+      </div>
+      <div class="fortschritt"><i id="balken" style="width:0%"></i></div>
+
+      <p class="aussage" id="aussage">&ndash;</p>
+      <div class="jn">
+        <button type="button" id="btnJa">Richtig</button>
+        <button type="button" id="btnNein">Falsch</button>
+      </div>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+
+      <p style="margin-top:16px">
+        <button type="button" class="knopf" id="btnWeiter" hidden>Weiter</button>
+        <button type="button" class="knopf leise" id="btnNeu">Von vorn</button>
+      </p>
+    </div>
+
+    <div id="ende" hidden>
+      <h3>Ergebnis</h3>
+      <div class="box">
+        <p class="bilanz" id="bilanz">&ndash;</p>
+        <p id="urteil"></p>
+        <div id="rueckblick"></div>
+      </div>
+    </div>
+
+    <h2><span class="nr">2</span>Die Regeln auf einen Blick</h2>
+
+    <details>
+      <summary>1. Was wird im Längsschnitt nicht geschnitten?</summary>
+      <p><strong>Schraube, Mutter, Scheibe, Welle, Stift, Niet, Keil, Rippe und
+        Speiche.</strong> Die Schnittebene geht zwar hindurch, aber ein Schnitt
+        durch diese Vollkörper zeigt nichts Neues und macht die Zeichnung
+        unleserlich.</p>
+      <p><em>Merkhilfe:</em> Was man aus dem Katalog kauft statt zu fertigen,
+        wird meist nicht geschnitten.</p>
+    </details>
+
+    <details>
+      <summary>2. Wo hört die Schraffur auf?</summary>
+      <p><strong>Immer an der breiten Linie.</strong> Beim Außengewinde liegt die
+        breite Linie außen (am Außendurchmesser), beim Innengewinde innen (am
+        Kerndurchmesser). Beim Innengewinde läuft die Schraffur dabei über die
+        schmale Linie hinweg.</p>
+    </details>
+
+    <details>
+      <summary>3. Wie schraffiert man benachbarte Teile?</summary>
+      <p><strong>Unterschiedlich</strong> &ndash; in der Richtung, im Abstand oder
+        versetzt. Sonst verschmelzen sie im Bild zu einem Bauteil, und die
+        Trennfuge verschwindet. Dasselbe Bauteil bekommt in allen Schnitten
+        dieselbe Schraffur.</p>
+    </details>
+
+    <details>
+      <summary>4. Gilt „nicht schneiden" für das Bauteil oder für die Richtung?</summary>
+      <p>Für die <strong>Richtung</strong>. Eine Welle längs in der Schnittebene
+        bleibt ungeschnitten; ein Querschnitt durch dieselbe Welle wird sehr wohl
+        schraffiert &ndash; dort zeigt der Schnitt etwas Neues, etwa eine Nut.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Nicht geschnitten werden Schraube, Mutter,
+      Scheibe, Welle, Stift, Niet, Keil und Rippe. Die Schraffur endet an der
+      breiten Linie. Nachbarn schraffiert man nie gleich.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>Die Übung <em>Vier Schnitte, drei Fehler</em> zeigt dieselben Regeln am
+      Bild. Der Reiter <em>Zeichnung</em> im Werkzeug zeichnet die Verbindung mit
+      eigenen Plattendicken neu.</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="maschinenelemente-schrauben-schraubverbindungen.html">Werkzeug Schraubverbindungen öffnen</a>
+    </p>
+    <p class="fussnote">Darstellung nach DIN ISO 128 und DIN ISO 6410.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Zwanzig Aussagen. "stimmt" sagt, ob die Aussage richtig ist; der Grund wird
+   in jedem Fall gezeigt - auch beim Treffer, sonst lernt man nur das Raten. */
+var AUSSAGEN = [
+  {satz:"Eine Schraube wird im Längsschnitt nicht geschnitten dargestellt.",
+   stimmt:true,
+   grund:"Sie ist ein Vollkörper – ein Schnitt zeigt nichts Neues."},
+  {satz:"Die Mutter bekommt im Längsschnitt eine Schraffur.",
+   stimmt:false,
+   grund:"Mutter, Scheibe und Schraube bleiben ohne Schraffur."},
+  {satz:"Zwei aneinandergrenzende Bauteile dürfen dieselbe Schraffurrichtung haben.",
+   stimmt:false,
+   grund:"Dann verschwindet die Trennfuge im Bild – Nachbarn schraffiert man unterschiedlich."},
+  {satz:"Dasselbe Bauteil hat in allen Schnitten einer Zeichnung dieselbe Schraffur.",
+   stimmt:true,
+   grund:"Nur so erkennt man es wieder."},
+  {satz:"Beim Außengewinde ist der Außendurchmesser die breite Vollinie.",
+   stimmt:true,
+   grund:"Und der Kerndurchmesser die schmale."},
+  {satz:"Beim Innengewinde ist der Kerndurchmesser die breite Vollinie.",
+   stimmt:true,
+   grund:"Dort dreht sich das Verhältnis um – die breite Linie liegt innen."},
+  {satz:"Die Schraffur endet immer an der schmalen Linie.",
+   stimmt:false,
+   grund:"An der breiten. Beim Innengewinde läuft sie über die schmale hinweg."},
+  {satz:"Eine Welle, die längs in der Schnittebene liegt, wird schraffiert.",
+   stimmt:false,
+   grund:"Längs nicht – quer geschnitten dagegen schon."},
+  {satz:"Ein Querschnitt durch eine Welle wird schraffiert.",
+   stimmt:true,
+   grund:"Dort zeigt der Schnitt etwas Neues, etwa eine Passfedernut."},
+  {satz:"Ein Stift wird im Längsschnitt geschnitten dargestellt.",
+   stimmt:false,
+   grund:"Stifte, Niete und Keile gehören zu den Teilen, die man nicht schneidet."},
+  {satz:"Eine Rippe wird längs geschnitten schraffiert.",
+   stimmt:false,
+   grund:"Rippen und Speichen bleiben längs ungeschnitten, sonst wirkt das Bauteil massiv."},
+  {satz:"Das Gewindeende wird mit einer schmalen Vollinie quer zur Achse gezeichnet.",
+   stimmt:true,
+   grund:"Sie markiert, wo das ausgeführte Gewinde aufhört."},
+  {satz:"In einer Durchsteckschraubung bekommt das Durchgangsloch denselben Durchmesser wie die Schraube.",
+   stimmt:false,
+   grund:"Es ist größer – M10 sitzt üblicherweise in einem Loch von 11 mm."},
+  {satz:"Die Schraffurlinien werden schmal und unter 45° gezeichnet.",
+   stimmt:true,
+   grund:"45° ist der Regelfall; abweichend nur, wenn 45° mit einer Kontur zusammenfiele."},
+  {satz:"Sehr schmale Flächen dürfen ganz geschwärzt werden.",
+   stimmt:true,
+   grund:"Bei dünnen Blechen und Dichtungen ist eine Schraffur nicht mehr lesbar."},
+  {satz:"Eine Scheibe unter der Mutter wird geschnitten dargestellt.",
+   stimmt:false,
+   grund:"Auch sie bleibt ohne Schraffur."},
+  {satz:"Im Grundloch wird die Bohrtiefe größer gezeichnet als die Gewindetiefe.",
+   stimmt:true,
+   grund:"Der Bohrer braucht Auslauf – sonst käme das Gewinde nicht tief genug."},
+  {satz:"Die Trennfuge zwischen zwei Bauteilen wird als breite Vollinie gezeichnet.",
+   stimmt:true,
+   grund:"Sie ist eine sichtbare Kante. Erkennbar wird sie aber erst durch die unterschiedliche Schraffur."},
+  {satz:"Wenn die Schnittebene durch eine Schraube geht, zeichnet man sie trotzdem in Ansicht.",
+   stimmt:true,
+   grund:"Genau das ist die Regel – geschnitten wird nur, was etwas zeigt."},
+  {satz:"Eine Schraffur darf über eine Maßlinie hinweggezeichnet werden.",
+   stimmt:false,
+   grund:"An Maßzahlen wird die Schraffur unterbrochen, sonst wird die Zahl unlesbar."}
+];
+
+function el(id){ return document.getElementById(id); }
+
+function mischen(liste){
+  var a = liste.slice();
+  for(var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var h = a[i]; a[i] = a[j]; a[j] = h;
+  }
+  return a;
+}
+
+var runde = [], nr = 0, richtig = 0, daneben = [];
+var startZeit = 0, uhr = null;
+
+function zeitText(ms){
+  var s = Math.floor(ms / 1000);
+  return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2);
+}
+
+function uhrLaufen(an){
+  if(uhr){ clearInterval(uhr); uhr = null; }
+  if(!an) return;
+  uhr = setInterval(function(){
+    el("zeit").textContent = zeitText(Date.now() - startZeit);
+  }, 500);
+}
+
+function zeigen(){
+  if(nr >= runde.length) return abschluss();
+  el("stand").textContent = "Aussage " + (nr + 1) + " von " + runde.length;
+  el("balken").style.width = (100 * nr / runde.length) + "%";
+  el("aussage").textContent = runde[nr].satz;
+  ["btnJa", "btnNein"].forEach(function(id){
+    el(id).disabled = false;
+    el(id).className = "";
+  });
+  el("rueck").hidden = true;
+  el("btnWeiter").hidden = true;
+}
+
+function antwort(gesagt){
+  var a = runde[nr];
+  var stimmt = gesagt === a.stimmt;
+  if(stimmt) richtig++; else daneben.push(a);
+
+  ["btnJa", "btnNein"].forEach(function(id){ el(id).disabled = true; });
+  var gedrueckt = gesagt ? "btnJa" : "btnNein";
+  el(gedrueckt).className = "war " + (stimmt ? "ok" : "nein");
+  if(!stimmt) el(a.stimmt ? "btnJa" : "btnNein").className = "war ok";
+
+  var r = el("rueck");
+  r.className = "rueckmeldung " + (stimmt ? "ja" : "nein");
+  r.innerHTML = "<strong>" + (stimmt ? "Richtig." : "Falsch.") + "</strong>"
+    + "Die Aussage ist <strong>" + (a.stimmt ? "richtig" : "falsch") + "</strong>. "
+    + a.grund;
+  r.hidden = false;
+
+  nr++;
+  el("balken").style.width = (100 * nr / runde.length) + "%";
+  el("btnWeiter").hidden = false;
+  el("btnWeiter").textContent = nr >= runde.length ? "Ergebnis" : "Weiter";
+  el("btnWeiter").focus();
+}
+
+function abschluss(){
+  uhrLaufen(false);
+  var dauer = Date.now() - startZeit;
+  el("ende").hidden = false;
+  el("bilanz").textContent = richtig + " von " + runde.length + " richtig, in "
+    + zeitText(dauer);
+
+  var anteil = richtig / runde.length;
+  el("urteil").textContent = anteil === 1
+    ? "Vollständig – die Regeln sitzen."
+    : anteil >= 0.85
+      ? "Sitzt weitgehend. Die offenen Punkte stehen unten."
+      : anteil >= 0.6
+        ? "Die Hälfte sitzt sicher. Geh die Regeln unter Teil 3 durch und wiederhole."
+        : "Noch wacklig – erst die Regeln unter Teil 3 lesen, dann noch einmal.";
+
+  el("rueckblick").innerHTML = daneben.length
+    ? "<p>Diese Aussagen noch einmal ansehen:</p><ul class=\"rueckblick\">"
+      + daneben.map(function(a){
+          return "<li><strong>" + a.satz + "</strong><br>"
+            + "Die Aussage ist " + (a.stimmt ? "richtig" : "falsch") + ". " + a.grund + "</li>";
+        }).join("")
+      + "</ul>"
+    : "";
+  el("btnWeiter").hidden = true;
+  el("ende").scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+function starten(){
+  runde = mischen(AUSSAGEN);
+  nr = 0; richtig = 0; daneben = [];
+  startZeit = Date.now();
+  el("zeit").textContent = "0:00";
+  el("ende").hidden = true;
+  uhrLaufen(true);
+  zeigen();
+}
+
+el("btnJa").addEventListener("click", function(){ antwort(true); });
+el("btnNein").addEventListener("click", function(){ antwort(false); });
+el("btnWeiter").addEventListener("click", zeigen);
+el("btnNeu").addEventListener("click", starten);
+
+starten();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

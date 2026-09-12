@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anziehdrehmoment rechnen</title>
+<meta name="description" content="Zufallsaufgaben zu Vorspannkraft und Anziehdrehmoment – mit Toleranz, Rückmeldung und vollständigem Rechenweg.">
+<meta name="dauer" content="20 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .aufgabe{
+    background:var(--bg); border:1px solid var(--border-stark); border-radius:10px;
+    padding:14px 16px; margin:0 0 16px; font-size:16px; line-height:1.7;
+  }
+  .aufgabe strong{font-size:17px}
+  .zaehler{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:13px; color:var(--muted); margin:0 0 10px}
+  .rechenweg{
+    background:var(--bg); border:1px solid var(--border); border-radius:10px;
+    padding:12px 16px; margin:12px 0 0; font-size:14.5px; line-height:2;
+    font-variant-numeric:tabular-nums;
+  }
+  .rechenweg b{font-weight:700}
+  .rechenweg .schritt{display:block; color:var(--muted); font-size:12.5px; line-height:1.5}
+  .bilanz{font-size:19px; font-weight:700; margin:0 0 8px}
+</style>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Schraubverbindungen</p>
+    <h1>Anziehdrehmoment rechnen</h1>
+    <p class="lead">Immer neue Zahlen, immer derselbe Weg. Bis er sitzt.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Worum es geht:</strong> Gegeben sind Gewinde, Festigkeitsklasse
+        und Reibungszahl. Gesucht sind die zulässige Montagevorspannkraft
+        F<sub>M,zul</sub> und das Anziehdrehmoment M<sub>A</sub>.</p>
+      <p>Gerechnet wird mit <strong>90 % Ausnutzung der Streckgrenze</strong>.
+        Tabellenbuch und Taschenrechner gehören dazu &ndash; das ist kein
+        Kopfrechnen. Anerkannt wird alles, was <strong>bis 4 % daneben</strong>
+        liegt; auf die dritte Stelle kommt es nicht an.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Aufgaben</h2>
+
+    <div class="box">
+      <div class="zaehler">
+        <span id="stand">Aufgabe 1</span>
+        <span id="punkte"></span>
+      </div>
+
+      <p class="aufgabe" id="aufgabe">&ndash;</p>
+
+      <div class="felder">
+        <label class="feld">F<sub>M,zul</sub> in kN
+          <input type="number" id="aFM" step="0.1" inputmode="decimal" autocomplete="off">
+        </label>
+        <label class="feld">M<sub>A</sub> in N&middot;m
+          <input type="number" id="aMA" step="0.1" inputmode="decimal" autocomplete="off">
+        </label>
+      </div>
+
+      <p style="margin-top:16px">
+        <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+        <button type="button" class="knopf leise" id="btnWeg">Rechenweg zeigen</button>
+        <button type="button" class="knopf leise" id="btnWeiter">Nächste Aufgabe</button>
+      </p>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+      <div class="rechenweg" id="weg" hidden></div>
+    </div>
+
+    <h2><span class="nr">2</span>Der Weg, einmal ausgeschrieben</h2>
+
+    <details>
+      <summary>1. Woher kommt der Spannungsquerschnitt A<sub>S</sub>?</summary>
+      <p>Aus dem Tabellenbuch &ndash; oder gerechnet. Maßgebend ist nicht der
+        Nenndurchmesser d, sondern ein Mittel aus Flanken- und Kerndurchmesser:</p>
+      <p>d<sub>2</sub> = d &minus; 0,6495 &middot; P &nbsp;&middot;&nbsp;
+         d<sub>3</sub> = d &minus; 1,2269 &middot; P<br>
+         d<sub>S</sub> = (d<sub>2</sub> + d<sub>3</sub>) / 2 &nbsp;&middot;&nbsp;
+         A<sub>S</sub> = &pi;/4 &middot; d<sub>S</sub>²</p>
+      <p>Für M12: d<sub>2</sub> = 10,86 mm, d<sub>3</sub> = 9,85 mm,
+        d<sub>S</sub> = 10,36 mm, A<sub>S</sub> = <strong>84,3 mm²</strong> &ndash;
+        genau der Tabellenwert.</p>
+    </details>
+
+    <details>
+      <summary>2. Warum ist F<sub>M,zul</sub> kleiner als A<sub>S</sub> &middot; R<sub>p0,2</sub>?</summary>
+      <p>Weil beim Anziehen nicht nur Zug wirkt, sondern gleichzeitig
+        <strong>Torsion</strong> aus der Gewindereibung. Zusammen ergeben sie die
+        Vergleichsspannung nach von Mises, und die erreicht die Streckgrenze
+        früher als der Zug allein.</p>
+      <p>Deshalb steht im Nenner nicht nur A<sub>S</sub>, sondern die Wurzel aus
+        beiden Anteilen. Und von der Streckgrenze nutzt man nur
+        <strong>&nu; = 0,9</strong> aus &ndash; ein Zehntel bleibt als Reserve.</p>
+    </details>
+
+    <details>
+      <summary>3. Wie setzt sich M<sub>A</sub> zusammen?</summary>
+      <p>Aus drei Anteilen, alle proportional zur Vorspannkraft:</p>
+      <p><strong>Steigung</strong> 0,16 &middot; P &ndash; der einzige Anteil, der
+        wirklich Spannkraft erzeugt.<br>
+        <strong>Gewindereibung</strong> 0,58 &middot; d<sub>2</sub> &middot; &mu;<sub>G</sub><br>
+        <strong>Kopfreibung</strong> 0,5 &middot; D<sub>Km</sub> &middot; &mu;<sub>K</sub></p>
+      <p>Bei &mu; = 0,12 gehen rund 86 % in Reibung. Mehr dazu in der Übung
+        <em>Wohin geht das Anziehdrehmoment?</em></p>
+    </details>
+
+    <details>
+      <summary>4. Warum weicht mein Tabellenbuch ab?</summary>
+      <p>Tabellenwerte nach VDI 2230 rechnen die Torsion beim Anziehen etwas
+        milder an und erlauben dadurch eine höhere Vorspannkraft &ndash; für
+        M12&nbsp;8.8 bei &mu;&nbsp;=&nbsp;0,12 rund 87 N·m statt der hier
+        gerechneten 77 N·m.</p>
+      <p>Beides ist richtig, nur unter verschiedenen Annahmen. Wer Drehmomente
+        angibt, muss die Quelle dazusagen &ndash; ein Tabellenwert ist kein
+        Naturgesetz. Die Toleranz dieses Trainings umfasst diese Abweichung
+        bewusst <em>nicht</em>: Geübt wird der hier gezeigte Weg.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Erst A<sub>S</sub>, dann F<sub>M,zul</sub>,
+      dann M<sub>A</sub>. Wer die Reihenfolge kennt, braucht die Formel nicht
+      auswendig.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>Im Reiter <em>Berechnungen</em> des Werkzeugs lassen sich dieselben
+      Größen einstellen und der Rechenweg aufklappen.</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="maschinenelemente-schrauben-schraubverbindungen.html"
+         data-fach="1">Werkzeug Schraubverbindungen öffnen</a>
+    </p>
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+      Sie ersetzen keine Auslegung nach VDI 2230 und keine Herstellerangaben.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Zahlen und Formeln wie im Werkzeug "Maschinenelemente: Schrauben -
+   Schraubverbindungen", damit das Gegenprüfen dort dieselben Werte liefert. */
+var SCHRAUBEN = {
+  M6:  {d:6,  P:1.00, dw:8.9,  Dh:6.6},
+  M8:  {d:8,  P:1.25, dw:11.6, Dh:9.0},
+  M10: {d:10, P:1.50, dw:14.6, Dh:11.0},
+  M12: {d:12, P:1.75, dw:16.6, Dh:13.5},
+  M16: {d:16, P:2.00, dw:22.5, Dh:17.5},
+  M20: {d:20, P:2.50, dw:28.2, Dh:22.0},
+  M24: {d:24, P:3.00, dw:33.6, Dh:26.0}
+};
+var GROESSEN = ["M6","M8","M10","M12","M16","M20","M24"];
+var KLASSEN = {"4.6":240, "5.6":300, "8.8":640, "10.9":900, "12.9":1080};
+var KLASSENLISTE = ["4.6","5.6","8.8","10.9","12.9"];
+var REIBUNGEN = [0.08, 0.10, 0.12, 0.14, 0.16, 0.20];
+var NU = 0.9;
+var TOLERANZ = 0.04;      /* vier Prozent */
+
+function masse(groesse){
+  var g = SCHRAUBEN[groesse];
+  var d2 = g.d - 0.6495 * g.P;
+  var d3 = g.d - 1.2269 * g.P;
+  var dS = (d2 + d3) / 2;
+  return {d:g.d, P:g.P, d2:d2, d3:d3, dS:dS,
+          As:Math.PI / 4 * dS * dS,
+          Wp:Math.PI * Math.pow(dS, 3) / 16,
+          DKm:(g.dw + g.Dh) / 2};
+}
+
+/* ISO 898-1: ab Nenndurchmesser ueber 16 mm gilt fuer 8.8 die hoehere Streckgrenze. */
+function streckgrenze(klasse, d){
+  if(klasse === "8.8" && d > 16) return 660;
+  return KLASSEN[klasse];
+}
+
+function rechne(groesse, klasse, my){
+  var m  = masse(groesse);
+  var Rp = streckgrenze(klasse, m.d);
+  var cSteig = 0.16 * m.P;
+  var cGew   = 0.58 * m.d2 * my;
+  var cKopf  = 0.5 * m.DKm * my;
+  var cVerdreh = cSteig + cGew;                  /* nur dieser Teil verdreht */
+  var FM = NU * Rp / Math.sqrt(1/(m.As*m.As) + 3*cVerdreh*cVerdreh/(m.Wp*m.Wp));
+  return {
+    m:m, Rp:Rp, FM:FM,
+    cSteig:cSteig, cGew:cGew, cKopf:cKopf,
+    MA: FM * (cSteig + cGew + cKopf) / 1000
+  };
+}
+
+function el(id){ return document.getElementById(id); }
+function zahl(x, n){ return x.toFixed(n === undefined ? 1 : n).replace(".", ","); }
+function waehle(liste){ return liste[Math.floor(Math.random() * liste.length)]; }
+
+/* ---------- Der Durchlauf ---------- */
+
+var aufgabe = null;
+var nr = 0, richtig = 0, versuche = 0;
+
+function neueAufgabe(){
+  nr++;
+  var groesse = waehle(GROESSEN);
+  var klasse = waehle(KLASSENLISTE);
+  var my = waehle(REIBUNGEN);
+  aufgabe = {groesse:groesse, klasse:klasse, my:my, loesung:rechne(groesse, klasse, my)};
+
+  el("aufgabe").innerHTML =
+    "Eine Schraube <strong>" + groesse + "</strong> der Festigkeitsklasse "
+    + "<strong>" + klasse + "</strong> wird angezogen. Die Reibungszahl beträgt "
+    + "<strong>&mu; = " + zahl(my, 2) + "</strong> im Gewinde und unter dem Kopf.";
+
+  el("stand").textContent = "Aufgabe " + nr;
+  el("aFM").value = "";
+  el("aMA").value = "";
+  el("rueck").hidden = true;
+  el("weg").hidden = true;
+  el("aFM").focus();
+}
+
+function punkteZeigen(){
+  el("punkte").textContent = versuche ? richtig + " von " + versuche + " richtig" : "";
+}
+
+function nah(wert, soll){
+  return isFinite(wert) && Math.abs(wert - soll) <= Math.abs(soll) * TOLERANZ;
+}
+
+function wegBauen(){
+  var l = aufgabe.loesung, m = l.m;
+  return ""
+    + "<span class=\"schritt\">1. Spannungsquerschnitt</span>"
+    + "d<sub>2</sub> = " + m.d + " &minus; 0,6495 &middot; " + zahl(m.P, 2) + " = <b>"
+      + zahl(m.d2, 2) + " mm</b> &middot; d<sub>3</sub> = <b>" + zahl(m.d3, 2) + " mm</b><br>"
+    + "A<sub>S</sub> = &pi;/4 &middot; " + zahl(m.dS, 2) + "² = <b>" + zahl(m.As, 1) + " mm²</b>"
+    + "<span class=\"schritt\">2. Vorspannkraft, mit &nu; = 0,9 und R<sub>p0,2</sub> = "
+      + l.Rp + " N/mm²</span>"
+    + "F<sub>M,zul</sub> = <b>" + zahl(l.FM / 1000, 1) + " kN</b>"
+    + "<span class=\"schritt\">3. Anziehdrehmoment aus den drei Anteilen "
+      + "(Steigung, Gewinde, Kopf)</span>"
+    + "M<sub>A</sub> = " + zahl(l.FM / 1000, 1) + " kN &middot; ("
+      + zahl(l.cSteig, 2) + " + " + zahl(l.cGew, 2) + " + " + zahl(l.cKopf, 2)
+      + ") mm = <b>" + zahl(l.MA, 1) + " N&middot;m</b>";
+}
+
+el("btnPruefen").addEventListener("click", function(){
+  if(!aufgabe) return;
+  var l = aufgabe.loesung;
+  var fm = parseFloat(String(el("aFM").value).replace(",", "."));
+  var ma = parseFloat(String(el("aMA").value).replace(",", "."));
+  var r = el("rueck");
+
+  if(!isFinite(fm) && !isFinite(ma)){
+    r.className = "rueckmeldung fast";
+    r.innerHTML = "<strong>Noch nichts eingetragen.</strong> Beide Felder ausfüllen "
+      + "&ndash; oder den Rechenweg zeigen lassen.";
+    r.hidden = false;
+    return;
+  }
+
+  var okFM = nah(fm, l.FM / 1000);
+  var okMA = nah(ma, l.MA);
+  versuche++;
+  if(okFM && okMA) richtig++;
+
+  r.className = "rueckmeldung " + (okFM && okMA ? "ja" : (okFM || okMA ? "fast" : "nein"));
+  r.innerHTML = "<strong>"
+    + (okFM && okMA ? "Beides richtig." : okFM || okMA ? "Halb richtig." : "Noch nicht.")
+    + "</strong>"
+    + "F<sub>M,zul</sub> = <strong>" + zahl(l.FM / 1000, 1) + " kN</strong> "
+    + (okFM ? "&ndash; getroffen. " : "&ndash; du hattest " + (isFinite(fm) ? zahl(fm, 1) : "nichts") + ". ")
+    + "M<sub>A</sub> = <strong>" + zahl(l.MA, 1) + " N&middot;m</strong> "
+    + (okMA ? "&ndash; getroffen." : "&ndash; du hattest " + (isFinite(ma) ? zahl(ma, 1) : "nichts") + ".");
+  r.hidden = false;
+
+  if(!(okFM && okMA)){
+    el("weg").innerHTML = wegBauen();
+    el("weg").hidden = false;
+  }
+  punkteZeigen();
+});
+
+el("btnWeg").addEventListener("click", function(){
+  if(!aufgabe) return;
+  el("weg").innerHTML = wegBauen();
+  el("weg").hidden = false;
+});
+
+el("btnWeiter").addEventListener("click", neueAufgabe);
+
+neueAufgabe();
+punkteZeigen();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

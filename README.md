@@ -56,6 +56,14 @@ das man selbst verfasst – ihre `index.html` fasst niemand an.
 Einzelne `.html` direkt in `uebungen/` oder `trainings/` sind weiterhin
 erlaubt; sie erscheinen dann als eigene Karte statt in einem Paket.
 
+**Übung oder Training?** Technisch sind beide gleich gebaut – dieselbe `info.json`,
+dasselbe CSS, dieselben Bausteine. Sie unterscheiden sich in der Absicht: Eine
+**Übung** arbeitet einen Sachverhalt der Reihe nach durch, mit Lösungen zum
+Aufklappen und offenen Fragen. Ein **Training** ist ein Durchgang mit vielen
+kurzen Aufgaben, die der Rechner selbst auswertet – Punktestand, Wiederholung
+der Fehler, Ergebnis am Ende. Wer sicher werden will, trainiert; wer verstehen
+will, übt.
+
 ## 📦 Ein Paket anlegen
 
 Ein Paket ist ein Ordner mit `info.json` und den einzelnen Übungen:
@@ -143,6 +151,10 @@ Deshalb trägt jede Übung unten rechts die Schaltfläche **„Übung anpassen"*
 Dahinter lassen sich einzelne Teile und Aufgaben abwählen; daraus entsteht ein
 Link und ein QR-Code, die die Übung genau so öffnen.
 
+In einem Training heißt dieselbe Schaltfläche **„Training anpassen"**. Woran das
+hängt, ist der Pfad: Liegt die Seite unter `trainings/`, sprechen Baukasten und
+Ausgabe vom Training. Einzutragen ist dafür nichts.
+
 Die Datei selbst bleibt dabei unverändert – die Auswahl steckt allein in der
 Adresse:
 
@@ -157,6 +169,11 @@ Zwei Eigenschaften, die man kennen sollte:
 * **Wird eine Überschrift umformuliert, greift der alte Link dort nicht mehr.**
   Dann erscheint der Teil wieder, statt dass ein falscher verschwindet – die
   harmlosere der beiden Richtungen.
+
+Ein Training hat dabei eine Eigenheit: Sein **Ergebnis** ist kein Teil der
+Gliederung, sondern der Ausgang des Durchgangs. Es steht deshalb unter `h3`, nicht
+unter `h2` – sonst erschiene es im Baukasten als abwählbarer „Teil 2", und die
+Nummerierung hätte eine Lücke, solange es noch verborgen ist.
 
 Eingebunden werden `assets/qr.js` und `assets/baukasten.js`; beides trägt der
 Build in jede Übung und jedes Training selbst ein. Zu tun ist dafür nichts –
@@ -175,13 +192,18 @@ Neben *Übung anpassen* steht **„Herunterladen"**. Wählbar ist, ob die Lösun
 | | |
 | --- | --- |
 | **Drucken / als PDF** | über den Druckdialog des Browsers. Das gibt das **schönste Ergebnis**: der Browser setzt die Seite mit ihrem eigenen Layout, Zeichnungen bleiben gestochen scharf, farbige Balken und Bänder kommen mit. Im Dialog als Ziel „Als PDF speichern" wählen. |
-| **PDF herunterladen** | ohne Dialog, direkt als Datei. Gesetzt wird schlichter: Überschriften, Absätze, Listen, Tabellen als Zeilen, Zeichnungen als Bild. Was allein aus HTML-Kästen besteht (etwa das Streuband), ist hier nur als Zahl dabei, nicht als Bild. |
+| **PDF herunterladen** | ohne Dialog, direkt als Datei. Gesetzt wird schlichter: Überschriften, Absätze, Listen, Tabellen als Zeilen, Zeichnungen als Bild. |
 | **Word** | als **Web-Archiv** (MHTML) mit der Endung `.doc`. Word öffnet es und bearbeitet es weiter. Die Zeichnungen liegen als eigene Teile bei – Word lädt keine Bilder aus `data:`-Adressen, wohl aber Teile eines Archivs. |
 
 Der PDF-Schreiber (`assets/pdf.js`) nutzt nur die Standardschriften des
 PDF-Formats und bettet Bilder als JPEG ein. So braucht er weder eine
 Fremdbibliothek noch eine eingebaute Breitentabelle: Gemessen wird im Browser
 mit derselben Schrift, die das PDF später setzt.
+
+Mitgenommen werden dabei nur **Zeichnungen (SVG)**, keine farbigen Kästen aus
+HTML. Was eine Aussage über Farbe oder Länge trifft – ein Streuband, ein Balken,
+eine Spanne –, gehört deshalb gezeichnet, nicht aus `div`-Kästen gebaut. Sonst
+steht es auf dem Bildschirm, fehlt aber in PDF und Word.
 
 Ausgegeben wird **genau der Stand, der gerade auf dem Bildschirm steht**: die
 Auswahl aus *Übung anpassen*, die Werte in den Rechnern, der erreichte Schritt
@@ -395,3 +417,5 @@ erwünscht – sie laden nichts nach. `assets/uebung.css` nutzt genau die.
 | Werkzeug-Link führt ins Leere | `data-werkzeug` statt `href` verwenden; Dateiname muss dem im Werkzeuge-Repo entsprechen |
 | Übung fehlt auf der Paketseite | Datei heißt `index.html` – die wird erzeugt und deshalb übersprungen |
 | Reihenfolge stimmt nicht | Bereich/Kategorie in `daten/kategorien.csv` ergänzen, im Paket `reihenfolge` in `info.json` |
+| Lösung steht sofort da, statt erst nach dem Auflösen | Der verbergende Abschnitt enthält ein `h2` – der Baukasten hält ihn dann für einen eigenen Teil. Überschrift auf `h3` setzen |
+| Farbiger Balken fehlt in PDF und Word | Er besteht aus HTML-Kästen. Als SVG zeichnen (siehe [Zeichnungen](#zeichnungen)) |

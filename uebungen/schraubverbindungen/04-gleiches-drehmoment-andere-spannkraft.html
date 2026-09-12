@@ -10,39 +10,9 @@
 <style>
   /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
 
-  /* Kraftskala: unten der zulässige Bereich, darüber das Streuband, das sich
-     aus der unbekannten Reibung ergibt. */
-  .skala{position:relative; height:104px; margin:22px 0 8px}
-  .spur{
-    position:absolute; left:0; right:0; top:44px; height:26px;
-    background:var(--bg); border:1px solid var(--border-stark); border-radius:6px;
-    overflow:hidden;
-  }
-  .zone{position:absolute; top:0; bottom:0}
-  .z-lose{background:rgba(202,138,4,.28)}
-  .z-gut{background:rgba(22,163,74,.30)}
-  .z-ueber{background:rgba(220,38,38,.30)}
-  .z-bruch{background:rgba(127,29,29,.65)}
-  .band{
-    position:absolute; top:38px; height:38px;
-    border:2px solid var(--accent); border-radius:6px;
-    background:rgba(43,108,176,.18);
-    transition:left .2s ease, width .2s ease;
-  }
-  .marke{position:absolute; top:26px; bottom:16px; width:2px; background:var(--fg)}
-  .marke span{
-    position:absolute; top:-20px; left:50%; transform:translateX(-50%);
-    font-size:11px; font-weight:700; white-space:nowrap; color:var(--fg);
-  }
-  .skala-fuss{
-    position:absolute; left:0; right:0; top:76px;
-    display:flex; justify-content:space-between; font-size:11px; color:var(--muted);
-  }
-  .legende{display:flex; flex-wrap:wrap; gap:14px; font-size:13px; color:var(--muted); margin-top:2px}
-  .legende i{display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px; vertical-align:-2px}
-  .l-lose{background:rgba(202,138,4,.6)} .l-gut{background:rgba(22,163,74,.6)}
-  .l-ueber{background:rgba(220,38,38,.6)} .l-bruch{background:rgba(127,29,29,.85)}
-  .l-band{background:rgba(43,108,176,.45); border:1px solid var(--accent)}
+  /* Die Kraftskala ist eine Zeichnung (siehe skalaZeichnen weiter unten) und
+     keine Sammlung von Kästen mehr. Nur so kommt sie in den Ausdruck und in
+     die Word-Datei: Gerastert werden kann nur SVG. */
 
   .schritte{display:flex; flex-wrap:wrap; gap:10px; align-items:center; margin:12px 0 0}
   .schritt-zahl{font-size:13px; color:var(--muted); font-variant-numeric:tabular-nums}
@@ -130,26 +100,7 @@
           </label>
         </div>
 
-        <div class="skala" id="skala">
-          <div class="spur">
-            <div class="zone z-lose"  id="zLose"></div>
-            <div class="zone z-gut"   id="zGut"></div>
-            <div class="zone z-ueber" id="zUeber"></div>
-            <div class="zone z-bruch" id="zBruch"></div>
-          </div>
-          <div class="band" id="band"></div>
-          <div class="marke" id="mErf"><span>nötig</span></div>
-          <div class="marke" id="mFlie"><span>Streckgrenze</span></div>
-          <div class="marke" id="mBruch"><span>Bruch</span></div>
-          <div class="skala-fuss"><span>0 kN</span><span id="skalaEnde">&ndash;</span></div>
-        </div>
-        <div class="legende">
-          <span><i class="l-band"></i>möglicher Bereich</span>
-          <span><i class="l-lose"></i>zu wenig &ndash; rutscht</span>
-          <span><i class="l-gut"></i>brauchbar</span>
-          <span><i class="l-ueber"></i>über der Streckgrenze</span>
-          <span><i class="l-bruch"></i>Bruch</span>
-        </div>
+        <figure class="bild" id="bildSkala"></figure>
 
         <div class="ergebnis">
           <div class="ez"><span class="l">bei &mu; klein</span>
@@ -440,29 +391,62 @@ function lage(){
   };
 }
 
+/* Die Kraftskala als Zeichnung: unten die Zonen, darüber das Band, das sich
+   aus der unbekannten Reibung ergibt, und die drei Grenzen als Marken. */
+function skalaZeichnen(z){
+  var ende = Math.max(z.fMax, z.fBruch, z.erf) * 1.1;
+  var x0 = 44, breite = 368, y = 74, h = 26;
+  var px = function(f){ return x0 + breite * Math.max(0, Math.min(1, f / ende)); };
+
+  var svg = bild("bildSkala", 452, 148,
+    "Kraftskala: farbige Zonen für zu wenig, brauchbar, über der Streckgrenze "
+    + "und Bruch, darüber der Bereich, in dem die Vorspannkraft landen kann",
+    "Der blaue Bereich ist das, was bei diesem Drehmoment herauskommen kann.");
+
+  var gutVon = Math.min(z.erf, z.fFlie), gutBis = Math.max(z.erf, z.fFlie);
+  [[0, gutVon, "#ca8a04", "zu wenig"],
+   [gutVon, gutBis, "#16a34a", "brauchbar"],
+   [gutBis, z.fBruch, "#dc2626", "über der Streckgrenze"],
+   [z.fBruch, ende, "#7f1d1d", "Bruch"]].forEach(function(zone){
+    var b = px(zone[1]) - px(zone[0]);
+    if(b <= 0.3) return;
+    svgEl("rect", {x:px(zone[0]), y:y, width:b, height:h,
+      fill:zone[2], opacity:0.42}, svg);
+  });
+  kasten(svg, x0, y, breite, h, {strich:SCHMAL});
+
+  /* Das Band der möglichen Werte. */
+  var gB = svgEl("g", {style:"color:var(--accent)"}, svg);
+  svgEl("rect", {x:px(z.fMin), y:y - 8, width:Math.max(2, px(z.fMax) - px(z.fMin)),
+    height:h + 16, fill:"currentColor", opacity:0.20,
+    stroke:"currentColor", "stroke-width":2, rx:3}, gB);
+
+  [[z.erf, "nötig"], [z.fFlie, "Streckgrenze"], [z.fBruch, "Bruch"]]
+    .forEach(function(m, i){
+      var x = px(m[0]);
+      linie(svg, x, y - 14, x, y + h + 6, SCHMAL, {strich:"4 3"});
+      /* Die Beschriftungen abwechselnd hoch und tief, sonst überlagern sie
+         sich, wenn zwei Grenzen dicht beieinanderliegen. */
+      txt(svg, x, i === 1 ? 26 : 40, m[1], {groesse:10.5, deckung:.9});
+    });
+
+  txt(svg, x0, y + h + 20, "0 kN", {anker:"start", groesse:10, deckung:.75});
+  txt(svg, x0 + breite, y + h + 20, zahl(ende / 1000, 0) + " kN",
+      {anker:"end", groesse:10, deckung:.75});
+
+  /* Legende unter der Skala. */
+  var lx = x0;
+  [["#ca8a04", "zu wenig"], ["#16a34a", "brauchbar"],
+   ["#dc2626", "über der Streckgrenze"], ["#7f1d1d", "Bruch"]].forEach(function(e){
+    svgEl("rect", {x:lx, y:132, width:10, height:10, fill:e[0], opacity:0.62}, svg);
+    txt(svg, lx + 14, 141, e[1], {anker:"start", groesse:9.5, deckung:.8});
+    lx += 16 + e[1].length * 5.1;
+  });
+}
+
 function neuZeichnen(){
   var z = lage();
-  var ende = Math.max(z.fMax, z.fBruch, z.erf) * 1.1;
-  var p = function(f){ return Math.max(0, Math.min(100, 100 * f / ende)); };
-
-  el("skalaEnde").textContent = zahl(ende / 1000, 0) + " kN";
-
-  /* Zonen: zu wenig | brauchbar | über der Streckgrenze | Bruch */
-  var gutVon = Math.min(z.erf, z.fFlie), gutBis = Math.max(z.erf, z.fFlie);
-  el("zLose").style.left    = "0%";
-  el("zLose").style.width   = p(gutVon) + "%";
-  el("zGut").style.left     = p(gutVon) + "%";
-  el("zGut").style.width    = (p(gutBis) - p(gutVon)) + "%";
-  el("zUeber").style.left   = p(gutBis) + "%";
-  el("zUeber").style.width  = Math.max(0, p(z.fBruch) - p(gutBis)) + "%";
-  el("zBruch").style.left   = p(z.fBruch) + "%";
-  el("zBruch").style.width  = (100 - p(z.fBruch)) + "%";
-
-  el("band").style.left  = p(z.fMin) + "%";
-  el("band").style.width = Math.max(0.8, p(z.fMax) - p(z.fMin)) + "%";
-  el("mErf").style.left   = p(z.erf) + "%";
-  el("mFlie").style.left  = p(z.fFlie) + "%";
-  el("mBruch").style.left = p(z.fBruch) + "%";
+  skalaZeichnen(z);
 
   el("rMax").textContent = zahl(z.fMax / 1000);
   el("rMin").textContent = zahl(z.fMin / 1000);

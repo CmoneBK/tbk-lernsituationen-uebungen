@@ -37,5 +37,32 @@
         "url": "uebungen/schraubverbindungen/06-festigkeitsklassen-deuten.html"
       }
     ]
+  },
+  {
+    "typ": "trainings",
+    "bereich": "Maschinenelemente",
+    "kategorie": "Schrauben",
+    "name": "Schraubverbindungen",
+    "url": "trainings/schraubverbindungen/index.html",
+    "werkzeuge": [
+      {
+        "datei": "maschinenelemente-schrauben-schraubverbindungen.html",
+        "name": "Werkzeug Schraubverbindungen"
+      }
+    ],
+    "inhalt": [
+      {
+        "titel": "Begriffe und Formelzeichen",
+        "url": "trainings/schraubverbindungen/01-begriffe-und-formelzeichen.html"
+      },
+      {
+        "titel": "Anziehdrehmoment rechnen",
+        "url": "trainings/schraubverbindungen/02-anziehdrehmoment-rechnen.html"
+      },
+      {
+        "titel": "Schraffur-Schnellcheck",
+        "url": "trainings/schraubverbindungen/03-schraffur-schnellcheck.html"
+      }
+    ]
   }
 ]
