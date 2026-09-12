@@ -31,7 +31,10 @@
   // bei defer/async faellt es weg - dann ueber den Dateinamen nachsehen.
   var self = document.currentScript ||
     document.querySelector('script[src$="assets/back-nav.js"]');
-  var wurzel = self ? new URL('../', self.src).href : '../';
+  // self.src ist leer, wenn die Datei inline statt ueber src eingebunden
+  // wird. Dann lieber der einfache relative Pfad als eine Ausnahme, die
+  // die ganze Seite anhaelt.
+  var wurzel = self && self.src ? new URL('../', self.src).href : '../';
 
   // Innerhalb eines Uebungs- oder Trainingspakets soll der Ruecklink zur
   // Paketuebersicht fuehren, nicht bis zur Startseite des Materialbereichs.

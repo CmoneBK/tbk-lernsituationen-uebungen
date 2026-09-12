@@ -35,7 +35,9 @@
     document.querySelector('script[src$="assets/werkzeug-link.js"]');
   // ".../assets/werkzeug-link.js" minus "assets/werkzeug-link.js" = Wurzel des
   // Materialbereichs - dieselbe Ableitung wie in back-nav.js.
-  var wurzel = self ? new URL('../', self.src).href : '../';
+  // self.src ist leer, wenn die Datei inline statt ueber src eingebunden
+  // wird - dann bleibt es beim einfachen relativen Pfad.
+  var wurzel = self && self.src ? new URL('../', self.src).href : '../';
 
   function basis() {
     if (location.protocol === 'file:') {
