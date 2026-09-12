@@ -28,6 +28,21 @@
   .bez .trenn{color:var(--muted)}
   .bez-hinweis{margin-top:14px; font-size:14px; color:var(--muted)}
 
+  /* Zeichnungen. Sie entstehen im Skript; Strichstärken stehen dort direkt am
+     Element, weil sie die fachliche Information tragen. Gezeichnet wird in
+     currentColor, damit heller und dunkler Modus beide stimmen. */
+  .bild{margin:18px 0}
+  .bild svg{width:100%; height:auto; display:block}
+  .bild figcaption{
+    font-size:13px; color:var(--muted); margin-top:6px; text-align:center;
+  }
+  /* Hervorhebung in Teil 1: Sobald ein Baustein gewählt ist, tritt alles
+     Übrige zurück. Die Farbe kommt über color, weil alle Striche
+     currentColor verwenden. */
+  svg.hat-auswahl .teil{opacity:.22; transition:opacity .15s ease}
+  svg.hat-auswahl .teil.aktiv{opacity:1; color:var(--accent)}
+  @media (prefers-reduced-motion:reduce){svg.hat-auswahl .teil{transition:none}}
+
   /* Ergebnis des Längen-Rechners. */
   .stapel{margin:16px 0 0}
   .stapel td:first-child{width:60%}
@@ -51,7 +66,10 @@
     </div>
 
     <h2><span class="nr">1</span>Die Bausteine</h2>
-    <p>Klicke jeden Baustein an. Rate erst, lies dann nach.</p>
+    <p>Klicke jeden Baustein an. Rate erst, lies dann nach &ndash; die Zeichnung
+      zeigt jeweils, wovon die Rede ist.</p>
+
+    <figure class="bild" id="bildBausteine"></figure>
 
     <div class="box">
       <div class="bez" id="bez">
@@ -78,6 +96,7 @@
         früher DIN 7991) zählt der Kopf mit, denn er verschwindet ja im Bauteil.
         Dort ist l die <em>Gesamtlänge</em>. Wer das verwechselt, bestellt eine
         Schraube, die um die Kopfhöhe danebenliegt.</p>
+      <figure class="bild" id="bildLaenge"></figure>
     </details>
 
     <details>
@@ -90,6 +109,7 @@
         gut bei schwingender Belastung, weil dann ein kleinerer Anteil der Betriebskraft
         in der Schraube landet. Vollgewinde nimmt man, wenn die Klemmlänge klein ist
         oder stark variiert.</p>
+      <figure class="bild" id="bildNormen"></figure>
       <p><strong>Wichtige Regel:</strong> Der glatte Schaft darf nicht in die Mutter
         hineinragen &ndash; sonst lässt sich die Verbindung nicht spannen. Der
         Rechner unten prüft das mit.</p>
@@ -101,6 +121,7 @@
         und <em>M12</em> kennt, kann alles Weitere nachschlagen: Schlüsselweite
         <strong>SW 18</strong>, Kopfhöhe k = 7,5 mm, Steigung P = 1,75 mm,
         Spannungsquerschnitt A<sub>S</sub> = 84,3 mm².</p>
+      <figure class="bild" id="bildMasse"></figure>
       <p>Die Norm ist also nicht Bürokratie, sondern eine Abkürzung: Sie ersetzt
         ein Dutzend Maße durch eine Nummer. Schlag die vier Werte einmal in deinem
         Tabellenbuch nach &ndash; danach weißt du, wo sie stehen.</p>
@@ -108,7 +129,10 @@
 
     <h2><span class="nr">3</span>Die richtige Länge wählen</h2>
     <p>Jetzt andersherum: Du kennst die Verbindung und suchst die Bezeichnung.
-      Stelle die Verbindung ein und wähle eine Normlänge.</p>
+      Stelle die Verbindung ein und wähle eine Normlänge &ndash; die Zeichnung
+      folgt deinen Werten.</p>
+
+    <figure class="bild" id="bildVerbindung"></figure>
 
     <div class="box">
       <div class="felder">
@@ -157,6 +181,7 @@
         <strong>Sechskantschraube ISO 4014 &ndash; M12 &times; 65 &ndash; 8.8</strong>.</p>
       <p>Und die eingangs genannte Schraube mit 60 mm? Die ist <strong>zu kurz</strong> &ndash;
         die Mutter greift nicht vollständig. Genau deshalb lohnt sich das Nachrechnen.</p>
+      <figure class="bild" id="bildLoesung"></figure>
     </details>
 
     <h2><span class="nr">4</span>Übertragen</h2>
@@ -255,13 +280,455 @@ var TEXTE = {
 function el(id){ return document.getElementById(id); }
 function zahl(x, n){ return x.toFixed(n === undefined ? 1 : n).replace(".", ","); }
 
+/* ============================================================================
+   ZEICHNUNGEN
+   Alle Bilder entstehen hier aus denselben Bausteinen. Dadurch stimmen
+   Strichstärken und Maßstäbe überall überein, und die parametrisierte
+   Zeichnung in Teil 3 zeigt genau dieselbe Schraube wie die Erklärbilder.
+   Gezeichnet wird in currentColor, damit heller und dunkler Modus stimmen;
+   die Strichstärke steht direkt am Element, weil sie beim Gewinde die
+   fachliche Information trägt.
+   ========================================================================== */
+
+var NS = "http://www.w3.org/2000/svg";
+var BREIT = 2.0, SCHMAL = 0.85;
+
+function svgEl(name, attr, eltern){
+  var e = document.createElementNS(NS, name);
+  for(var k in attr) if(attr.hasOwnProperty(k)) e.setAttribute(k, attr[k]);
+  if(eltern) eltern.appendChild(e);
+  return e;
+}
+
+/* Eine Gruppe, optional als hervorhebbares Teil für Teil 1. */
+function gruppe(eltern, teil){
+  return svgEl("g", teil ? {"class":"teil", "data-t":teil} : {}, eltern);
+}
+
+function bild(zielId, breite, hoehe, label, unterschrift){
+  var ziel = el(zielId);
+  ziel.textContent = "";
+  var svg = svgEl("svg", {viewBox:"0 0 " + breite + " " + hoehe,
+                          role:"img", "aria-label":label}, ziel);
+  if(unterschrift){
+    var f = document.createElement("figcaption");
+    f.innerHTML = unterschrift;
+    ziel.appendChild(f);
+  }
+  return svg;
+}
+
+function linie(g, x1, y1, x2, y2, w, opt){
+  opt = opt || {};
+  var a = {x1:x1, y1:y1, x2:x2, y2:y2, stroke:"currentColor",
+           "stroke-width": w || BREIT, "stroke-linecap":"round"};
+  if(opt.strich)  a["stroke-dasharray"] = opt.strich;
+  if(opt.deckung) a.opacity = opt.deckung;
+  return svgEl("line", a, g);
+}
+
+function kasten(g, x, y, w, h, opt){
+  opt = opt || {};
+  return svgEl("rect", {x:x, y:y, width:w, height:h,
+    fill: opt.fuell || "none", stroke: opt.ohneRand ? "none" : "currentColor",
+    "stroke-width": opt.strich || BREIT}, g);
+}
+
+function txt(g, x, y, s, opt){
+  opt = opt || {};
+  var t = svgEl("text", {x:x, y:y, fill:"currentColor",
+    "font-size": opt.groesse || 11.5, "font-family":"inherit",
+    "text-anchor": opt.anker || "middle",
+    "font-weight": opt.fett ? 700 : 500}, g);
+  if(opt.deckung) t.setAttribute("opacity", opt.deckung);
+  t.textContent = s;
+  return t;
+}
+
+/* Waagerechtes Maß mit Maßhilfslinien und Pfeilen. vonY = Kante des Objekts,
+   von der die Hilfslinien ausgehen. Ist die Strecke zu kurz für Pfeile
+   zwischen den Grenzen, zeigen sie von außen darauf. */
+function mass(g, x1, x2, y, s, vonY){
+  var k = svgEl("g", {}, g);
+  var eng = (x2 - x1) < 34;
+
+  if(vonY !== undefined){
+    [x1, x2].forEach(function(x){
+      linie(k, x, vonY, x, y + (y > vonY ? 3 : -3), SCHMAL, {deckung:.55});
+    });
+  }
+  linie(k, eng ? x1 - 9 : x1, y, eng ? x2 + 9 : x2, y, SCHMAL);
+  [[x1, eng ? -1 : 1], [x2, eng ? 1 : -1]].forEach(function(p){
+    linie(k, p[0], y, p[0] + 6.5 * p[1], y - 2.6, SCHMAL);
+    linie(k, p[0], y, p[0] + 6.5 * p[1], y + 2.6, SCHMAL);
+  });
+  /* Bei engen Maßen zeigen die Pfeile von außen herein; der Text muss dann
+     höher sitzen, sonst liegt er auf ihnen. */
+  txt(k, (x1 + x2) / 2, y - (eng ? 11 : 5), s);
+  return k;
+}
+
+/* Senkrechtes Maß. links = Text links neben der Maßlinie. */
+function massV(g, y1, y2, x, s, vonX, links){
+  var k = svgEl("g", {}, g);
+  if(vonX !== undefined){
+    [y1, y2].forEach(function(y){
+      linie(k, vonX, y, x + (x > vonX ? -3 : 3), y, SCHMAL, {deckung:.55});
+    });
+  }
+  linie(k, x, y1, x, y2, SCHMAL);
+  [[y1, 1], [y2, -1]].forEach(function(p){
+    linie(k, x, p[0], x - 2.6, p[0] + 6.5 * p[1], SCHMAL);
+    linie(k, x, p[0], x + 2.6, p[0] + 6.5 * p[1], SCHMAL);
+  });
+  txt(k, links ? x - 6 : x + 6, (y1 + y2) / 2 + 4, s,
+      {anker: links ? "end" : "start"});
+  return k;
+}
+
+/* Mittellinie (Strichpunkt). */
+function achse(g, x1, x2, y){
+  linie(g, x1, y, x2, y, SCHMAL, {strich:"10 3 2 3", deckung:.5});
+}
+
+/* Schraffur für geschnittene Bauteile. Die ID muss je Bild eindeutig sein,
+   sonst greifen alle Bilder auf dasselbe Muster zu. */
+function schraffur(svg, id, winkel){
+  var defs = svg.querySelector("defs") || svgEl("defs", {}, svg);
+  var p = svgEl("pattern", {id:id, width:7, height:7,
+    patternUnits:"userSpaceOnUse",
+    patternTransform:"rotate(" + winkel + ")"}, defs);
+  svgEl("line", {x1:0, y1:0, x2:0, y2:7, stroke:"currentColor",
+    "stroke-width":0.85, opacity:0.6}, p);
+  return "url(#" + id + ")";
+}
+
+/* Sechskantschraube in Ansicht, Achse waagerecht, Kopf links.
+   Maße in mm, s = Pixel je mm. Liefert die Teilgruppen zurück, damit Teil 1
+   einzelne Bereiche hervorheben kann. */
+function schraube(eltern, o){
+  var s = o.s, y = o.y, x = o.x;
+  var rd = o.d * s / 2;
+  var rk = (o.sw || o.d * 1.5) * s / 2;
+  var kx = o.k * s;
+  var lx = o.l * s;
+  var bx = Math.min(o.b, o.l) * s;
+  var r3 = (o.d - 1.2269 * o.P) * s / 2;
+  var teile = o.teile || {};
+
+  var gKopf    = gruppe(eltern, teile.kopf);
+  var gSchaft  = gruppe(eltern, teile.schaft);
+  var gGewinde = gruppe(eltern, teile.gewinde);
+
+  kasten(gKopf, x, y - rk, kx, 2 * rk, {fuell:"var(--card)"});
+  linie(gKopf, x + kx * 0.24, y - rk, x + kx * 0.24, y + rk, SCHMAL, {deckung:.6});
+
+  var gewindeVon = x + kx + (lx - bx);
+  if(lx - bx > 0.5){
+    kasten(gSchaft, x + kx, y - rd, lx - bx, 2 * rd, {fuell:"var(--card)"});
+  }
+
+  /* Gewinde: Außendurchmesser breit, Kerndurchmesser schmal. */
+  kasten(gGewinde, gewindeVon, y - rd, bx, 2 * rd, {fuell:"var(--card)"});
+  var ende = x + kx + lx;
+  [y - r3, y + r3].forEach(function(yy){
+    linie(gGewinde, gewindeVon + 1, yy, ende - 1, yy, SCHMAL);
+  });
+  linie(gGewinde, ende - rd * 0.45, y - rd, ende, y - rd * 0.55, SCHMAL);
+  linie(gGewinde, ende - rd * 0.45, y + rd, ende, y + rd * 0.55, SCHMAL);
+
+  achse(eltern, x - 8, ende + 10, y);
+
+  return {kopf:gKopf, schaft:gSchaft, gewinde:gGewinde,
+          kopfEnde:x + kx, gewindeVon:gewindeVon, ende:ende, rd:rd, rk:rk};
+}
+
+/* Senkkopfschraube, schematisch: Kopfdurchmesser rund 2d, Kopfhöhe rund 0,57d.
+   Die Länge zählt hier ab der Kopfoberseite - genau darum geht es im Bild. */
+function senkschraube(eltern, o){
+  var s = o.s, y = o.y, x = o.x;
+  var rd = o.d * s / 2;
+  var rk = o.d * s;
+  var kx = 0.57 * o.d * s;
+  var lx = o.l * s;
+  var r3 = (o.d - 1.2269 * o.P) * s / 2;
+  var bx = Math.min(o.b, o.l - 0.57 * o.d) * s;
+
+  var g = gruppe(eltern);
+  svgEl("polygon", {points:[x, y - rk, x + kx, y - rd, x + kx, y + rd, x, y + rk].join(" "),
+    fill:"var(--card)", stroke:"currentColor", "stroke-width":BREIT}, g);
+
+  var ende = x + lx;
+  var gewindeVon = Math.max(x + kx, ende - bx);
+  if(gewindeVon > x + kx + 0.5){
+    kasten(g, x + kx, y - rd, gewindeVon - (x + kx), 2 * rd, {fuell:"var(--card)"});
+  }
+  kasten(g, gewindeVon, y - rd, ende - gewindeVon, 2 * rd, {fuell:"var(--card)"});
+  [y - r3, y + r3].forEach(function(yy){
+    linie(g, gewindeVon + 1, yy, ende - 1, yy, SCHMAL);
+  });
+  achse(eltern, x - 8, ende + 10, y);
+  return {g:g, kopfEnde:x + kx, ende:ende, rd:rd, rk:rk};
+}
+
+/* Sechskant von vorn - dort ist die Schlüsselweite zu sehen.
+   Ecken bei 0, 60, ... Grad: dadurch liegen die Flächen oben und unten, und
+   der Abstand zwischen ihnen ist genau die Schlüsselweite. */
+function hexKopf(eltern, cx, cy, sw, s){
+  var h = sw * s / 2;                  /* halbe Schlüsselweite */
+  var R = h * 2 / Math.sqrt(3);        /* Umkreisradius */
+  var p = [];
+  for(var i = 0; i < 6; i++){
+    var w = Math.PI / 3 * i;
+    p.push((cx + R * Math.cos(w)).toFixed(2), (cy + R * Math.sin(w)).toFixed(2));
+  }
+  var g = gruppe(eltern);
+  svgEl("polygon", {points:p.join(" "), fill:"var(--card)",
+    stroke:"currentColor", "stroke-width":BREIT}, g);
+  return {g:g, h:h, R:R};
+}
+
+/* Gewindeprofil stark vergrößert: mehrere Gänge, damit die Steigung P als Maß
+   zwischen zwei Spitzen sichtbar wird. */
+function gewindeProfil(eltern, x, y, P, s, gaenge){
+  var g = gruppe(eltern);
+  var px = P * s;
+  var H1 = 0.5413 * P * s;             /* Tragtiefe */
+  var oben = y, unten = y + H1;
+
+  var pfad = ["M", x, unten];
+  for(var i = 0; i < gaenge; i++){
+    pfad.push("L", x + i * px + px * 0.25, oben,
+              "L", x + i * px + px * 0.50, oben,
+              "L", x + i * px + px * 0.75, unten,
+              "L", x + (i + 1) * px,       unten);
+  }
+  svgEl("path", {d:pfad.join(" "), fill:"none", stroke:"currentColor",
+    "stroke-width":BREIT, "stroke-linejoin":"round"}, g);
+
+  var breite = gaenge * px;
+  linie(g, x - 12, oben,  x + breite + 30, oben,  SCHMAL, {deckung:.55});
+  linie(g, x - 12, unten, x + breite + 30, unten, SCHMAL, {deckung:.55});
+  linie(g, x - 12, (oben + unten) / 2, x + breite + 30, (oben + unten) / 2,
+        SCHMAL, {strich:"6 4", deckung:.55});
+
+  txt(g, x + breite + 34, oben  + 4, "d",  {anker:"start"});
+  txt(g, x + breite + 34, (oben + unten) / 2 + 4, "d₂", {anker:"start"});
+  txt(g, x + breite + 34, unten + 4, "d₃", {anker:"start"});
+
+  mass(g, x + px * 0.25, x + px * 1.25, oben - 15, "P", oben - 2);
+  return g;
+}
+
+/* ---------- Die einzelnen Bilder ---------- */
+
+/* Teil 1: die Bezeichnung als Zeichnung. Jede Gruppe trägt den Schlüssel des
+   Bausteins, der sie meint - der Zerleger hebt sie damit hervor. */
+function bildBausteine(){
+  var g = SCHRAUBEN.M12, s = 4.4, x = 72, y = 82;
+  var svg = bild("bildBausteine", 452, 202,
+    "Sechskantschraube M12 mal 60 in Ansicht, bemaßt mit Kopfhöhe, " +
+    "Schlüsselweite, Gewindedurchmesser, Gewindelänge und Länge",
+    "Sechskantschraube ISO 4014 &ndash; M12 &times; 60 &ndash; 8.8");
+
+  var t = schraube(svg, {x:x, y:y, s:s, d:g.d, P:g.P, k:g.k, sw:g.s,
+    l:60, b:2 * g.d + 6,
+    teile:{kopf:"form", schaft:"norm", gewinde:"gew"}});
+
+  /* Kennzeichnung auf dem Kopf. */
+  var gKlasse = gruppe(svg, "klasse");
+  txt(gKlasse, (x + t.kopfEnde) / 2, y + 5, "8.8", {fett:true, groesse:13});
+
+  /* Maße den Bausteinen zuordnen, die sie festlegen. */
+  var gForm = svg.querySelector('.teil[data-t="form"]');
+  var gNorm = svg.querySelector('.teil[data-t="norm"]');
+  var gGew  = svg.querySelector('.teil[data-t="gew"]');
+  var gLae  = gruppe(svg, "laenge");
+
+  massV(gForm, y - t.rk, y + t.rk, x - 16, "SW " + g.s, x, true);
+  mass(gForm, x, t.kopfEnde, 30, "k = " + String(g.k).replace(".", ","), y - t.rk);
+  mass(gNorm, t.gewindeVon, t.ende, 30, "b = " + (2 * g.d + 6), y - t.rd);
+  massV(gGew, y - t.rd, y + t.rd, t.ende + 22, "d = " + g.d, t.ende);
+  mass(gLae, t.kopfEnde, t.ende, 178, "l = 60", y + t.rd);
+
+  return svg;
+}
+
+/* Teil 2 a): Woran die Länge gemessen wird - und die Ausnahme. */
+function bildLaenge(){
+  var g = SCHRAUBEN.M12, s = 3.3;
+  var svg = bild("bildLaenge", 452, 340,
+    "Vergleich: bei der Sechskantschraube wird die Länge ohne Kopf gemessen, " +
+    "bei der Senkkopfschraube einschließlich Kopf",
+    "Beide Schrauben hei&szlig;en &bdquo;&times;&nbsp;60&ldquo; &ndash; und " +
+    "sind doch unterschiedlich lang.");
+
+  /* Beide Schrauben beginnen an derselben Stelle, damit der Unterschied am
+     rechten Ende sichtbar wird. */
+  var x = 56, y1 = 72, y2 = 222;
+
+  txt(svg, x, 22, "Sechskantschraube ISO 4014", {anker:"start", fett:true});
+  var a = schraube(svg, {x:x, y:y1, s:s, d:g.d, P:g.P, k:g.k, sw:g.s,
+                         l:60, b:2 * g.d + 6});
+  mass(svg, a.kopfEnde, a.ende, y1 + 56, "l = 60", y1 + a.rd);
+  txt(svg, a.ende + 10, y1 + 56, "ab der Kopfauflage",
+      {anker:"start", deckung:.75, groesse:10.5});
+
+  txt(svg, x, 172, "Senkkopfschraube ISO 10642", {anker:"start", fett:true});
+  var b = senkschraube(svg, {x:x, y:y2, s:s, d:g.d, P:g.P, l:60, b:2 * g.d + 6});
+  mass(svg, x, b.ende, y2 + 60, "l = 60", y2 + b.rd);
+  txt(svg, b.ende + 10, y2 + 60, "Kopf eingerechnet",
+      {anker:"start", deckung:.75, groesse:10.5});
+
+  /* Der Unterschied ist genau die Kopfhöhe. */
+  var yU = 320;
+  [a.ende, b.ende].forEach(function(xx){
+    linie(svg, xx, y2 + b.rd + 6, xx, yU - 4, SCHMAL, {strich:"5 4", deckung:.45});
+  });
+  var gU = svgEl("g", {style:"color:var(--accent)"}, svg);
+  mass(gU, b.ende, a.ende, yU, "k = 7,5");
+
+  return svg;
+}
+
+/* Teil 2 b): ISO 4014 gegen ISO 4017. */
+function bildNormen(){
+  var g = SCHRAUBEN.M12, s = 3.5, x = 60, b = 2 * g.d + 6;
+  var svg = bild("bildNormen", 452, 230,
+    "Vergleich: ISO 4014 mit Schaft und Teilgewinde, ISO 4017 mit Vollgewinde",
+    "Gleiche Länge, gleiche Bezeichnung bis auf die Norm &ndash; " +
+    "und ein ganz anderes Bauteil.");
+
+  var y1 = 56;
+  txt(svg, x, 20, "ISO 4014 – mit Schaft", {anker:"start", fett:true});
+  var a = schraube(svg, {x:x, y:y1, s:s, d:g.d, P:g.P, k:g.k, sw:g.s, l:60, b:b});
+  mass(svg, a.kopfEnde, a.gewindeVon, y1 + 50, "Schaft l − b", y1 + a.rd);
+  mass(svg, a.gewindeVon, a.ende, y1 - 38, "b = " + b, y1 - a.rd);
+
+  var y2 = 160;
+  txt(svg, x, 124, "ISO 4017 – Vollgewinde", {anker:"start", fett:true});
+  var c = schraube(svg, {x:x, y:y2, s:s, d:g.d, P:g.P, k:g.k, sw:g.s, l:60, b:60});
+  mass(svg, c.kopfEnde, c.ende, y2 + 50, "b = l = 60", y2 + c.rd);
+
+  return svg;
+}
+
+/* Teil 2 c): Was die Norm festlegt, ohne dass es in der Bezeichnung steht. */
+function bildMasse(){
+  var g = SCHRAUBEN.M12, s = 3.2;
+  var svg = bild("bildMasse", 452, 280,
+    "Sechskantkopf von vorn mit Schlüsselweite, Schraube in Ansicht mit " +
+    "Kopfhöhe und Nenndurchmesser, dazu das vergrößerte Gewindeprofil mit " +
+    "Steigung, Flanken- und Kerndurchmesser",
+    "Alles hier ist durch &bdquo;ISO 4014&ldquo; und &bdquo;M12&ldquo; " +
+    "eindeutig festgelegt &ndash; nachzuschlagen im Tabellenbuch.");
+
+  /* links: Kopf von vorn, dort liegt die Schlüsselweite */
+  var h = hexKopf(svg, 66, 62, g.s, s);
+  massV(svg, 62 - h.h, 62 + h.h, 66 + h.R + 18, "SW " + g.s, 66 + h.R);
+  txt(svg, 66, 62 + h.R + 22, "Kopf von vorn", {deckung:.75});
+
+  /* rechts: Schraube in Ansicht */
+  var x = 176, y = 62;
+  var t = schraube(svg, {x:x, y:y, s:s, d:g.d, P:g.P, k:g.k, sw:g.s,
+                         l:44, b:30});
+  mass(svg, x, t.kopfEnde, y - 34, "k = 7,5", y - t.rk);
+  massV(svg, y - t.rd, y + t.rd, t.ende + 20, "d = 12", t.ende);
+
+  /* unten: Gewinde stark vergrößert */
+  linie(svg, 40, 150, 412, 150, SCHMAL, {deckung:.35});
+  txt(svg, 40, 172, "Gewindeprofil, stark vergrößert", {anker:"start", fett:true});
+  gewindeProfil(svg, 96, 206, g.P, 34, 4);
+  txt(svg, 40, 244, "P = 1,75", {anker:"start", deckung:.75});
+
+  return svg;
+}
+
+/* Teil 3 und Lösung: die Verbindung mit allen Posten, die die Schraube
+   überbrücken muss. Dieselbe Funktion für beide Stellen - was in der Lösung
+   steht, ist damit garantiert dasselbe, was der Rechner zeigt. */
+function verbindung(svg, o){
+  var g = o.g, s = o.s, x = o.x, y = o.y;
+  var rd = g.d * s / 2;
+  var ueberstand = 2 * g.P;
+  var klemm = o.t1 + o.t2;
+  var lMin = klemm + g.sW + g.m + ueberstand;
+
+  var wand = rd + 26;                       /* halbe Höhe der Platten */
+  var kopfEnde = x + g.k * s;
+
+  var mA = schraffur(svg, o.id + "a", 45);
+  var mB = schraffur(svg, o.id + "b", -45);
+
+  var gBau = gruppe(svg);
+
+  /* Platten geschnitten: ober- und unterhalb des Durchgangslochs. */
+  function platte(x1, breite, muster){
+    [[y - wand, wand - rd - 1], [y + rd + 1, wand - rd - 1]].forEach(function(p){
+      kasten(gBau, x1, p[0], breite, p[1], {fuell:muster});
+    });
+  }
+  platte(kopfEnde, o.t1 * s, mA);
+  platte(kopfEnde + o.t1 * s, o.t2 * s, mB);
+
+  /* Schraube über die Platten. */
+  var xScheibe = kopfEnde + klemm * s;
+  var xMutter  = xScheibe + g.sW * s;
+  var t = schraube(svg, {x:x, y:y, s:s, d:g.d, P:g.P, k:g.k, sw:g.s,
+                         l:o.l, b:2 * g.d + 6});
+
+  /* Scheibe und Mutter zuletzt und ohne Füllung: Sie werden nie geschnitten,
+     ihre Umrisse müssen aber über der Schraube sichtbar bleiben. */
+  var gTeile = gruppe(svg);
+  kasten(gTeile, xScheibe, y - rd - 14, g.sW * s, 2 * rd + 28);
+  kasten(gTeile, xMutter,  y - g.s * s / 2, g.m * s, g.s * s);
+
+  /* Maße oben: was eingestellt wurde. */
+  mass(svg, kopfEnde, kopfEnde + o.t1 * s, y - wand - 16,
+       "t₁ = " + o.t1, y - wand);
+  mass(svg, kopfEnde + o.t1 * s, xScheibe, y - wand - 16,
+       "t₂ = " + o.t2, y - wand);
+
+  /* Die Scheibe ist zu schmal für eine Beschriftung darunter - also eine
+     Hinweislinie nach schräg oben. Die Mutter beschriftet sich darunter. */
+  var xs = xScheibe + g.sW * s / 2;
+  linie(svg, xs, y - rd - 16, xs + 14, y - wand - 6, SCHMAL, {deckung:.55});
+  txt(svg, xs + 18, y - wand - 6, "Scheibe",
+      {anker:"start", groesse:10, deckung:.75});
+  txt(svg, xMutter + g.m * s / 2, y + g.s * s / 2 + 14, "Mutter",
+      {groesse:10, deckung:.75});
+
+  /* Maße unten: nötig gegen gewählt. */
+  var yM = y + wand + 22;
+  mass(svg, kopfEnde, kopfEnde + lMin * s, yM,
+       "nötig " + zahl(lMin) + " mm", y + wand);
+  mass(svg, kopfEnde, t.ende, yM + 30, "gewählt l = " + o.l, yM + 6);
+
+  return {lMin:lMin, ende:t.ende, noetigBis:kopfEnde + lMin * s,
+          kopfEnde:kopfEnde, gewindeVon:t.gewindeVon, klemm:klemm, y:y, wand:wand};
+}
+
+/* Breite je Millimeter, damit das Bild unabhängig von Gewinde und Plattendicke
+   immer die verfügbare Fläche ausfüllt. */
+function massstab(g, laengeMm, platz){
+  return platz / (g.k + laengeMm + 4);
+}
+
 /* ---------- Teil 1: Bausteine ---------- */
 
 var knoepfe = [].slice.call(document.querySelectorAll("#bez button"));
+var svgBausteine = null;
+
 knoepfe.forEach(function(b){
   b.addEventListener("click", function(){
     knoepfe.forEach(function(o){ o.setAttribute("aria-pressed", String(o === b)); });
     el("bezText").innerHTML = TEXTE[b.dataset.t];
+
+    /* In der Zeichnung tritt alles zurück, was nicht gemeint ist. */
+    svgBausteine.classList.add("hat-auswahl");
+    [].slice.call(svgBausteine.querySelectorAll(".teil")).forEach(function(t){
+      t.classList.toggle("aktiv", t.dataset.t === b.dataset.t);
+    });
   });
 });
 
@@ -277,6 +744,67 @@ function auswahlFuellen(sel, liste, start){
 }
 auswahlFuellen(el("lGewinde"), GROESSEN, "M12");
 auswahlFuellen(el("lWahl"), NORMLAENGEN, 60);
+
+/* Eine Verbindung in ein vorhandenes Bild zeichnen, samt Urteil. So kann die
+   Lösung zwei Fälle untereinander zeigen und Teil 3 einen einzelnen. */
+function verbindungInSvg(svg, id, g, t1, t2, l, y, s, titel){
+  var r = verbindung(svg, {id:id, g:g, s:s, x:56, y:y, t1:t1, t2:t2, l:l});
+  var schaft = Math.max(0, l - (2 * g.d + 6));
+
+  if(titel) txt(svg, 56, y - r.wand - 34, titel, {anker:"start", fett:true});
+
+  if(l < r.lMin){
+    /* Was fehlt, wird rot markiert - das ist die Aussage des Bildes. Die
+       Strecke ist winzig, deshalb steht das Maß über der Zeichnung und nicht
+       mitten in der Mutter. */
+    var m = svgEl("g", {style:"color:var(--bad)"}, svg);
+    var yF = y - r.wand - 38;
+    [r.ende, r.noetigBis].forEach(function(xx){
+      linie(m, xx, y - r.wand - 2, xx, yF + 4, SCHMAL, {strich:"4 3", deckung:.85});
+    });
+    mass(m, r.ende, r.noetigBis, yF, "fehlt " + zahl(r.lMin - l) + " mm");
+  } else if(schaft > r.klemm){
+    var w = svgEl("g", {style:"color:var(--bad)"}, svg);
+    mass(w, r.kopfEnde + r.klemm * s, r.gewindeVon, y - 20, "Schaft in der Mutter");
+  } else {
+    var o = svgEl("g", {style:"color:var(--ok)"}, svg);
+    txt(o, r.ende + 10, y + 4, "✓", {anker:"start", fett:true, groesse:17});
+  }
+  return r;
+}
+
+/* Teil 3: Die Zeichnung folgt den Eingaben. Der Maßstab wird so gewählt, dass
+   das Bild die Fläche ausfüllt - aber nicht über 9 Pixel je Millimeter, sonst
+   wird eine kurze M4 unnötig fett. */
+function zeichneVerbindung(g, t1, t2, l, lMin){
+  var s = Math.min(9, 330 / (g.k + Math.max(l, lMin) + 6));
+  var svg = bild("bildVerbindung", 452, 256,
+    "Schnitt durch die Verbindung: Kopf, zwei Platten, Scheibe, Mutter und " +
+    "Überstand, dazu die nötige und die gewählte Schraubenlänge",
+    "Oben die eingestellten Plattendicken, unten die nötige gegen die " +
+    "gewählte Länge.");
+  verbindungInSvg(svg, "verb", g, t1, t2, l, 116, s);
+}
+
+/* Lösung: derselbe Fall zweimal - zu kurz und passend. */
+function zeichneLoesung(){
+  var g = SCHRAUBEN.M12, t1 = 20, t2 = 25;
+  var s = Math.min(9, 330 / (g.k + 70 + 6));
+  var svg = bild("bildLoesung", 452, 512,
+    "Dieselbe Verbindung mit 60 mm und mit 65 mm Schraubenlänge im Vergleich",
+    "Dieselbe Verbindung, zwei Schraubenlängen.");
+  verbindungInSvg(svg, "loesA", g, t1, t2, 60, 120, s, "M12 × 60 – zu kurz");
+  linie(svg, 30, 250, 422, 250, SCHMAL, {deckung:.3});
+  verbindungInSvg(svg, "loesB", g, t1, t2, 65, 376, s, "M12 × 65 – passt");
+}
+
+/* Alle festen Bilder einmal zeichnen. */
+svgBausteine = bildBausteine();
+bildLaenge();
+bildNormen();
+bildMasse();
+zeichneLoesung();
+
 
 function ganzzahl(wert, min, max, ersatz){
   var x = parseFloat(wert);
@@ -313,6 +841,8 @@ function neuRechnen(){
   var gewaehlt = parseInt(el("lWahl").value, 10);
   var b = 2 * g.d + 6;
   var schaft = Math.max(0, gewaehlt - b);
+
+  zeichneVerbindung(g, t1, t2, gewaehlt, lMin);
 
   var r = el("lRueck");
   if(gewaehlt < lMin){
