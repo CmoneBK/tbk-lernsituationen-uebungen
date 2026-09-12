@@ -1,0 +1,195 @@
+<!-- Erzeugt von build/build.mjs – nicht von Hand bearbeiten.
+     Design ändern: build/uebersicht-vorlage.html, danach neu bauen. -->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unterrichtsmaterial &middot; t-bk.de</title>
+<meta name="description" content="Lernsituationen, Übungen und Trainings für den technischen Unterricht.">
+<!-- ACHTUNG: Diese Datei ist die VORLAGE der Uebersicht. Die ausgelieferte
+     index.html wird daraus von build/build.mjs erzeugt - Aenderungen am Design
+     also hier vornehmen und anschliessend "node build/build.mjs" ausfuehren.
+     Der Platzhalter-Kommentar INHALT weiter unten wird dabei ersetzt. -->
+<style>
+  :root{
+    --bg:#f7f7f5; --fg:#1a1a1a; --muted:#5f5f5a;
+    --card:#fff; --border:#e3e3df; --accent:#2b6cb0; --accent-fg:#fff;
+    --chip:#fff; --shadow:0 1px 3px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.05);
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#151517; --fg:#ececec; --muted:#a0a0a0;
+      --card:#1e1e21; --border:#2c2c30; --accent:#5b9bd5; --accent-fg:#0b0b0c;
+      --chip:#1e1e21; --shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--fg);
+    font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  a{color:var(--accent)}
+  .wrap{width:100%; max-width:960px; margin:0 auto; padding:0 20px}
+  header{padding:48px 0 8px}
+  .back{display:inline-block; margin-bottom:18px; font-size:14px; text-decoration:none}
+  .back:hover{text-decoration:underline}
+  h1{font-size:clamp(26px,4vw,34px); letter-spacing:-.5px; margin:0 0 10px}
+  .lead{color:var(--muted); font-size:17px; margin:0}
+
+  /* --- Filterleiste --- */
+  .filter{
+    position:sticky; top:0; z-index:10; background:var(--bg);
+    padding:18px 0 14px; margin-top:22px; border-bottom:1px solid var(--border);
+  }
+  .filter-inner{display:flex; flex-wrap:wrap; gap:10px; align-items:center}
+  .chip{
+    appearance:none; cursor:pointer; font:inherit; font-size:14px; font-weight:600;
+    background:var(--chip); color:var(--fg); border:1px solid var(--border);
+    border-radius:999px; padding:7px 14px;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .chip:hover{border-color:var(--accent)}
+  .chip[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--accent-fg)}
+  .chip .n{opacity:.7; font-weight:500; margin-left:6px}
+  .suche{
+    flex:1 1 200px; min-width:160px; font:inherit; font-size:15px;
+    background:var(--chip); color:var(--fg);
+    border:1px solid var(--border); border-radius:999px; padding:8px 16px;
+  }
+  .suche:focus{outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent)}
+
+  /* --- Gliederung --- */
+  .typ-titel{
+    font-size:23px; font-weight:700; letter-spacing:-.3px;
+    margin:44px 0 0; padding-top:26px; border-top:1px solid var(--border);
+  }
+  section.typ:first-of-type .typ-titel{border-top:0; padding-top:8px; margin-top:26px}
+  .typ-lead{color:var(--muted); font-size:15px; margin:4px 0 0}
+  .bereich-titel{font-size:18px; font-weight:700; margin:30px 0 0}
+  .kat-titel{
+    font-size:13px; font-weight:700; text-transform:uppercase;
+    letter-spacing:.06em; color:var(--muted); margin:24px 0 0;
+  }
+  .grid{
+    display:grid; gap:14px; padding:14px 0 2px;
+    grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  }
+  a.card{
+    display:flex; align-items:center; min-height:64px;
+    background:var(--card); border:1px solid var(--border); border-radius:12px;
+    padding:16px 18px; text-decoration:none; color:inherit; box-shadow:var(--shadow);
+    transition:transform .15s ease, border-color .15s ease;
+    font-weight:600; font-size:15px;
+  }
+  a.card:hover{transform:translateY(-3px); border-color:var(--accent)}
+  .leer{color:var(--muted); padding:40px 0; text-align:center}
+  [hidden]{display:none!important}
+
+  footer{
+    text-align:center; color:var(--muted); font-size:13px;
+    padding:40px 0 32px; border-top:1px solid var(--border); margin-top:48px;
+  }
+  footer a{color:var(--muted)}
+  @media (prefers-reduced-motion:reduce){a.card{transition:none}a.card:hover{transform:none}}
+</style>
+</head>
+<body>
+  <header class="wrap">
+    <a class="back" id="tbk-home" href="/" hidden>&larr; Startseite</a>
+    <h1>Unterrichtsmaterial</h1>
+    <p class="lead">Lernsituationen, &Uuml;bungen und Trainings &ndash; direkt im Browser, ohne Anmeldung.</p>
+  </header>
+
+  <div class="filter">
+    <div class="wrap filter-inner">
+      <button type="button" class="chip" data-filter="alle" aria-pressed="true">Alle</button>
+      <button type="button" class="chip" data-filter="lernsituationen" aria-pressed="false">Lernsituationen</button>
+      <button type="button" class="chip" data-filter="uebungen" aria-pressed="false">&Uuml;bungen</button>
+      <button type="button" class="chip" data-filter="trainings" aria-pressed="false">Trainings</button>
+      <input type="search" class="suche" id="tbk-suche" placeholder="Suchen &hellip;" aria-label="Material durchsuchen" autocomplete="off">
+    </div>
+  </div>
+
+  <main class="wrap" id="tbk-inhalt">
+    <p class="leer">Noch kein Material veröffentlicht.</p>
+    <p class="leer" id="tbk-leer" hidden>Keine Treffer.</p>
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+/* Startseiten-Link nur dort zeigen, wo es eine gibt: auf t-bk.de liegt der
+   Bereich unter /unterrichtsmaterial/, auf GitHub Pages waere "/" dagegen die
+   Profilseite und nicht dieses Projekt. Genauso beim lokalen file-Test. */
+(function () {
+  var h = location.hostname;
+  if (location.protocol !== 'file:' && !/(^|\.)github\.io$/.test(h)) {
+    document.getElementById('tbk-home').hidden = false;
+  }
+})();
+
+/* Filter und Suche: rein clientseitig, ohne Abhaengigkeiten. Sichtbar bleibt
+   eine Karte, wenn Typ UND Suchbegriff passen; anschliessend werden leer
+   gewordene Gruppen, Bereiche und Abschnitte ausgeblendet, damit keine
+   Ueberschrift ohne Inhalt stehen bleibt. */
+(function () {
+  var karten     = [].slice.call(document.querySelectorAll('a.card'));
+  var gruppen    = [].slice.call(document.querySelectorAll('.gruppe'));
+  var bereiche   = [].slice.call(document.querySelectorAll('.bereich'));
+  var abschnitte = [].slice.call(document.querySelectorAll('section.typ'));
+  var chips      = [].slice.call(document.querySelectorAll('.chip'));
+  var suche      = document.getElementById('tbk-suche');
+  var leer       = document.getElementById('tbk-leer');
+  var typ = 'alle';
+
+  chips.forEach(function (c) {
+    if (c.dataset.filter === 'alle') return;
+    var n = karten.filter(function (k) { return k.dataset.typ === c.dataset.filter; }).length;
+    if (!n) { c.hidden = true; return; }
+    c.insertAdjacentHTML('beforeend', '<span class="n">' + n + '</span>');
+  });
+
+  function sichtbar(el) { return !el.hidden; }
+
+  function anwenden() {
+    var q = suche.value.trim().toLowerCase();
+    var treffer = 0;
+
+    karten.forEach(function (k) {
+      var passt = (typ === 'alle' || k.dataset.typ === typ) &&
+                  (!q || k.dataset.suche.indexOf(q) !== -1);
+      k.hidden = !passt;
+      if (passt) treffer++;
+    });
+
+    gruppen.forEach(function (g) {
+      g.hidden = !g.querySelector('a.card:not([hidden])');
+    });
+    bereiche.forEach(function (b) {
+      b.hidden = ![].slice.call(b.querySelectorAll('.gruppe')).some(sichtbar);
+    });
+    abschnitte.forEach(function (s) {
+      s.hidden = ![].slice.call(s.querySelectorAll('.bereich')).some(sichtbar);
+    });
+
+    leer.hidden = treffer > 0;
+  }
+
+  chips.forEach(function (c) {
+    c.addEventListener('click', function () {
+      typ = c.dataset.filter;
+      chips.forEach(function (o) { o.setAttribute('aria-pressed', String(o === c)); });
+      anwenden();
+    });
+  });
+  suche.addEventListener('input', anwenden);
+
+  anwenden();
+})();
+</script>
+</body>
+</html>

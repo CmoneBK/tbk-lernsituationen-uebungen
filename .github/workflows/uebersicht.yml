@@ -1,0 +1,57 @@
+# Haelt index.html und daten/material.json aktuell, wenn Material nicht ueber
+# einen lokalen Build, sondern direkt auf GitHub landet (Web-Oberflaeche, API,
+# Make.com-Automation). Wer lokal "node build/build.mjs" laeuft laesst und das
+# Ergebnis mitcommittet, merkt von diesem Workflow nichts - dann gibt es nichts
+# zu tun und der Lauf endet ohne Commit.
+#
+# Das ist kein GitHub-Pages-Build: die Seiten selbst bleiben statisch (.nojekyll),
+# der Workflow erzeugt lediglich dieselbe Datei, die auch der lokale Build
+# erzeugen wuerde.
+name: Übersicht aktualisieren
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lernsituationen/**'
+      - 'uebungen/**'
+      - 'trainings/**'
+      - 'daten/kategorien.csv'
+      - 'build/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: uebersicht-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  bauen:
+    # Eigene Commits nicht erneut verarbeiten - der Build traegt in neuen Dateien
+    # den Ruecklink nach und veraendert damit Pfade unter lernsituationen/ usw.,
+    # was den Workflow sonst ein zweites Mal ausloesen wuerde.
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Übersicht erzeugen
+        run: node build/build.mjs
+
+      - name: Änderungen committen
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "Nichts zu tun - Übersicht war bereits aktuell."
+            exit 0
+          fi
+          git config user.name  'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Übersicht automatisch aktualisiert'
+          git push

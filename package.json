@@ -1,0 +1,10 @@
+{
+  "name": "tbk-unterrichtsmaterial",
+  "private": true,
+  "type": "module",
+  "description": "Lernsituationen, Uebungen und Trainings fuer t-bk.de",
+  "scripts": {
+    "build": "node build/build.mjs",
+    "check": "node build/build.mjs --check"
+  }
+}
