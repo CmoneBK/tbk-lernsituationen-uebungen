@@ -35,6 +35,7 @@ assets/uebung.css        gemeinsames Aussehen aller Übungen und Trainings
 assets/zeichnen.js       Bausteine für Zeichnungen (Maße, Schraffur, Diagramme)
 assets/baukasten.js      Übungen zuschneiden und als Link weitergeben
 assets/qr.js             QR-Code für diesen Link
+assets/export.js         Ausgabe als PDF und als Word-Datei
 assets/back-nav.js       Rücklink „← Übersicht“ – einzige Quelle
 assets/werkzeug-link.js  löst Links auf die Werkzeuge je nach Umgebung auf
 daten/kategorien.csv     Reihenfolge der Bereiche und Unterkategorien
@@ -164,6 +165,40 @@ ohnehin vormacht.
 Der QR-Code entsteht im Browser, ohne Dienst und ohne Fremdbibliothek
 (`assets/qr.js`, Byte-Modus, Fehlerkorrektur M, bis Version 10). Das ist
 Bedingung, weil die Seite [nichts von fremden Servern lädt](#-trackingfrei--ohne-ausnahme).
+
+## 🖨️ Als PDF oder Word mitnehmen
+
+Neben *Übung anpassen* steht **„Herunterladen"**. Wählbar ist, ob die Lösungen
+**unter den Aufgaben** stehen oder **gesammelt am Ende** auf eigener Seite.
+
+| | |
+| --- | --- |
+| **PDF** | über den Druckdialog des Browsers („Als PDF speichern"). Die Zeichnungen bleiben gestochen scharf, weil der Browser die SVG direkt setzt. |
+| **Word** | als HTML-Dokument mit der Endung `.doc`, das Word öffnet und weiterbearbeitet. Die Zeichnungen werden dafür in Bilder umgewandelt – Word stellt SVG in diesem Format nicht zuverlässig dar. |
+
+Ausgegeben wird **genau der Stand, der gerade auf dem Bildschirm steht**: die
+Auswahl aus *Übung anpassen*, die Werte in den Rechnern, der erreichte Schritt
+einer Schrittfolge. Interaktives lässt sich auf Papier nun einmal nicht
+bedienen – es erscheint eingefroren. Teile, die noch ausgeblendet sind (etwa
+was erst nach dem Auflösen kommt), sind nicht dabei. Die Datei selbst weist
+oben darauf hin.
+
+### Was beim Ausdruck wegfällt
+
+Die Ausgabe räumt auf: Skripte, Bedienknöpfe, die Leiste unten rechts und alles
+Ausgeblendete verschwinden; Eingabefelder werden zu ihrem Wert. Zwei Angaben
+steuern das aus der Übung heraus, falls die Vorgabe nicht passt:
+
+| Angabe | Wirkung |
+| --- | --- |
+| `data-druck="text"` an einer Schaltfläche | Ihre Beschriftung ist Inhalt und bleibt (z. B. die anklickbaren Bausteine einer Schraubenbezeichnung). |
+| `data-druck="weg"` an einem Element | Fällt in PDF und Word weg (z. B. „Noch nichts ausgewählt"). |
+
+Eine Schaltfläche, in der eine Zeichnung steckt, behält ihren Inhalt von selbst
+– sie wird nur ihrer Hülle entledigt.
+
+Für die Ausgabe schaltet die Seite auf die helle Farbpalette um. Sonst kämen
+bei jemandem, der im dunklen Modus liest, weiße Striche auf weißem Papier heraus.
 
 ## ➕ Neues Material anlegen
 

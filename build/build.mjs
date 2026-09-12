@@ -58,6 +58,7 @@ const BACK_NAV = 'assets/back-nav.js';
 const WZ_LINK = 'assets/werkzeug-link.js';
 const QR = 'assets/qr.js';
 const BAUKASTEN = 'assets/baukasten.js';
+const EXPORT = 'assets/export.js';
 
 /* ---------- kleine Helfer ---------- */
 
@@ -116,7 +117,11 @@ async function seiteLesen(datei, { imPaket = false, baukasten = false } = {}) {
   if (/data-werkzeug=/.test(text)) noetig.push({ pfad: WZ_LINK, attr: '' });
   // Uebungen und Trainings lassen sich fuer eine Lerngruppe zuschneiden. Der
   // QR-Code gehoert dazu, deshalb beide Bausteine und in dieser Reihenfolge.
-  if (baukasten) { noetig.push({ pfad: QR, attr: '' }); noetig.push({ pfad: BAUKASTEN, attr: '' }); }
+  if (baukasten) {
+    noetig.push({ pfad: QR, attr: '' });
+    noetig.push({ pfad: BAUKASTEN, attr: '' });
+    noetig.push({ pfad: EXPORT, attr: '' });
+  }
 
   for (const { pfad, attr } of noetig) {
     if (text.includes(pfad)) continue;

@@ -67,7 +67,12 @@
     [].slice.call(haupt.querySelectorAll('h2')).forEach(function (h2) {
       var knoten = [h2];
       var n = h2.nextElementSibling;
-      while (n && n.tagName !== 'H2') {
+      /* Auch bei einem Geschwister anhalten, das seinerseits eine h2 enthaelt:
+         Mehrere Uebungen packen spaetere Teile in ein div, das erst nach einem
+         Klick erscheint. Wuerde dieses div zum vorigen Teil gezaehlt, gehoerte
+         es dem falschen - und schlimmer: das Einblenden der uebrigen Teile
+         wuerde es aufdecken, bevor es soweit ist. */
+      while (n && n.tagName !== 'H2' && !n.querySelector('h2')) {
         knoten.push(n);
         n = n.nextElementSibling;
       }
@@ -179,8 +184,24 @@
 
   /* ---------- Oberfläche ---------- */
 
+  /* Die Leiste unten rechts teilen sich mehrere Bausteine (Anpassen,
+     Herunterladen). Wer zuerst kommt, legt sie an. */
+  function leiste() {
+    var l = document.getElementById('tbk-leiste');
+    if (!l) {
+      l = document.createElement('div');
+      l.id = 'tbk-leiste';
+      document.body.appendChild(l);
+    }
+    return l;
+  }
+
   var CSS = ''
-    + '#bk-knopf{position:fixed;right:16px;bottom:16px;z-index:2147483646;'
+    + '#tbk-leiste{position:fixed;right:16px;bottom:16px;z-index:2147483646;'
+    + 'display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px}'
+    + '@media (max-width:640px){#tbk-leiste{right:8px;bottom:8px;left:8px}}'
+    + '@media print{#tbk-leiste{display:none!important}}'
+    + '#bk-knopf{'
     + 'display:inline-flex;align-items:center;gap:8px;cursor:pointer;'
     + 'font:600 14px/1 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;'
     + 'padding:11px 16px;border-radius:999px;color:#fff;background:#2b6cb0;'
@@ -226,8 +247,8 @@
     + 'border:1px solid var(--border-stark,#cbd5e1)}'
     + '#bk-qr{display:flex;justify-content:center;margin:14px 0 4px}'
     + '#bk-qr svg{width:148px;height:148px;border-radius:8px}'
-    + '@media (max-width:640px){#bk-tafel{right:8px;left:8px;bottom:68px;width:auto;'
-    + 'max-height:70vh}#bk-knopf{right:8px;bottom:8px}}'
+    + '@media (max-width:640px){#bk-tafel{right:8px;left:8px;bottom:74px;width:auto;'
+    + 'max-height:70vh}}'
     + '@media print{#bk-knopf,#bk-tafel{display:none!important}}';
 
   function bauen(teile) {
@@ -285,7 +306,7 @@
       + '<p class="bk-hinweis">Der QR-Code führt auf dieselbe Zusammenstellung.</p>'
       + '</div>';
 
-    document.body.appendChild(knopf);
+    leiste().appendChild(knopf);
     document.body.appendChild(tafel);
 
     /* Beschriftungen als Text setzen, nicht über innerHTML - die Überschriften
@@ -360,8 +381,15 @@
     function oeffnen(an) {
       tafel.hidden = !an;
       knopf.setAttribute('aria-expanded', String(an));
-      if (an) stand();
+      if (an) {
+        stand();
+        /* Das andere Fenster derselben Leiste schliesst sich dabei. */
+        document.dispatchEvent(new CustomEvent('tbk-tafel', { detail: 'baukasten' }));
+      }
     }
+    document.addEventListener('tbk-tafel', function (e) {
+      if (e.detail !== 'baukasten' && !tafel.hidden) oeffnen(false);
+    });
     knopf.addEventListener('click', function () { oeffnen(tafel.hidden); });
     tafel.querySelector('#bk-schliessen').addEventListener('click', function () {
       oeffnen(false);
