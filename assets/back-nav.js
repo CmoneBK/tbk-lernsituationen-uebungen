@@ -33,6 +33,13 @@
     document.querySelector('script[src$="assets/back-nav.js"]');
   var wurzel = self ? new URL('../', self.src).href : '../';
 
+  // Innerhalb eines Uebungs- oder Trainingspakets soll der Ruecklink zur
+  // Paketuebersicht fuehren, nicht bis zur Startseite des Materialbereichs.
+  // build/build.mjs traegt dafuer data-ziel="./" ein.
+  var ziel = self && self.dataset && self.dataset.ziel
+    ? new URL(self.dataset.ziel, location.href).href
+    : wurzel;
+
   var css = '' +
     '#tbk-back{' +
       'position:fixed!important;top:12px!important;left:12px!important;z-index:2147483647!important;' +
@@ -65,7 +72,7 @@
 
   var a = document.createElement('a');
   a.id = 'tbk-back';
-  a.href = wurzel;
+  a.href = ziel;
   a.title = 'Zurück zur Übersicht';
   a.setAttribute('aria-label', 'Zurück zur Übersicht');
   a.innerHTML =

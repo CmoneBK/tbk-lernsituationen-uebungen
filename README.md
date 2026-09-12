@@ -27,30 +27,78 @@ spiegelt ihn nach `/unterrichtsmaterial/`. Siehe [Deployment](#-deployment).
 ## 📂 Ordnerstruktur
 
 ```
-lernsituationen/   Lernsituationen  ─┐
-uebungen/          Übungen           ├─ Inhalt; je Seite eine .html
-trainings/         Trainings        ─┘  (oder ein Ordner mit index.html)
-assets/back-nav.js Rücklink „← Übersicht“ – einzige Quelle
-daten/kategorien.csv  Reihenfolge der Bereiche und Unterkategorien
-daten/material.json   erzeugt: Bestand als Liste (für weitere Auswertungen)
-build/build.mjs       Generator der Übersicht
-build/uebersicht-vorlage.html  Design der Übersicht (hier ändern, dann neu bauen)
-vorlagen/seite.html   Kopiervorlage für eine neue Seite
-index.html            erzeugt – nicht von Hand bearbeiten
+lernsituationen/<name>/index.html   Lernsituation – selbst geschrieben
+uebungen/<paket>/                   Übungspaket   – index.html wird ERZEUGT
+trainings/<paket>/                  Trainingspaket – index.html wird ERZEUGT
+assets/back-nav.js       Rücklink „← Übersicht“ – einzige Quelle
+assets/werkzeug-link.js  löst Links auf die Werkzeuge je nach Umgebung auf
+daten/kategorien.csv     Reihenfolge der Bereiche und Unterkategorien
+daten/material.json      erzeugt: Bestand als Liste (für weitere Auswertungen)
+build/build.mjs          Generator
+build/uebersicht-vorlage.html  Design der Startseite   ┐ hier ändern,
+build/paket-vorlage.html       Design der Paketseiten  ┘ dann neu bauen
+vorlagen/lernsituation.html    Kopiervorlage für eine Lernsituation
+vorlagen/uebung.html           Kopiervorlage für eine Übung im Paket
+index.html               erzeugt – nicht von Hand bearbeiten
 ```
+
+Die Trennung ist bewusst: **Übungen und Trainings sind Sammlungen**, deren
+Übersichtsseite der Build schreibt. **Eine Lernsituation ist ein Dokument**,
+das man selbst verfasst – ihre `index.html` fasst niemand an.
+
+Einzelne `.html` direkt in `uebungen/` oder `trainings/` sind weiterhin
+erlaubt; sie erscheinen dann als eigene Karte statt in einem Paket.
+
+## 📦 Ein Paket anlegen
+
+Ein Paket ist ein Ordner mit `info.json` und den einzelnen Übungen:
+
+```
+uebungen/schraubverbindungen/
+    info.json
+    03-wohin-geht-das-drehmoment.html
+    index.html      ← erzeugt
+```
+
+```json
+{
+  "titel": "Maschinenelemente: Schrauben - Schraubverbindungen",
+  "lead": "Ein Satz, der auf der Karte und über der Paketseite steht.",
+  "werkzeuge": [
+    { "datei": "maschinenelemente-schrauben-schraubverbindungen.html",
+      "name": "Werkzeug Schraubverbindungen", "fach": "1" }
+  ],
+  "reihenfolge": ["03-wohin-geht-das-drehmoment.html"]
+}
+```
+
+| Feld | |
+| --- | --- |
+| `titel` | folgt der [Titelkonvention](#titelkonvention) – **er** bestimmt Bereich und Unterkategorie |
+| `lead` | optional, ein Satz |
+| `werkzeuge` | optional, Dateinamen im Werkzeuge-Repo; siehe [Werkzeug-Links](#-werkzeug-links) |
+| `reihenfolge` | optional; was fehlt, wird alphabetisch angehängt – deshalb Dateien nummerieren |
+
+Die Übungen im Paket brauchen im `<title>` **nur ihren Namen** – Bereich und
+Kategorie stehen schon in `info.json`. Zusätzlich ausgewertet werden
+`<meta name="description">` (Zeile unter dem Namen) und `<meta name="dauer">`.
 
 ## ➕ Neues Material anlegen
 
-1. `vorlagen/seite.html` in den passenden Ordner kopieren und umbenennen
-   (Kleinbuchstaben, Bindestriche, keine Umlaute im Dateinamen).
-2. `<title>` nach der Konvention **`Bereich: Unterkategorie - Name`** setzen.
+1. Vorlage kopieren: `vorlagen/uebung.html` in ein Paket,
+   `vorlagen/lernsituation.html` nach `lernsituationen/<name>/index.html`
+   (Dateinamen klein, mit Bindestrichen, ohne Umlaute).
+2. Titel setzen – bei einer Lernsituation nach der Konvention unten, in einem
+   Paket nur den Namen der Übung.
 3. Inhalt schreiben.
 4. `node build/build.mjs` ausführen.
 5. Committen und pushen – fertig.
 
-Umfangreiches Material darf auch ein eigener Ordner sein:
-`lernsituationen/meine-ls/index.html` plus Bilder daneben. In der Übersicht
-erscheint dann nur die `index.html` als eine Karte.
+Eine Lernsituation darf weitere Seiten und Bilder neben ihrer `index.html`
+haben; in der Übersicht erscheint sie trotzdem als eine Karte. Optional kann
+auch sie eine `info.json` bekommen – genutzt werden dort `titel`, `lead` und
+`werkzeuge`, was besonders für Lernsituationen praktisch ist, die **mehrere**
+Werkzeuge brauchen.
 
 ### Titelkonvention
 
@@ -93,14 +141,18 @@ node build/build.mjs --check  # nur prüfen (Exit 1, wenn nicht aktuell)
 ```
 
 Kein `npm install` nötig – der Generator kommt ohne Abhängigkeiten aus
-(Node 18+). Er tut drei Dinge:
+(Node 18+). Er tut vier Dinge:
 
-* **Übersicht erzeugen.** Gliederung: Typ → Bereich → Unterkategorie. Dazu eine
+* **Startseite erzeugen.** Gliederung: Typ → Bereich → Unterkategorie. Dazu eine
   Filterleiste (Alle / Lernsituationen / Übungen / Trainings) und eine Suche –
-  beides reines clientseitiges JavaScript ohne Abhängigkeiten.
-* **Rücklink nachtragen.** Fehlt in einer Seite die Zeile
-  `<script src="../assets/back-nav.js"></script>`, wird sie vor dem
-  schließenden `body`-Tag eingefügt – mit der zur Ablagetiefe passenden Anzahl `../`.
+  beides reines clientseitiges JavaScript ohne Abhängigkeiten. Die Suche eines
+  Pakets greift auch auf die Titel der enthaltenen Übungen zu.
+* **Paketseiten erzeugen.** Je Paket eine nummerierte Liste seiner Übungen samt
+  Dauer, Kurzbeschreibung und Link zum passenden Werkzeug.
+* **Bausteine nachtragen.** Fehlt `assets/back-nav.js` oder – sobald die Seite
+  einen Werkzeug-Link enthält – `assets/werkzeug-link.js`, wird die Zeile vor
+  dem schließenden `body`-Tag eingefügt, mit der zur Ablagetiefe passenden
+  Anzahl `../`. In einem Paket zusätzlich mit `data-ziel="./"`.
 * **Front-Matter entfernen.** Ein `--- … ---`-Block am Dateianfang stammt aus dem
   Jekyll-Workflow des Werkzeuge-Repos. Ohne Jekyll stünde er als Text auf der
   Seite; er wird entfernt, ein dort notierter `title` aber vorher übernommen.
@@ -127,9 +179,39 @@ Materialbereichs – unabhängig von Ablagetiefe und Ausspielpfad.
 | t-bk.de | `t-bk.de/unterrichtsmaterial/uebungen/x.html` | `t-bk.de/unterrichtsmaterial/` |
 | lokal | `…/uebungen/x.html` | Repo-Wurzel |
 
+Innerhalb eines Pakets wäre das aber einen Schritt zu weit: Von einer Übung
+will man zurück zum Paket, nicht bis zur Startseite. Dafür trägt der Build am
+Skript-Tag `data-ziel="./"` ein.
+
 Aussehen oder Ziel ändert man also ausschließlich in `assets/back-nav.js`.
 Der Block verwendet eine eigene ID (`#tbk-back`) und `!important`, damit ihn
 die sehr unterschiedlichen Seiten-Designs (helle wie dunkle) nicht überschreiben.
+
+## 🔗 Werkzeug-Links
+
+Die interaktiven Werkzeuge liegen im **anderen** Repo. Wo sie zu finden sind,
+hängt davon ab, wo die Seite gerade ausgeliefert wird – ein fester Pfad
+funktioniert deshalb nicht. `assets/werkzeug-link.js` nimmt das ab: Im Text
+wird nur das Ziel benannt, das `href` entsteht beim Laden.
+
+```html
+<a class="werkzeug" data-werkzeug="maschinenelemente-schrauben-schraubverbindungen.html"
+   data-fach="1">Werkzeug öffnen</a>
+```
+
+| Umgebung | aufgelöst zu |
+| --- | --- |
+| t-bk.de | `/werkzeuge/tools/<datei>` |
+| GitHub Pages | `https://cmonebk.github.io/CmoneBK-Unterrichtsmaterial/tools/<datei>` |
+| lokal (`file:`) | Nachbarordner `CmoneBK-Unterrichtsmaterial/tools/` |
+
+Weitere Angaben, alle optional: `data-fach="1"` startet das Werkzeug mit
+Fachbegriffen statt Alltagssprache, `data-sym="1"` mit Formelzeichen,
+`data-neu="0"` öffnet im selben Tab. `data-reiter="…"` ist vorbereitet – es
+wirkt erst, wenn das Werkzeug den Parameter auswertet, und schadet bis dahin nicht.
+
+Ein Paket braucht den Link nicht in jeder Übung zu wiederholen: Was in
+`info.json` unter `werkzeuge` steht, erscheint schon oben auf der Paketseite.
 
 ## 🚀 Deployment
 
@@ -162,9 +244,12 @@ Danach genügt `git push` – der nächste Cron-Lauf von `deploy.sh` zieht nach.
 
 | Symptom | Ursache |
 | --- | --- |
-| Karte fehlt in der Übersicht | `node build/build.mjs` vergessen, oder Ordner ohne `index.html` |
+| Karte fehlt in der Übersicht | `node build/build.mjs` vergessen, Paket ohne `info.json`, oder Lernsituation ohne `index.html` |
 | Karte steht unter „Allgemein“ | `:` im `<title>` fehlt |
 | Unterkategorie wird ignoriert | ` - ` ohne Leerzeichen geschrieben |
 | `--- title: … ---` steht sichtbar auf der Seite | Front-Matter; einmal `node build/build.mjs` laufen lassen |
 | Rücklink fehlt | `assets/back-nav.js` nicht erreichbar – Anzahl der `../` prüfen |
-| Reihenfolge stimmt nicht | Bereich/Kategorie in `daten/kategorien.csv` ergänzen |
+| Rücklink springt zu weit zurück | `data-ziel="./"` am Skript-Tag fehlt (Datei liegt in einem Paket) |
+| Werkzeug-Link führt ins Leere | `data-werkzeug` statt `href` verwenden; Dateiname muss dem im Werkzeuge-Repo entsprechen |
+| Übung fehlt auf der Paketseite | Datei heißt `index.html` – die wird erzeugt und deshalb übersprungen |
+| Reihenfolge stimmt nicht | Bereich/Kategorie in `daten/kategorien.csv` ergänzen, im Paket `reihenfolge` in `info.json` |

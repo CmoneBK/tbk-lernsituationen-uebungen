@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wohin geht das Anziehdrehmoment?</title>
+<meta name="description" content="Erst schätzen, dann nachrechnen: Wie viel vom Anziehdrehmoment wird wirklich zu Spannkraft?">
+<meta name="dauer" content="15 min">
+<style>
+  :root{
+    --bg:#f7f7f5; --fg:#1a1a1a; --muted:#5f5f5a;
+    --card:#fff; --border:#e3e3df; --border-stark:#cbd5e1; --accent:#2b6cb0; --accent-fg:#fff;
+    --spann:#16a34a; --gewinde:#ca8a04; --kopf:#dc2626;
+    --shadow:0 1px 3px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.05);
+  }
+  @media (prefers-color-scheme:dark){
+    :root{
+      --bg:#151517; --fg:#ececec; --muted:#a0a0a0;
+      --card:#1e1e21; --border:#2c2c30; --border-stark:#3d3d44; --accent:#5b9bd5; --accent-fg:#0b0b0c;
+      --spann:#4ade80; --gewinde:#facc15; --kopf:#f87171;
+      --shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+    }
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--fg);
+    font:16px/1.7 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  a{color:var(--accent)}
+  .wrap{width:100%; max-width:760px; margin:0 auto; padding:0 20px}
+  /* Platz für den schwebenden Rücklink oben links. */
+  header{padding:72px 0 8px}
+  .herkunft{
+    font-size:13px; font-weight:700; text-transform:uppercase;
+    letter-spacing:.06em; color:var(--muted); margin:0 0 6px;
+  }
+  h1{font-size:clamp(24px,4vw,32px); letter-spacing:-.5px; margin:0 0 10px}
+  .lead{color:var(--muted); font-size:17px; margin:0}
+
+  h2{
+    font-size:20px; margin:44px 0 4px; padding-top:24px;
+    border-top:1px solid var(--border);
+  }
+  h2 .nr{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:26px; height:26px; border-radius:50%; margin-right:10px;
+    background:var(--accent); color:var(--accent-fg);
+    font-size:13px; font-weight:700; vertical-align:2px;
+  }
+  h3{font-size:16px; margin:26px 0 6px}
+
+  .box{
+    background:var(--card); border:1px solid var(--border); border-radius:12px;
+    padding:18px 20px; box-shadow:var(--shadow); margin:18px 0;
+  }
+  .box p:first-child{margin-top:0}
+  .box p:last-child{margin-bottom:0}
+  .auftrag{border-left:4px solid var(--accent)}
+
+  /* --- Schätz-Schieber --- */
+  .schaetz{display:flex; flex-wrap:wrap; align-items:center; gap:14px; margin:8px 0 4px}
+  .schaetz input[type=range]{flex:1 1 240px; min-width:180px; accent-color:var(--accent)}
+  .schaetz output{
+    font-variant-numeric:tabular-nums; font-weight:700; font-size:22px;
+    min-width:4.2em; text-align:right;
+  }
+  button.knopf{
+    font:600 15px/1 inherit; cursor:pointer;
+    background:var(--accent); color:var(--accent-fg);
+    border:1px solid var(--accent); border-radius:999px; padding:11px 20px;
+  }
+  button.knopf:hover{filter:brightness(1.08)}
+  button.knopf:focus-visible{outline:2px solid var(--fg); outline-offset:2px}
+
+  .rueckmeldung{
+    margin:18px 0 0; padding:14px 16px; border-radius:10px;
+    border:1px solid var(--border-stark); background:var(--bg); font-size:15px;
+  }
+  .rueckmeldung strong{display:block; margin-bottom:2px}
+
+  /* --- Einstellungen --- */
+  .felder{display:flex; flex-wrap:wrap; gap:16px}
+  .feld{display:flex; flex-direction:column; gap:4px; flex:1 1 180px; font-size:14px; color:var(--muted)}
+  .feld select, .feld input[type=number]{
+    font:inherit; font-size:15px; color:var(--fg); background:var(--card);
+    border:1px solid var(--border-stark); border-radius:8px; padding:8px 10px;
+  }
+  .feld input[type=number]{accent-color:var(--accent)}
+  .feld select:focus, .feld input:focus{outline:2px solid var(--accent); outline-offset:1px}
+
+  /* --- Balken --- */
+  .balken{
+    display:flex; height:44px; border-radius:10px; overflow:hidden;
+    border:1px solid var(--border-stark); margin:16px 0 12px;
+  }
+  .balken span{
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px; font-weight:700; color:#fff; white-space:nowrap;
+    transition:flex-basis .25s ease;
+  }
+  .balken .b-spann{background:var(--spann)}
+  .balken .b-gewinde{background:var(--gewinde); color:#1a1a1a}
+  .balken .b-kopf{background:var(--kopf)}
+
+  table{border-collapse:collapse; width:100%; font-size:15px; margin:8px 0 0}
+  th, td{text-align:left; padding:8px 10px; border-bottom:1px solid var(--border)}
+  th{font-size:13px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); font-weight:700}
+  td.zahl{text-align:right; font-variant-numeric:tabular-nums}
+  .punkt{display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:8px}
+  .p-spann{background:var(--spann)} .p-gewinde{background:var(--gewinde)} .p-kopf{background:var(--kopf)}
+  .summe td{font-weight:700; border-bottom:0}
+
+  details{
+    border:1px solid var(--border); border-radius:10px;
+    padding:12px 16px; margin:12px 0; background:var(--card);
+  }
+  details[open]{box-shadow:var(--shadow)}
+  summary{cursor:pointer; font-weight:600; font-size:15px}
+  summary::marker{color:var(--accent)}
+  details p:last-child{margin-bottom:0}
+
+  .merksatz{
+    border-left:4px solid var(--spann); background:var(--card);
+    border-radius:0 12px 12px 0; padding:18px 20px; margin:32px 0 0;
+    box-shadow:var(--shadow); font-size:17px;
+  }
+  a.werkzeug{
+    display:inline-flex; align-items:center; gap:8px;
+    font-weight:600; font-size:15px; text-decoration:none;
+    border:1px solid var(--accent); border-radius:999px; padding:8px 16px; margin-top:6px;
+  }
+  a.werkzeug::after{content:"\2197"; font-weight:400}
+  a.werkzeug:hover{background:var(--accent); color:var(--accent-fg)}
+
+  .fussnote{color:var(--muted); font-size:13px}
+  footer{
+    text-align:center; color:var(--muted); font-size:13px;
+    padding:40px 0 32px; border-top:1px solid var(--border); margin-top:48px;
+  }
+  footer a{color:var(--muted)}
+  [hidden]{display:none!important}
+  @media (prefers-reduced-motion:reduce){.balken span{transition:none}}
+  @media print{
+    details{border:0} details > *{display:block}
+    a.werkzeug{display:none}
+  }
+</style>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Schraubverbindungen</p>
+    <h1>Wohin geht das Anziehdrehmoment?</h1>
+    <p class="lead">Du ziehst eine Schraube mit dem Drehmomentschlüssel an. Wie viel
+      von deiner Mühe kommt eigentlich als Spannkraft an?</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Ausgangslage:</strong> Eine Sechskantschraube <strong>M12</strong> der
+        Festigkeitsklasse <strong>8.8</strong> wird trocken und blank montiert
+        (Reibungszahl &mu;&nbsp;=&nbsp;0,12 im Gewinde und unter dem Kopf).
+        Angezogen wird bis zur zulässigen Montagevorspannkraft.</p>
+      <p>Das gesamte Anziehdrehmoment teilt sich auf drei Wege auf:</p>
+      <ul>
+        <li><strong>Steigungsanteil</strong> &ndash; wird tatsächlich in Spannkraft umgesetzt</li>
+        <li><strong>Gewindereibung</strong> &ndash; zwischen Schraubengewinde und Mutter</li>
+        <li><strong>Kopfreibung</strong> &ndash; zwischen Schraubenkopf und Bauteil</li>
+      </ul>
+    </div>
+
+    <h2><span class="nr">1</span>Erst schätzen</h2>
+    <p>Kein Nachschlagen, kein Rechnen. Wie viel Prozent des Anziehdrehmoments
+      werden deiner Meinung nach wirklich zu Spannkraft?</p>
+
+    <div class="box">
+      <div class="schaetz">
+        <label for="tipp" style="flex:0 0 auto">Meine Schätzung</label>
+        <input type="range" id="tipp" min="0" max="100" step="1" value="50">
+        <output id="tippWert" for="tipp">50 %</output>
+      </div>
+      <p style="margin-top:16px">
+        <button type="button" class="knopf" id="btnAufloesen">Auflösen</button>
+      </p>
+      <div class="rueckmeldung" id="rueck" hidden></div>
+    </div>
+
+    <div id="aufloesung" hidden>
+      <h2><span class="nr">2</span>Die Auflösung</h2>
+      <p>So verteilt sich das Anziehdrehmoment tatsächlich:</p>
+
+      <div class="balken" id="balken1" role="img" aria-labelledby="tab1-bu">
+        <span class="b-spann"   id="b1s"></span>
+        <span class="b-gewinde" id="b1g"></span>
+        <span class="b-kopf"    id="b1k"></span>
+      </div>
+      <table id="tab1">
+        <caption id="tab1-bu" class="fussnote" style="text-align:left; margin-bottom:6px">
+          M12, Klasse 8.8, &mu;<sub>G</sub> = &mu;<sub>K</sub> = 0,12
+        </caption>
+        <thead>
+          <tr><th>Anteil</th><th style="text-align:right">N&middot;m</th><th style="text-align:right">%</th></tr>
+        </thead>
+        <tbody id="tab1Body"></tbody>
+      </table>
+
+      <div class="box" style="margin-top:22px">
+        <p><strong>Der überraschende Teil:</strong> Rund <strong>86 %</strong> des
+          Drehmoments werden von Reibung aufgezehrt, bevor überhaupt Spannkraft
+          entsteht. Und der größte Brocken sitzt nicht im Gewinde, sondern
+          <em>unter dem Kopf</em> &ndash; dort ist der Reibradius am größten.</p>
+      </div>
+    </div>
+
+    <div id="teil3" hidden>
+      <h2><span class="nr">3</span>Jetzt ausprobieren</h2>
+      <p>Verstelle Gewindegröße und Reibungszahlen und beobachte, was mit dem
+        grünen Anteil passiert.</p>
+
+      <div class="box">
+        <div class="felder">
+          <label class="feld">Gewinde
+            <select id="eGewinde"></select>
+          </label>
+          <label class="feld">Festigkeitsklasse
+            <select id="eKlasse"></select>
+          </label>
+          <label class="feld">&mu;<sub>G</sub> im Gewinde
+            <input type="number" id="eMyG" min="0.04" max="0.35" step="0.01" value="0.12">
+          </label>
+          <label class="feld">&mu;<sub>K</sub> unter dem Kopf
+            <input type="number" id="eMyK" min="0.04" max="0.35" step="0.01" value="0.12">
+          </label>
+        </div>
+
+        <div class="balken" id="balken2" role="img" aria-labelledby="tab2-bu">
+          <span class="b-spann"   id="b2s"></span>
+          <span class="b-gewinde" id="b2g"></span>
+          <span class="b-kopf"    id="b2k"></span>
+        </div>
+        <table id="tab2">
+          <caption id="tab2-bu" class="fussnote" style="text-align:left; margin-bottom:6px">
+            Aktuelle Einstellung
+          </caption>
+          <thead>
+            <tr><th>Anteil</th><th style="text-align:right">N&middot;m</th><th style="text-align:right">%</th></tr>
+          </thead>
+          <tbody id="tab2Body"></tbody>
+        </table>
+        <p class="fussnote" style="margin-bottom:0">
+          Montagevorspannkraft F<sub>M,zul</sub> = <span id="eFM">&ndash;</span> kN
+          bei 90 % Ausnutzung der Streckgrenze &middot;
+          Spannungsquerschnitt A<sub>S</sub> = <span id="eAs">&ndash;</span> mm&sup2;
+        </p>
+      </div>
+
+      <h3>Beobachtungsaufgaben</h3>
+      <p>Stelle jeweils ein, notiere den grünen Anteil und beantworte die Frage.</p>
+
+      <details>
+        <summary>a) Setze beide Reibungszahlen auf 0,08 (gut geschmiert). Was passiert?</summary>
+        <p>Der Spannkraftanteil steigt auf rund <strong>20 %</strong>. Weniger Reibung
+          bedeutet: Vom selben Drehmoment bleibt mehr für die Spannkraft übrig.
+          Darum sinkt bei geschmierten Schrauben das <em>nötige</em> Anziehdrehmoment,
+          obwohl dieselbe Vorspannkraft erreicht werden soll.</p>
+      </details>
+
+      <details>
+        <summary>b) Setze beide Reibungszahlen auf 0,20 (verzinkt, trocken). Was passiert?</summary>
+        <p>Der Spannkraftanteil fällt auf rund <strong>9 %</strong>. Über 90 % des
+          Drehmoments gehen in Reibung. Wer hier mit dem Tabellenwert für geölte
+          Schrauben anzieht, erreicht die geforderte Vorspannkraft nicht &ndash;
+          die Verbindung rutscht, obwohl der Drehmomentschlüssel geklickt hat.</p>
+      </details>
+
+      <details>
+        <summary>c) Vergleiche bei &mu; = 0,12 die Größen M6 und M24. Ändert sich der Anteil stark?</summary>
+        <p>Kaum: rund <strong>16 %</strong> bei M6 gegenüber rund <strong>13 %</strong> bei M24.
+          Das ist die eigentliche Erkenntnis dieser Übung &ndash; <strong>nicht die
+          Schraubengröße entscheidet über die Aufteilung, sondern die Reibung.</strong>
+          Die Größe bestimmt nur, wie groß die Beträge insgesamt werden.</p>
+      </details>
+
+      <details>
+        <summary>d) Schlage im Tabellenbuch A<sub>S</sub> und M<sub>A</sub> für M12&nbsp;8.8 bei &mu;&nbsp;=&nbsp;0,12 nach und vergleiche.</summary>
+        <p>A<sub>S</sub> = 84,3 mm² steht so im Tabellenbuch und stimmt genau überein.
+          Beim Anziehdrehmoment wird es interessanter: Dort findest du für M12&nbsp;8.8
+          bei &mu;&nbsp;=&nbsp;0,12 meist rund <strong>87 N·m</strong>, hier stehen
+          <strong>77 N·m</strong> &ndash; gut 10 % weniger.</p>
+        <p>Das ist kein Rechenfehler, sondern eine andere Annahme. Tabellenwerte nach
+          VDI 2230 rechnen die Torsionsbeanspruchung beim Anziehen etwas milder an als
+          diese Übung, die die volle Torsion aus Steigung und Gewindereibung ansetzt.
+          Ergebnis: Die Tabelle erlaubt eine etwas höhere Vorspannkraft und damit ein
+          höheres Drehmoment.</p>
+        <p><strong>Was du daraus mitnimmst:</strong> Ein Tabellenwert ist kein Naturgesetz,
+          sondern das Ergebnis von Annahmen. Wer Drehmomente angibt, muss dazusagen,
+          nach welcher Quelle und für welchen Reibungszustand. Die <em>Aufteilung</em>
+          in Prozent &ndash; also worum es in dieser Übung geht &ndash; ist von dieser
+          Frage übrigens gar nicht betroffen.</p>
+      </details>
+
+      <h2><span class="nr">4</span>Übertragen</h2>
+
+      <details>
+        <summary>1. Ein Monteur ölt die Schrauben, zieht aber mit dem Tabellenwert für
+          trockene Montage an. Was passiert mit der Schraube?</summary>
+        <p>Die Reibung ist kleiner als angenommen, also wird ein größerer Teil des
+          Drehmoments in Spannkraft umgesetzt. Die Schraube wird <strong>überdehnt</strong>:
+          Die Vergleichsspannung überschreitet die Streckgrenze, die Schraube reißt
+          beim Anziehen oder bleibt bleibend gelängt zurück. Geschmierte Verbindungen
+          brauchen ein <em>kleineres</em> Anziehdrehmoment, nicht dasselbe.</p>
+      </details>
+
+      <details>
+        <summary>2. Warum ist der Kopfreibungsanteil größer als der Gewindereibungsanteil,
+          obwohl beide Reibungszahlen gleich sind?</summary>
+        <p>Weil der Hebelarm größer ist. Die Gewindereibung wirkt am Flankendurchmesser
+          d<sub>2</sub>, die Kopfreibung am mittleren Auflagedurchmesser D<sub>Km</sub>
+          &ndash; und der ist deutlich größer. Bei M12: d<sub>2</sub> ≈ 10,9 mm gegenüber
+          D<sub>Km</sub> ≈ 15,1 mm. Daraus folgt auch ein praktischer Hinweis: Eine
+          saubere, geschmierte Kopfauflage bringt mehr als alles andere.</p>
+      </details>
+
+      <details>
+        <summary>3. Warum streut die erreichte Vorspannkraft beim Anziehen nach
+          Drehmoment so stark, obwohl der Schlüssel exakt arbeitet?</summary>
+        <p>Weil die Reibung über 85 % des Drehmoments bestimmt &ndash; und sie ist keine
+          feste Zahl. Oberfläche, Schmierzustand, Sauberkeit und mehrfaches Anziehen
+          verändern sie erheblich. Der Drehmomentschlüssel misst genau, aber er misst
+          die falsche Größe: Was zählt, ist die Vorspannkraft, und die kennt er nicht.
+          Deshalb rechnet man mit einem Anziehfaktor und legt Verbindungen mit Reserve aus.</p>
+      </details>
+
+      <div class="merksatz">
+        <strong>Merksatz:</strong> Beim Anziehen nach Drehmoment arbeitest du
+        überwiegend gegen Reibung. Wer die Reibung nicht kennt, kennt die
+        Vorspannkraft nicht.
+      </div>
+
+      <h3>Weiterarbeiten</h3>
+      <p>Im Werkzeug findest du dieselbe Aufteilung im Reiter <em>Funktion</em>,
+        die vollständige Rechnung mit Spannungen und Auslastung im Reiter
+        <em>Berechnungen</em>.</p>
+      <p>
+        <a class="werkzeug" data-werkzeug="maschinenelemente-schrauben-schraubverbindungen.html"
+           data-fach="1">Werkzeug Schraubverbindungen öffnen</a>
+      </p>
+      <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+        Sie ersetzen keine Auslegung nach VDI 2230 und keine Herstellerangaben.</p>
+    </div>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Metrisches ISO-Regelgewinde und Festigkeitsklassen.
+   Zahlen und Formeln absichtlich identisch zum Werkzeug
+   "Maschinenelemente: Schrauben - Schraubverbindungen" - sonst rechnet die
+   Uebung andere Werte aus als das Werkzeug, in dem die Lernenden gegenpruefen.
+   P = Steigung, dw = Kopfauflagedurchmesser, Dh = Durchgangsloch (Reihe mittel). */
+var SCHRAUBEN = {
+  M4:  {d:4,  P:0.70, dw:5.9,  Dh:4.5},
+  M5:  {d:5,  P:0.80, dw:6.9,  Dh:5.5},
+  M6:  {d:6,  P:1.00, dw:8.9,  Dh:6.6},
+  M8:  {d:8,  P:1.25, dw:11.6, Dh:9.0},
+  M10: {d:10, P:1.50, dw:14.6, Dh:11.0},
+  M12: {d:12, P:1.75, dw:16.6, Dh:13.5},
+  M16: {d:16, P:2.00, dw:22.5, Dh:17.5},
+  M20: {d:20, P:2.50, dw:28.2, Dh:22.0},
+  M24: {d:24, P:3.00, dw:33.6, Dh:26.0}
+};
+var GROESSEN = ["M4","M5","M6","M8","M10","M12","M16","M20","M24"];
+var KLASSEN = {"4.6":240, "5.6":300, "8.8":640, "10.9":900, "12.9":1080};
+var KLASSENLISTE = ["4.6","5.6","8.8","10.9","12.9"];
+
+var NU = 0.9;          /* Ausnutzung der Streckgrenze */
+var START = {groesse:"M12", klasse:"8.8", myG:0.12, myK:0.12};
+
+function masse(groesse){
+  var g = SCHRAUBEN[groesse];
+  var d2 = g.d - 0.6495 * g.P;
+  var d3 = g.d - 1.2269 * g.P;
+  var dS = (d2 + d3) / 2;
+  return {d:g.d, P:g.P, d2:d2, dS:dS,
+          As:Math.PI / 4 * dS * dS,
+          DKm:(g.dw + g.Dh) / 2};
+}
+
+/* ISO 898-1: ab Nenndurchmesser ueber 16 mm gilt fuer 8.8 die hoehere Streckgrenze. */
+function streckgrenze(klasse, d){
+  if(klasse === "8.8" && d > 16) return 660;
+  return KLASSEN[klasse];
+}
+
+/* Momentenbeiwerte je 1 N Vorspannkraft, in mm. */
+function beiwerte(m, myG, myK){
+  return {
+    steig:   0.16 * m.P,
+    gewinde: 0.58 * m.d2 * myG,
+    kopf:    0.5 * m.DKm * myK
+  };
+}
+
+/* Montagevorspannkraft: Beim Anziehen wirken Zug und Torsion gleichzeitig.
+   Gesucht ist die Kraft, bei der die Vergleichsspannung nach von Mises genau
+   den zugelassenen Anteil NU der Streckgrenze erreicht. */
+function rechne(groesse, klasse, myG, myK){
+  var m  = masse(groesse);
+  var c  = beiwerte(m, myG, myK);
+  var cG = c.steig + c.gewinde;                  /* verdrehender Anteil */
+  var Wp = Math.PI * Math.pow(m.dS, 3) / 16;
+  var Rp = streckgrenze(klasse, m.d);
+  var FM = NU * Rp / Math.sqrt(1/(m.As*m.As) + 3*cG*cG/(Wp*Wp));   /* N */
+
+  var summe = c.steig + c.gewinde + c.kopf;
+  return {
+    As:m.As, FM:FM,
+    MA:     FM * summe   / 1000,                 /* N*mm -> N*m */
+    Msteig: FM * c.steig / 1000,
+    Mgew:   FM * c.gewinde / 1000,
+    Mkopf:  FM * c.kopf  / 1000,
+    pSteig: 100 * c.steig   / summe,
+    pGew:   100 * c.gewinde / summe,
+    pKopf:  100 * c.kopf    / summe
+  };
+}
+
+function el(id){ return document.getElementById(id); }
+function zahl(x, n){ return x.toFixed(n === undefined ? 1 : n).replace(".", ","); }
+
+/* Balken und Tabelle eines Abschnitts fuellen. */
+function darstellen(r, ids){
+  var teile = [
+    {k:"spann",   name:"Steigungsanteil &ndash; wird Spannkraft", m:r.Msteig, p:r.pSteig},
+    {k:"gewinde", name:"Gewindereibung",                          m:r.Mgew,   p:r.pGew},
+    {k:"kopf",    name:"Kopfreibung",                             m:r.Mkopf,  p:r.pKopf}
+  ];
+
+  teile.forEach(function(t, i){
+    var s = el(ids.balken[i]);
+    s.style.flex = "0 0 " + t.p + "%";
+    /* Unter etwa 12 % wird die Beschriftung im Balken unleserlich. */
+    s.textContent = t.p >= 12 ? Math.round(t.p) + " %" : "";
+  });
+
+  var html = "";
+  teile.forEach(function(t){
+    html += '<tr><td><span class="punkt p-' + t.k + '"></span>' + t.name + '</td>' +
+            '<td class="zahl">' + zahl(t.m) + '</td>' +
+            '<td class="zahl">' + zahl(t.p) + '</td></tr>';
+  });
+  html += '<tr class="summe"><td>Anziehdrehmoment M<sub>A</sub></td>' +
+          '<td class="zahl">' + zahl(r.MA) + '</td><td class="zahl">100,0</td></tr>';
+  el(ids.body).innerHTML = html;
+}
+
+/* ---------- Schritt 1: schaetzen ---------- */
+
+var ergebnisStart = rechne(START.groesse, START.klasse, START.myG, START.myK);
+
+el("tipp").addEventListener("input", function(){
+  el("tippWert").textContent = this.value + " %";
+});
+
+el("btnAufloesen").addEventListener("click", function(){
+  var tipp = parseInt(el("tipp").value, 10);
+  var ist  = ergebnisStart.pSteig;
+  var ab   = tipp - ist;
+  var kopf, text;
+
+  if(Math.abs(ab) <= 5){
+    kopf = "Treffer.";
+    text = "Du hast die Größenordnung richtig eingeschätzt – das gelingt selten " +
+           "beim ersten Versuch.";
+  } else if(ab > 25){
+    kopf = "Deutlich zu hoch – und damit in bester Gesellschaft.";
+    text = "Das ist die häufigste Fehlvorstellung: Man nimmt an, der Drehmomentschlüssel " +
+           "erzeuge vor allem Spannkraft. Tatsächlich arbeitet man fast nur gegen Reibung.";
+  } else if(ab > 5){
+    kopf = "Noch zu hoch.";
+    text = "Die richtige Richtung, aber der Reibungsanteil ist noch größer als gedacht.";
+  } else {
+    kopf = "Etwas zu niedrig.";
+    text = "Ein kleiner Teil kommt tatsächlich als Spannkraft an – aber nicht ganz " +
+           "so wenig, wie du geschätzt hast.";
+  }
+
+  el("rueck").innerHTML = "<strong>" + kopf + "</strong>" + text +
+    " Deine Schätzung: " + tipp + " %. Tatsächlich: <strong>" +
+    zahl(ist) + " %</strong>.";
+  el("rueck").hidden = false;
+  el("aufloesung").hidden = false;
+  el("teil3").hidden = false;
+
+  darstellen(ergebnisStart, {balken:["b1s","b1g","b1k"], body:"tab1Body"});
+  el("aufloesung").scrollIntoView({behavior:"smooth", block:"start"});
+});
+
+/* ---------- Schritt 3: ausprobieren ---------- */
+
+function auswahlFuellen(sel, liste, start){
+  liste.forEach(function(w){
+    var o = document.createElement("option");
+    o.value = w; o.textContent = w;
+    if(w === start) o.selected = true;
+    sel.appendChild(o);
+  });
+}
+auswahlFuellen(el("eGewinde"), GROESSEN, START.groesse);
+auswahlFuellen(el("eKlasse"), KLASSENLISTE, START.klasse);
+
+function grenze(wert, min, max, ersatz){
+  var x = parseFloat(wert);
+  if(isNaN(x)) return ersatz;
+  return Math.min(max, Math.max(min, x));
+}
+
+function neuZeichnen(){
+  var r = rechne(
+    el("eGewinde").value,
+    el("eKlasse").value,
+    grenze(el("eMyG").value, 0.04, 0.35, START.myG),
+    grenze(el("eMyK").value, 0.04, 0.35, START.myK)
+  );
+  darstellen(r, {balken:["b2s","b2g","b2k"], body:"tab2Body"});
+  el("eFM").textContent = zahl(r.FM / 1000);
+  el("eAs").textContent = zahl(r.As);
+}
+
+["eGewinde","eKlasse","eMyG","eMyK"].forEach(function(id){
+  el(id).addEventListener("input", neuZeichnen);
+  el(id).addEventListener("change", neuZeichnen);
+});
+neuZeichnen();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+</body>
+</html>

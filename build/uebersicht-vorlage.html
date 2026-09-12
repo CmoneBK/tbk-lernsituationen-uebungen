@@ -75,13 +75,16 @@
     grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
   }
   a.card{
-    display:flex; align-items:center; min-height:64px;
+    display:flex; flex-direction:column; justify-content:center; gap:3px;
+    min-height:64px;
     background:var(--card); border:1px solid var(--border); border-radius:12px;
     padding:16px 18px; text-decoration:none; color:inherit; box-shadow:var(--shadow);
     transition:transform .15s ease, border-color .15s ease;
-    font-weight:600; font-size:15px;
   }
   a.card:hover{transform:translateY(-3px); border-color:var(--accent)}
+  .kartenname{font-weight:600; font-size:15px}
+  /* Nur Pakete tragen eine Stückzahl - einzelne Seiten bleiben ohne. */
+  .anzahl{font-size:12px; font-weight:600; color:var(--muted)}
   .leer{color:var(--muted); padding:40px 0; text-align:center}
   [hidden]{display:none!important}
 

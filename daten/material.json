@@ -1,1 +1,21 @@
-[]
+[
+  {
+    "typ": "uebungen",
+    "bereich": "Maschinenelemente",
+    "kategorie": "Schrauben",
+    "name": "Schraubverbindungen",
+    "url": "uebungen/schraubverbindungen/index.html",
+    "werkzeuge": [
+      {
+        "datei": "maschinenelemente-schrauben-schraubverbindungen.html",
+        "name": "Werkzeug Schraubverbindungen"
+      }
+    ],
+    "inhalt": [
+      {
+        "titel": "Wohin geht das Anziehdrehmoment?",
+        "url": "uebungen/schraubverbindungen/03-wohin-geht-das-drehmoment.html"
+      }
+    ]
+  }
+]
