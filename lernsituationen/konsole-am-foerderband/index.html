@@ -354,37 +354,41 @@
             <th>reicht für 10 kN?</th></tr>
         </thead>
         <tbody>
-          <tr><td>M8 &middot; 5.6</td><td class="zahl">36,6 mm²</td><td class="zahl">8,1 kN</td><td class="zahl">10,6 N&middot;m</td><td>nein</td></tr>
-          <tr><td>M8 &middot; 8.8</td><td class="zahl">36,6 mm²</td><td class="zahl">17,2 kN</td><td class="zahl">22,7 N&middot;m</td><td>ja</td></tr>
-          <tr><td>M10 &middot; 5.6</td><td class="zahl">58,0 mm²</td><td class="zahl">12,8 kN</td><td class="zahl">21,0 N&middot;m</td><td>knapp</td></tr>
-          <tr><td>M10 &middot; 8.8</td><td class="zahl">58,0 mm²</td><td class="zahl">27,4 kN</td><td class="zahl">44,8 N&middot;m</td><td>ja</td></tr>
-          <tr><td>M12 &middot; 8.8</td><td class="zahl">84,3 mm²</td><td class="zahl">39,9 kN</td><td class="zahl">77,4 N&middot;m</td><td>ja</td></tr>
+          <tr><td>M8 &middot; 5.6</td><td class="zahl">36,6 mm²</td><td class="zahl">8,7 kN</td><td class="zahl">11,5 N&middot;m</td><td>nein</td></tr>
+          <tr><td>M8 &middot; 8.8</td><td class="zahl">36,6 mm²</td><td class="zahl">18,6 kN</td><td class="zahl">24,6 N&middot;m</td><td>ja</td></tr>
+          <tr><td>M10 &middot; 5.6</td><td class="zahl">58,0 mm²</td><td class="zahl">13,9 kN</td><td class="zahl">22,7 N&middot;m</td><td>knapp</td></tr>
+          <tr><td>M10 &middot; 8.8</td><td class="zahl">58,0 mm²</td><td class="zahl">29,6 kN</td><td class="zahl">48,4 N&middot;m</td><td>ja</td></tr>
+          <tr><td>M12 &middot; 8.8</td><td class="zahl">84,3 mm²</td><td class="zahl">43,1 kN</td><td class="zahl">83,6 N&middot;m</td><td>ja</td></tr>
         </tbody>
       </table>
     </div>
-    <p class="fussnote">Werte mit dem Werkzeug Schraubverbindungen gerechnet
-      (&nu; = 0,9, Kopfreibung gleich Gewindereibung).</p>
+    <p class="fussnote">Gerechnet nach VDI 2230 (&nu; = 0,9, Kopfreibung gleich
+      Gewindereibung) &ndash; dieselben Werte stehen im Tabellenbuch unter
+      <em>Maximale Vorspannkräfte und Anziehdrehmomente</em>. Ihr könnt die
+      Zeile also nachschlagen, statt sie zu glauben.</p>
 
     <details>
-      <summary>Im Tabellenbuch steht eine andere Zahl &ndash; welche gilt?</summary>
-      <p>Die Tabelle <em>Maximale Vorspannkräfte und Anziehdrehmomente</em>
-        (Abschnitt <em>Montage hochbeanspruchter Schraubenverbindungen</em>)
-        nennt für M10, Festigkeitsklasse 8.8, &mu; = 0,12:</p>
-      <p class="merksatz" style="margin:8px 0">F<sub>V</sub> = 29,6 kN und
-        M<sub>A</sub> = <strong>48 N&middot;m</strong></p>
-      <p>Das Werkzeug rechnet mit 27,4 kN und 45 N&middot;m &ndash; rund 6 %
-        vorsichtiger. Beide Werte stehen für dieselbe Aussage: die Schraube
-        ist bis rund 90 % ihrer Streckgrenze ausgenutzt. Sie unterscheiden
-        sich darin, wie viel von der Verdrehbeanspruchung beim Anziehen
-        mitgerechnet wird.</p>
-      <p><strong>Für die Werkstatt ist der Unterschied klein</strong> gegen das,
-        was die Reibung anrichtet: Zwischen &mu; = 0,10 und &mu; = 0,14 ändert
-        sich das nötige Drehmoment um mehr als &plusmn; 10 %. Wer 45 statt
-        48 N&middot;m anzieht, liegt innerhalb dieser Streuung; wer das Gewinde
-        trocken statt geölt verschraubt, nicht mehr.</p>
-      <p>Angezogen wird nach der Vorgabe, die im Betrieb gilt. Hier: die Zahl
-        aus dem Tabellenbuch, also <strong>48 N&middot;m</strong>. Wichtig ist,
-        dass im Protokoll steht, <em>woher</em> sie stammt.</p>
+      <summary>Woher die Zahlen kommen &ndash; und warum sie im Buch genauso stehen</summary>
+      <p>Die zulässige Montagevorspannkraft ist keine Materialkonstante, sondern
+        das Ergebnis einer Abwägung. Beim Anziehen wirken zwei Beanspruchungen
+        gleichzeitig: <strong>Zug</strong> aus der Vorspannkraft und
+        <strong>Torsion</strong> aus der Gewindereibung. Zusammen erreichen sie
+        die Streckgrenze früher als der Zug allein.</p>
+      <p class="merksatz" style="margin:8px 0">F<sub>M,zul</sub> =
+        &nu; &middot; R<sub>p0,2</sub> &middot; A<sub>S</sub> / &radic;(1 + 3k²)
+        &nbsp;mit&nbsp; k = 1,5 &middot; (d<sub>2</sub>/d<sub>S</sub>) &middot;
+        (P/(&pi; &middot; d<sub>2</sub>) + 1,155 &middot; &mu;<sub>G</sub>)</p>
+      <p>Ausgenutzt wird die Streckgrenze zu &nu; = 90 %. Für M10 8.8 bei
+        &mu; = 0,12 kommen so <strong>29,6 kN</strong> heraus und daraus
+        <strong>48 N&middot;m</strong> &ndash; genau die Zeile, die im Tabellenbuch
+        steht. Wer nachschlägt, findet dieselben Zahlen; wer rechnet, versteht,
+        woher sie kommen.</p>
+      <p class="fussnote">Zwei Stellen, an denen man sich sonst wundert: Der
+        Faktor 1,5 im Torsionsglied ist eine Festlegung der VDI 2230 (ein Teil
+        der Verdrehung fällt nach dem Anziehen wieder ab) &ndash; ohne ihn lägen
+        alle Werte rund 7 % niedriger. Und bei 10.9 und 12.9 rechnet man mit
+        940 statt 900 und 1100 statt 1080 N/mm²: Das sind die Mindestwerte nach
+        ISO 898-1, die etwas über dem liegen, was die Bezeichnung sagt.</p>
     </details>
 
     <details>
@@ -449,8 +453,8 @@
 
     <details>
       <summary>Welche Schraube nehmt ihr &ndash; und warum?</summary>
-      <p>Rechnerisch reicht <strong>M8 8.8</strong>: 10 kN von 17,2 kN sind
-        58 % Ausnutzung. Trotzdem ist <strong>M10 8.8</strong> hier die bessere
+      <p>Rechnerisch reicht <strong>M8 8.8</strong>: 10 kN von 18,6 kN sind
+        53 % Ausnutzung. Trotzdem ist <strong>M10 8.8</strong> hier die bessere
         Wahl, und zwar aus Gründen, die nicht in der Rechnung stehen:</p>
       <ul>
         <li><strong>Die Löcher sind da.</strong> Die Konsole hat &oslash; 11 mm.
@@ -462,8 +466,8 @@
           aus S235. Schon M10 braucht dafür Scheiben – die Rechnung dazu steht
           im Abschnitt darüber.</li>
         <li><strong>Reserve für die Wirklichkeit.</strong> Verzinkte Flächen,
-          Farbreste, eine Palette, die härter aufsetzt als gedacht: Mit 36 %
-          Ausnutzung bleibt Luft, mit 58 % weniger.</li>
+          Farbreste, eine Palette, die härter aufsetzt als gedacht: Mit 33 %
+          Ausnutzung bleibt Luft, mit 53 % weniger.</li>
         <li><strong>Gleichteile.</strong> Die übrigen Konsolen der Bahn sind mit
           M10 geschraubt. Ein Schlüssel, eine Sorte im Regal, ein Drehmoment.</li>
       </ul>
@@ -505,13 +509,13 @@
     <details>
       <summary>1. Mit welchem Drehmoment wird angezogen?</summary>
       <p>Für M10 8.8 bei &mu; = 0,12: <strong>M<sub>A</sub> = 48 N&middot;m</strong>
-        nach Tabellenbuch (das Werkzeug rechnet 45 N&middot;m &ndash; siehe Teil 4).
+        &ndash; gerechnet wie in Teil 4, nachzuschlagen im Tabellenbuch.
         Das gilt für die zulässige Montagevorspannkraft, also für die volle
         Ausnutzung &ndash; und genau so wird angezogen. Man zieht <em>nicht</em>
         nur so fest, wie die Rechnung mindestens verlangt: Je höher die
         Vorspannkraft, desto sicherer hält die Reibung, solange
         F<sub>M,zul</sub> nicht überschritten wird.</p>
-      <p>Wichtig ist, dass die Reibungszahl stimmt. Die 45 N&middot;m gelten für
+      <p>Wichtig ist, dass die Reibungszahl stimmt. Die 48 N&middot;m gelten für
         leicht geölte Gewinde. Trocken und verzinkt kann &mu; deutlich höher
         liegen &ndash; dann landet bei gleichem Drehmoment viel weniger
         Vorspannkraft in der Schraube, weil mehr davon in der Reibung
@@ -576,7 +580,7 @@
           </thead>
           <tbody>
             <tr><td>Schraubengröße und Klasse</td><td>M10 &middot; 8.8</td><td></td><td></td></tr>
-            <tr><td>Anziehdrehmoment</td><td>48 N&middot;m (Tabellenbuch)</td><td></td><td></td></tr>
+            <tr><td>Anziehdrehmoment</td><td>48 N&middot;m</td><td></td><td></td></tr>
             <tr><td>Anzahl Schrauben</td><td>4</td><td></td><td></td></tr>
             <tr><td>Trennfuge sauber, Konsole plan an</td><td>ja</td><td></td><td></td></tr>
             <tr><td>Scheiben unter Kopf und Mutter</td><td>ja, &oslash; 20</td><td></td><td></td></tr>

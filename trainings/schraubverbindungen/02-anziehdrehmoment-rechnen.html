@@ -98,6 +98,18 @@
       <p>Deshalb steht im Nenner nicht nur A<sub>S</sub>, sondern die Wurzel aus
         beiden Anteilen. Und von der Streckgrenze nutzt man nur
         <strong>&nu; = 0,9</strong> aus &ndash; ein Zehntel bleibt als Reserve.</p>
+      <p>Wie stark die Torsion zählt, steckt in einem Faktor:</p>
+      <div class="rechenweg">
+        k = 1,5 &middot; (d<sub>2</sub>/d<sub>S</sub>) &middot;
+        (P/(&pi; &middot; d<sub>2</sub>) + 1,155 &middot; &mu;<sub>G</sub>)
+        &nbsp;&rarr;&nbsp;
+        F<sub>M,zul</sub> = &nu; &middot; R<sub>p0,2</sub> &middot; A<sub>S</sub>
+        / &radic;(1 + 3k²)
+      </div>
+      <p>Die 1,5 ist keine Willkür: Ohne sie stünde dort eine 2. VDI 2230 rechnet
+        mit drei Vierteln davon, weil sich ein Teil der Verdrehung nach dem
+        Loslassen des Schlüssels wieder zurückdreht. Genau mit diesem Faktor
+        entstehen die Werte in den Tabellen.</p>
     </details>
 
     <details>
@@ -112,15 +124,23 @@
     </details>
 
     <details>
-      <summary>4. Warum weicht mein Tabellenbuch ab?</summary>
-      <p>Tabellenwerte nach VDI 2230 rechnen die Torsion beim Anziehen etwas
-        milder an und erlauben dadurch eine höhere Vorspannkraft &ndash; für
-        M12&nbsp;8.8 bei &mu;&nbsp;=&nbsp;0,12 rund 87 N·m statt der hier
-        gerechneten 77 N·m.</p>
-      <p>Beides ist richtig, nur unter verschiedenen Annahmen. Wer Drehmomente
-        angibt, muss die Quelle dazusagen &ndash; ein Tabellenwert ist kein
-        Naturgesetz. Die Toleranz dieses Trainings umfasst diese Abweichung
-        bewusst <em>nicht</em>: Geübt wird der hier gezeigte Weg.</p>
+      <summary>4. Steht das auch so im Tabellenbuch?</summary>
+      <p>Ja. Die Tabelle <em>Maximale Vorspannkräfte und Anziehdrehmomente</em>
+        nennt für M12&nbsp;8.8 bei &mu;&nbsp;=&nbsp;0,12 genau
+        <strong>43,0 kN und 84 N&middot;m</strong> &ndash; und das rechnet dieses
+        Training auch. Du kannst dein Ergebnis also nachschlagen.</p>
+      <p>Zwei Kleinigkeiten muss man dafür wissen:</p>
+      <ul>
+        <li>Der Torsionsfaktor 1,5 von oben. Ohne ihn lägen die Werte rund 7 %
+          niedriger.</li>
+        <li>Die Streckgrenzen von <strong>10.9 und 12.9</strong>. Aus der
+          Bezeichnung liest man 900 und 1080 N/mm² ab; ISO 898-1 fordert als
+          Mindestwert 940 und 1100 N/mm², und damit rechnen die Tabellen. Bei
+          4.6, 5.6 und 8.8 sind beide Zahlen gleich.</li>
+      </ul>
+      <p>Bleiben Abweichungen von ein bis zwei Prozent: Tabellen runden die
+        Zwischenwerte anders. Die Toleranz dieses Trainings (&plusmn;&nbsp;4 %)
+        deckt das ab &ndash; ein abgelesener Tabellenwert gilt hier als richtig.</p>
     </details>
 
     <div class="merksatz">
@@ -160,7 +180,9 @@ var SCHRAUBEN = {
   M24: {d:24, P:3.00, dw:33.6, Dh:26.0}
 };
 var GROESSEN = ["M6","M8","M10","M12","M16","M20","M24"];
-var KLASSEN = {"4.6":240, "5.6":300, "8.8":640, "10.9":900, "12.9":1080};
+/* Mindestwerte nach ISO 898-1. Aus der Bezeichnung liest man 900 und 1080
+   ab; die Norm fordert fuer 10.9 und 12.9 etwas mehr. */
+var KLASSEN = {"4.6":240, "5.6":300, "8.8":640, "10.9":940, "12.9":1100};
 var KLASSENLISTE = ["4.6","5.6","8.8","10.9","12.9"];
 var REIBUNGEN = [0.08, 0.10, 0.12, 0.14, 0.16, 0.20];
 var NU = 0.9;
@@ -190,9 +212,14 @@ function rechne(groesse, klasse, my){
   var cGew   = 0.58 * m.d2 * my;
   var cKopf  = 0.5 * m.DKm * my;
   var cVerdreh = cSteig + cGew;                  /* nur dieser Teil verdreht */
-  var FM = NU * Rp / Math.sqrt(1/(m.As*m.As) + 3*cVerdreh*cVerdreh/(m.Wp*m.Wp));
+/* Verhaeltnis von Torsions- zu Zugspannung beim Anziehen, nach VDI 2230.
+   Der Faktor 3/2 (statt der unmittelbaren 2) steckt die Annahme ein, dass ein
+   Teil der Verdrehung nach dem Anziehen wieder abfaellt. Genau mit diesem
+   Faktor entstehen die Werte in den Tabellen - auch im Tabellenbuch. */
+  var kT = 1.5 * (m.d2 / m.dS) * (m.P / (Math.PI * m.d2) + 1.155 * my);
+  var FM = NU * Rp * m.As / Math.sqrt(1 + 3 * kT * kT);
   return {
-    m:m, Rp:Rp, FM:FM,
+    m:m, Rp:Rp, FM:FM, kT:kT,
     cSteig:cSteig, cGew:cGew, cKopf:cKopf,
     MA: FM * (cSteig + cGew + cKopf) / 1000
   };
@@ -244,7 +271,12 @@ function wegBauen(){
     + "A<sub>S</sub> = &pi;/4 &middot; " + zahl(m.dS, 2) + "² = <b>" + zahl(m.As, 1) + " mm²</b>"
     + "<span class=\"schritt\">2. Vorspannkraft, mit &nu; = 0,9 und R<sub>p0,2</sub> = "
       + l.Rp + " N/mm²</span>"
-    + "F<sub>M,zul</sub> = <b>" + zahl(l.FM / 1000, 1) + " kN</b>"
+    + "Torsion je Zug: k = 1,5 &middot; (d<sub>2</sub>/d<sub>S</sub>) &middot; "
+      + "(P/(&pi; &middot; d<sub>2</sub>) + 1,155 &middot; &mu;) = <b>"
+      + zahl(l.kT, 3) + "</b><br>"
+    + "F<sub>M,zul</sub> = 0,9 &middot; " + l.Rp + " &middot; " + zahl(l.m.As, 1)
+      + " / &radic;(1 + 3 &middot; " + zahl(l.kT, 3) + "²) = <b>"
+      + zahl(l.FM / 1000, 1) + " kN</b>"
     + "<span class=\"schritt\">3. Anziehdrehmoment aus den drei Anteilen "
       + "(Steigung, Gewinde, Kopf)</span>"
     + "M<sub>A</sub> = " + zahl(l.FM / 1000, 1) + " kN &middot; ("

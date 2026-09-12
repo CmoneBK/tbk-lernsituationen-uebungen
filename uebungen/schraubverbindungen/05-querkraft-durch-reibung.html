@@ -130,15 +130,16 @@
     <details>
       <summary>Lösung für die Ausgangslage</summary>
       <p>F<sub>M,zul</sub> für M10&nbsp;8.8 bei &mu; = 0,12 beträgt rund
-        <strong>27,4 kN</strong>. Damit ergibt sich:</p>
+        <strong>29,6 kN</strong> &ndash; derselbe Wert steht im Tabellenbuch.
+        Damit ergibt sich:</p>
       <p><strong>Mit &mu;<sub>T</sub> = 0,10:</strong>
-        F<sub>Q,zul</sub> = (0,10 &middot; 27,4 kN &middot; 4 &middot; 1) / 1,25 =
-        <strong>8,8 kN</strong> &ndash; das reicht <em>nicht</em> für 12 kN.</p>
+        F<sub>Q,zul</sub> = (0,10 &middot; 29,6 kN &middot; 4 &middot; 1) / 1,25 =
+        <strong>9,5 kN</strong> &ndash; das reicht <em>nicht</em> für 12 kN.</p>
       <p><strong>Mit &mu;<sub>T</sub> = 0,20:</strong>
-        F<sub>Q,zul</sub> = <strong>17,5 kN</strong> &ndash; das würde reichen.</p>
+        F<sub>Q,zul</sub> = <strong>18,9 kN</strong> &ndash; das würde reichen.</p>
       <p><strong>Antwort:</strong> Die Verbindung hält <em>vielleicht</em>. Und
         „vielleicht“ ist kein Nachweis. Maßgebend ist der untere Wert, also
-        8,8 kN. <strong>Die Konsole ist so nicht ausreichend verschraubt.</strong></p>
+        9,5 kN. <strong>Die Konsole ist so nicht ausreichend verschraubt.</strong></p>
     </details>
 
     <h2><span class="nr">3</span>Was jetzt?</h2>
@@ -147,8 +148,8 @@
     <details>
       <summary>Weg 1: Mehr oder größere Schrauben</summary>
       <p>Wirkt direkt, weil n<sub>S</sub> und F<sub>M,zul</sub> linear eingehen.
-        Sechs statt vier M10 bringen 13,1 kN &ndash; das reicht. Vier M12 statt
-        vier M10 bringen 12,8 kN &ndash; reicht ebenfalls, knapp.</p>
+        Sechs statt vier M10 bringen 14,2 kN &ndash; das reicht. Vier M12 statt
+        vier M10 bringen 13,8 kN &ndash; reicht ebenfalls.</p>
       <figure class="bild" id="bildMehrSchrauben"></figure>
       <p>Nachteil: mehr Bohrungen, mehr Montagezeit, mehr Platzbedarf. Und der
         Nachweis hängt weiter am unsicheren &mu;<sub>T</sub>.</p>
@@ -158,7 +159,7 @@
       <summary>Weg 2: Die Trennfuge behandeln</summary>
       <p>Der wirksamste Hebel. <strong>Gestrahlte Flächen</strong> greifen
         ineinander und erreichen &mu;<sub>T</sub> = 0,20 bis 0,45 &ndash; damit
-        liefern schon die vorhandenen vier M10 mindestens 17,5 kN. Im Stahlbau
+        liefern schon die vorhandenen vier M10 mindestens 18,9 kN. Im Stahlbau
         wird das planmäßig gemacht: gleitfeste Verbindungen werden gestrahlt und
         dürfen nicht nachträglich lackiert werden.</p>
       <p>Der Preis: Die Fläche muss vorbereitet, sauber gehalten und geprüft
@@ -168,7 +169,7 @@
     <details>
       <summary>Weg 3: Zweite Trennfuge nutzen</summary>
       <p>Wird die Konsole zwischen zwei Blechen geklemmt statt auf eines gelegt,
-        verdoppelt n<sub>F</sub> die Reibfläche &ndash; 17,5 kN statt 8,8 kN, ohne
+        verdoppelt n<sub>F</sub> die Reibfläche &ndash; 18,9 kN statt 9,5 kN, ohne
         eine einzige Schraube mehr. Konstruktiv oft die eleganteste Lösung, wenn
         der Bauraum es hergibt.</p>
       <figure class="bild" id="bildTrennfugen"></figure>
@@ -205,7 +206,7 @@
       <summary>2. Die Verbindung lockert sich im Betrieb um 20 %. Was bedeutet das für F<sub>Q,zul</sub>?</summary>
       <p>Sie sinkt um genau dieselben 20 %. F<sub>V</sub> steht linear in der
         Formel &ndash; weniger Vorspannkraft heißt sofort weniger Haltekraft.
-        Aus 8,8 kN werden 7,0 kN.</p>
+        Aus 9,5 kN werden 7,6 kN.</p>
       <p>Deshalb ist <em>Setzen</em> (das Einebnen der Rauheitsspitzen in den ersten
         Betriebsstunden) kein Schönheitsfehler, sondern ein Auslegungsthema.
         Gegenmittel: nachziehen, weniger Trennfugen, keine weichen Zwischenlagen,
@@ -284,7 +285,9 @@ var SCHRAUBEN = {
   M24: {d:24, P:3.00, dw:33.6, Dh:26.0}
 };
 var GROESSEN = ["M4","M5","M6","M8","M10","M12","M16","M20","M24"];
-var KLASSEN = {"4.6":240, "5.6":300, "8.8":640, "10.9":900, "12.9":1080};
+/* Mindestwerte nach ISO 898-1. Aus der Bezeichnung liest man 900 und 1080
+   ab; fuer 10.9 und 12.9 fordert die Norm etwas mehr. */
+var KLASSEN = {"4.6":240, "5.6":300, "8.8":640, "10.9":940, "12.9":1100};
 var KLASSENLISTE = ["4.6","5.6","8.8","10.9","12.9"];
 
 /* Anhaltswerte fuer die Haftreibungszahl in der Trennfuge. Sie streuen stark,
@@ -325,9 +328,13 @@ function streckgrenze(klasse, d){
    Gewindereibung, nicht die Kopfreibung. */
 function vorspannkraft(groesse, klasse){
   var m  = masse(groesse);
-  var cG = 0.16 * m.P + 0.58 * m.d2 * MY_ANZIEH;
   var Rp = streckgrenze(klasse, m.d);
-  return NU * Rp / Math.sqrt(1/(m.As*m.As) + 3*cG*cG/(m.Wp*m.Wp));
+/* Verhaeltnis von Torsions- zu Zugspannung beim Anziehen, nach VDI 2230.
+   Der Faktor 3/2 (statt der unmittelbaren 2) steckt die Annahme ein, dass ein
+   Teil der Verdrehung nach dem Anziehen wieder abfaellt. Genau mit diesem
+   Faktor entstehen die Werte in den Tabellen - auch im Tabellenbuch. */
+  var kT = 1.5 * (m.d2 / m.dS) * (m.P / (Math.PI * m.d2) + 1.155 * MY_ANZIEH);
+  return NU * Rp * m.As / Math.sqrt(1 + 3 * kT * kT);
 }
 
 function el(id){ return document.getElementById(id); }
@@ -540,9 +547,9 @@ function bildMehrSchrauben(){
     "doppelte Haltekraft.");
 
   var f = [
-    {sp:2, z:2, r:9,  titel:"4 × M10",  wert:"8,8 kN",  farbe:"bad"},
-    {sp:2, z:3, r:9,  titel:"6 × M10",  wert:"13,1 kN", farbe:"ok"},
-    {sp:2, z:2, r:12, titel:"4 × M12",  wert:"12,8 kN", farbe:"ok"}
+    {sp:2, z:2, r:9,  titel:"4 × M10",  wert:"9,5 kN",  farbe:"bad"},
+    {sp:2, z:3, r:9,  titel:"6 × M10",  wert:"14,2 kN", farbe:"ok"},
+    {sp:2, z:2, r:12, titel:"4 × M12",  wert:"13,8 kN", farbe:"ok"}
   ];
   f.forEach(function(o, i){
     var x = 32 + i * 140;
@@ -607,8 +614,8 @@ function bildTrennfugen(){
 
   /* Reichlich Abstand: die untere Zeile traegt ihre Beschriftung oben, die
      obere ihre unten - die duerfen sich nicht begegnen. */
-  zeile(80,  2, "aufgelegt",   "8,8 kN",  "bad");
-  zeile(232, 3, "eingeklemmt", "17,5 kN", "ok");
+  zeile(80,  2, "aufgelegt",   "9,5 kN",  "bad");
+  zeile(232, 3, "eingeklemmt", "18,9 kN", "ok");
 
   return svg;
 }

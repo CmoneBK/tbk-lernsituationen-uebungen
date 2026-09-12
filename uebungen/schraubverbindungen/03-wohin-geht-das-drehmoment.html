@@ -260,7 +260,9 @@ var SCHRAUBEN = {
   M24: {d:24, P:3.00, dw:33.6, Dh:26.0}
 };
 var GROESSEN = ["M4","M5","M6","M8","M10","M12","M16","M20","M24"];
-var KLASSEN = {"4.6":240, "5.6":300, "8.8":640, "10.9":900, "12.9":1080};
+/* Mindestwerte nach ISO 898-1. Aus der Bezeichnung liest man 900 und 1080
+   ab; fuer 10.9 und 12.9 fordert die Norm etwas mehr. */
+var KLASSEN = {"4.6":240, "5.6":300, "8.8":640, "10.9":940, "12.9":1100};
 var KLASSENLISTE = ["4.6","5.6","8.8","10.9","12.9"];
 
 var NU = 0.9;          /* Ausnutzung der Streckgrenze */
@@ -297,10 +299,13 @@ function beiwerte(m, myG, myK){
 function rechne(groesse, klasse, myG, myK){
   var m  = masse(groesse);
   var c  = beiwerte(m, myG, myK);
-  var cG = c.steig + c.gewinde;                  /* verdrehender Anteil */
-  var Wp = Math.PI * Math.pow(m.dS, 3) / 16;
   var Rp = streckgrenze(klasse, m.d);
-  var FM = NU * Rp / Math.sqrt(1/(m.As*m.As) + 3*cG*cG/(Wp*Wp));   /* N */
+/* Verhaeltnis von Torsions- zu Zugspannung beim Anziehen, nach VDI 2230.
+   Der Faktor 3/2 (statt der unmittelbaren 2) steckt die Annahme ein, dass ein
+   Teil der Verdrehung nach dem Anziehen wieder abfaellt. Genau mit diesem
+   Faktor entstehen die Werte in den Tabellen - auch im Tabellenbuch. */
+  var kT = 1.5 * (m.d2 / m.dS) * (m.P / (Math.PI * m.d2) + 1.155 * myG);
+  var FM = NU * Rp * m.As / Math.sqrt(1 + 3 * kT * kT);            /* N */
 
   var summe = c.steig + c.gewinde + c.kopf;
   return {
