@@ -37,6 +37,7 @@ assets/baukasten.js      Übungen zuschneiden und als Link weitergeben
 assets/qr.js             QR-Code für diesen Link
 assets/export.js         Ausgabe als PDF und als Word-Datei
 assets/pdf.js            schlanker PDF-Schreiber für den Direkt-Download
+assets/zahlenfeld.js     Mausrad in Zahlenfeldern, ohne die Seite zu verschieben
 assets/back-nav.js       Rücklink „← Übersicht“ – einzige Quelle
 assets/werkzeug-link.js  löst Links auf die Werkzeuge je nach Umgebung auf
 daten/kategorien.csv     Reihenfolge der Bereiche und Unterkategorien
@@ -115,6 +116,20 @@ gehört in ein eigenes `<style>` in der Datei selbst.
 
 Lernsituationen bringen ihr Aussehen dagegen selbst mit; sie sind Dokumente
 mit eigenem Aufbau.
+
+### Zahlen einstellen
+
+Ein Wert in einem Zahlenfeld lässt sich mit dem Mausrad verstellen – aber nur,
+solange das Feld den Fokus hat. Während dessen scrollt die Seite nicht mit:
+`assets/zahlenfeld.js` nimmt das Rad an sich, rechnet auf dem Raster aus `min`
+und `step` und löst `input` aus, damit die Übung neu rechnet.
+
+Die Bedingung „nur mit Fokus" ist Absicht. Ohne sie würde jedes Feld, an dem
+man beim Lesen vorbeiscrollt, die Seite anhalten und dabei seinen Wert
+verstellen. So muss man es erst anklicken; wer weiterlesen will, klickt daneben.
+
+Zu tun ist dafür nichts außer `min`, `max` und `step` am Feld zu setzen – den
+Rest trägt der Build ein.
 
 ### Zeichnungen
 
@@ -302,10 +317,12 @@ Kein `npm install` nötig – der Generator kommt ohne Abhängigkeiten aus
   Pakets greift auch auf die Titel der enthaltenen Übungen zu.
 * **Paketseiten erzeugen.** Je Paket eine nummerierte Liste seiner Übungen samt
   Dauer, Kurzbeschreibung und Link zum passenden Werkzeug.
-* **Bausteine nachtragen.** Fehlt `assets/back-nav.js` oder – sobald die Seite
-  einen Werkzeug-Link enthält – `assets/werkzeug-link.js`, wird die Zeile vor
-  dem schließenden `body`-Tag eingefügt, mit der zur Ablagetiefe passenden
-  Anzahl `../`. In einem Paket zusätzlich mit `data-ziel="./"`.
+* **Bausteine nachtragen.** Was eine Seite braucht, trägt der Build vor dem
+  schließenden `body`-Tag ein, mit der zur Ablagetiefe passenden Anzahl `../`:
+  `assets/back-nav.js` immer (in einem Paket mit `data-ziel="./"`),
+  `assets/werkzeug-link.js` bei einem Werkzeug-Link, `assets/zahlenfeld.js`
+  bei einem Feld vom Typ `number` oder `range`, und in Übungen wie Trainings
+  `qr.js`, `baukasten.js`, `pdf.js`, `export.js`.
 * **Front-Matter entfernen.** Ein `--- … ---`-Block am Dateianfang stammt aus dem
   Jekyll-Workflow des Werkzeuge-Repos. Ohne Jekyll stünde er als Text auf der
   Seite; er wird entfernt, ein dort notierter `title` aber vorher übernommen.
@@ -413,6 +430,7 @@ erwünscht – sie laden nichts nach. `assets/uebung.css` nutzt genau die.
 | Unterkategorie wird ignoriert | ` - ` ohne Leerzeichen geschrieben |
 | `--- title: … ---` steht sichtbar auf der Seite | Front-Matter; einmal `node build/build.mjs` laufen lassen |
 | Rücklink fehlt | `assets/back-nav.js` nicht erreichbar – Anzahl der `../` prüfen |
+| Mausrad verstellt den Wert nicht | Das Feld hat keinen Fokus (erst hineinklicken), oder `assets/zahlenfeld.js` fehlt – einmal `node build/build.mjs` laufen lassen |
 | Rücklink springt zu weit zurück | `data-ziel="./"` am Skript-Tag fehlt (Datei liegt in einem Paket) |
 | Werkzeug-Link führt ins Leere | `data-werkzeug` statt `href` verwenden; Dateiname muss dem im Werkzeuge-Repo entsprechen |
 | Übung fehlt auf der Paketseite | Datei heißt `index.html` – die wird erzeugt und deshalb übersprungen |

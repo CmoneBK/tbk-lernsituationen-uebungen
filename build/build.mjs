@@ -60,6 +60,7 @@ const QR = 'assets/qr.js';
 const BAUKASTEN = 'assets/baukasten.js';
 const PDF = 'assets/pdf.js';
 const EXPORT = 'assets/export.js';
+const ZAHLENFELD = 'assets/zahlenfeld.js';
 
 /* ---------- kleine Helfer ---------- */
 
@@ -116,6 +117,11 @@ async function seiteLesen(datei, { imPaket = false, baukasten = false } = {}) {
   // Pakets zur Paketuebersicht, sonst zur Startseite des Materialbereichs.
   const noetig = [{ pfad: BACK_NAV, attr: imPaket ? ' data-ziel="./"' : '' }];
   if (/data-werkzeug=/.test(text)) noetig.push({ pfad: WZ_LINK, attr: '' });
+  // Wo Zahlen eingestellt werden, soll das Mausrad den Wert aendern und nicht
+  // nebenbei die Seite wegscrollen.
+  if (/<input[^>]+type=["'](?:number|range)["']/i.test(text)) {
+    noetig.push({ pfad: ZAHLENFELD, attr: '' });
+  }
   // Uebungen und Trainings lassen sich fuer eine Lerngruppe zuschneiden. Der
   // QR-Code gehoert dazu, deshalb beide Bausteine und in dieser Reihenfolge.
   if (baukasten) {
