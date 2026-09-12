@@ -237,9 +237,13 @@ async function typSammeln(typ) {
         warnen(posix.join(typ.id, e.name), 'Ordner ohne index.html – erscheint nicht in der Übersicht');
         continue;
       }
-      const s = await seiteLesen(index);
+      // Auch eine Lernsituation laesst sich fuer eine Lerngruppe zuschneiden
+      // und mitnehmen - dieselben Bausteine wie in Uebungen und Trainings.
+      const s = await seiteLesen(index, { baukasten: true });
       // Weitere Seiten der Lernsituation bekommen die Bausteine ebenfalls.
-      for (const f of dateien) await seiteLesen(join(ordner, f), { imPaket: true });
+      for (const f of dateien) {
+        await seiteLesen(join(ordner, f), { imPaket: true, baukasten: true });
+      }
       eintraege.push({
         typ: typ.id, ...titelZerlegen(info.titel ?? s.titel), ...s,
         beschreibung: info.lead ?? s.beschreibung,

@@ -52,7 +52,8 @@ index.html               erzeugt – nicht von Hand bearbeiten
 
 Die Trennung ist bewusst: **Übungen und Trainings sind Sammlungen**, deren
 Übersichtsseite der Build schreibt. **Eine Lernsituation ist ein Dokument**,
-das man selbst verfasst – ihre `index.html` fasst niemand an.
+das man selbst verfasst – ihren Inhalt fasst der Build nicht an; er trägt nur
+die Bausteine nach, die unten beschrieben sind.
 
 Einzelne `.html` direkt in `uebungen/` oder `trainings/` sind weiterhin
 erlaubt; sie erscheinen dann als eigene Karte statt in einem Paket.
@@ -114,8 +115,12 @@ Zuständen `ja` / `fast` / `nein`, `details` für Lösungen, `.merksatz` und
 `a.werkzeug`. Was nur **eine** Übung braucht – eine Zeichnung, ein Diagramm –
 gehört in ein eigenes `<style>` in der Datei selbst.
 
-Lernsituationen bringen ihr Aussehen dagegen selbst mit; sie sind Dokumente
-mit eigenem Aufbau.
+Eine Lernsituation darf ihr Aussehen selbst mitbringen – sie ist ein Dokument
+mit eigenem Aufbau. Einfacher ist es, auch dort `assets/uebung.css` zu nehmen
+und nur zu ergänzen, was dieses eine Dokument braucht: Dann sehen Kästen,
+Eingaben und Lösungen überall gleich aus, und die Ausgabe als PDF oder Word
+verhält sich wie in den Übungen. `vorlagen/lernsituation.html` zeigt den
+eigenständigen Weg, `lernsituationen/konsole-am-foerderband/` den gemeinsamen.
 
 ### Zahlen einstellen
 
@@ -161,14 +166,20 @@ alle dasselbe Muster.
 
 ## ✂️ Übungen zuschneiden
 
-Nicht jeder Teil einer Übung passt zu jeder Lerngruppe oder jedem Bildungsgang.
-Deshalb trägt jede Übung unten rechts die Schaltfläche **„Übung anpassen"**.
+Nicht jeder Teil passt zu jeder Lerngruppe oder jedem Bildungsgang. Deshalb
+trägt jede Übung, jedes Training und jede Lernsituation unten rechts die
+Schaltfläche **„Übung anpassen"**.
 Dahinter lassen sich einzelne Teile und Aufgaben abwählen; daraus entsteht ein
 Link und ein QR-Code, die die Übung genau so öffnen.
 
-In einem Training heißt dieselbe Schaltfläche **„Training anpassen"**. Woran das
-hängt, ist der Pfad: Liegt die Seite unter `trainings/`, sprechen Baukasten und
-Ausgabe vom Training. Einzutragen ist dafür nichts.
+In einem Training heißt dieselbe Schaltfläche **„Training anpassen"**, in einer
+Lernsituation **„Lernsituation anpassen"**. Woran das hängt, ist der Pfad:
+`trainings/` oder `lernsituationen/` im Verzeichnis genügt, Baukasten und
+Ausgabe richten sich danach. Einzutragen ist dafür nichts.
+
+Ein Nebeneffekt beim lokalen Ausprobieren: Kopiert man eine Seite zum Testen in
+einen anderen Ordner, steht wieder „Übung anpassen" dort – der Pfad stimmt dann
+ja nicht mehr.
 
 Die Datei selbst bleibt dabei unverändert – die Auswahl steckt allein in der
 Adresse:
@@ -321,8 +332,8 @@ Kein `npm install` nötig – der Generator kommt ohne Abhängigkeiten aus
   schließenden `body`-Tag ein, mit der zur Ablagetiefe passenden Anzahl `../`:
   `assets/back-nav.js` immer (in einem Paket mit `data-ziel="./"`),
   `assets/werkzeug-link.js` bei einem Werkzeug-Link, `assets/zahlenfeld.js`
-  bei einem Feld vom Typ `number` oder `range`, und in Übungen wie Trainings
-  `qr.js`, `baukasten.js`, `pdf.js`, `export.js`.
+  bei einem Feld vom Typ `number` oder `range`, und in Übungen, Trainings wie
+  Lernsituationen `qr.js`, `baukasten.js`, `pdf.js`, `export.js`.
 * **Front-Matter entfernen.** Ein `--- … ---`-Block am Dateianfang stammt aus dem
   Jekyll-Workflow des Werkzeuge-Repos. Ohne Jekyll stünde er als Text auf der
   Seite; er wird entfernt, ein dort notierter `title` aber vorher übernommen.

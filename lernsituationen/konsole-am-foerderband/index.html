@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Maschinenelemente: Schrauben - Konsole am Förderband</title>
+<meta name="description" content="Eine Rollenbahn wird verlängert: Schraubverbindung auslegen, Schraube wählen, Montage planen, Ergebnis prüfen.">
+<meta name="dauer" content="180 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/zeichnen.js"></script>
+<style>
+  /* Nur was diese Lernsituation zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .bild{margin:16px 0 4px}
+  .bild svg{width:100%; height:auto; display:block}
+  .bild figcaption{font-size:13px; color:var(--muted); margin-top:6px; text-align:center}
+
+  /* Die Schritte der vollständigen Handlung als Marken über den Abschnitten. */
+  .schritt{
+    display:inline-block; font-size:12px; font-weight:700; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--accent); margin:26px 0 -4px;
+  }
+
+  /* Auftrag aus dem Betrieb - sieht aus wie eine Notiz, ist auch eine. */
+  .auftragskarte{
+    border-left:4px solid var(--accent); background:var(--card);
+    border-radius:0 12px 12px 0; padding:18px 20px; margin:16px 0;
+    box-shadow:var(--shadow);
+  }
+  .auftragskarte .von{font-size:13px; color:var(--muted); margin:0 0 8px}
+
+  .daten{display:flex; flex-wrap:wrap; gap:10px; margin:16px 0 0}
+  .daten div{
+    flex:1 1 150px; background:var(--bg); border:1px solid var(--border);
+    border-radius:10px; padding:10px 14px;
+  }
+  .daten .l{display:block; font-size:13px; color:var(--muted)}
+  .daten .v{font-size:18px; font-weight:700; font-variant-numeric:tabular-nums}
+
+  .haken{list-style:none; margin:8px 0 0; padding:0}
+  .haken li{padding:4px 0 4px 28px; position:relative}
+  .haken li::before{
+    content:"\2610"; position:absolute; left:0; top:2px;
+    font-size:18px; color:var(--muted);
+  }
+
+  .warnschild{
+    display:flex; gap:12px; align-items:flex-start;
+    border:1px solid var(--warn); border-left-width:4px; border-radius:10px;
+    background:var(--card); padding:12px 16px; margin:16px 0; font-size:15px;
+  }
+  .warnschild::before{content:"\26A0"; font-size:20px; line-height:1.1; color:var(--warn)}
+</style>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Lernsituation &middot; Schraubverbindungen</p>
+    <h1>Konsole am Förderband</h1>
+    <p class="lead">Eine Rollenbahn wird um ein Feld verlängert. Die Konsole dafür
+      ist schnell angeschraubt &ndash; die Frage ist, ob sie hält, und woher man
+      das vorher weiß.</p>
+  </header>
+
+  <main class="wrap">
+
+    <p class="schritt">Schritt 1 &middot; Auftrag</p>
+    <h2><span class="nr">1</span>Der Auftrag</h2>
+
+    <div class="auftragskarte">
+      <p class="von">Werkstattauftrag 24-118 &middot; Instandhaltung &middot; Halle 2</p>
+      <p>„In der Abfüllung soll die Rollenbahn an der Palettierstation um ein Feld
+        verlängert werden. Das letzte Rollenfeld wird von einer Konsole getragen,
+        die an die vorhandene Stahlstütze geschraubt wird &ndash; schweißen geht
+        nicht, die Stütze ist verzinkt und trägt eine Elektroleitung.</p>
+      <p>Legt die Schraubverbindung aus, wählt die Schrauben, plant die Montage
+        und gebt an, mit welchem Drehmoment angezogen wird. Am Montag früh soll
+        die Bahn laufen."</p>
+    </div>
+
+    <figure class="bild" id="bildLage"></figure>
+
+    <div class="box">
+      <p><strong>Was gegeben ist</strong></p>
+      <div class="daten">
+        <div><span class="l">Last am Konsolenende</span><span class="v">F = 2,4 kN</span></div>
+        <div><span class="l">Abstand von der Stütze</span><span class="v">a = 250 mm</span></div>
+        <div><span class="l">Schrauben</span><span class="v">4 Stück</span></div>
+        <div><span class="l">Reihenabstand</span><span class="v">h = 120 mm</span></div>
+        <div><span class="l">Reibungszahl</span><span class="v">&mu; = 0,12</span></div>
+        <div><span class="l">geforderte Rutschsicherheit</span><span class="v">S<sub>R</sub> = 1,3</span></div>
+      </div>
+      <p style="margin-top:14px">Stütze und Konsole aus S235, der Flansch der
+        Stütze ist 10 mm dick. Die Konsole hat vier Durchgangslöcher &oslash; 11 mm.
+        Die Last enthält bereits einen Zuschlag für das Aufsetzen der Paletten.</p>
+    </div>
+
+    <div class="box auftrag">
+      <p><strong>Was am Ende vorliegen soll</strong></p>
+      <ul class="haken">
+        <li>Rechenweg mit den Kräften an der Verbindung</li>
+        <li>Entscheidung für Schraubengröße und Festigkeitsklasse, begründet</li>
+        <li>Montageplan mit Anziehdrehmoment, Reihenfolge und Werkzeug</li>
+        <li>Schnittzeichnung der Verbindung, normgerecht</li>
+        <li>Prüfprotokoll für die Abnahme</li>
+      </ul>
+    </div>
+
+    <p class="schritt">Schritt 2 &middot; Informieren</p>
+    <h2><span class="nr">2</span>Was in der Trennfuge passiert</h2>
+
+    <p>Bevor gerechnet wird, muss klar sein, <em>wie</em> die Verbindung die Last
+      überhaupt aufnimmt. Beantwortet die drei Fragen zuerst im Team, dann
+      aufklappen.</p>
+
+    <figure class="bild" id="bildKraefte"></figure>
+
+    <details>
+      <summary>1. Welche Kräfte und Momente wirken auf die Verbindung?</summary>
+      <p>Die Last steht nicht in der Trennfuge, sondern 250 mm davor. Deshalb
+        kommen an der Verbindung <strong>zwei</strong> Dinge an:</p>
+      <ul>
+        <li>eine <strong>Querkraft</strong> F<sub>Q</sub> = 2,4 kN &ndash; sie will
+          die Konsole nach unten abrutschen lassen;</li>
+        <li>ein <strong>Kippmoment</strong> M = F &middot; a = 2,4 kN &middot; 0,25 m
+          = <strong>600 N&middot;m</strong> &ndash; es will die Konsole um ihre
+          untere Kante drehen.</li>
+      </ul>
+      <p>Das Moment zieht die oberen Schrauben zusätzlich auf Zug und drückt die
+        Konsole unten gegen die Stütze. Die unteren Schrauben werden dadurch
+        eher entlastet &ndash; maßgebend sind die oberen.</p>
+    </details>
+
+    <details>
+      <summary>2. Wie überträgt eine Schraubverbindung eine Querkraft?</summary>
+      <p>Im Regelfall <strong>über Reibung</strong>, nicht über die Schraube
+        selbst. Die Schraube presst die Teile zusammen; die Querkraft wird von
+        der Haftreibung in der Trennfuge aufgenommen. Der Schraubenschaft liegt
+        gar nicht an der Lochwand an &ndash; das Durchgangsloch ist größer als
+        die Schraube (&oslash; 11 für M10).</p>
+      <p>Eine Schraube auf <em>Abscheren</em> zu beanspruchen ist die Ausnahme
+        und verlangt eine Passschraube in einer aufgeriebenen Bohrung. Wer eine
+        normale Durchgangsschraube auf Scherung auslegt, plant ein Wackeln
+        ein, das die Verbindung mit der Zeit zerarbeitet.</p>
+    </details>
+
+    <details>
+      <summary>3. Was bedeutet die geforderte Rutschsicherheit S<sub>R</sub> = 1,3?</summary>
+      <p>Sie ist ein Sicherheitsfaktor auf die Reibung: Die Verbindung muss
+        1,3-mal so viel Querkraft halten können, wie tatsächlich anliegt. Der
+        Faktor fängt auf, was man nicht genau weiß &ndash; wie fettig die Flächen
+        wirklich sind, ob die Vorspannkraft durch Setzen nachlässt, ob die Last
+        beim Aufsetzen einer Palette kurz höher ist.</p>
+      <p>Gerechnet wird damit so: <em>F</em><sub>Kl,erf</sub> =
+        F<sub>Q</sub> &middot; S<sub>R</sub> / (&mu; &middot; n &middot; i), mit
+        n = Anzahl der Schrauben und i = Anzahl der Reibflächen (hier eine).</p>
+    </details>
+
+    <p class="schritt">Schritt 3 &middot; Planen</p>
+    <h2><span class="nr">3</span>Die Kräfte ausrechnen</h2>
+
+    <p>Rechnet die vier Werte aus und tragt sie ein. Geprüft wird auf 3 % genau
+      &ndash; Rundungsunterschiede sind also kein Problem.</p>
+
+    <div class="box">
+      <div class="felder">
+        <label class="feld">Kippmoment M in N&middot;m
+          <input type="number" id="aM" step="1" min="0" inputmode="decimal">
+        </label>
+        <label class="feld">Zugkraft je oberer Schraube in kN
+          <input type="number" id="aFZ" step="0.1" min="0" inputmode="decimal">
+        </label>
+        <label class="feld">Klemmkraft gegen Rutschen je Schraube in kN
+          <input type="number" id="aFK" step="0.1" min="0" inputmode="decimal">
+        </label>
+        <label class="feld">nötige Vorspannkraft je oberer Schraube in kN
+          <input type="number" id="aFV" step="0.1" min="0" inputmode="decimal">
+        </label>
+      </div>
+      <p style="margin-top:16px">
+        <button type="button" class="knopf" id="btnPruefen">Ergebnisse prüfen</button>
+        <button type="button" class="knopf leise" id="btnLeeren">Felder leeren</button>
+      </p>
+      <div class="rueckmeldung" id="rueck" hidden></div>
+    </div>
+
+    <details>
+      <summary>Rechenweg, Schritt für Schritt</summary>
+      <p><strong>1. Kippmoment.</strong> Die Last greift 250 mm vor der Trennfuge an:</p>
+      <p class="merksatz" style="margin:8px 0">M = F &middot; a = 2,4 kN &middot; 0,25 m
+        = <strong>0,6 kN&middot;m = 600 N&middot;m</strong></p>
+      <p><strong>2. Zugkraft aus dem Moment.</strong> Vereinfacht wird
+        angenommen, dass das Moment als Kräftepaar zwischen der oberen und der
+        unteren Schraubenreihe aufgenommen wird &ndash; Hebelarm ist der
+        Reihenabstand h:</p>
+      <p class="merksatz" style="margin:8px 0">F<sub>Z,oben</sub> = M / h
+        = 600 N&middot;m / 0,12 m = 5,0 kN für beide oberen Schrauben zusammen,
+        also <strong>2,5 kN je Schraube</strong></p>
+      <p><strong>3. Klemmkraft gegen das Abrutschen.</strong> Alle vier Schrauben
+        pressen mit, die Trennfuge hat eine Reibfläche:</p>
+      <p class="merksatz" style="margin:8px 0">F<sub>Kl,erf</sub> =
+        F<sub>Q</sub> &middot; S<sub>R</sub> / (&mu; &middot; n &middot; i)
+        = 2,4 kN &middot; 1,3 / (0,12 &middot; 4 &middot; 1)
+        = <strong>6,5 kN je Schraube</strong></p>
+      <p><strong>4. Nötige Vorspannkraft.</strong> Die oberen Schrauben müssen
+        beides können: klemmen <em>und</em> die Zugkraft aus dem Moment
+        aufnehmen, ohne dass die Klemmkraft darunter leidet:</p>
+      <p class="merksatz" style="margin:8px 0">F<sub>V,erf</sub> =
+        F<sub>Kl,erf</sub> + F<sub>Z,oben</sub> = 6,5 kN + 2,5 kN
+        = <strong>9,0 kN</strong></p>
+      <p>Mit einem Zuschlag von rund 10 % für das Setzen der Verbindung sind das
+        <strong>rund 10 kN</strong>, die jede obere Schraube nach der Montage
+        noch aufbringen muss.</p>
+    </details>
+
+    <details>
+      <summary>Was wir dabei vereinfacht haben</summary>
+      <p>Drei Dinge rechnet die Praxis genauer, und man sollte wissen, welche:</p>
+      <ul>
+        <li><strong>Das Kraftverhältnis &Phi;.</strong> In Wirklichkeit landet
+          nur ein Teil der Betriebskraft auf der Schraube, der Rest entlastet die
+          verspannten Teile. Wir rechnen so, als käme die ganze Zugkraft bei der
+          Schraube an &ndash; das liegt auf der sicheren Seite.</li>
+        <li><strong>Die Druckkante.</strong> Wir setzen den Drehpunkt in die
+          untere Schraubenreihe. Tatsächlich liegt er etwas tiefer, an der
+          Kante der Konsole &ndash; der Hebelarm wäre also größer und die Zugkraft
+          kleiner. Auch das liegt auf der sicheren Seite.</li>
+        <li><strong>Das Setzen.</strong> Statt der Setzbeträge aus der Tabelle
+          nehmen wir pauschal 10 %. Bei mehr als drei Trennfugen oder bei
+          weichen Zwischenlagen reicht das nicht mehr.</li>
+      </ul>
+      <p>Wer eine solche Verbindung für die Serie auslegt, rechnet nach
+        VDI 2230. Für eine Konsole in der Instandhaltung ist die Abschätzung
+        oben der übliche Weg &ndash; solange man die Annahmen aufschreibt.</p>
+    </details>
+
+    <p class="schritt">Schritt 4 &middot; Entscheiden</p>
+    <h2><span class="nr">4</span>Die Schraube wählen</h2>
+
+    <p>Nötig sind rund 10 kN je oberer Schraube. Welche Schraube bringt das auf?
+      Die zulässige Montagevorspannkraft F<sub>M,zul</sub> hängt von Größe,
+      Festigkeitsklasse und Reibung ab &ndash; hier für &mu; = 0,12:</p>
+
+    <div class="tabellenrahmen">
+      <table>
+        <thead>
+          <tr><th>Schraube</th><th class="zahl">A<sub>S</sub></th>
+            <th class="zahl">F<sub>M,zul</sub></th><th class="zahl">M<sub>A</sub></th>
+            <th>reicht für 10 kN?</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>M8 &middot; 5.6</td><td class="zahl">36,6 mm²</td><td class="zahl">8,1 kN</td><td class="zahl">10,6 N&middot;m</td><td>nein</td></tr>
+          <tr><td>M8 &middot; 8.8</td><td class="zahl">36,6 mm²</td><td class="zahl">17,2 kN</td><td class="zahl">22,7 N&middot;m</td><td>ja</td></tr>
+          <tr><td>M10 &middot; 5.6</td><td class="zahl">58,0 mm²</td><td class="zahl">12,8 kN</td><td class="zahl">21,0 N&middot;m</td><td>knapp</td></tr>
+          <tr><td>M10 &middot; 8.8</td><td class="zahl">58,0 mm²</td><td class="zahl">27,4 kN</td><td class="zahl">44,8 N&middot;m</td><td>ja</td></tr>
+          <tr><td>M12 &middot; 8.8</td><td class="zahl">84,3 mm²</td><td class="zahl">39,9 kN</td><td class="zahl">77,4 N&middot;m</td><td>ja</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="fussnote">Werte mit dem Werkzeug Schraubverbindungen gerechnet
+      (&nu; = 0,9, Kopfreibung gleich Gewindereibung). Im Tabellenbuch stehen
+      dieselben Größenordnungen.</p>
+
+    <details>
+      <summary>Welche Schraube nehmt ihr &ndash; und warum?</summary>
+      <p>Rechnerisch reicht <strong>M8 8.8</strong>: 10 kN von 17,2 kN sind
+        58 % Ausnutzung. Trotzdem ist <strong>M10 8.8</strong> hier die bessere
+        Wahl, und zwar aus Gründen, die nicht in der Rechnung stehen:</p>
+      <ul>
+        <li><strong>Die Löcher sind da.</strong> Die Konsole hat &oslash; 11 mm.
+          Mit M8 hätte die Schraube 3 mm Luft im Loch &ndash; die Konsole ließe
+          sich beim Anziehen kaum genau ausrichten, und bei Rutschen käme die
+          Schraube schlagartig zur Anlage.</li>
+        <li><strong>Reserve für die Wirklichkeit.</strong> Verzinkte Flächen,
+          Farbreste, eine Palette, die härter aufsetzt als gedacht: Mit 36 %
+          Ausnutzung bleibt Luft, mit 58 % weniger.</li>
+        <li><strong>Gleichteile.</strong> Die übrigen Konsolen der Bahn sind mit
+          M10 geschraubt. Ein Schlüssel, eine Sorte im Regal, ein Drehmoment.</li>
+      </ul>
+      <p>Nicht überzeugend wäre dagegen „M12, dann hält's sicher": Mehr
+        Drehmoment heißt auch mehr Kraft in der Stütze, ein dickeres Loch und
+        ein größerer Schlüssel, der in der Ecke vielleicht gar nicht mehr
+        angesetzt werden kann.</p>
+      <p><strong>Festigkeitsklasse 8.8</strong>, weil 5.6 rechnerisch nicht
+        trägt. 10.9 brächte nichts: Die Verbindung scheitert nicht an der
+        Schraube, sondern an der Reibung &ndash; und eine höhere Klasse ist
+        empfindlicher gegen Korrosion.</p>
+    </details>
+
+    <details>
+      <summary>Die Entscheidung festhalten</summary>
+      <p>Schreibt die Entscheidung so auf, dass sie jemand in zwei Jahren noch
+        nachvollziehen kann:</p>
+      <div class="tabellenrahmen">
+        <table>
+          <tbody>
+            <tr><td>Gewählt</td><td>&hellip;</td></tr>
+            <tr><td>Weil rechnerisch</td><td>&hellip;</td></tr>
+            <tr><td>Weil betrieblich</td><td>&hellip;</td></tr>
+            <tr><td>Verworfen wurde</td><td>&hellip;, weil &hellip;</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <p class="schritt">Schritt 5 &middot; Ausführen</p>
+    <h2><span class="nr">5</span>Die Montage planen</h2>
+
+    <div class="warnschild">
+      <span>Die Konsole hängt über einem Arbeitsplatz. Vor der Montage klären:
+        Bereich absperren, Bahn stromlos schalten, Leitung an der Stütze
+        sichern. Kein Schritt der Planung ist es wert, das zu überspringen.</span>
+    </div>
+
+    <details>
+      <summary>1. Mit welchem Drehmoment wird angezogen?</summary>
+      <p>Für M10 8.8 bei &mu; = 0,12: <strong>M<sub>A</sub> = 45 N&middot;m</strong>
+        (gerundet von 44,8). Das gilt für die zulässige Montagevorspannkraft,
+        also für die volle Ausnutzung &ndash; und genau so wird angezogen. Man
+        zieht <em>nicht</em> nur so fest, wie die Rechnung mindestens verlangt:
+        Je höher die Vorspannkraft, desto sicherer hält die Reibung, solange
+        F<sub>M,zul</sub> nicht überschritten wird.</p>
+      <p>Wichtig ist, dass die Reibungszahl stimmt. Die 45 N&middot;m gelten für
+        leicht geölte Gewinde. Trocken und verzinkt kann &mu; deutlich höher
+        liegen &ndash; dann landet bei gleichem Drehmoment viel weniger
+        Vorspannkraft in der Schraube, weil mehr davon in der Reibung
+        verschwindet.</p>
+    </details>
+
+    <details>
+      <summary>2. In welcher Reihenfolge, mit welchem Werkzeug?</summary>
+      <ul>
+        <li>Flächen säubern: Farbreste, Zinkspritzer und Grate in der Trennfuge
+          kosten Vorspannkraft, sobald sie sich setzen.</li>
+        <li>Konsole ausrichten, alle vier Schrauben handfest eindrehen.</li>
+        <li><strong>Über Kreuz</strong> in zwei Stufen anziehen: erst rund
+          50 % (etwa 22 N&middot;m), dann auf 45 N&middot;m.</li>
+        <li>Drehmomentschlüssel, kein Schlagschrauber. Der Schlagschrauber
+          trifft die Vorspannkraft nur auf gut ein Drittel genau.</li>
+        <li>Nach dem ersten Belasten der Bahn nachziehen und das Ergebnis
+          notieren.</li>
+      </ul>
+      <p>Das Nachziehen ist kein Eingeständnis, dass etwas falsch war &ndash;
+        es fängt das Setzen ab. Genauso, wie man Radschrauben am Auto nach
+        50 km noch einmal nachzieht.</p>
+    </details>
+
+    <details>
+      <summary>3. Muss die Verbindung gesichert werden?</summary>
+      <p>Eine planmäßig vorgespannte Verbindung sichert sich im Wesentlichen
+        selbst: Solange die Vorspannkraft steht, kann sich nichts losdrehen.
+        Federringe bringen bei hochfesten Schrauben nichts &ndash; sie sind
+        weicher als die Schraube und flachen unter der Vorspannkraft ab.</p>
+      <p>Sinnvoll sind hier: saubere Auflageflächen, eine Scheibe unter der
+        Mutter (die Konsole ist nur gestanzt), Anziehen mit Drehmoment und das
+        Nachziehen. Wer zusätzlich sichern will, nimmt Sperrzahnschrauben oder
+        Klebstoff &ndash; und weiß, dass beides die Demontage erschwert.</p>
+    </details>
+
+    <p class="schritt">Schritt 6 &middot; Kontrollieren</p>
+    <h2><span class="nr">6</span>Zeichnung und Abnahme</h2>
+
+    <details>
+      <summary>1. Schnittzeichnung der Verbindung</summary>
+      <p>Zeichnet die Verbindung im Schnitt: Stützenflansch, Konsole, Schraube
+        mit Scheibe und Mutter. Diese Punkte werden geprüft:</p>
+      <ul class="haken">
+        <li>Schraube, Mutter und Scheibe bleiben ungeschnitten (keine Schraffur)</li>
+        <li>Flansch und Konsole gegenläufig schraffiert &ndash; die Trennfuge muss
+          zu sehen sein</li>
+        <li>Durchgangsloch größer als der Schaft gezeichnet (&oslash; 11 zu M10)</li>
+        <li>Schraffur endet an der breiten Linie</li>
+        <li>Maße für Klemmlänge und Schraubenlänge eingetragen</li>
+      </ul>
+      <p>Wer dabei unsicher ist: Die Übung <em>Vier Schnitte, drei Fehler</em>
+        zeigt genau diese Fälle nebeneinander.</p>
+    </details>
+
+    <details>
+      <summary>2. Prüfprotokoll für die Abnahme</summary>
+      <div class="tabellenrahmen">
+        <table>
+          <thead>
+            <tr><th>Prüfpunkt</th><th>Soll</th><th>Ist</th><th>i.O.</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Schraubengröße und Klasse</td><td>M10 &middot; 8.8</td><td></td><td></td></tr>
+            <tr><td>Anziehdrehmoment</td><td>45 N&middot;m</td><td></td><td></td></tr>
+            <tr><td>Anzahl Schrauben</td><td>4</td><td></td><td></td></tr>
+            <tr><td>Trennfuge sauber, Konsole plan an</td><td>ja</td><td></td><td></td></tr>
+            <tr><td>Scheibe unter der Mutter</td><td>ja</td><td></td><td></td></tr>
+            <tr><td>Nachgezogen nach Erstbelastung</td><td>ja, mit Datum</td><td></td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="fussnote" style="margin-top:10px">Das Protokoll gehört zur
+        Anlagendokumentation. Es beantwortet die Frage, die im Schadensfall als
+        erste kommt: Womit wurde angezogen, und wer hat es geprüft?</p>
+    </details>
+
+    <details>
+      <summary>3. Woran würde man merken, dass etwas nicht stimmt?</summary>
+      <ul>
+        <li><strong>Blanke Stellen oder Rost in der Trennfuge</strong> &ndash; die
+          Konsole arbeitet, die Reibung reicht nicht.</li>
+        <li><strong>Schraubenkopf wandert</strong> (Markierungsstrich über Kopf
+          und Bauteil ziehen) &ndash; die Verbindung dreht sich los.</li>
+        <li><strong>Die Bahn steht nach einiger Zeit schief</strong> &ndash; die
+          Konsole ist abgerutscht, bis der Schaft an der Lochwand anliegt.</li>
+      </ul>
+      <p>Alle drei zeigen dasselbe: zu wenig Vorspannkraft. Die Ursache ist
+        selten die Schraube, meistens die Montage &ndash; falsches Drehmoment,
+        schmutzige Flächen, nicht nachgezogen.</p>
+    </details>
+
+    <p class="schritt">Schritt 7 &middot; Bewerten</p>
+    <h2><span class="nr">7</span>Zurückschauen</h2>
+
+    <details>
+      <summary>Reflexion im Team</summary>
+      <ul>
+        <li>An welcher Stelle wart ihr euch uneinig, und was hat entschieden?</li>
+        <li>Welche der Vereinfachungen würdet ihr euch nicht mehr erlauben, wenn
+          die Konsole 24 kN statt 2,4 kN tragen müsste?</li>
+        <li>Der Meister sagt: „Nehmt einfach M12, dann ist Ruhe." Was antwortet
+          ihr &ndash; in einem Satz, der ihn überzeugt?</li>
+        <li>Was hättet ihr gebraucht, um schneller fertig zu werden?</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>Bewertungsraster</summary>
+      <div class="tabellenrahmen">
+        <table>
+          <thead>
+            <tr><th>Kriterium</th><th class="zahl">Punkte</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Kräfte an der Verbindung vollständig erfasst (Querkraft <em>und</em> Moment)</td><td class="zahl">15</td></tr>
+            <tr><td>Rechenweg nachvollziehbar, Einheiten durchgehend richtig</td><td class="zahl">20</td></tr>
+            <tr><td>Schraubenwahl begründet, auch betrieblich</td><td class="zahl">15</td></tr>
+            <tr><td>Montageplan: Drehmoment, Reihenfolge, Werkzeug, Nachziehen</td><td class="zahl">20</td></tr>
+            <tr><td>Schnittzeichnung normgerecht</td><td class="zahl">20</td></tr>
+            <tr><td>Prüfprotokoll brauchbar für die Abnahme</td><td class="zahl">10</td></tr>
+            <tr class="summe"><td>Summe</td><td class="zahl">100</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Eine Schraubverbindung hält nicht, weil die
+      Schraube stark ist, sondern weil sie fest genug vorgespannt ist. Die
+      Rechnung sagt, wie fest &ndash; die Montage entscheidet, ob es ankommt.
+    </div>
+
+    <h2><span class="nr">8</span>Material</h2>
+
+    <p>Das Werkzeug rechnet jede Variante durch &ndash; Größe, Festigkeitsklasse,
+      Reibungszahl &ndash; und zeichnet die Verbindung dazu:</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="maschinenelemente-schrauben-schraubverbindungen.html">Werkzeug Schraubverbindungen öffnen</a>
+    </p>
+
+    <p>Wer an einer Stelle hängt, findet dort den passenden Ausschnitt:</p>
+    <div class="tabellenrahmen">
+      <table>
+        <thead>
+          <tr><th>Wenn es hakt bei &hellip;</th><th>&hellip; hilft</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Bezeichnung und Maße der Schraube</td>
+              <td><a href="../../uebungen/schraubverbindungen/01-bezeichnung-lesen.html">Übung 1 &middot; Was in der Bezeichnung steckt</a></td></tr>
+          <tr><td>Schnittdarstellung</td>
+              <td><a href="../../uebungen/schraubverbindungen/02-schnittdarstellung-pruefen.html">Übung 2 &middot; Vier Schnitte, drei Fehler</a></td></tr>
+          <tr><td>Drehmoment und Vorspannkraft</td>
+              <td><a href="../../uebungen/schraubverbindungen/03-wohin-geht-das-drehmoment.html">Übung 3 &middot; Wohin geht das Drehmoment?</a></td></tr>
+          <tr><td>Querkraft und Reibung</td>
+              <td><a href="../../uebungen/schraubverbindungen/05-querkraft-durch-reibung.html">Übung 5 &middot; Querkraft durch Reibung</a></td></tr>
+          <tr><td>Begriffe und Formelzeichen</td>
+              <td><a href="../../trainings/schraubverbindungen/01-begriffe-und-formelzeichen.html">Training 1 &middot; Begriffe und Formelzeichen</a></td></tr>
+          <tr><td>Rechnen unter Zeitdruck</td>
+              <td><a href="../../trainings/schraubverbindungen/02-anziehdrehmoment-rechnen.html">Training 2 &middot; Anziehdrehmoment rechnen</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="fussnote" style="margin-top:16px">Im Tabellenbuch gebraucht werden:
+      Spannungsquerschnitte und Festigkeitsklassen, Reibungszahlen für Stahl auf
+      Stahl, Anziehdrehmomente, Durchgangslöcher nach DIN EN 20273.
+      Darstellung nach DIN ISO 6410.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* ---------- Die Zeichnungen ----------
+   Gebaut aus den Bausteinen in assets/zeichnen.js. Gezeichnet wird in
+   currentColor, die Strichstärke steht am Element. */
+
+function el(id){ return document.getElementById(id); }
+
+/* Die Ausgangslage: Stützenflansch im Schnitt, angeschraubte Konsole,
+   Rollenfeld, Last. Der Maßstab ist bewusst nicht durchgehend - es geht um
+   die Hebelarme, nicht um die Blechdicken. */
+function bildLage(){
+  var svg = bild("bildLage", 700, 300,
+    "Seitenansicht: Links der geschnittene Flansch der Stahlstütze, daran mit " +
+    "zwei Schraubenreihen die Konsole. Ihr Arm trägt 250 Millimeter vor der " +
+    "Trennfuge eine Rolle, auf die die Last von 2,4 Kilonewton drückt",
+    "Die Last steht 250 mm vor der Trennfuge &ndash; daraus entsteht neben der " +
+    "Querkraft ein Kippmoment.");
+
+  var mS = schraffur(svg, "ls-stuetze", 45);
+  var mK = schraffur(svg, "ls-konsole", -45);
+
+  var sx = 84, sb = 44;                       /* Flansch der Stütze, geschnitten */
+  var fuge = sx + sb;                          /* hier liegt die Trennfuge */
+  var px = fuge, pb = 18;                      /* Grundplatte der Konsole */
+  var pOben = 40, pUnten = 230;
+  var reihe1 = 70, reihe2 = 200;               /* die beiden Schraubenreihen */
+  var armX = px + pb, armEnde = 452;
+  var armOben = 110, armUnten = 136;
+  var lastX = 400;
+
+  /* Stütze: geschnitten, also schraffiert. */
+  kasten(svg, sx, 16, sb, 258, {fuell:mS, ohneRand:true});
+  kasten(svg, sx, 16, sb, 258, {strich:BREIT});
+  txt(svg, sx + sb / 2, 290, "Stütze", {groesse:12, deckung:.85});
+
+  /* Konsole: Grundplatte, Arm, Strebe - ein Bauteil, eine Schraffur. */
+  kasten(svg, px, pOben, pb, pUnten - pOben, {fuell:mK, ohneRand:true});
+  kasten(svg, armX, armOben, armEnde - armX, armUnten - armOben,
+    {fuell:mK, ohneRand:true});
+  svgEl("polygon", {points:[px + 8, pUnten - 8, px + 30, pUnten - 8,
+    armEnde - 30, armUnten, armEnde - 52, armUnten].join(" "),
+    fill:mK, stroke:"currentColor", "stroke-width":BREIT}, svg);
+  kasten(svg, px, pOben, pb, pUnten - pOben, {strich:BREIT});
+  kasten(svg, armX, armOben, armEnde - armX, armUnten - armOben, {strich:BREIT});
+  txt(svg, armX + 70, armOben - 10, "Konsole", {groesse:12, deckung:.85});
+
+  /* Zwei Schraubenreihen: Kopf auf der Konsolenseite, Mutter und Scheibe
+     hinter dem Flansch. Geschnitten wird keine von beiden. */
+  [reihe1, reihe2].forEach(function(y){
+    kasten(svg, sx - 34, y - 15, 22, 30, {fuell:"var(--card)", strich:BREIT});
+    kasten(svg, sx - 12, y - 20, 8, 40, {fuell:"var(--card)", strich:BREIT});
+    kasten(svg, sx - 30, y - 7, (px + pb + 18) - (sx - 30), 14,
+      {fuell:"var(--card)", strich:BREIT});
+    kasten(svg, px + pb, y - 17, 18, 34, {fuell:"var(--card)", strich:BREIT});
+    achse(svg, sx - 44, px + pb + 30, y);
+  });
+  txt(svg, sx - 30, reihe1 + 34, "Mutter", {groesse:11, deckung:.8, anker:"start"});
+  txt(svg, px + pb + 8, reihe2 - 26, "Kopf", {groesse:11, deckung:.8, anker:"start"});
+
+  /* Rolle auf dem Arm, darüber die Last. */
+  svgEl("circle", {cx:lastX, cy:armOben - 24, r:24, fill:"var(--card)",
+    stroke:"currentColor", "stroke-width":BREIT}, svg);
+  svgEl("circle", {cx:lastX, cy:armOben - 24, r:5, fill:"none",
+    stroke:"currentColor", "stroke-width":SCHMAL}, svg);
+
+  var gL = svgEl("g", {style:"color:var(--accent)"}, svg);
+  linie(gL, lastX, 18, lastX, 58, BREIT);
+  linie(gL, lastX, 58, lastX - 6, 46, BREIT);
+  linie(gL, lastX, 58, lastX + 6, 46, BREIT);
+  txt(gL, lastX, 12, "F = 2,4 kN", {fett:true, groesse:13});
+
+  /* Maße: Hebelarm und Reihenabstand. */
+  mass(svg, fuge, lastX, 266, "a = 250", 246);
+  massV(svg, reihe1, reihe2, 560, "h = 120", 500, false);
+  [reihe1, reihe2].forEach(function(y){
+    linie(svg, px + pb + 30, y, 556, y, SCHMAL, {deckung:.4});
+  });
+
+  linie(svg, fuge, pOben - 14, fuge + 8, pOben - 22, SCHMAL, {deckung:.7});
+  txt(svg, fuge + 12, pOben - 20, "Trennfuge", {groesse:12, deckung:.85, anker:"start"});
+  return svg;
+}
+
+/* Was an der Verbindung ankommt: links das Schraubenbild, rechts die Wirkung
+   des Moments. Links wird bewusst nicht schraffiert - man blickt auf die
+   Fläche, schneidet sie aber nicht. */
+function bildKraefte(){
+  var svg = bild("bildKraefte", 700, 250,
+    "Links das Schraubenbild von vorn mit vier Schrauben im Rechteck, rechts " +
+    "die Seitenansicht: Das Kippmoment zieht an den oberen Schrauben und " +
+    "drückt die untere Kante der Konsole gegen die Stütze",
+    "Links, wie die Schrauben stehen. Rechts, was das Moment aus ihnen macht: " +
+    "oben Zug, unten Druck.");
+
+  /* --- links: Blick auf die Trennfuge (Ansicht, keine Schraffur) --- */
+  var gL = svgEl("g", {transform:"translate(20,0)"}, svg);
+  kasten(gL, 40, 34, 230, 176, {fuell:"var(--card)", strich:BREIT});
+  [[110, 80], [200, 80], [110, 164], [200, 164]].forEach(function(p){
+    svgEl("circle", {cx:p[0], cy:p[1], r:13, fill:"none",
+      stroke:"currentColor", "stroke-width":BREIT}, gL);
+    linie(gL, p[0] - 20, p[1], p[0] + 20, p[1], SCHMAL, {strich:"9 3 2 3", deckung:.55});
+    linie(gL, p[0], p[1] - 20, p[0], p[1] + 20, SCHMAL, {strich:"9 3 2 3", deckung:.55});
+  });
+  mass(gL, 110, 200, 236, "b = 80", 184);
+  massV(gL, 80, 164, 306, "h = 120", 220, false);
+  txt(gL, 155, 22, "Blick auf die Trennfuge", {groesse:12, deckung:.8});
+
+  /* --- rechts: dieselbe Verbindung von der Seite, beide Teile geschnitten --- */
+  var gR = svgEl("g", {transform:"translate(400,0)"}, svg);
+  var mS = schraffur(svg, "kr-stuetze", 45);
+  var mK = schraffur(svg, "kr-konsole", -45);
+  var sx = 14, sb = 34, px = sx + sb, pb = 26;
+  var oben = 34, unten = 210;
+  var r1 = 80, r2 = 164;
+
+  kasten(gR, sx, oben, sb, unten - oben, {fuell:mS, ohneRand:true});
+  kasten(gR, sx, oben, sb, unten - oben, {strich:BREIT});
+  kasten(gR, px, oben, pb, unten - oben, {fuell:mK, ohneRand:true});
+  kasten(gR, px, oben, pb, unten - oben, {strich:BREIT});
+  txt(gR, 60, 22, "von der Seite", {groesse:12, deckung:.8});
+
+  /* Die beiden Schraubenreihen, damit die Pfeile einen Bezug haben. */
+  [r1, r2].forEach(function(y){
+    kasten(gR, sx - 12, y - 6, (px + pb + 10) - (sx - 12), 12,
+      {fuell:"var(--card)", strich:SCHMAL});
+    achse(gR, sx - 18, px + pb + 16, y);
+  });
+
+  /* Oben zieht das Moment die Schrauben, unten drückt die Kante. */
+  var gZ = svgEl("g", {style:"color:var(--bad)"}, gR);
+  linie(gZ, px + pb + 18, r1, px + pb + 74, r1, BREIT);
+  linie(gZ, px + pb + 74, r1, px + pb + 62, r1 - 5, BREIT);
+  linie(gZ, px + pb + 74, r1, px + pb + 62, r1 + 5, BREIT);
+  txt(gZ, px + pb + 80, r1 - 4, "Zug in den", {anker:"start", groesse:12});
+  txt(gZ, px + pb + 80, r1 + 12, "oberen Schrauben", {anker:"start", groesse:12});
+
+  var gD = svgEl("g", {style:"color:var(--ok)"}, gR);
+  linie(gD, px + pb + 74, unten - 12, px + pb + 18, unten - 12, BREIT);
+  linie(gD, px + pb + 18, unten - 12, px + pb + 30, unten - 17, BREIT);
+  linie(gD, px + pb + 18, unten - 12, px + pb + 30, unten - 7, BREIT);
+  txt(gD, px + pb + 80, unten - 16, "untere Kante", {anker:"start", groesse:12});
+  txt(gD, px + pb + 80, unten, "wird gedrückt", {anker:"start", groesse:12});
+
+  /* Die Querkraft hängt an der Konsole und zieht nach unten. */
+  var gQ = svgEl("g", {style:"color:var(--accent)"}, gR);
+  linie(gQ, px + pb / 2, unten + 4, px + pb / 2, unten + 32, BREIT);
+  linie(gQ, px + pb / 2, unten + 32, px + pb / 2 - 6, unten + 21, BREIT);
+  linie(gQ, px + pb / 2, unten + 32, px + pb / 2 + 6, unten + 21, BREIT);
+  txt(gQ, px + pb / 2 + 12, unten + 30, "Querkraft 2,4 kN",
+    {anker:"start", groesse:12, fett:true});
+  return svg;
+}
+
+bildLage();
+bildKraefte();
+
+/* ---------- Die Ergebnisse prüfen ----------
+   Geprüft wird auf drei Prozent genau: Wer mit gerundeten Zwischenwerten
+   rechnet, soll nicht durchfallen. */
+
+var SOLL = [
+  {id:"aM",  wert:600, einheit:"N·m", name:"Kippmoment"},
+  {id:"aFZ", wert:2.5, einheit:"kN",  name:"Zugkraft je oberer Schraube"},
+  {id:"aFK", wert:6.5, einheit:"kN",  name:"Klemmkraft gegen Rutschen"},
+  {id:"aFV", wert:9.0, einheit:"kN",  name:"nötige Vorspannkraft"}
+];
+
+function zahl(x){
+  return x.toFixed(x < 10 ? 1 : 0).replace(".", ",");
+}
+
+el("btnPruefen").addEventListener("click", function(){
+  var offen = [], daneben = [], passt = [];
+
+  SOLL.forEach(function(s){
+    var roh = el(s.id).value.replace(",", ".");
+    if(roh === ""){ offen.push(s); return; }
+    var wert = parseFloat(roh);
+    if(!isFinite(wert) || Math.abs(wert - s.wert) > 0.03 * s.wert) daneben.push(s);
+    else passt.push(s);
+  });
+
+  var r = el("rueck");
+  var text;
+  if(offen.length === SOLL.length){
+    r.className = "rueckmeldung";
+    text = "<strong>Noch nichts eingetragen.</strong>Rechnet die Werte aus – "
+      + "der Rechenweg steht darunter zum Aufklappen.";
+  } else if(!daneben.length && !offen.length){
+    r.className = "rueckmeldung ja";
+    text = "<strong>Alle vier stimmen.</strong>Damit steht, was jede obere "
+      + "Schraube können muss: rund 9 kN, mit dem Zuschlag fürs Setzen rund "
+      + "10 kN. Weiter zur Schraubenwahl.";
+  } else {
+    r.className = "rueckmeldung " + (daneben.length > 1 ? "nein" : "fast");
+    text = "<strong>" + passt.length + " von " + SOLL.length + " stimmen.</strong>";
+    if(daneben.length){
+      text += "Noch einmal ansehen: <strong>"
+        + daneben.map(function(s){ return s.name; }).join("</strong>, <strong>")
+        + "</strong>. ";
+    }
+    if(offen.length) text += "Noch offen: " + offen.length + ". ";
+    /* Ein Hinweis statt der Lösung - die steht im Rechenweg. */
+    if(daneben.some(function(s){ return s.id === "aM"; })){
+      text += "Beim Moment: Die Last steht 0,25 m vor der Fuge, nicht 250.";
+    } else if(daneben.some(function(s){ return s.id === "aFZ"; })){
+      text += "Bei der Zugkraft: Das Moment teilt sich auf zwei obere Schrauben auf.";
+    } else if(daneben.some(function(s){ return s.id === "aFK"; })){
+      text += "Bei der Klemmkraft: Es tragen alle vier Schrauben, aber nur eine Reibfläche.";
+    }
+  }
+  r.innerHTML = text;
+  r.hidden = false;
+});
+
+el("btnLeeren").addEventListener("click", function(){
+  SOLL.forEach(function(s){ el(s.id).value = ""; });
+  el("rueck").hidden = true;
+});
+</script>
+
+<script src="../../assets/back-nav.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

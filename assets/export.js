@@ -26,10 +26,12 @@
   'use strict';
 
 
-  /* Ob die Seite eine Übung oder ein Training ist, steht im Pfad. Das ist
-     unabhängig davon, wie die Seite selbst überschrieben ist, und stimmt auch
-     lokal und auf GitHub Pages. */
-  var TYP = /\/trainings\//.test(location.pathname) ? 'Training' : 'Übung';
+  /* Um welche Art Seite es geht, steht im Pfad. Das ist unabhängig davon, wie
+     die Seite selbst überschrieben ist, und stimmt auch lokal und auf GitHub
+     Pages. */
+  var TYP = /\/trainings\//.test(location.pathname) ? 'Training'
+    : /\/lernsituationen\//.test(location.pathname) ? 'Lernsituation'
+    : 'Übung';
 
   /* Dieselbe Leiste wie der Baukasten; wer zuerst kommt, legt sie an. */
   function leiste() {

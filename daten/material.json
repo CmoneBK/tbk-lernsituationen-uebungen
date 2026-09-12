@@ -1,5 +1,19 @@
 [
   {
+    "typ": "lernsituationen",
+    "bereich": "Maschinenelemente",
+    "kategorie": "Schrauben",
+    "name": "Konsole am Förderband",
+    "url": "lernsituationen/konsole-am-foerderband/index.html",
+    "werkzeuge": [
+      {
+        "datei": "maschinenelemente-schrauben-schraubverbindungen.html",
+        "name": "Werkzeug Schraubverbindungen"
+      }
+    ],
+    "inhalt": []
+  },
+  {
     "typ": "uebungen",
     "bereich": "Maschinenelemente",
     "kategorie": "Schrauben",
