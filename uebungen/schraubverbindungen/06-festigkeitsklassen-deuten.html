@@ -91,6 +91,11 @@
       <p class="punkte" id="punkte"></p>
     </div>
 
+    <p class="fussnote" id="sperre">Die Tabelle mit allen Werten steht unten &ndash;
+      sie erscheint, sobald du jede der fünf Klassen einmal bearbeitet hast.
+      Vorher wäre sie nur ein Spickzettel.</p>
+
+    <div id="teil2" hidden>
     <h2><span class="nr">2</span>Die Tabelle</h2>
     <p>Alle gebräuchlichen Klassen auf einen Blick. Die letzte Spalte zeigt, was
       das für eine M12 bedeutet (A<sub>S</sub> = 84,3 mm²).</p>
@@ -123,6 +128,8 @@
       <p>Im Rechner des Werkzeugs ist dieser Sprung eingebaut. Stell dort einmal
         M16 und dann M20 bei Klasse 8.8 ein und beobachte die Vorspannkraft.</p>
     </details>
+
+    </div>
 
     <h2><span class="nr">3</span>Übertragen</h2>
 
@@ -225,6 +232,9 @@ el("tabBody").innerHTML = KLASSENLISTE.map(function(k){
 var offen = KLASSENLISTE.slice();
 var aktuell = null;
 var richtig = 0, versuche = 0;
+/* Welche Klassen schon einmal bearbeitet wurden. Erst wenn alle fünf dabei
+   sind, erscheint die Tabelle - vorher wäre sie die Lösung zur Aufgabe. */
+var bearbeitet = {};
 
 function naechste(){
   if(!offen.length) offen = KLASSENLISTE.slice();
@@ -236,10 +246,26 @@ function naechste(){
   el("aRm").focus();
 }
 
+function anzahlBearbeitet(){
+  return Object.keys(bearbeitet).length;
+}
+
 function punkteZeigen(){
+  var fehlen = KLASSENLISTE.length - anzahlBearbeitet();
   el("punkte").textContent = versuche
-    ? richtig + " von " + versuche + " richtig."
+    ? richtig + " von " + versuche + " richtig." +
+      (fehlen ? "  Noch " + fehlen + (fehlen === 1 ? " Klasse" : " Klassen") + " offen." : "")
     : "";
+}
+
+/* Freischalten, sobald jede Klasse einmal dran war - unabhängig davon, ob die
+   Antwort stimmte. Wer hängenbleibt, soll nicht ausgesperrt werden. */
+function freischalten(){
+  if(anzahlBearbeitet() < KLASSENLISTE.length) return;
+  if(!el("teil2").hidden) return;
+  el("teil2").hidden = false;
+  el("sperre").textContent = "Alle fünf Klassen bearbeitet – hier ist die " +
+    "vollständige Tabelle zum Gegenprüfen.";
 }
 
 el("btnPruefen").addEventListener("click", function(){
@@ -251,6 +277,7 @@ el("btnPruefen").addEventListener("click", function(){
   var r = el("rueck");
 
   versuche++;
+  bearbeitet[aktuell] = true;
   if(okRm && okRp){
     richtig++;
     r.className = "rueckmeldung ja";
@@ -265,6 +292,7 @@ el("btnPruefen").addEventListener("click", function(){
   }
   r.hidden = false;
   punkteZeigen();
+  freischalten();
 });
 
 el("btnWeiter").addEventListener("click", naechste);

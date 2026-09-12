@@ -40,6 +40,9 @@
   .formel .erl{display:block; font-size:13px; color:var(--muted); line-height:1.5; margin-top:6px}
 
   .hinweis-paarung{font-size:13px; color:var(--muted); margin:6px 0 0}
+  .bild{margin:16px 0 4px}
+  .bild svg{width:100%; height:auto; display:block}
+  .bild figcaption{font-size:13px; color:var(--muted); margin-top:6px; text-align:center}
   @media (prefers-reduced-motion:reduce){.spanne .band{transition:none}}
 </style>
 </head>
@@ -63,6 +66,8 @@
       <p><strong>Frage:</strong> Hält das?</p>
     </div>
 
+    <figure class="bild" id="bildAusgangslage"></figure>
+
     <h2><span class="nr">1</span>Die Formel</h2>
 
     <div class="formel">
@@ -85,6 +90,13 @@
         typisch <strong>0,10 bis 0,20</strong> &ndash; also Faktor zwei.</p>
       <p>Für die Auslegung heißt das: <strong>Mit dem unteren Wert rechnen.</strong>
         Der obere ist Glück, kein Nachweis.</p>
+      <p><strong>Manche Tabellenbücher vereinfachen</strong> und nennen einen
+        einzelnen Wert, etwa &mu;<sub>T</sub> = 0,15 für Stahl auf Stahl. Das
+        macht die Rechnung eindeutig &ndash; und verschweigt die Streuung. Im
+        Rechner unten kannst du bei der Werkstoffpaarung
+        <em>eigener Wert aus dem Tabellenbuch</em> wählen und deine Zahl
+        eintragen. Vergleiche dann mit dem Bereich: Der Einzelwert liefert ein
+        sauberes Ja oder Nein, wo in Wirklichkeit ein Vielleicht steht.</p>
     </details>
 
     <h2><span class="nr">2</span>Rechnen</h2>
@@ -101,6 +113,9 @@
         </label>
         <label class="feld">Werkstoffpaarung in der Trennfuge
           <select id="ePaarung"></select>
+        </label>
+        <label class="feld" id="eigenFeld" hidden>&mu;<sub>T</sub> aus dem Tabellenbuch
+          <input type="number" id="eMyEigen" min="0.02" max="0.60" step="0.01" value="0.15">
         </label>
         <label class="feld">Anzahl Schrauben n<sub>S</sub>
           <input type="number" id="eNs" min="1" max="24" step="1" value="4">
@@ -158,6 +173,7 @@
       <p>Wirkt direkt, weil n<sub>S</sub> und F<sub>M,zul</sub> linear eingehen.
         Sechs statt vier M10 bringen 13,1 kN &ndash; das reicht. Vier M12 statt
         vier M10 bringen 12,8 kN &ndash; reicht ebenfalls, knapp.</p>
+      <figure class="bild" id="bildMehrSchrauben"></figure>
       <p>Nachteil: mehr Bohrungen, mehr Montagezeit, mehr Platzbedarf. Und der
         Nachweis hängt weiter am unsicheren &mu;<sub>T</sub>.</p>
     </details>
@@ -179,6 +195,7 @@
         verdoppelt n<sub>F</sub> die Reibfläche &ndash; 17,5 kN statt 8,8 kN, ohne
         eine einzige Schraube mehr. Konstruktiv oft die eleganteste Lösung, wenn
         der Bauraum es hergibt.</p>
+      <figure class="bild" id="bildTrennfugen"></figure>
     </details>
 
     <details>
@@ -189,6 +206,7 @@
       <p>Das ist immer dann der richtige Weg, wenn die Querkraft groß, die
         Reibung unsicher oder ein Verrutschen nicht hinnehmbar ist. Der Preis
         sind enge Toleranzen: Passbohrungen müssen gemeinsam gerieben werden.</p>
+      <figure class="bild" id="bildFormschluss"></figure>
     </details>
 
     <h2><span class="nr">4</span>Übertragen</h2>
@@ -204,6 +222,7 @@
       <p>Die Ausnahme heißt <strong>Passschraube</strong>: Sie hat einen
         geschliffenen Schaft und sitzt spielfrei &ndash; und darf dann tatsächlich
         auf Abscheren gerechnet werden.</p>
+      <figure class="bild" id="bildSpiel"></figure>
     </details>
 
     <details>
@@ -216,6 +235,15 @@
         Gegenmittel: nachziehen, weniger Trennfugen, keine weichen Zwischenlagen,
         und lange nachgiebige Schrauben, bei denen ein Setzbetrag prozentual
         weniger ausmacht.</p>
+      <p><strong>Das kennst du schon:</strong> Nach einem Radwechsel steht in
+        jeder Betriebsanleitung, die Radschrauben nach etwa 50 bis 100 Kilometern
+        <em>nachzuziehen</em>. Dahinter steckt genau dieses Setzen &ndash; Nabe,
+        Felge und Schraubenkopf ebnen ihre Rauheitsspitzen ein, die Vorspannkraft
+        sinkt, und mit ihr die Reibung, die das Rad an seinem Platz hält.</p>
+      <p>Denn das Rad wird nicht von den Schrauben <em>getragen</em>: Es hängt an
+        der Reibung zwischen Felge und Nabe. Dieselbe Rechnung wie bei der
+        Konsole, nur mit einem Rad daran &ndash; und mit demselben Ausgang, wenn
+        die Vorspannkraft fehlt.</p>
     </details>
 
     <details>
@@ -226,8 +254,17 @@
         festeres Anziehen.</p>
       <p>Und sie hat Nachteile: 12.9 ist kerbempfindlicher, anfälliger für
         wasserstoffinduzierte Sprödbrüche und verträgt keine galvanische
-        Verzinkung ohne besondere Maßnahmen. Wer nur mehr Haltekraft braucht,
-        fährt mit einer gestrahlten Trennfuge oder einer Schraube mehr meist besser.</p>
+        Verzinkung ohne besondere Maßnahmen.</p>
+      <p><strong>Dazu kommt der Preis.</strong> Eine 12.9 kostet je nach Größe
+        etwa das Zwei- bis Dreifache einer 8.8 und ist seltener am Lager. Bei
+        einer einzelnen Konsole fällt das nicht ins Gewicht &ndash; bei einer
+        Maschine mit einigen hundert Schrauben oder in der Serienfertigung
+        durchaus. Dort lohnt der Vergleich: Eine gestrahlte Trennfuge kostet
+        einen Arbeitsgang, zwei Schrauben mehr kosten zwei Bohrungen. Beides ist
+        meist günstiger als die hochfeste Schraube &ndash; und der Nachweis wird
+        besser, weil man nicht weiter an der Reibungszahl hängt.</p>
+      <p>Wer nur mehr Haltekraft braucht, fährt mit einer gestrahlten Trennfuge
+        oder einer Schraube mehr also meist besser.</p>
     </details>
 
     <div class="merksatz">
@@ -253,6 +290,7 @@
     &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
   </footer>
 
+<script src="../../assets/zeichnen.js"></script>
 <script>
 "use strict";
 
@@ -331,6 +369,11 @@ function auswahlFuellen(sel, liste, start){
 auswahlFuellen(el("eGewinde"), GROESSEN, "M10");
 auswahlFuellen(el("eKlasse"), KLASSENLISTE, "8.8");
 auswahlFuellen(el("ePaarung"), PAARUNGEN, "0");
+/* Zusaetzlich ein fester Wert, wie ihn manche Tabellenbuecher nennen. */
+var eigen = document.createElement("option");
+eigen.value = "eigen";
+eigen.textContent = "eigener Wert aus dem Tabellenbuch";
+el("ePaarung").appendChild(eigen);
 
 function grenze(wert, min, max, ersatz){
   var x = parseFloat(wert);
@@ -339,7 +382,21 @@ function grenze(wert, min, max, ersatz){
 }
 
 function neuRechnen(){
-  var paarung = PAARUNGEN[parseInt(el("ePaarung").value, 10)];
+  /* Entweder ein Bereich aus der Tabelle oder ein einzelner Wert von Hand.
+     Beim Einzelwert fallen von und bis zusammen - das Ergebnis ist dann eine
+     Zahl statt einer Spanne, und genau darin liegt seine Schwaeche. */
+  var istEigen = el("ePaarung").value === "eigen";
+  el("eigenFeld").hidden = !istEigen;
+
+  var paarung;
+  if(istEigen){
+    var w = grenze(el("eMyEigen").value, 0.02, 0.60, 0.15);
+    paarung = {name:"eigener Wert", von:w, bis:w,
+      hinweis:"ein einzelner Wert verdeckt, dass die Reibung streut"};
+  } else {
+    paarung = PAARUNGEN[parseInt(el("ePaarung").value, 10)];
+  }
+
   var FM   = vorspannkraft(el("eGewinde").value, el("eKlasse").value);
   var nS   = grenze(el("eNs").value, 1, 24, 4);
   var nF   = grenze(el("eNf").value, 1, 6, 1);
@@ -349,8 +406,11 @@ function neuRechnen(){
   var q = function(my){ return my * FM * nS * nF / sR; };
   var qMin = q(paarung.von), qMax = q(paarung.bis);
 
-  el("paarungHinweis").innerHTML = "&mu;<sub>T</sub> = " + zahl(paarung.von, 2) +
-    " bis " + zahl(paarung.bis, 2) + (paarung.hinweis ? " &middot; " + paarung.hinweis : "");
+  el("paarungHinweis").innerHTML = "&mu;<sub>T</sub> = " +
+    (paarung.von === paarung.bis
+      ? zahl(paarung.von, 2)
+      : zahl(paarung.von, 2) + " bis " + zahl(paarung.bis, 2)) +
+    (paarung.hinweis ? " &middot; " + paarung.hinweis : "");
 
   el("rFM").textContent   = zahl(FM / 1000);
   el("rQmin").textContent = zahl(qMin / 1000);
@@ -369,6 +429,11 @@ function neuRechnen(){
     u.innerHTML = "<strong>Hält &ndash; nachweislich.</strong> Schon mit der " +
       "kleinsten Reibungszahl werden " + zahl(qMin / 1000) + " kN übertragen, " +
       "gefordert sind " + zahl(soll / 1000) + " kN.";
+  } else if(qMin === qMax){
+    u.className = "rueckmeldung nein";
+    u.innerHTML = "<strong>Hält nicht.</strong> Mit &mu;<sub>T</sub> = " +
+      zahl(paarung.von, 2) + " werden " + zahl(qMax / 1000) + " kN übertragen, " +
+      "gefordert sind " + zahl(soll / 1000) + " kN.";
   } else if(qMax >= soll){
     u.className = "rueckmeldung fast";
     u.innerHTML = "<strong>Hält vielleicht &ndash; und das genügt nicht.</strong> " +
@@ -383,11 +448,291 @@ function neuRechnen(){
   }
 }
 
-["eGewinde","eKlasse","ePaarung","eNs","eNf","eSr","eSoll"].forEach(function(id){
+["eGewinde","eKlasse","ePaarung","eMyEigen","eNs","eNf","eSr","eSoll"].forEach(function(id){
   el(id).addEventListener("input", neuRechnen);
   el(id).addEventListener("change", neuRechnen);
 });
 neuRechnen();
+
+/* ---------- Zeichnungen ----------
+   Gebaut aus den Bausteinen in assets/zeichnen.js. Die Konsole wird in allen
+   Bildern gleich gezeichnet, damit die Lösungswege als Abwandlung derselben
+   Verbindung erkennbar bleiben. */
+
+/* Schraubensymbol, Achse waagerecht, Kopf rechts - so sitzt die Schraube in
+   der Konsole: Kopf außen, Gewinde im Gestell. */
+function schraubeLinks(g, x, y, laenge, rd, rk){
+  kasten(g, x, y - rk, 13, 2 * rk, {fuell:"var(--card)"});
+  kasten(g, x - laenge, y - rd, laenge, 2 * rd, {fuell:"var(--card)"});
+}
+
+/* Vier Schrauben im Rechteck, Blick auf die Trennfuge. */
+function schraubenbild(g, x, y, b, h, spalten, zeilen, r, beschriftung){
+  kasten(g, x, y, b, h, {fuell:"none"});
+  for(var i = 0; i < spalten; i++){
+    for(var j = 0; j < zeilen; j++){
+      var cx = x + b * (i + 1) / (spalten + 1);
+      var cy = y + h * (j + 1) / (zeilen + 1);
+      svgEl("circle", {cx:cx, cy:cy, r:r, fill:"none",
+        stroke:"currentColor", "stroke-width":BREIT}, g);
+      linie(g, cx - r - 4, cy, cx + r + 4, cy, SCHMAL, {strich:"7 2 1 2", deckung:.5});
+      linie(g, cx, cy - r - 4, cx, cy + r + 4, SCHMAL, {strich:"7 2 1 2", deckung:.5});
+    }
+  }
+  if(beschriftung) txt(g, x + b / 2, y + h + 20, beschriftung, {groesse:11});
+}
+
+/* Die Ausgangslage: Konsole am Gestell, vier Schrauben, Querkraft nach unten. */
+function bildAusgangslage(){
+  var svg = bild("bildAusgangslage", 452, 268,
+    "Links die Konsole im Schnitt: sie ist an ein senkrechtes Gestell " +
+    "geschraubt und trägt am freien Ende eine Querkraft von 12 Kilonewton. " +
+    "Rechts der Blick auf die Trennfuge mit vier Schrauben M10",
+    "Die Last steht <em>quer</em> zu den Schrauben &ndash; getragen wird sie " +
+    "von der Reibung in der Trennfuge.");
+
+  var m = schraffur(svg, "ag1", 45);
+  var mK = schraffur(svg, "ag2", -45);
+
+  /* Gestell */
+  kasten(svg, 24, 28, 34, 190, {fuell:m});
+  txt(svg, 41, 238, "Gestell", {groesse:10.5, deckung:.8});
+
+  /* Konsole: Flansch an der Wand, Arm nach rechts */
+  var gK = gruppe(svg);
+  svgEl("polygon", {points:"58,44 80,44 80,104 206,104 206,132 80,132 80,202 58,202",
+    fill:mK, stroke:"currentColor", "stroke-width":BREIT}, gK);
+  txt(svg, 150, 152, "Konsole", {groesse:10.5, deckung:.8});
+
+  /* Zwei der vier Schrauben sind im Schnitt zu sehen. */
+  [72, 174].forEach(function(y){
+    schraubeLinks(gruppe(svg), 80, y, 44, 5, 11);
+  });
+  txt(svg, 100, 60, "4 × M10", {anker:"start", groesse:10.5, deckung:.85});
+
+  /* Trennfuge hervorheben - dort entsteht die Haltekraft. */
+  var gT = svgEl("g", {style:"color:var(--accent)"}, svg);
+  linie(gT, 58, 36, 58, 212, SCHMAL, {strich:"5 4"});
+  txt(gT, 58, 26, "Trennfuge – hier wirkt μ", {groesse:10.5});
+
+  /* Querkraft am freien Ende */
+  var gF = svgEl("g", {style:"color:var(--bad)"}, svg);
+  linie(gF, 224, 118, 224, 196, BREIT);
+  linie(gF, 224, 200, 218, 188, BREIT);
+  linie(gF, 224, 200, 230, 188, BREIT);
+  txt(gF, 224, 216, "Querkraft 12 kN", {groesse:11, fett:true});
+
+  /* Blick auf die Trennfuge */
+  txt(svg, 300, 26, "Blick auf die Trennfuge", {anker:"start", fett:true, groesse:11.5});
+  schraubenbild(gruppe(svg), 306, 46, 118, 150, 2, 2, 9, "4 × M10, eine Trennfuge");
+
+  return svg;
+}
+
+/* Weg 1: mehr oder größere Schrauben. */
+function bildMehrSchrauben(){
+  var svg = bild("bildMehrSchrauben", 452, 226,
+    "Drei Schraubenbilder im Vergleich: vier M10, sechs M10 und vier M12, " +
+    "mit der jeweils übertragbaren Querkraft",
+    "Beide Wege wirken linear &ndash; doppelt so viel Schraubenfläche, " +
+    "doppelte Haltekraft.");
+
+  var f = [
+    {sp:2, z:2, r:9,  titel:"4 × M10",  wert:"8,8 kN",  farbe:"bad"},
+    {sp:2, z:3, r:9,  titel:"6 × M10",  wert:"13,1 kN", farbe:"ok"},
+    {sp:2, z:2, r:12, titel:"4 × M12",  wert:"12,8 kN", farbe:"ok"}
+  ];
+  f.forEach(function(o, i){
+    var x = 32 + i * 140;
+    txt(svg, x + 52, 24, o.titel, {fett:true});
+    schraubenbild(gruppe(svg), x, 40, 104, 132, o.sp, o.z, o.r);
+    var g = svgEl("g", {style:"color:var(--" + o.farbe + ")"}, svg);
+    txt(g, x + 52, 196, o.wert, {fett:true, groesse:13});
+  });
+  txt(svg, 226, 216, "gefordert sind 12 kN", {groesse:10.5, deckung:.8});
+
+  return svg;
+}
+
+/* Weg 3: eine zweite Trennfuge verdoppelt die Reibfläche. */
+function bildTrennfugen(){
+  var svg = bild("bildTrennfugen", 452, 300,
+    "Oben die Konsole auf einem Blech mit einer Trennfuge, unten zwischen " +
+    "zwei Blechen mit zwei Trennfugen",
+    "Dieselben vier Schrauben, dieselbe Vorspannkraft \u2013 und die " +
+    "doppelte Haltekraft.");
+
+  /* Je Zeile: links die Benennung, in der Mitte der Stapel im Schnitt, rechts
+     die uebertragbare Querkraft. Alles auf derselben Hoehe, damit die beiden
+     Faelle unmittelbar vergleichbar sind. */
+  function zeile(y, lagenZahl, titel, wert, farbe){
+    var mA = schraffur(svg, "tf" + y + "a", 45);
+    var mB = schraffur(svg, "tf" + y + "b", -45);
+    var x = 150, dick = 30, h = 44;
+
+    txt(svg, 24, y + 5, titel, {anker:"start", fett:true, groesse:11});
+
+    var muster = lagenZahl === 3 ? [mA, mB, mA] : [mA, mB];
+    muster.forEach(function(m, i){
+      [[y - h, h - 7], [y + 7, h - 7]].forEach(function(p){
+        kasten(svg, x + i * dick, p[0], dick, p[1], {fuell:m});
+      });
+    });
+
+    var breite = lagenZahl * dick;
+    kasten(svg, x - 15, y - 17, 15, 34, {fuell:"var(--card)"});
+    kasten(svg, x, y - 5, breite + 14, 10, {fuell:"var(--card)"});
+    kasten(svg, x + breite + 14, y - 17, 15, 34, {fuell:"var(--card)"});
+
+    /* Die Trennfugen markieren - sie tragen die Last. */
+    var g = svgEl("g", {style:"color:var(--accent)"}, svg);
+    for(var i = 1; i < lagenZahl; i++){
+      var xf = x + i * dick;
+      linie(g, xf, y - h - 16, xf, y - h + 2, SCHMAL, {strich:"4 3"});
+    }
+    txt(g, x + breite / 2, y - h - 22,
+        (lagenZahl - 1) + (lagenZahl === 2 ? " Trennfuge" : " Trennfugen"),
+        {groesse:10.5});
+
+    /* Die Konsole ist die mittlere Lage - einmal benannt genuegt. */
+    txt(svg, x + dick * (lagenZahl === 3 ? 1.5 : 1.5), y + h + 16,
+        lagenZahl === 3 ? "Konsole zwischen zwei Blechen" : "Konsole auf einem Blech",
+        {groesse:9.5, deckung:.75});
+
+    var gW = svgEl("g", {style:"color:var(--" + farbe + ")"}, svg);
+    txt(gW, 428, y + 6, wert, {anker:"end", fett:true, groesse:14});
+  }
+
+  /* Reichlich Abstand: die untere Zeile traegt ihre Beschriftung oben, die
+     obere ihre unten - die duerfen sich nicht begegnen. */
+  zeile(80,  2, "aufgelegt",   "8,8 kN",  "bad");
+  zeile(232, 3, "eingeklemmt", "17,5 kN", "ok");
+
+  return svg;
+}
+
+/* Weg 4: Formschluss nimmt die Querkraft direkt auf. */
+function bildFormschluss(){
+  var svg = bild("bildFormschluss", 452, 252,
+    "Links wird die Querkraft nur über die Reibung in der Trennfuge " +
+    "übertragen, rechts zusätzlich formschlüssig über einen Passstift, der " +
+    "die Trennfuge kreuzt",
+    "Mit Formschluss ist die Reibungszahl gleichgültig \u2013 die Last hat " +
+    "einen festen Weg.");
+
+  function seite(x0, mitStift, titel, hinweis, farbe){
+    var mA = schraffur(svg, "fs" + x0 + "a", 45);
+    var mB = schraffur(svg, "fs" + x0 + "b", -45);
+    var y = 128, dick = 30, h = 46;
+
+    txt(svg, x0 + dick, 26, titel, {fett:true});
+
+    [[x0 - dick, mA], [x0, mB]].forEach(function(l){
+      [[y - h, h - 7], [y + 7, h - 7]].forEach(function(p){
+        kasten(svg, l[0], p[0], dick, p[1], {fuell:l[1]});
+      });
+    });
+    kasten(svg, x0 - dick - 14, y - 16, 14, 32, {fuell:"var(--card)"});
+    kasten(svg, x0 - dick, y - 5, 2 * dick + 13, 10, {fuell:"var(--card)"});
+    kasten(svg, x0 + dick + 13, y - 16, 14, 32, {fuell:"var(--card)"});
+
+    /* Die Last hängt am rechten Bauteil und will nach unten. */
+    var gL = svgEl("g", {style:"color:var(--bad)"}, svg);
+    linie(gL, x0 + dick + 34, y - 20, x0 + dick + 34, y + 24, BREIT);
+    linie(gL, x0 + dick + 29, y + 16, x0 + dick + 34, y + 26, BREIT);
+    linie(gL, x0 + dick + 39, y + 16, x0 + dick + 34, y + 26, BREIT);
+    txt(gL, x0 + dick + 34, y + 44, "F", {groesse:11, fett:true});
+
+    if(mitStift){
+      /* Der Stift liegt wie die Schraube quer zur Trennfuge und spielfrei im
+         Loch - er nimmt die Querkraft unmittelbar auf. */
+      var gS = svgEl("g", {style:"color:var(--ok)"}, svg);
+      kasten(gS, x0 - 24, y - h + 14, 48, 15, {fuell:"var(--card)"});
+      txt(gS, x0, y - h - 6, "Passstift", {groesse:10.5});
+      linie(gS, x0, y - h + 33, x0, y - h + 45, BREIT);
+      linie(gS, x0 - 5, y - h + 39, x0, y - h + 45, BREIT);
+      linie(gS, x0 + 5, y - h + 39, x0, y - h + 45, BREIT);
+    } else {
+      /* Ohne Formschluss haelt nur die Reibung entlang der Trennfuge. */
+      var gR = svgEl("g", {style:"color:var(--warn)"}, svg);
+      [-1, 1].forEach(function(v){
+        linie(gR, x0, y + v * 16, x0, y + v * 36, BREIT);
+        linie(gR, x0 - 5, y + v * 30, x0, y + v * 36, BREIT);
+        linie(gR, x0 + 5, y + v * 30, x0, y + v * 36, BREIT);
+      });
+      txt(gR, x0, y - h - 6, "nur Reibung", {groesse:10.5});
+    }
+
+    var g = svgEl("g", {style:"color:var(--" + farbe + ")"}, svg);
+    txt(g, x0 + dick, 226, hinweis, {groesse:11, fett:true});
+  }
+
+  seite(100, false, "nur Schrauben", "h\u00e4ngt an \u03bc", "warn");
+  seite(330, true,  "mit Passstift", "\u03bc ist egal",       "ok");
+
+  return svg;
+}
+
+/* Teil 4, Frage 1: Warum die Schraube im Durchgangsloch nicht auf Abscheren
+   gerechnet werden darf - und was die Passschraube anders macht. */
+function bildSpiel(){
+  var svg = bild("bildSpiel", 452, 244,
+    "Links eine Durchgangsschraube M10 in einem Loch von 11 Millimetern mit " +
+    "0,5 Millimeter Spiel je Seite, rechts eine spielfrei sitzende " +
+    "Passschraube",
+    "Solange die Verbindung hält, berührt die Durchgangsschraube die " +
+    "Lochwand gar nicht. Das Spiel ist &uuml;berh&ouml;ht gezeichnet.");
+
+  function fall(x0, spiel, titel, hinweis, farbe){
+    var m = schraffur(svg, "sp" + x0, 45);
+    var y = 116, dick = 74, rLoch = 30, rSchaft = 30 - spiel;
+
+    txt(svg, x0 + dick / 2, 26, titel, {fett:true});
+
+    /* Bauteil im Schnitt mit Durchgangsloch */
+    [[y - 74, 74 - rLoch], [y + rLoch, 74 - rLoch]].forEach(function(p){
+      kasten(svg, x0, p[0], dick, p[1], {fuell:m});
+    });
+
+    /* Schraubenschaft mittig im Loch */
+    kasten(svg, x0 - 26, y - rSchaft, dick + 52, 2 * rSchaft, {fuell:"var(--card)"});
+    achse(svg, x0 - 34, x0 + dick + 34, y);
+
+    if(spiel > 0){
+      var g = svgEl("g", {style:"color:var(--" + farbe + ")"}, svg);
+      [-1, 1].forEach(function(v){
+        var a = y + v * rSchaft, b = y + v * rLoch;
+        linie(g, x0 + dick + 8, a, x0 + dick + 8, b, SCHMAL);
+        linie(g, x0 + dick + 5, a, x0 + dick + 11, a, SCHMAL);
+        linie(g, x0 + dick + 5, b, x0 + dick + 11, b, SCHMAL);
+      });
+      txt(g, x0 + dick / 2, y + 92, "0,5 mm Spiel je Seite", {groesse:10.5});
+      txt(svg, x0 + dick / 2, y - 92, "Schaft 10 mm im Loch 11 mm",
+          {groesse:10.5, deckung:.8});
+    } else {
+      txt(svg, x0 + dick / 2, y - 92, "Schaft geschliffen, spielfrei",
+          {groesse:10.5, deckung:.8});
+      var gO = svgEl("g", {style:"color:var(--ok)"}, svg);
+      txt(gO, x0 + dick / 2, y + 92, "liegt an der Lochwand an", {groesse:10.5});
+    }
+
+    var gH = svgEl("g", {style:"color:var(--" + farbe + ")"}, svg);
+    txt(gH, x0 + dick / 2, 228, hinweis, {groesse:10.5, fett:true});
+  }
+
+  /* Das Spiel ist ueberhoeht gezeichnet - 0,5 mm auf 10 mm waeren sonst kaum
+     zu sehen. Die Bildunterschrift sagt das dazu. */
+  fall(70,  7, "Durchgangsschraube", "nur Reibschluss", "bad");
+  fall(288, 0, "Passschraube",       "darf abscheren",  "ok");
+
+  return svg;
+}
+
+bildAusgangslage();
+bildMehrSchrauben();
+bildTrennfugen();
+bildFormschluss();
+bildSpiel();
 </script>
 
 <script src="../../assets/back-nav.js" data-ziel="./"></script>
