@@ -32,6 +32,7 @@ lernsituationen/<name>/index.html   Lernsituation – selbst geschrieben
 uebungen/<paket>/                   Übungspaket   – index.html wird ERZEUGT
 trainings/<paket>/                  Trainingspaket – index.html wird ERZEUGT
 assets/uebung.css        gemeinsames Aussehen aller Übungen und Trainings
+assets/zeichnen.js       Bausteine für Zeichnungen (Maße, Schraffur, Diagramme)
 assets/back-nav.js       Rücklink „← Übersicht“ – einzige Quelle
 assets/werkzeug-link.js  löst Links auf die Werkzeuge je nach Umgebung auf
 daten/kategorien.csv     Reihenfolge der Bereiche und Unterkategorien
@@ -102,6 +103,34 @@ gehört in ein eigenes `<style>` in der Datei selbst.
 
 Lernsituationen bringen ihr Aussehen dagegen selbst mit; sie sind Dokumente
 mit eigenem Aufbau.
+
+### Zeichnungen
+
+Technische Zeichnungen entstehen im Skript, nicht als Bilddatei – so bleiben
+sie scharf, im dunklen Modus lesbar und können auf Eingaben reagieren.
+`assets/zeichnen.js` liefert die Bausteine:
+
+```html
+<script src="../../assets/zeichnen.js"></script>
+```
+
+`bild()` legt ein SVG mit Bildunterschrift an, `linie()` / `kasten()` / `txt()`
+zeichnen, `mass()` und `massV()` setzen Maße mit Hilfslinien und Pfeilen,
+`schraffur()` liefert ein Schraffurmuster, `schraube()`, `senkschraube()`,
+`hexKopf()` und `gewindeProfil()` die wiederkehrenden Bauteile, und
+`achsenkreuz()` mit `kurve()` die Diagramme.
+
+Zwei Festlegungen gelten dabei überall:
+
+* **Gezeichnet wird in `currentColor`.** Damit stimmen heller und dunkler Modus
+  von selbst, und eine Gruppe lässt sich über `style="color:var(--bad)"`
+  einfärben – so werden Fehlerhinweise rot und Bestätigungen grün.
+* **Die Strichstärke steht am Element, nie in einer CSS-Klasse.** Beim Gewinde
+  trägt sie die fachliche Information (breite Vollinie außen, schmale innen)
+  und darf nicht versehentlich überschrieben werden.
+
+Schraffur-IDs gelten dokumentweit – jedes Bild braucht eigene, sonst zeigen
+alle dasselbe Muster.
 
 ## ➕ Neues Material anlegen
 
