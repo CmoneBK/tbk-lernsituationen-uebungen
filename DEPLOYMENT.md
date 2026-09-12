@@ -4,20 +4,20 @@ Alle Schritte sind **einmalig**. Danach reicht `git push`.
 
 ## 1. GitHub-Repository anlegen und befüllen
 
-Vorausgesetzter Name: **`tbk-unterrichtsmaterial`** unter dem Account `CmoneBK`.
+Vorausgesetzter Name: **`tbk-lernsituationen-uebungen`** unter dem Account `CmoneBK`.
 Ein anderer Name ist möglich – dann aber an drei Stellen anpassen:
 `deploy.sh` (Variable `LERN_DIR`) im Repo `tbk-webseite`, der `git clone`-Befehl
 unter Punkt 3 und die Links in der `README.md`.
 
 ```bash
 cd "K:/OneDrive/VSCode Projects/LernsituationenÜbungenTrainings"
-gh repo create CmoneBK/tbk-unterrichtsmaterial --public --source=. --remote=origin --push
+gh repo create CmoneBK/tbk-lernsituationen-uebungen --public --source=. --remote=origin --push
 ```
 
 Ohne `gh`: Repository auf github.com anlegen, dann
 
 ```bash
-git remote add origin https://github.com/CmoneBK/tbk-unterrichtsmaterial.git
+git remote add origin https://github.com/CmoneBK/tbk-lernsituationen-uebungen.git
 git push -u origin main
 ```
 
@@ -30,7 +30,7 @@ git push -u origin main
 
 Kein Jekyll-Build nötig – `.nojekyll` im Repo sorgt dafür, dass GitHub die
 Dateien unverändert ausliefert. Ergebnis:
-`https://cmonebk.github.io/tbk-unterrichtsmaterial/`
+`https://cmonebk.github.io/tbk-lernsituationen-uebungen/`
 
 Damit der Workflow `.github/workflows/uebersicht.yml` zurückcommitten darf:
 *Settings → Actions → General → Workflow permissions* → **Read and write permissions**.
@@ -40,8 +40,8 @@ Damit der Workflow `.github/workflows/uebersicht.yml` zurückcommitten darf:
 Als Benutzer `ctnutzerone`:
 
 ```bash
-git clone https://github.com/CmoneBK/tbk-unterrichtsmaterial.git \
-  /home/users/ctnutzerone/git/tbk-unterrichtsmaterial
+git clone https://github.com/CmoneBK/tbk-lernsituationen-uebungen.git \
+  /home/users/ctnutzerone/git/tbk-lernsituationen-uebungen
 ```
 
 Mehr ist nicht zu tun – `deploy.sh` erkennt das Repo am vorhandenen `.git`

@@ -18,7 +18,7 @@ und beim lokalen Öffnen per Doppelklick.
 | Umgebung | Adresse |
 | --- | --- |
 | t-bk.de | `https://t-bk.de/unterrichtsmaterial/` |
-| GitHub Pages | `https://cmonebk.github.io/tbk-unterrichtsmaterial/` |
+| GitHub Pages | `https://cmonebk.github.io/tbk-lernsituationen-uebungen/` |
 
 Der Weg auf den Server: `git push` → GitHub → `deploy.sh` im Repo
 [tbk-webseite](https://github.com/CmoneBK/tbk-webseite) holt den neuen Stand und
@@ -123,7 +123,7 @@ Materialbereichs – unabhängig von Ablagetiefe und Ausspielpfad.
 
 | Umgebung | Seiten-URL | Ziel |
 | --- | --- | --- |
-| GitHub Pages | `…/tbk-unterrichtsmaterial/uebungen/x.html` | `…/tbk-unterrichtsmaterial/` |
+| GitHub Pages | `…/tbk-lernsituationen-uebungen/uebungen/x.html` | `…/tbk-lernsituationen-uebungen/` |
 | t-bk.de | `t-bk.de/unterrichtsmaterial/uebungen/x.html` | `t-bk.de/unterrichtsmaterial/` |
 | lokal | `…/uebungen/x.html` | Repo-Wurzel |
 
@@ -147,13 +147,13 @@ valis, bk-e-plan             → /projekte/…
 Für diesen Bereich ist das ein reines `rsync` – die fertige `index.html` liegt
 ja schon im Repo. Ausgenommen werden nur die Dateien, die im Web nichts zu
 suchen haben (`.git/`, `.github/`, `build/`, `vorlagen/`, `README.md`,
-`package.json`).
+`DEPLOYMENT.md`, `package.json`).
 
 **Einmalig auf dem Server einzurichten** (siehe `DEPLOYMENT.md` in diesem Repo):
 
 ```bash
-git clone https://github.com/CmoneBK/tbk-unterrichtsmaterial.git \
-  /home/users/ctnutzerone/git/tbk-unterrichtsmaterial
+git clone https://github.com/CmoneBK/tbk-lernsituationen-uebungen.git \
+  /home/users/ctnutzerone/git/tbk-lernsituationen-uebungen
 ```
 
 Danach genügt `git push` – der nächste Cron-Lauf von `deploy.sh` zieht nach.
