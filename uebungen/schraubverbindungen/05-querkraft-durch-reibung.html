@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hält die Konsole?</title>
+<meta name="description" content="Eine Konsole muss 12 kN Querkraft übertragen. Vier Schrauben M10 sind gesetzt. Reicht das – und wovon hängt es ab?">
+<meta name="dauer" content="20 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+
+  /* Ergebnis als Spanne: die Reibungszahl ist kein Wert, sondern ein Bereich -
+     also ist auch die übertragbare Querkraft einer. */
+  .spanne{position:relative; height:78px; margin:20px 0 4px}
+  .spanne .spur{
+    position:absolute; left:0; right:0; top:30px; height:24px;
+    background:var(--bg); border:1px solid var(--border-stark); border-radius:6px;
+  }
+  .spanne .band{
+    position:absolute; top:26px; height:32px;
+    border:2px solid var(--accent); border-radius:6px;
+    background:rgba(43,108,176,.18); transition:left .2s ease, width .2s ease;
+  }
+  .spanne .ziel{position:absolute; top:14px; bottom:18px; width:2px; background:var(--bad)}
+  .spanne .ziel span{
+    position:absolute; top:-18px; left:50%; transform:translateX(-50%);
+    font-size:11px; font-weight:700; white-space:nowrap; color:var(--bad);
+  }
+  .spanne .fuss{
+    position:absolute; left:0; right:0; top:60px;
+    display:flex; justify-content:space-between; font-size:11px; color:var(--muted);
+  }
+
+  .formel{
+    background:var(--bg); border:1px solid var(--border); border-radius:10px;
+    padding:14px 16px; margin:16px 0; text-align:center;
+    font-size:18px; line-height:2;
+  }
+  .formel .erl{display:block; font-size:13px; color:var(--muted); line-height:1.5; margin-top:6px}
+
+  .hinweis-paarung{font-size:13px; color:var(--muted); margin:6px 0 0}
+  @media (prefers-reduced-motion:reduce){.spanne .band{transition:none}}
+</style>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Schraubverbindungen</p>
+    <h1>Hält die Konsole?</h1>
+    <p class="lead">Nicht die Schraube trägt die seitliche Last, sondern die
+      Reibung zwischen den Bauteilen. Das macht die Rechnung anders, als man denkt.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Ausgangslage:</strong> Eine Konsole ist mit <strong>vier Schrauben
+        M10 der Klasse 8.8</strong> an einem Stahlgestell verschraubt &ndash; Stahl
+        auf Stahl, trocken, <strong>eine Trennfuge</strong>. Angezogen wird auf die
+        zulässige Montagevorspannkraft (&mu; = 0,12 im Gewinde und unter dem Kopf).</p>
+      <p>Die Konsole muss dauerhaft eine <strong>Querkraft von 12 kN</strong>
+        übertragen. Gefordert ist eine <strong>Rutschsicherheit von 1,25</strong>.</p>
+      <p><strong>Frage:</strong> Hält das?</p>
+    </div>
+
+    <h2><span class="nr">1</span>Die Formel</h2>
+
+    <div class="formel">
+      F<sub>Q,zul</sub> = (&mu;<sub>T</sub> &middot; F<sub>M,zul</sub> &middot; n<sub>S</sub> &middot; n<sub>F</sub>) / S<sub>R</sub>
+      <span class="erl">Reibungszahl in der Trennfuge &middot; Vorspannkraft je Schraube
+        &middot; Anzahl Schrauben &middot; Anzahl Trennfugen, geteilt durch die
+        Rutschsicherheit</span>
+    </div>
+
+    <p>Bevor du rechnest: <strong>Schlag &mu;<sub>T</sub> für „Stahl auf Stahl,
+      trocken“ in deinem Tabellenbuch nach.</strong> Dir wird auffallen, dass dort
+      kein Wert steht, sondern ein <em>Bereich</em>. Genau darum geht es in dieser
+      Übung.</p>
+
+    <details>
+      <summary>Warum ist &mu;<sub>T</sub> ein Bereich und keine Zahl?</summary>
+      <p>Weil die Haftreibung zwischen zwei Flächen von Dingen abhängt, die
+        niemand auf der Zeichnung festlegt: Rauheit, Sauberkeit, Rostfilm,
+        Ölreste, Flächenpressung. Für Stahl auf Stahl, trocken, findet man
+        typisch <strong>0,10 bis 0,20</strong> &ndash; also Faktor zwei.</p>
+      <p>Für die Auslegung heißt das: <strong>Mit dem unteren Wert rechnen.</strong>
+        Der obere ist Glück, kein Nachweis.</p>
+    </details>
+
+    <h2><span class="nr">2</span>Rechnen</h2>
+    <p>Stelle die Verbindung ein. Die Vorspannkraft je Schraube rechnet die Seite
+      mit, damit du dich auf die Querkraft konzentrieren kannst.</p>
+
+    <div class="box">
+      <div class="felder">
+        <label class="feld">Gewinde
+          <select id="eGewinde"></select>
+        </label>
+        <label class="feld">Festigkeitsklasse
+          <select id="eKlasse"></select>
+        </label>
+        <label class="feld">Werkstoffpaarung in der Trennfuge
+          <select id="ePaarung"></select>
+        </label>
+        <label class="feld">Anzahl Schrauben n<sub>S</sub>
+          <input type="number" id="eNs" min="1" max="24" step="1" value="4">
+        </label>
+        <label class="feld">Anzahl Trennfugen n<sub>F</sub>
+          <input type="number" id="eNf" min="1" max="6" step="1" value="1">
+        </label>
+        <label class="feld">Rutschsicherheit S<sub>R</sub>
+          <input type="number" id="eSr" min="1" max="3" step="0.05" value="1.25">
+        </label>
+        <label class="feld">Geforderte Querkraft in kN
+          <input type="number" id="eSoll" min="0" max="500" step="0.5" value="12">
+        </label>
+      </div>
+      <p class="hinweis-paarung" id="paarungHinweis"></p>
+
+      <div class="ergebnis">
+        <div class="ez"><span class="l">F<sub>M,zul</sub> je Schraube</span>
+          <span class="v" id="rFM">&ndash;</span> <span class="e">kN</span></div>
+        <div class="ez"><span class="l">F<sub>Q,zul</sub> bei &mu;<sub>T</sub> klein</span>
+          <span class="v" id="rQmin">&ndash;</span> <span class="e">kN</span></div>
+        <div class="ez"><span class="l">F<sub>Q,zul</sub> bei &mu;<sub>T</sub> groß</span>
+          <span class="v" id="rQmax">&ndash;</span> <span class="e">kN</span></div>
+      </div>
+
+      <div class="spanne" id="spanne">
+        <div class="spur"></div>
+        <div class="band" id="band"></div>
+        <div class="ziel" id="ziel"><span>gefordert</span></div>
+        <div class="fuss"><span>0 kN</span><span id="spanneEnde">&ndash;</span></div>
+      </div>
+
+      <div class="rueckmeldung" id="urteil"></div>
+    </div>
+
+    <details>
+      <summary>Lösung für die Ausgangslage</summary>
+      <p>F<sub>M,zul</sub> für M10&nbsp;8.8 bei &mu; = 0,12 beträgt rund
+        <strong>27,4 kN</strong>. Damit ergibt sich:</p>
+      <p><strong>Mit &mu;<sub>T</sub> = 0,10:</strong>
+        F<sub>Q,zul</sub> = (0,10 &middot; 27,4 kN &middot; 4 &middot; 1) / 1,25 =
+        <strong>8,8 kN</strong> &ndash; das reicht <em>nicht</em> für 12 kN.</p>
+      <p><strong>Mit &mu;<sub>T</sub> = 0,20:</strong>
+        F<sub>Q,zul</sub> = <strong>17,5 kN</strong> &ndash; das würde reichen.</p>
+      <p><strong>Antwort:</strong> Die Verbindung hält <em>vielleicht</em>. Und
+        „vielleicht“ ist kein Nachweis. Maßgebend ist der untere Wert, also
+        8,8 kN. <strong>Die Konsole ist so nicht ausreichend verschraubt.</strong></p>
+    </details>
+
+    <h2><span class="nr">3</span>Was jetzt?</h2>
+    <p>Probier die vier Wege im Rechner oben durch und sieh, was am meisten bringt.</p>
+
+    <details>
+      <summary>Weg 1: Mehr oder größere Schrauben</summary>
+      <p>Wirkt direkt, weil n<sub>S</sub> und F<sub>M,zul</sub> linear eingehen.
+        Sechs statt vier M10 bringen 13,1 kN &ndash; das reicht. Vier M12 statt
+        vier M10 bringen 12,8 kN &ndash; reicht ebenfalls, knapp.</p>
+      <p>Nachteil: mehr Bohrungen, mehr Montagezeit, mehr Platzbedarf. Und der
+        Nachweis hängt weiter am unsicheren &mu;<sub>T</sub>.</p>
+    </details>
+
+    <details>
+      <summary>Weg 2: Die Trennfuge behandeln</summary>
+      <p>Der wirksamste Hebel. <strong>Gestrahlte Flächen</strong> greifen
+        ineinander und erreichen &mu;<sub>T</sub> = 0,20 bis 0,45 &ndash; damit
+        liefern schon die vorhandenen vier M10 mindestens 17,5 kN. Im Stahlbau
+        wird das planmäßig gemacht: gleitfeste Verbindungen werden gestrahlt und
+        dürfen nicht nachträglich lackiert werden.</p>
+      <p>Der Preis: Die Fläche muss vorbereitet, sauber gehalten und geprüft
+        werden &ndash; also ein Arbeitsgang und eine Vorschrift mehr.</p>
+    </details>
+
+    <details>
+      <summary>Weg 3: Zweite Trennfuge nutzen</summary>
+      <p>Wird die Konsole zwischen zwei Blechen geklemmt statt auf eines gelegt,
+        verdoppelt n<sub>F</sub> die Reibfläche &ndash; 17,5 kN statt 8,8 kN, ohne
+        eine einzige Schraube mehr. Konstruktiv oft die eleganteste Lösung, wenn
+        der Bauraum es hergibt.</p>
+    </details>
+
+    <details>
+      <summary>Weg 4: Formschluss statt Reibschluss</summary>
+      <p>Passschrauben, Passstifte, ein Anschlag oder eine Nut nehmen die Querkraft
+        <strong>direkt</strong> auf. Die Schrauben müssen dann nur noch zusammen-
+        halten, nicht mehr klemmen &ndash; und die Reibungszahl ist plötzlich egal.</p>
+      <p>Das ist immer dann der richtige Weg, wenn die Querkraft groß, die
+        Reibung unsicher oder ein Verrutschen nicht hinnehmbar ist. Der Preis
+        sind enge Toleranzen: Passbohrungen müssen gemeinsam gerieben werden.</p>
+    </details>
+
+    <h2><span class="nr">4</span>Übertragen</h2>
+
+    <details>
+      <summary>1. Warum darf man die Schraube nicht einfach auf Abscheren auslegen?</summary>
+      <p>Weil sie dafür nicht gebaut ist. Im Durchgangsloch hat die Schraube
+        <em>Spiel</em> (M10 &rarr; Loch 11 mm). Sie liegt also gar nicht an, solange
+        die Verbindung hält. Rutscht sie erst einmal, schlägt sie gegen die
+        Lochwand &ndash; dann wirkt eine Stoßbelastung auf ein Gewinde mit Kerbwirkung,
+        und das Loch wird ausgeschlagen. Eine Schraubverbindung, die auf Abscheren
+        beansprucht wird, ist bereits gescheitert.</p>
+      <p>Die Ausnahme heißt <strong>Passschraube</strong>: Sie hat einen
+        geschliffenen Schaft und sitzt spielfrei &ndash; und darf dann tatsächlich
+        auf Abscheren gerechnet werden.</p>
+    </details>
+
+    <details>
+      <summary>2. Die Verbindung lockert sich im Betrieb um 20 %. Was bedeutet das für F<sub>Q,zul</sub>?</summary>
+      <p>Sie sinkt um genau dieselben 20 %. F<sub>V</sub> steht linear in der
+        Formel &ndash; weniger Vorspannkraft heißt sofort weniger Haltekraft.
+        Aus 8,8 kN werden 7,0 kN.</p>
+      <p>Deshalb ist <em>Setzen</em> (das Einebnen der Rauheitsspitzen in den ersten
+        Betriebsstunden) kein Schönheitsfehler, sondern ein Auslegungsthema.
+        Gegenmittel: nachziehen, weniger Trennfugen, keine weichen Zwischenlagen,
+        und lange nachgiebige Schrauben, bei denen ein Setzbetrag prozentual
+        weniger ausmacht.</p>
+    </details>
+
+    <details>
+      <summary>3. Ein Kollege sagt: „Nimm 12.9, dann hält es sicher.“ Stimmt das?</summary>
+      <p>Es hilft, aber aus einem anderen Grund als gedacht. 12.9 erlaubt eine
+        höhere Vorspannkraft &ndash; und <em>die</em> erhöht die Reibkraft. Die
+        Festigkeitsklasse selbst trägt nichts zur Querkraft bei; sie erlaubt nur
+        festeres Anziehen.</p>
+      <p>Und sie hat Nachteile: 12.9 ist kerbempfindlicher, anfälliger für
+        wasserstoffinduzierte Sprödbrüche und verträgt keine galvanische
+        Verzinkung ohne besondere Maßnahmen. Wer nur mehr Haltekraft braucht,
+        fährt mit einer gestrahlten Trennfuge oder einer Schraube mehr meist besser.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Eine Schraubverbindung hält durch Reibung, nicht
+      durch die Schraube. Ausgelegt wird deshalb mit der <em>kleinsten</em>
+      Reibungszahl &ndash; alles darüber ist Reserve, kein Nachweis.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>Der Reiter <em>Grundlagen</em> im Werkzeug hat die Tabelle der
+      Werkstoffpaarungen mit Hinweisen zu jeder, der Reiter <em>Berechnungen</em>
+      denselben Querkraft-Rechner mit Rechenweg.</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="maschinenelemente-schrauben-schraubverbindungen.html"
+         data-fach="1">Werkzeug Schraubverbindungen öffnen</a>
+    </p>
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+      Sie ersetzen keine Auslegung nach VDI 2230 und keine Herstellerangaben.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Zahlen und Formeln wie im Werkzeug "Maschinenelemente: Schrauben -
+   Schraubverbindungen", damit beide dieselben Werte liefern. */
+var SCHRAUBEN = {
+  M4:  {d:4,  P:0.70, dw:5.9,  Dh:4.5},
+  M5:  {d:5,  P:0.80, dw:6.9,  Dh:5.5},
+  M6:  {d:6,  P:1.00, dw:8.9,  Dh:6.6},
+  M8:  {d:8,  P:1.25, dw:11.6, Dh:9.0},
+  M10: {d:10, P:1.50, dw:14.6, Dh:11.0},
+  M12: {d:12, P:1.75, dw:16.6, Dh:13.5},
+  M16: {d:16, P:2.00, dw:22.5, Dh:17.5},
+  M20: {d:20, P:2.50, dw:28.2, Dh:22.0},
+  M24: {d:24, P:3.00, dw:33.6, Dh:26.0}
+};
+var GROESSEN = ["M4","M5","M6","M8","M10","M12","M16","M20","M24"];
+var KLASSEN = {"4.6":240, "5.6":300, "8.8":640, "10.9":900, "12.9":1080};
+var KLASSENLISTE = ["4.6","5.6","8.8","10.9","12.9"];
+
+/* Anhaltswerte fuer die Haftreibungszahl in der Trennfuge. Sie streuen stark,
+   deshalb immer ein Bereich statt einer Zahl. */
+var PAARUNGEN = [
+  {name:"Stahl auf Stahl, trocken",      von:0.10, bis:0.20, hinweis:""},
+  {name:"Stahl auf Stahl, geölt",        von:0.05, bis:0.12,
+   hinweis:"Öl in der Trennfuge ist der schlechteste Fall – geschmiert gehören Gewinde und Kopfauflage, nicht die Trennfuge."},
+  {name:"Stahl auf Stahl, gestrahlt",    von:0.20, bis:0.45,
+   hinweis:"Gestrahlte Flächen greifen ineinander. Im Stahlbau wird das gezielt genutzt."},
+  {name:"Stahl auf Gusseisen, trocken",  von:0.15, bis:0.25, hinweis:""},
+  {name:"Stahl auf Aluminium, trocken",  von:0.10, bis:0.20,
+   hinweis:"Aluminium ist weicher – die Verbindung setzt sich mit der Zeit stärker."},
+  {name:"Stahl auf Kunststoff, trocken", von:0.10, bis:0.25,
+   hinweis:"Kunststoff kriecht unter Druck. Die Vorspannkraft sinkt dauerhaft."}
+];
+
+var MY_ANZIEH = 0.12;   /* Reibung an Gewinde und Kopf beim Anziehen */
+var NU = 0.9;           /* Ausnutzung der Streckgrenze */
+
+function masse(groesse){
+  var g = SCHRAUBEN[groesse];
+  var d2 = g.d - 0.6495 * g.P;
+  var d3 = g.d - 1.2269 * g.P;
+  var dS = (d2 + d3) / 2;
+  return {d:g.d, P:g.P, d2:d2, dS:dS,
+          As:Math.PI / 4 * dS * dS,
+          Wp:Math.PI * Math.pow(dS, 3) / 16};
+}
+
+/* ISO 898-1: ab Nenndurchmesser ueber 16 mm gilt fuer 8.8 die hoehere Streckgrenze. */
+function streckgrenze(klasse, d){
+  if(klasse === "8.8" && d > 16) return 660;
+  return KLASSEN[klasse];
+}
+
+/* Montagevorspannkraft in N. Verdrehend wirkt nur der Anteil aus Steigung und
+   Gewindereibung, nicht die Kopfreibung. */
+function vorspannkraft(groesse, klasse){
+  var m  = masse(groesse);
+  var cG = 0.16 * m.P + 0.58 * m.d2 * MY_ANZIEH;
+  var Rp = streckgrenze(klasse, m.d);
+  return NU * Rp / Math.sqrt(1/(m.As*m.As) + 3*cG*cG/(m.Wp*m.Wp));
+}
+
+function el(id){ return document.getElementById(id); }
+function zahl(x, n){ return x.toFixed(n === undefined ? 1 : n).replace(".", ","); }
+
+function auswahlFuellen(sel, liste, start){
+  liste.forEach(function(w, i){
+    var o = document.createElement("option");
+    o.value = (typeof w === "string") ? w : i;
+    o.textContent = (typeof w === "string") ? w : w.name;
+    if(o.value === start) o.selected = true;
+    sel.appendChild(o);
+  });
+}
+auswahlFuellen(el("eGewinde"), GROESSEN, "M10");
+auswahlFuellen(el("eKlasse"), KLASSENLISTE, "8.8");
+auswahlFuellen(el("ePaarung"), PAARUNGEN, "0");
+
+function grenze(wert, min, max, ersatz){
+  var x = parseFloat(wert);
+  if(isNaN(x)) return ersatz;
+  return Math.min(max, Math.max(min, x));
+}
+
+function neuRechnen(){
+  var paarung = PAARUNGEN[parseInt(el("ePaarung").value, 10)];
+  var FM   = vorspannkraft(el("eGewinde").value, el("eKlasse").value);
+  var nS   = grenze(el("eNs").value, 1, 24, 4);
+  var nF   = grenze(el("eNf").value, 1, 6, 1);
+  var sR   = grenze(el("eSr").value, 1, 3, 1.25);
+  var soll = grenze(el("eSoll").value, 0, 500, 12) * 1000;
+
+  var q = function(my){ return my * FM * nS * nF / sR; };
+  var qMin = q(paarung.von), qMax = q(paarung.bis);
+
+  el("paarungHinweis").innerHTML = "&mu;<sub>T</sub> = " + zahl(paarung.von, 2) +
+    " bis " + zahl(paarung.bis, 2) + (paarung.hinweis ? " &middot; " + paarung.hinweis : "");
+
+  el("rFM").textContent   = zahl(FM / 1000);
+  el("rQmin").textContent = zahl(qMin / 1000);
+  el("rQmax").textContent = zahl(qMax / 1000);
+
+  var ende = Math.max(qMax, soll) * 1.15;
+  var p = function(f){ return Math.max(0, Math.min(100, 100 * f / ende)); };
+  el("spanneEnde").textContent = zahl(ende / 1000, 0) + " kN";
+  el("band").style.left  = p(qMin) + "%";
+  el("band").style.width = Math.max(0.8, p(qMax) - p(qMin)) + "%";
+  el("ziel").style.left  = p(soll) + "%";
+
+  var u = el("urteil");
+  if(qMin >= soll){
+    u.className = "rueckmeldung ja";
+    u.innerHTML = "<strong>Hält &ndash; nachweislich.</strong> Schon mit der " +
+      "kleinsten Reibungszahl werden " + zahl(qMin / 1000) + " kN übertragen, " +
+      "gefordert sind " + zahl(soll / 1000) + " kN.";
+  } else if(qMax >= soll){
+    u.className = "rueckmeldung fast";
+    u.innerHTML = "<strong>Hält vielleicht &ndash; und das genügt nicht.</strong> " +
+      "Mit &mu;<sub>T</sub> = " + zahl(paarung.bis, 2) + " reicht es (" +
+      zahl(qMax / 1000) + " kN), mit &mu;<sub>T</sub> = " + zahl(paarung.von, 2) +
+      " nicht (" + zahl(qMin / 1000) + " kN). Maßgebend ist der kleine Wert.";
+  } else {
+    u.className = "rueckmeldung nein";
+    u.innerHTML = "<strong>Hält nicht.</strong> Auch im günstigsten Fall werden " +
+      "nur " + zahl(qMax / 1000) + " kN übertragen, gefordert sind " +
+      zahl(soll / 1000) + " kN.";
+  }
+}
+
+["eGewinde","eKlasse","ePaarung","eNs","eNf","eSr","eSoll"].forEach(function(id){
+  el(id).addEventListener("input", neuRechnen);
+  el(id).addEventListener("change", neuRechnen);
+});
+neuRechnen();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+</body>
+</html>

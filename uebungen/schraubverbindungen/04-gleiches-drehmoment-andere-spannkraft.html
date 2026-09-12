@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gleiches Drehmoment, andere Spannkraft</title>
+<meta name="description" content="80 N·m auf eine M12 – und je nach Schmierzustand landet die Vorspannkraft zwischen „rutscht“ und „gerissen“.">
+<meta name="dauer" content="20 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+
+  /* Kraftskala: unten der zulässige Bereich, darüber das Streuband, das sich
+     aus der unbekannten Reibung ergibt. */
+  .skala{position:relative; height:104px; margin:22px 0 8px}
+  .spur{
+    position:absolute; left:0; right:0; top:44px; height:26px;
+    background:var(--bg); border:1px solid var(--border-stark); border-radius:6px;
+    overflow:hidden;
+  }
+  .zone{position:absolute; top:0; bottom:0}
+  .z-lose{background:rgba(202,138,4,.28)}
+  .z-gut{background:rgba(22,163,74,.30)}
+  .z-ueber{background:rgba(220,38,38,.30)}
+  .band{
+    position:absolute; top:38px; height:38px;
+    border:2px solid var(--accent); border-radius:6px;
+    background:rgba(43,108,176,.18);
+    transition:left .2s ease, width .2s ease;
+  }
+  .marke{position:absolute; top:26px; bottom:16px; width:2px; background:var(--fg)}
+  .marke span{
+    position:absolute; top:-20px; left:50%; transform:translateX(-50%);
+    font-size:11px; font-weight:700; white-space:nowrap; color:var(--fg);
+  }
+  .skala-fuss{
+    position:absolute; left:0; right:0; top:76px;
+    display:flex; justify-content:space-between; font-size:11px; color:var(--muted);
+  }
+  .legende{display:flex; flex-wrap:wrap; gap:14px; font-size:13px; color:var(--muted); margin-top:2px}
+  .legende i{display:inline-block; width:12px; height:12px; border-radius:3px; margin-right:6px; vertical-align:-2px}
+  .l-lose{background:rgba(202,138,4,.6)} .l-gut{background:rgba(22,163,74,.6)}
+  .l-ueber{background:rgba(220,38,38,.6)} .l-band{background:rgba(43,108,176,.45); border:1px solid var(--accent)}
+
+  @media (prefers-reduced-motion:reduce){.band{transition:none}}
+</style>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Schraubverbindungen</p>
+    <h1>Gleiches Drehmoment, andere Spannkraft</h1>
+    <p class="lead">Der Drehmomentschlüssel klickt bei 80 N&middot;m. Immer.
+      Was danach in der Schraube steckt, ist trotzdem jedes Mal anders.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Ausgangslage:</strong> Eine <strong>M12 der Klasse 8.8</strong>
+        wird mit einem geprüften Drehmomentschlüssel auf <strong>80 N&middot;m</strong>
+        angezogen. Die Verbindung braucht mindestens <strong>25 kN</strong>
+        Vorspannkraft, um zu halten.</p>
+      <p>Der Schmierzustand ist nicht vorgeschrieben. Je nach Oberfläche und
+        Schmierung liegt die Reibungszahl irgendwo zwischen <strong>0,08</strong>
+        (gut geölt) und <strong>0,20</strong> (verzinkt, trocken).</p>
+      <p><strong>Frage:</strong> Reicht das? Und was ist das Schlimmste, was
+        passieren kann?</p>
+    </div>
+
+    <h2><span class="nr">1</span>Erst schätzen</h2>
+    <p>Um welchen Faktor unterscheidet sich die erreichte Vorspannkraft zwischen
+      der bestgeschmierten und der trockensten Schraube &ndash; bei
+      <em>demselben</em> Drehmoment?</p>
+
+    <div class="box">
+      <div class="felder">
+        <label class="feld">Mein Tipp: Faktor
+          <select id="tipp">
+            <option value="1">rund 1,1 &ndash; kaum ein Unterschied</option>
+            <option value="1.3">rund 1,3</option>
+            <option value="1.6">rund 1,6</option>
+            <option value="2.2" selected>rund 2,2</option>
+            <option value="3">rund 3 oder mehr</option>
+          </select>
+        </label>
+      </div>
+      <p style="margin-top:16px">
+        <button type="button" class="knopf" id="btnAufloesen">Auflösen</button>
+      </p>
+      <div class="rueckmeldung" id="rueck" hidden></div>
+    </div>
+
+    <div id="rest" hidden>
+      <h2><span class="nr">2</span>Das Streuband</h2>
+      <p>Der blaue Balken zeigt, wo die Vorspannkraft landen <em>kann</em> &ndash;
+        irgendwo darin, ohne dass du es merkst. Der farbige Streifen darunter
+        sagt, was das bedeutet.</p>
+
+      <div class="box">
+        <div class="felder">
+          <label class="feld">Gewinde
+            <select id="eGewinde"></select>
+          </label>
+          <label class="feld">Festigkeitsklasse
+            <select id="eKlasse"></select>
+          </label>
+          <label class="feld">Anziehdrehmoment M<sub>A</sub> in N&middot;m
+            <input type="number" id="eMA" min="1" max="1200" step="1" value="80">
+          </label>
+          <label class="feld">Nötige Vorspannkraft in kN
+            <input type="number" id="eErf" min="0" max="400" step="1" value="25">
+          </label>
+          <label class="feld">&mu; kleinster Wert
+            <input type="number" id="eMyMin" min="0.04" max="0.35" step="0.01" value="0.08">
+          </label>
+          <label class="feld">&mu; größter Wert
+            <input type="number" id="eMyMax" min="0.04" max="0.35" step="0.01" value="0.20">
+          </label>
+        </div>
+
+        <div class="skala" id="skala">
+          <div class="spur">
+            <div class="zone z-lose"  id="zLose"></div>
+            <div class="zone z-gut"   id="zGut"></div>
+            <div class="zone z-ueber" id="zUeber"></div>
+          </div>
+          <div class="band" id="band"></div>
+          <div class="marke" id="mErf"><span>nötig</span></div>
+          <div class="marke" id="mFlie"><span>Streckgrenze</span></div>
+          <div class="skala-fuss"><span>0 kN</span><span id="skalaEnde">&ndash;</span></div>
+        </div>
+        <div class="legende">
+          <span><i class="l-band"></i>möglicher Bereich</span>
+          <span><i class="l-lose"></i>zu wenig &ndash; rutscht</span>
+          <span><i class="l-gut"></i>brauchbar</span>
+          <span><i class="l-ueber"></i>über der Streckgrenze</span>
+        </div>
+
+        <div class="ergebnis">
+          <div class="ez"><span class="l">bei &mu; klein</span>
+            <span class="v" id="rMax">&ndash;</span> <span class="e">kN</span></div>
+          <div class="ez"><span class="l">bei &mu; groß</span>
+            <span class="v" id="rMin">&ndash;</span> <span class="e">kN</span></div>
+          <div class="ez"><span class="l">Verhältnis</span>
+            <span class="v" id="rFaktor">&ndash;</span> <span class="e">&times;</span></div>
+        </div>
+
+        <div class="rueckmeldung" id="urteil"></div>
+      </div>
+
+      <h3>Beobachtungsaufgaben</h3>
+
+      <details>
+        <summary>a) Senke M<sub>A</sub> so weit, dass die Schraube auf keinen Fall überdehnt wird. Hält die Verbindung dann noch?</summary>
+        <p>Bei M12&nbsp;8.8 und &mu; zwischen 0,08 und 0,20 wird es eng: Erst unter
+          etwa <strong>66 N&middot;m</strong> bleibt auch die bestgeschmierte
+          Schraube unter der Streckgrenze &ndash; die trockenste erreicht dann aber
+          nur noch <strong>21,7 kN</strong> und liegt damit unter den geforderten
+          25 kN.</p>
+        <p>Mit einem einzigen Drehmomentwert für diese Spanne ist das Problem
+          also <em>nicht lösbar</em>. Egal welchen Wert du einträgst: Entweder die
+          eine Schraube reißt oder die andere hält nicht. Genau das ist die
+          Erkenntnis dieser Übung.</p>
+      </details>
+
+      <details>
+        <summary>b) Schreibe den Schmierzustand vor: &mu; = 0,10 bis 0,14. Was ändert sich?</summary>
+        <p>Das Band schrumpft deutlich: Der Faktor fällt von 2,20 auf
+          <strong>1,33</strong>, bei 80 N&middot;m liegt die Vorspannkraft zwischen
+          <strong>36,1 und 48,1 kN</strong>.</p>
+        <p>Aber Achtung &ndash; ganz fertig ist man damit noch nicht: 48,1 kN liegen
+          immer noch knapp <em>über</em> der Streckgrenze (46,1 kN). Das Drehmoment
+          muss also mit. Trage <strong>75 N&middot;m</strong> ein, und das ganze Band
+          liegt sauber zwischen 33,8 und 45,1 kN &ndash; über den nötigen 25 kN und
+          unter der Streckgrenze. Jetzt trägt <em>ein</em> Zahlenwert für alle Fälle.</p>
+        <p><strong>Das ist die eigentliche Maßnahme:</strong> nicht genauer messen,
+          sondern die Reibung festlegen <em>und</em> das Drehmoment darauf abstimmen.
+          Eine Montagevorschrift, die den Schmierzustand nennt, ist mehr wert als
+          ein teurerer Schlüssel.</p>
+      </details>
+
+      <details>
+        <summary>c) Wechsle auf Klasse 10.9. Verschwindet das Problem?</summary>
+        <p>Nein &ndash; es verschiebt sich nur. Die Streckgrenze steigt auf
+          900 N/mm², die Überdehnungsgefahr sinkt also. Das <em>Verhältnis</em>
+          zwischen bester und schlechtester Schmierung bleibt aber exakt gleich,
+          denn es hängt nur von der Reibung ab, nicht vom Werkstoff. Die
+          Verbindung wird sicherer gegen Bruch, aber nicht berechenbarer.</p>
+      </details>
+
+      <h2><span class="nr">3</span>Übertragen</h2>
+
+      <details>
+        <summary>1. Was ist der „Anziehfaktor“ &alpha;<sub>A</sub> &ndash; und wo steckt er in dieser Übung?</summary>
+        <p>Er ist genau das Verhältnis, das oben rechts steht: das Verhältnis von
+          größter zu kleinster erreichbarer Vorspannkraft bei einem Anziehverfahren.
+          Für das Anziehen nach Drehmoment liegt er typisch bei
+          <strong>1,6 bis 2,0</strong>, bei unbekannter Reibung auch darüber.</p>
+        <p>In der Auslegung legt man die Verbindung deshalb auf
+          F<sub>M,min</sub> aus und prüft die Schraube gegen
+          &alpha;<sub>A</sub> &middot; F<sub>M,min</sub>. Man bezahlt die
+          Unsicherheit also mit einer größeren Schraube.</p>
+      </details>
+
+      <details>
+        <summary>2. Welche Anziehverfahren streuen weniger &ndash; und warum?</summary>
+        <p><strong>Drehwinkelgesteuert:</strong> Erst handfest anziehen, dann um
+          einen festgelegten Winkel weiterdrehen. Der Winkel hängt über die
+          Steigung direkt mit der Längung zusammen &ndash; und die Längung ist die
+          Vorspannkraft. Die Reibung fällt weitgehend heraus
+          (&alpha;<sub>A</sub> ≈ 1,2 bis 1,4).</p>
+        <p><strong>Streckgrenzgesteuert:</strong> Der Schrauber erkennt am Knick
+          der Drehmoment-Winkel-Kurve, wann die Schraube zu fließen beginnt
+          (&alpha;<sub>A</sub> ≈ 1,1).</p>
+        <p><strong>Längenmessung</strong> an der Schraube selbst ist am genauesten,
+          aber aufwendig &ndash; üblich im Motoren- und Turbinenbau.</p>
+      </details>
+
+      <details>
+        <summary>3. Warum darf man eine einmal überdehnte Schraube nicht wiederverwenden?</summary>
+        <p>Weil sie bleibend gelängt ist. Ihr Gewinde ist verformt, ihre
+          Streckgrenze örtlich erschöpft, und beim zweiten Anziehen erreicht sie
+          die geforderte Vorspannkraft nicht mehr &ndash; oder reißt. Bei
+          Dehnschrauben, die planmäßig bis zur Streckgrenze angezogen werden
+          (Zylinderkopf, Pleuel), steht deshalb in jeder Reparaturanleitung:
+          <em>einmalig verwendbar</em>.</p>
+      </details>
+
+      <div class="merksatz">
+        <strong>Merksatz:</strong> Der Drehmomentschlüssel misst genau &ndash; nur
+        eben die falsche Größe. Wer die Vorspannkraft treffen will, muss die
+        Reibung vorschreiben oder das Verfahren wechseln.
+      </div>
+
+      <h3>Weiterarbeiten</h3>
+      <p>Der Reiter <em>Funktion</em> im Werkzeug zeigt dasselbe Streuband und
+        dazu die Tabelle der Einflüsse auf die Reibung. Die Aufteilung des
+        Drehmoments selbst steckt in der Übung
+        <em>Wohin geht das Anziehdrehmoment?</em></p>
+      <p>
+        <a class="werkzeug" data-werkzeug="maschinenelemente-schrauben-schraubverbindungen.html"
+           data-fach="1">Werkzeug Schraubverbindungen öffnen</a>
+      </p>
+      <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+        Sie ersetzen keine Auslegung nach VDI 2230 und keine Herstellerangaben.</p>
+    </div>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Zahlen und Formeln wie im Werkzeug "Maschinenelemente: Schrauben -
+   Schraubverbindungen", damit beide dieselben Werte liefern. */
+var SCHRAUBEN = {
+  M4:  {d:4,  P:0.70, dw:5.9,  Dh:4.5},
+  M5:  {d:5,  P:0.80, dw:6.9,  Dh:5.5},
+  M6:  {d:6,  P:1.00, dw:8.9,  Dh:6.6},
+  M8:  {d:8,  P:1.25, dw:11.6, Dh:9.0},
+  M10: {d:10, P:1.50, dw:14.6, Dh:11.0},
+  M12: {d:12, P:1.75, dw:16.6, Dh:13.5},
+  M16: {d:16, P:2.00, dw:22.5, Dh:17.5},
+  M20: {d:20, P:2.50, dw:28.2, Dh:22.0},
+  M24: {d:24, P:3.00, dw:33.6, Dh:26.0}
+};
+var GROESSEN = ["M4","M5","M6","M8","M10","M12","M16","M20","M24"];
+var KLASSEN = {"4.6":240, "5.6":300, "8.8":640, "10.9":900, "12.9":1080};
+var KLASSENLISTE = ["4.6","5.6","8.8","10.9","12.9"];
+
+function masse(groesse){
+  var g = SCHRAUBEN[groesse];
+  var d2 = g.d - 0.6495 * g.P;
+  var d3 = g.d - 1.2269 * g.P;
+  var dS = (d2 + d3) / 2;
+  return {d:g.d, P:g.P, d2:d2, dS:dS,
+          As:Math.PI / 4 * dS * dS,
+          Wp:Math.PI * Math.pow(dS, 3) / 16,
+          DKm:(g.dw + g.Dh) / 2};
+}
+
+/* ISO 898-1: ab Nenndurchmesser ueber 16 mm gilt fuer 8.8 die hoehere Streckgrenze. */
+function streckgrenze(klasse, d){
+  if(klasse === "8.8" && d > 16) return 660;
+  return KLASSEN[klasse];
+}
+
+/* Aus einem VORGEGEBENEN Drehmoment die erreichte Vorspannkraft bestimmen -
+   die Umkehrung der ueblichen Rechnung. MA in N*m, Ergebnis in N. */
+function ausDrehmoment(m, MA, my){
+  var c = 0.16 * m.P + 0.58 * m.d2 * my + 0.5 * m.DKm * my;   /* mm je N */
+  return MA * 1000 / c;
+}
+
+/* Kraft, bei der die Vergleichsspannung die Streckgrenze erreicht. Verdrehend
+   wirkt nur der Anteil aus Steigung und Gewindereibung. */
+function fliessKraft(m, Rp, my){
+  var cG = 0.16 * m.P + 0.58 * m.d2 * my;
+  return Rp / Math.sqrt(1/(m.As*m.As) + 3*cG*cG/(m.Wp*m.Wp));
+}
+
+function el(id){ return document.getElementById(id); }
+function zahl(x, n){ return x.toFixed(n === undefined ? 1 : n).replace(".", ","); }
+
+function auswahlFuellen(sel, liste, start){
+  liste.forEach(function(w){
+    var o = document.createElement("option");
+    o.value = w; o.textContent = w;
+    if(w === start) o.selected = true;
+    sel.appendChild(o);
+  });
+}
+auswahlFuellen(el("eGewinde"), GROESSEN, "M12");
+auswahlFuellen(el("eKlasse"), KLASSENLISTE, "8.8");
+
+function grenze(wert, min, max, ersatz){
+  var x = parseFloat(wert);
+  if(isNaN(x)) return ersatz;
+  return Math.min(max, Math.max(min, x));
+}
+
+function lage(){
+  var m   = masse(el("eGewinde").value);
+  var Rp  = streckgrenze(el("eKlasse").value, m.d);
+  var MA  = grenze(el("eMA").value, 1, 1200, 80);
+  var erf = grenze(el("eErf").value, 0, 400, 25) * 1000;
+  var myMin = grenze(el("eMyMin").value, 0.04, 0.35, 0.08);
+  var myMax = grenze(el("eMyMax").value, 0.04, 0.35, 0.20);
+  if(myMax < myMin){ var t = myMin; myMin = myMax; myMax = t; }
+
+  /* Kleine Reibung -> grosse Kraft, und umgekehrt. */
+  return {
+    m:m, MA:MA, erf:erf, myMin:myMin, myMax:myMax,
+    fMax: ausDrehmoment(m, MA, myMin),
+    fMin: ausDrehmoment(m, MA, myMax),
+    /* Die Fliessgrenze haengt selbst von der Reibung ab; massgebend fuer die
+       Ueberdehnung ist der ungünstigste Fall, also die kleine Reibung. */
+    fFlie: fliessKraft(m, Rp, myMin)
+  };
+}
+
+function neuZeichnen(){
+  var z = lage();
+  var ende = Math.max(z.fMax, z.fFlie, z.erf) * 1.15;
+  var p = function(f){ return Math.max(0, Math.min(100, 100 * f / ende)); };
+
+  el("skalaEnde").textContent = zahl(ende / 1000, 0) + " kN";
+
+  /* Zonen: zu wenig | brauchbar | ueber der Streckgrenze */
+  var gutVon = Math.min(z.erf, z.fFlie), gutBis = Math.max(z.erf, z.fFlie);
+  el("zLose").style.left   = "0%";
+  el("zLose").style.width  = p(gutVon) + "%";
+  el("zGut").style.left    = p(gutVon) + "%";
+  el("zGut").style.width   = (p(gutBis) - p(gutVon)) + "%";
+  el("zUeber").style.left  = p(gutBis) + "%";
+  el("zUeber").style.width = (100 - p(gutBis)) + "%";
+
+  el("band").style.left  = p(z.fMin) + "%";
+  el("band").style.width = Math.max(0.8, p(z.fMax) - p(z.fMin)) + "%";
+  el("mErf").style.left  = p(z.erf) + "%";
+  el("mFlie").style.left = p(z.fFlie) + "%";
+
+  el("rMax").textContent = zahl(z.fMax / 1000);
+  el("rMin").textContent = zahl(z.fMin / 1000);
+  el("rFaktor").textContent = zahl(z.fMax / z.fMin, 2);
+
+  var u = el("urteil");
+  if(z.fMax > z.fFlie && z.fMin < z.erf){
+    u.className = "rueckmeldung nein";
+    u.innerHTML = "<strong>Beides möglich.</strong> Je nach Schmierzustand wird " +
+      "die Schraube überdehnt <em>oder</em> die Verbindung hält nicht &ndash; mit " +
+      "ein und demselben Drehmoment. Diese Vorgabe ist unbrauchbar.";
+  } else if(z.fMax > z.fFlie){
+    u.className = "rueckmeldung fast";
+    u.innerHTML = "<strong>Gefahr der Überdehnung.</strong> Bei guter Schmierung " +
+      "überschreitet die Vorspannkraft die Streckgrenze. Halten würde die " +
+      "Verbindung zwar &ndash; die Schraube nimmt aber Schaden.";
+  } else if(z.fMin < z.erf){
+    u.className = "rueckmeldung fast";
+    u.innerHTML = "<strong>Kann zu wenig sein.</strong> Im ungünstigsten Fall " +
+      "(viel Reibung) bleibt die Vorspannkraft unter den geforderten " +
+      zahl(z.erf / 1000) + " kN. Die Verbindung rutscht, ohne dass es jemand merkt.";
+  } else {
+    u.className = "rueckmeldung ja";
+    u.innerHTML = "<strong>Sicher.</strong> Das ganze Streuband liegt über der " +
+      "nötigen Vorspannkraft und unter der Streckgrenze &ndash; unabhängig davon, " +
+      "wie gut geschmiert wurde.";
+  }
+}
+
+["eGewinde","eKlasse","eMA","eErf","eMyMin","eMyMax"].forEach(function(id){
+  el(id).addEventListener("input", neuZeichnen);
+  el(id).addEventListener("change", neuZeichnen);
+});
+
+el("btnAufloesen").addEventListener("click", function(){
+  var z = lage();
+  var ist = z.fMax / z.fMin;
+  var tipp = parseFloat(el("tipp").value);
+  var r = el("rueck");
+  var nah = Math.abs(tipp - ist) <= 0.35;
+
+  r.className = "rueckmeldung " + (nah ? "ja" : "nein");
+  r.innerHTML = "<strong>" + (nah ? "Gut geschätzt." : "Es ist mehr, als man denkt.") +
+    "</strong> Das Verhältnis beträgt <strong>" + zahl(ist, 2) + "</strong>. " +
+    "Dieselben " + zahl(z.MA, 0) + " N&middot;m erzeugen also " +
+    zahl(z.fMin / 1000) + " kN bei trockener und " + zahl(z.fMax / 1000) +
+    " kN bei gut geschmierter Montage. Die obere Zahl liegt <em>über</em> der " +
+    "Streckgrenze von " + zahl(z.fFlie / 1000) + " kN &ndash; diese Schraube wird " +
+    "beim Anziehen überdehnt.";
+  r.hidden = false;
+  el("rest").hidden = false;
+  neuZeichnen();
+  el("rest").scrollIntoView({behavior:"smooth", block:"start"});
+});
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+</body>
+</html>

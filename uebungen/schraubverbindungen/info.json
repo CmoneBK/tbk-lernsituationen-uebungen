@@ -1,10 +1,18 @@
 {
   "titel": "Maschinenelemente: Schrauben - Schraubverbindungen",
-  "lead": "Übungen rund um die Schraubverbindung – von der Bezeichnung über das Anziehdrehmoment bis zur übertragbaren Querkraft.",
+  "lead": "Sechs Übungen rund um die Schraubverbindung – von der Bezeichnung über das Anziehdrehmoment bis zur übertragbaren Querkraft.",
   "werkzeuge": [
     {
       "datei": "maschinenelemente-schrauben-schraubverbindungen.html",
       "name": "Werkzeug Schraubverbindungen"
     }
+  ],
+  "reihenfolge": [
+    "01-bezeichnung-lesen.html",
+    "02-schnittdarstellung-pruefen.html",
+    "03-wohin-geht-das-drehmoment.html",
+    "04-gleiches-drehmoment-andere-spannkraft.html",
+    "05-querkraft-durch-reibung.html",
+    "06-festigkeitsklassen-deuten.html"
   ]
 }

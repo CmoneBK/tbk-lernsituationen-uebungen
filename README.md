@@ -30,6 +30,7 @@ spiegelt ihn nach `/unterrichtsmaterial/`. Siehe [Deployment](#-deployment).
 lernsituationen/<name>/index.html   Lernsituation – selbst geschrieben
 uebungen/<paket>/                   Übungspaket   – index.html wird ERZEUGT
 trainings/<paket>/                  Trainingspaket – index.html wird ERZEUGT
+assets/uebung.css        gemeinsames Aussehen aller Übungen und Trainings
 assets/back-nav.js       Rücklink „← Übersicht“ – einzige Quelle
 assets/werkzeug-link.js  löst Links auf die Werkzeuge je nach Umgebung auf
 daten/kategorien.csv     Reihenfolge der Bereiche und Unterkategorien
@@ -82,6 +83,24 @@ uebungen/schraubverbindungen/
 Die Übungen im Paket brauchen im `<title>` **nur ihren Namen** – Bereich und
 Kategorie stehen schon in `info.json`. Zusätzlich ausgewertet werden
 `<meta name="description">` (Zeile unter dem Namen) und `<meta name="dauer">`.
+
+### Das Aussehen einer Übung
+
+Übungen und Trainings binden `assets/uebung.css` ein und sehen dadurch gleich
+aus, ohne dass jede Datei ihr eigenes CSS mitschleppt:
+
+```html
+<link rel="stylesheet" href="../../assets/uebung.css">
+```
+
+Bereit stehen unter anderem `.box` / `.auftrag` (Kästen), `.felder` / `.feld`
+(Eingaben), `.ergebnis` / `.ez` (Ergebniszeilen), `.rueckmeldung` mit den
+Zuständen `ja` / `fast` / `nein`, `details` für Lösungen, `.merksatz` und
+`a.werkzeug`. Was nur **eine** Übung braucht – eine Zeichnung, ein Diagramm –
+gehört in ein eigenes `<style>` in der Datei selbst.
+
+Lernsituationen bringen ihr Aussehen dagegen selbst mit; sie sind Dokumente
+mit eigenem Aufbau.
 
 ## ➕ Neues Material anlegen
 

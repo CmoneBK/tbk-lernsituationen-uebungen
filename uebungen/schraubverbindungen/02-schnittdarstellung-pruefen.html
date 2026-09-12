@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vier Schnitte, drei Fehler</title>
+<meta name="description" content="Nur eine der vier Schnittdarstellungen ist normgerecht. Finde sie – und benenne die Fehler in den anderen.">
+<meta name="dauer" content="15 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .zeichnungen{
+    display:grid; gap:16px; margin:18px 0 0;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+  }
+  .figur{
+    background:var(--card); border:1px solid var(--border); border-radius:12px;
+    padding:14px 16px 16px; box-shadow:var(--shadow);
+    text-align:left; cursor:pointer; color:inherit; font:inherit;
+    transition:border-color .15s ease, transform .15s ease;
+  }
+  .figur:hover{border-color:var(--accent); transform:translateY(-2px)}
+  .figur:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  .figur .name{font-weight:700; font-size:15px; display:block; margin-bottom:8px}
+  .figur svg{width:100%; height:auto; display:block}
+  .figur[data-stand="richtig"]{border-color:var(--ok); border-width:2px}
+  .figur[data-stand="falsch"]{border-color:var(--bad); border-width:2px; opacity:.75}
+  .figur[data-stand] {cursor:default; transform:none}
+
+  /* Die Zeichnungen entstehen im Skript. Strichstärken stehen dort direkt am
+     Element, weil gerade sie die fachliche Information tragen - sie dürfen
+     nicht versehentlich über eine Klasse verändert werden. Gezeichnet wird in
+     currentColor, damit der helle und der dunkle Modus beide stimmen. */
+
+  @media (prefers-reduced-motion:reduce){.figur:hover{transform:none}}
+</style>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Schraubverbindungen</p>
+    <h1>Vier Schnitte, drei Fehler</h1>
+    <p class="lead">Dieselbe Durchsteckschraubung, viermal gezeichnet.
+      Genau eine Darstellung ist normgerecht.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Ausgangslage:</strong> Zwei Platten sind mit einer
+        Sechskantschraube und Mutter verspannt, gezeichnet im Längsschnitt.
+        In drei der vier Bilder steckt je ein Fehler.</p>
+      <p><strong>Auftrag:</strong> Finde zuerst die richtige Darstellung.
+        Klicke sie an. Erst danach kommen die Erklärungen.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Welche Darstellung stimmt?</h2>
+    <div class="zeichnungen" id="figuren"></div>
+    <div class="rueckmeldung" id="rueck" hidden></div>
+
+    <div id="teil2" hidden>
+      <h2><span class="nr">2</span>Die drei Fehler</h2>
+
+      <details>
+        <summary>Bild A: Schraube und Mutter sind schraffiert</summary>
+        <p>Der <strong>häufigste Fehler überhaupt.</strong> Die Schnittebene geht
+          zwar durch die Schraube hindurch &ndash; trotzdem wird sie
+          <em>nicht geschnitten dargestellt</em> und bekommt keine Schraffur.</p>
+        <p>Dasselbe gilt für <strong>Mutter, Scheibe, Welle, Stift, Niet, Keil,
+          Rippe und Speiche</strong>. Der Grund ist praktisch: Diese Teile sind
+          Vollkörper, ein Schnitt durch sie zeigt nichts Neues, macht die
+          Zeichnung aber unleserlich.</p>
+        <p><em>Merkhilfe:</em> Was man aus dem Katalog kauft statt zu fertigen,
+          wird meist nicht geschnitten.</p>
+      </details>
+
+      <details>
+        <summary>Bild B: Beide Platten sind gleich schraffiert</summary>
+        <p>Aneinandergrenzende Teile müssen sich in der Schraffur
+          <strong>unterscheiden</strong> &ndash; durch die Richtung, durch den
+          Abstand oder durch Versatz. Sonst verschmelzen sie im Bild zu einem
+          einzigen Bauteil, und die Trennfuge verschwindet.</p>
+        <p>Gerade bei der Schraubverbindung ist das fatal: Die Trennfuge ist
+          genau die Stelle, an der die Reibung wirkt und über die die Querkraft
+          übertragen wird. Wer sie nicht sieht, sieht die Verbindung nicht.</p>
+      </details>
+
+      <details>
+        <summary>Bild C: Die Gewindelinien sind vertauscht</summary>
+        <p>Beim <strong>Außengewinde</strong> (also an der Schraube) ist der
+          <em>Außendurchmesser d</em> die <strong>breite</strong> Vollinie und
+          der <em>Kerndurchmesser d<sub>3</sub></em> die <strong>schmale</strong>.
+          In Bild C ist es umgekehrt gezeichnet.</p>
+        <p>Beim <strong>Innengewinde</strong> im geschnittenen Bauteil dreht sich
+          das Verhältnis um: Dort ist der Kerndurchmesser die breite Linie und
+          der Außendurchmesser die schmale.</p>
+        <p><strong>Merksatz:</strong> Die Schraffur hört immer an der breiten
+          Linie auf. Beim Außengewinde liegt die breite Linie außen, beim
+          Innengewinde innen.</p>
+      </details>
+
+      <h2><span class="nr">3</span>Übertragen</h2>
+
+      <details>
+        <summary>1. Wo hört beim Innengewinde die Schraffur auf &ndash; und warum ausgerechnet dort?</summary>
+        <p>An der <strong>breiten Linie</strong>, also am Kerndurchmesser. Das ist
+          kein willkürlicher Zeichenbrauch, sondern die Wahrheit: Bis dorthin
+          reicht der Werkstoff wirklich. Der Raum zwischen Kern- und
+          Außendurchmesser ist der Gewindegang &ndash; dort ist mal Werkstoff und
+          mal nicht.</p>
+      </details>
+
+      <details>
+        <summary>2. Eine Welle liegt längs in der Schnittebene, eine Nut quer dazu. Was wird geschnitten?</summary>
+        <p>Die Welle <strong>längs</strong>: nicht geschnitten, keine Schraffur.
+          Ein Schnitt <strong>quer</strong> durch dieselbe Welle dagegen schon &ndash;
+          dort zeigt der Schnitt etwas Neues, nämlich die Querschnittsform mit der
+          Nut. Die Regel gilt also nicht für das Bauteil an sich, sondern für die
+          Schnittrichtung.</p>
+      </details>
+
+      <details>
+        <summary>3. Warum reicht es nicht, die Trennfuge einfach als Linie zu zeichnen?</summary>
+        <p>Weil eine Linie allein nicht sagt, ob sie eine Kante, eine Trennfuge
+          oder ein Maßbezug ist. Erst die unterschiedliche Schraffur links und
+          rechts macht eindeutig: Hier enden zwei verschiedene Bauteile
+          aneinander. In der Fertigung entscheidet das darüber, ob zwei Teile
+          bestellt werden oder eines.</p>
+      </details>
+
+      <div class="merksatz">
+        <strong>Merksatz:</strong> Nicht geschnitten werden Schraube, Mutter,
+        Scheibe, Welle, Stift, Niet, Keil und Rippe. Und: Nachbarn schraffiert
+        man nie gleich.
+      </div>
+
+      <h3>Weiterarbeiten</h3>
+      <p>Der Reiter <em>Zeichnung</em> im Werkzeug zeichnet die Verbindung mit
+        deinen Plattendicken neu &ndash; wahlweise als Durchsteckschraubung oder
+        als Einschraubverbindung mit Grundloch, samt Kernloch und Bohrtiefe.</p>
+      <p>
+        <a class="werkzeug" data-werkzeug="maschinenelemente-schrauben-schraubverbindungen.html">Werkzeug Schraubverbindungen öffnen</a>
+      </p>
+      <p class="fussnote">Darstellung nach DIN ISO 128 und DIN ISO 6410.
+        Die Zeichnungen hier sind schematisch und nicht maßstäblich.</p>
+    </div>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Alle vier Bilder entstehen aus einer Funktion. So unterscheiden sie sich
+   garantiert nur in dem einen Punkt, um den es geht - und nicht nebenbei in
+   Strichstärken oder Maßen, die beim Abzeichnen verrutscht wären. */
+
+var ACHSE = 85;
+var X = {kopfL:26, kopfR:60, platte1:60, fuge:126, platte2:192, scheibe:192,
+         scheibeR:199, mutterL:199, mutterR:229, ende:250};
+var Y = {kopf:19, schaft:10, kern:7.5, loch:13, platte:70, scheibe:16, gew:150};
+
+function svgEl(name, attr){
+  var e = document.createElementNS("http://www.w3.org/2000/svg", name);
+  for(var k in attr) if(attr.hasOwnProperty(k)) e.setAttribute(k, attr[k]);
+  return e;
+}
+
+/* Zwei Schraffurmuster in entgegengesetzter Richtung. Die IDs muessen je Bild
+   eindeutig sein, sonst greifen alle Bilder auf dasselbe Muster zu. */
+function muster(id, winkel){
+  var p = svgEl("pattern", {id:id, width:7, height:7,
+    patternUnits:"userSpaceOnUse", patternTransform:"rotate(" + winkel + ")"});
+  p.appendChild(svgEl("line", {x1:0, y1:0, x2:0, y2:7,
+    stroke:"currentColor", "stroke-width":0.9, opacity:0.75}));
+  return p;
+}
+
+/* fehler: "schraffiert" | "gleich" | "gewinde" | null (richtig) */
+function zeichnen(bild, fehler){
+  var svg = svgEl("svg", {viewBox:"0 0 " + X.ende + " 170",
+    role:"img", "aria-label":"Schnittdarstellung " + bild});
+
+  var idA = "s" + bild + "a", idB = "s" + bild + "b";
+  var defs = svgEl("defs", {});
+  defs.appendChild(muster(idA, 45));
+  /* Beim Fehler "gleich" bekommt die zweite Platte dieselbe Richtung. */
+  defs.appendChild(muster(idB, fehler === "gleich" ? 45 : -45));
+  svg.appendChild(defs);
+
+  function platte(x1, x2, fuellung){
+    /* Ober- und Unterteil der Platte, dazwischen das Durchgangsloch. */
+    [[19, ACHSE - Y.loch], [ACHSE + Y.loch, 151]].forEach(function(p){
+      svg.appendChild(svgEl("rect", {x:x1, y:p[0], width:x2 - x1, height:p[1] - p[0],
+        fill:"url(#" + fuellung + ")", stroke:"currentColor", "stroke-width":2.2}));
+    });
+  }
+  platte(X.platte1, X.fuge, idA);
+  platte(X.fuge, X.platte2, idB);
+
+  /* Schraube: Kopf und Schaft. Beim Fehler "schraffiert" bekommen Schraube und
+     Mutter eine Schraffur - genau das, was die Norm verbietet. */
+  var fuell = fehler === "schraffiert" ? "url(#" + idA + ")" : "none";
+
+  svg.appendChild(svgEl("rect", {x:X.kopfL, y:ACHSE - Y.kopf,
+    width:X.kopfR - X.kopfL, height:2 * Y.kopf,
+    fill:fuell, stroke:"currentColor", "stroke-width":2.2}));
+  svg.appendChild(svgEl("rect", {x:X.kopfR, y:ACHSE - Y.schaft,
+    width:X.ende - 12 - X.kopfR, height:2 * Y.schaft,
+    fill:fuell, stroke:"currentColor", "stroke-width":2.2}));
+
+  /* Gewinde: Aussendurchmesser breit, Kerndurchmesser schmal.
+     Beim Fehler "gewinde" sind die beiden Strichstaerken vertauscht. */
+  var breitAussen = fehler !== "gewinde";
+  [[Y.schaft, breitAussen ? 2.2 : 0.9], [Y.kern, breitAussen ? 0.9 : 2.2]].forEach(function(l){
+    [ACHSE - l[0], ACHSE + l[0]].forEach(function(y){
+      svg.appendChild(svgEl("line", {x1:X.gew, y1:y, x2:X.ende - 12, y2:y,
+        stroke:"currentColor", "stroke-width":l[1]}));
+    });
+  });
+
+  /* Scheibe und Mutter - ebenfalls nie geschnitten. */
+  [[X.scheibe, X.scheibeR, Y.scheibe], [X.mutterL, X.mutterR, Y.kopf]].forEach(function(t){
+    svg.appendChild(svgEl("rect", {x:t[0], y:ACHSE - t[2],
+      width:t[1] - t[0], height:2 * t[2],
+      fill:fuell, stroke:"currentColor", "stroke-width":2.2}));
+  });
+
+  /* Mittellinie zuletzt, damit sie ueber den Flaechen liegt. */
+  svg.appendChild(svgEl("line", {x1:14, y1:ACHSE, x2:X.ende - 2, y2:ACHSE,
+    stroke:"currentColor", "stroke-width":0.8, "stroke-dasharray":"9 3 2 3", opacity:0.55}));
+
+  return svg;
+}
+
+var BILDER = [
+  {name:"A", fehler:"schraffiert"},
+  {name:"B", fehler:"gleich"},
+  {name:"C", fehler:"gewinde"},
+  {name:"D", fehler:null}
+];
+
+var GRUND = {
+  schraffiert: "Schraube, Scheibe und Mutter sind schraffiert – sie werden im " +
+               "Längsschnitt aber nie geschnitten.",
+  gleich:      "Beide Platten haben dieselbe Schraffurrichtung – die Trennfuge " +
+               "verschwindet dadurch im Bild.",
+  gewinde:     "Beim Außengewinde sind die Strichstärken vertauscht: der " +
+               "Kerndurchmesser ist breit gezeichnet, der Außendurchmesser schmal."
+};
+
+var el = function(id){ return document.getElementById(id); };
+var beantwortet = false;
+
+BILDER.forEach(function(b){
+  var knopf = document.createElement("button");
+  knopf.type = "button";
+  knopf.className = "figur";
+  knopf.dataset.name = b.name;
+
+  var name = document.createElement("span");
+  name.className = "name";
+  name.textContent = "Bild " + b.name;
+  knopf.appendChild(name);
+  knopf.appendChild(zeichnen(b.name, b.fehler));
+
+  knopf.addEventListener("click", function(){
+    if(beantwortet) return;
+    beantwortet = true;
+
+    BILDER.forEach(function(x, i){
+      var k = el("figuren").children[i];
+      k.dataset.stand = x.fehler ? "falsch" : "richtig";
+      k.setAttribute("aria-disabled", "true");
+    });
+
+    var r = el("rueck");
+    if(!b.fehler){
+      r.className = "rueckmeldung ja";
+      r.innerHTML = "<strong>Richtig.</strong> Bild D ist normgerecht: Schraube, " +
+        "Scheibe und Mutter ohne Schraffur, die beiden Platten unterschiedlich " +
+        "schraffiert, und am Gewinde liegt die breite Linie außen.";
+    } else {
+      r.className = "rueckmeldung nein";
+      r.innerHTML = "<strong>Nicht ganz.</strong> " + GRUND[b.fehler] +
+        " Normgerecht ist <strong>Bild D</strong>.";
+    }
+    r.hidden = false;
+    el("teil2").hidden = false;
+  });
+
+  el("figuren").appendChild(knopf);
+});
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+</body>
+</html>

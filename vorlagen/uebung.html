@@ -9,72 +9,10 @@
 <title>Name der Übung</title>
 <meta name="description" content="Ein Satz, der auf der Paketseite unter dem Namen steht.">
 <meta name="dauer" content="15 min">
-<style>
-  :root{
-    --bg:#f7f7f5; --fg:#1a1a1a; --muted:#5f5f5a;
-    --card:#fff; --border:#e3e3df; --border-stark:#cbd5e1;
-    --accent:#2b6cb0; --accent-fg:#fff;
-    --shadow:0 1px 3px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.05);
-  }
-  @media (prefers-color-scheme:dark){
-    :root{
-      --bg:#151517; --fg:#ececec; --muted:#a0a0a0;
-      --card:#1e1e21; --border:#2c2c30; --border-stark:#3d3d44;
-      --accent:#5b9bd5; --accent-fg:#0b0b0c;
-      --shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
-    }
-  }
-  *{box-sizing:border-box}
-  body{
-    margin:0; background:var(--bg); color:var(--fg);
-    font:16px/1.7 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  }
-  a{color:var(--accent)}
-  .wrap{width:100%; max-width:760px; margin:0 auto; padding:0 20px}
-  /* Platz für den schwebenden Rücklink oben links. */
-  header{padding:72px 0 8px}
-  .herkunft{
-    font-size:13px; font-weight:700; text-transform:uppercase;
-    letter-spacing:.06em; color:var(--muted); margin:0 0 6px;
-  }
-  h1{font-size:clamp(24px,4vw,32px); letter-spacing:-.5px; margin:0 0 10px}
-  .lead{color:var(--muted); font-size:17px; margin:0}
-  h2{font-size:20px; margin:44px 0 4px; padding-top:24px; border-top:1px solid var(--border)}
-  h2 .nr{
-    display:inline-flex; align-items:center; justify-content:center;
-    width:26px; height:26px; border-radius:50%; margin-right:10px;
-    background:var(--accent); color:var(--accent-fg);
-    font-size:13px; font-weight:700; vertical-align:2px;
-  }
-  .box{
-    background:var(--card); border:1px solid var(--border); border-radius:12px;
-    padding:18px 20px; box-shadow:var(--shadow); margin:18px 0;
-  }
-  .box p:first-child{margin-top:0}
-  .box p:last-child{margin-bottom:0}
-  .auftrag{border-left:4px solid var(--accent)}
-  details{
-    border:1px solid var(--border); border-radius:10px;
-    padding:12px 16px; margin:12px 0; background:var(--card);
-  }
-  summary{cursor:pointer; font-weight:600; font-size:15px}
-  summary::marker{color:var(--accent)}
-  details p:last-child{margin-bottom:0}
-  a.werkzeug{
-    display:inline-flex; align-items:center; gap:8px;
-    font-weight:600; font-size:15px; text-decoration:none;
-    border:1px solid var(--accent); border-radius:999px; padding:8px 16px;
-  }
-  a.werkzeug::after{content:"\2197"; font-weight:400}
-  a.werkzeug:hover{background:var(--accent); color:var(--accent-fg)}
-  .fussnote{color:var(--muted); font-size:13px}
-  footer{
-    text-align:center; color:var(--muted); font-size:13px;
-    padding:40px 0 32px; border-top:1px solid var(--border); margin-top:48px;
-  }
-  footer a{color:var(--muted)}
-  @media print{details{border:0} details > *{display:block} a.werkzeug{display:none}}
-</style>
+<!-- Das gemeinsame Aussehen aller Übungen. Was hier fehlt, gehört entweder in
+     ein eigenes <style> weiter unten (wenn es nur diese Übung braucht) oder in
+     assets/uebung.css (wenn es mehrere brauchen). -->
+<link rel="stylesheet" href="../../assets/uebung.css">
 </head>
 <body>
   <header class="wrap">
@@ -86,11 +24,27 @@
   <main class="wrap">
 
     <div class="box auftrag">
-      <p><strong>Ausgangslage:</strong> Woran wird gearbeitet? Welche Werte sind gegeben?</p>
+      <p><strong>Ausgangslage:</strong> Woran wird gearbeitet? Welche Werte sind
+        gegeben, welche muss man nachschlagen?</p>
     </div>
 
     <h2><span class="nr">1</span>Erste Aufgabe</h2>
     <p>Aufgabenstellung.</p>
+
+    <!-- Eingabefelder: die Klassen felder/feld/ergebnis/ez stehen in
+         assets/uebung.css bereit. -->
+    <div class="box">
+      <div class="felder">
+        <label class="feld">Ein Wert in mm
+          <input type="number" id="eWert" min="0" max="100" step="1" value="10">
+        </label>
+      </div>
+      <div class="ergebnis">
+        <div class="ez"><span class="l">Ergebnis</span>
+          <span class="v" id="rWert">&ndash;</span> <span class="e">mm</span></div>
+      </div>
+      <div class="rueckmeldung" id="rueck" hidden></div>
+    </div>
 
     <details>
       <summary>Lösung anzeigen</summary>
@@ -104,18 +58,51 @@
       <p>Antwort.</p>
     </details>
 
-    <h2>Weiterarbeiten</h2>
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Der eine Satz, der hängenbleiben soll.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
     <p>
       <!-- Das Werkzeug wird nur benannt; den passenden Pfad setzt
            assets/werkzeug-link.js je nach Umgebung ein. -->
       <a class="werkzeug" data-werkzeug="dateiname-im-werkzeuge-repo.html" data-fach="1">Werkzeug öffnen</a>
     </p>
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.</p>
 
   </main>
 
   <footer class="wrap">
     &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
   </footer>
+
+<script>
+"use strict";
+
+function el(id){ return document.getElementById(id); }
+function zahl(x, n){ return x.toFixed(n === undefined ? 1 : n).replace(".", ","); }
+
+/* Eingaben immer begrenzen: min und max am Feld halten nur die Pfeiltasten auf,
+   getippt werden kann trotzdem alles. */
+function grenze(wert, min, max, ersatz){
+  var x = parseFloat(wert);
+  if(isNaN(x)) return ersatz;
+  return Math.min(max, Math.max(min, x));
+}
+
+function neuRechnen(){
+  var w = grenze(el("eWert").value, 0, 100, 10);
+  el("rWert").textContent = zahl(w * 2);
+
+  var r = el("rueck");
+  r.className = "rueckmeldung " + (w > 50 ? "ja" : "fast");   /* ja | fast | nein */
+  r.innerHTML = "<strong>Kopfzeile.</strong> Erklärung dazu.";
+  r.hidden = false;
+}
+
+el("eWert").addEventListener("input", neuRechnen);
+neuRechnen();
+</script>
 
 <!-- Rücklink: data-ziel="./" führt zurück zur Paketseite statt zur Startseite
      des Materialbereichs. Beide Zeilen trägt "node build/build.mjs" auch

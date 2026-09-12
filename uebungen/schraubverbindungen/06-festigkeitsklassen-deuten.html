@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Was die zwei Zahlen verraten</title>
+<meta name="description" content="8.8, 10.9, 12.9 – aus zwei Ziffern lassen sich Zugfestigkeit und Streckgrenze im Kopf ausrechnen.">
+<meta name="dauer" content="15 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+
+  /* Die Kennzeichnung auf dem Schraubenkopf. */
+  .kopf{
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    margin:6px 0 14px;
+  }
+  .ziffer{
+    display:flex; align-items:center; justify-content:center;
+    width:64px; height:64px; border-radius:10px;
+    background:var(--accent); color:var(--accent-fg);
+    font-size:34px; font-weight:700;
+  }
+  .ziffer.punkt{
+    width:auto; background:none; color:var(--fg); font-size:34px;
+  }
+  .pfeil{text-align:center; color:var(--muted); font-size:13px; line-height:1.5}
+
+  .rechenweg{
+    background:var(--bg); border:1px solid var(--border); border-radius:10px;
+    padding:14px 16px; margin:14px 0; font-size:17px; line-height:2.1;
+    font-variant-numeric:tabular-nums;
+  }
+  .rechenweg b{font-weight:700}
+
+  /* Selbstkontrolle */
+  .frage{font-size:19px; font-weight:700; margin:0 0 12px}
+  .punkte{font-size:14px; color:var(--muted)}
+</style>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Schraubverbindungen</p>
+    <h1>Was die zwei Zahlen verraten</h1>
+    <p class="lead">Auf jedem Schraubenkopf stehen zwei Ziffern mit einem Punkt
+      dazwischen. Aus ihnen lassen sich zwei Werkstoffkennwerte im Kopf ausrechnen.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <div class="kopf">
+        <span class="ziffer">8</span>
+        <span class="ziffer punkt">.</span>
+        <span class="ziffer">8</span>
+      </div>
+      <p><strong>Die beiden Regeln:</strong></p>
+      <ul>
+        <li>Die <strong>erste Zahl mal 100</strong> ergibt die Zugfestigkeit
+          R<sub>m</sub> in N/mm².</li>
+        <li><strong>Beide Zahlen multipliziert, mal 10</strong> ergibt die
+          Streckgrenze R<sub>p0,2</sub> in N/mm².</li>
+      </ul>
+      <div class="rechenweg">
+        R<sub>m</sub> = 8 &middot; 100 = <b>800 N/mm²</b><br>
+        R<sub>p0,2</sub> = 8 &middot; 8 &middot; 10 = <b>640 N/mm²</b>
+      </div>
+      <p>Die zweite Zahl ist also nichts anderes als das
+        <strong>Streckgrenzenverhältnis in Zehnteln</strong>: 8 bedeutet, dass die
+        Streckgrenze bei 80 % der Zugfestigkeit liegt.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Selbstkontrolle</h2>
+    <p>Fünf Klassen, zwei Werte je Klasse. Rechne im Kopf, tippe ein, prüfe.</p>
+
+    <div class="box">
+      <p class="frage" id="frage">&ndash;</p>
+      <div class="felder">
+        <label class="feld">R<sub>m</sub> in N/mm²
+          <input type="number" id="aRm" min="0" max="2000" step="10" inputmode="numeric">
+        </label>
+        <label class="feld">R<sub>p0,2</sub> in N/mm²
+          <input type="number" id="aRp" min="0" max="2000" step="10" inputmode="numeric">
+        </label>
+      </div>
+      <p style="margin-top:16px">
+        <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+        <button type="button" class="knopf leise" id="btnWeiter">Nächste Klasse</button>
+      </p>
+      <div class="rueckmeldung" id="rueck" hidden></div>
+      <p class="punkte" id="punkte"></p>
+    </div>
+
+    <h2><span class="nr">2</span>Die Tabelle</h2>
+    <p>Alle gebräuchlichen Klassen auf einen Blick. Die letzte Spalte zeigt, was
+      das für eine M12 bedeutet (A<sub>S</sub> = 84,3 mm²).</p>
+
+    <div class="tabellenrahmen">
+      <table>
+        <thead>
+          <tr>
+            <th>Klasse</th>
+            <th class="zahl">R<sub>m</sub></th>
+            <th class="zahl">R<sub>p0,2</sub></th>
+            <th class="zahl">Bruchkraft M12</th>
+          </tr>
+        </thead>
+        <tbody id="tabBody"></tbody>
+      </table>
+    </div>
+    <p class="fussnote">Bruchkraft F = R<sub>m</sub> &middot; A<sub>S</sub> &ndash;
+      die Kraft, bei der die Schraube reißt. Angezogen wird auf einen Bruchteil davon.</p>
+
+    <details>
+      <summary>Der Sonderfall, den man kennen muss: 8.8 über M16</summary>
+      <p>Für Schrauben der Klasse 8.8 mit einem Nenndurchmesser <strong>über
+        16 mm</strong> gelten nach ISO 898-1 höhere Werte:
+        R<sub>m</sub> = <strong>830 N/mm²</strong> und
+        R<sub>p0,2</sub> = <strong>660 N/mm²</strong> statt 800 und 640.</p>
+      <p>Der Grund ist fertigungstechnisch: Große Schrauben werden anders vergütet,
+        die Norm trägt dem mit einer eigenen Zeile Rechnung. Für M16 selbst gilt
+        noch der kleinere Wert &ndash; die Grenze ist „über 16“, nicht „ab 16“.</p>
+      <p>Im Rechner des Werkzeugs ist dieser Sprung eingebaut. Stell dort einmal
+        M16 und dann M20 bei Klasse 8.8 ein und beobachte die Vorspannkraft.</p>
+    </details>
+
+    <h2><span class="nr">3</span>Übertragen</h2>
+
+    <details>
+      <summary>1. Warum nimmt man nicht grundsätzlich 12.9?</summary>
+      <p>Weil Festigkeit teuer erkauft ist:</p>
+      <ul>
+        <li><strong>Kerbempfindlichkeit.</strong> Je höher die Festigkeit, desto
+          spröder das Verhalten an Kerben &ndash; und der Gewindegrund ist eine
+          Kerbe. Bei schwingender Last verliert 12.9 ihren Vorsprung fast
+          vollständig.</li>
+        <li><strong>Wasserstoffversprödung.</strong> Ab etwa 10.9 besteht die
+          Gefahr, dass beim galvanischen Verzinken Wasserstoff eindringt und die
+          Schraube Stunden bis Tage später ohne Vorwarnung bricht. Solche
+          Schrauben müssen nach dem Beschichten getempert werden.</li>
+        <li><strong>Korrosion.</strong> Hochfeste Schrauben sind anfälliger für
+          Spannungsrisskorrosion.</li>
+        <li><strong>Kosten und Verfügbarkeit.</strong></li>
+      </ul>
+      <p>8.8 ist deshalb die Standardwahl im Maschinenbau. 10.9 und 12.9 nimmt
+        man, wenn der Bauraum eine kleinere Schraube erzwingt.</p>
+    </details>
+
+    <details>
+      <summary>2. Eine 8.8 M12 reißt bei etwa 67 kN. Angezogen wird sie auf rund 40 kN. Warum so weit darunter?</summary>
+      <p>Weil die Bruchkraft gar nicht die Grenze ist. Maßgebend ist die
+        <strong>Streckgrenze</strong>, denn oberhalb davon längt sich die Schraube
+        bleibend und verliert ihre Vorspannkraft. Und von der Streckgrenze nutzt
+        man üblicherweise nur <strong>90 %</strong> aus.</p>
+      <p>Dazu kommt: Beim Anziehen wirkt nicht nur Zug, sondern gleichzeitig
+        <strong>Torsion</strong> aus der Gewindereibung. Beide zusammen ergeben
+        die Vergleichsspannung &ndash; und die erreicht die Streckgrenze schon bei
+        einer kleineren Zugkraft, als man aus A<sub>S</sub> &middot;
+        R<sub>p0,2</sub> erwarten würde.</p>
+    </details>
+
+    <details>
+      <summary>3. Was steht bei Muttern auf dem Sechskant &ndash; und warum nur eine Zahl?</summary>
+      <p>Bei Muttern steht eine <strong>Festigkeitsklasse</strong> wie 8 oder 10.
+        Die Zahl gibt an, welche Schraubenklasse die Mutter voll ausnutzen kann:
+        Eine Mutter der Klasse 8 passt zu einer Schraube 8.8, Klasse 10 zu 10.9.</p>
+      <p>Eine Streckgrenze braucht es nicht, weil die Mutter nicht auf Zug
+        beansprucht wird, sondern auf Abstreifen des Gewindes. Entscheidend ist
+        nur: <strong>Die Mutter muss mindestens so fest sein wie die Schraube.</strong>
+        Sonst reißt bei Überlast das Muttergewinde aus &ndash; und das ohne die
+        Vorwarnung, die eine sich längende Schraube gibt.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Erste Zahl mal 100 ist die Zugfestigkeit, beide
+      Zahlen mal 10 die Streckgrenze. Und: Die Mutter ist nie schwächer als die
+      Schraube.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>Der Reiter <em>Berechnungen</em> im Werkzeug zeigt am Ende dieselbe
+      Klassentabelle und rechnet die Vorspannkraft für jede Klasse aus.</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="maschinenelemente-schrauben-schraubverbindungen.html">Werkzeug Schraubverbindungen öffnen</a>
+    </p>
+    <p class="fussnote">Werte nach ISO 898-1. Alle Zahlen sind Orientierungswerte
+      für den Unterricht.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+var KLASSENLISTE = ["4.6","5.6","8.8","10.9","12.9"];
+var AS_M12 = Math.PI / 4 * Math.pow(((12 - 0.6495*1.75) + (12 - 1.2269*1.75)) / 2, 2);
+
+function el(id){ return document.getElementById(id); }
+function zahl(x, n){ return x.toFixed(n === undefined ? 1 : n).replace(".", ","); }
+
+/* Die beiden Regeln - genau so, wie sie oben im Text stehen. Absichtlich
+   gerechnet und nicht als Tabelle hinterlegt: Wer den Code liest, sieht die
+   Regel. */
+function werte(klasse){
+  var t = klasse.split(".");
+  var a = parseFloat(t[0]), b = parseFloat(t[1]);
+  return {Rm: a * 100, Rp: a * b * 10};
+}
+
+/* ---------- Tabelle ---------- */
+
+el("tabBody").innerHTML = KLASSENLISTE.map(function(k){
+  var w = werte(k);
+  return '<tr><td><strong>' + k + '</strong></td>' +
+         '<td class="zahl">' + w.Rm + ' N/mm²</td>' +
+         '<td class="zahl">' + w.Rp + ' N/mm²</td>' +
+         '<td class="zahl">' + zahl(w.Rm * AS_M12 / 1000, 0) + ' kN</td></tr>';
+}).join("");
+
+/* ---------- Selbstkontrolle ---------- */
+
+var offen = KLASSENLISTE.slice();
+var aktuell = null;
+var richtig = 0, versuche = 0;
+
+function naechste(){
+  if(!offen.length) offen = KLASSENLISTE.slice();
+  aktuell = offen.splice(Math.floor(Math.random() * offen.length), 1)[0];
+  el("frage").textContent = "Festigkeitsklasse " + aktuell;
+  el("aRm").value = "";
+  el("aRp").value = "";
+  el("rueck").hidden = true;
+  el("aRm").focus();
+}
+
+function punkteZeigen(){
+  el("punkte").textContent = versuche
+    ? richtig + " von " + versuche + " richtig."
+    : "";
+}
+
+el("btnPruefen").addEventListener("click", function(){
+  if(!aktuell) return;
+  var w = werte(aktuell);
+  var rm = parseFloat(el("aRm").value);
+  var rp = parseFloat(el("aRp").value);
+  var okRm = rm === w.Rm, okRp = rp === w.Rp;
+  var r = el("rueck");
+
+  versuche++;
+  if(okRm && okRp){
+    richtig++;
+    r.className = "rueckmeldung ja";
+    r.innerHTML = "<strong>Beides richtig.</strong> " + aktuell + " &rarr; " +
+      w.Rm + " N/mm² und " + w.Rp + " N/mm².";
+  } else {
+    r.className = "rueckmeldung nein";
+    r.innerHTML = "<strong>Noch nicht.</strong> " +
+      (okRm ? "R<sub>m</sub> stimmt. " : "R<sub>m</sub> = erste Zahl &middot; 100 = " + w.Rm + " N/mm². ") +
+      (okRp ? "R<sub>p0,2</sub> stimmt." : "R<sub>p0,2</sub> = " + aktuell.split(".")[0] +
+        " &middot; " + aktuell.split(".")[1] + " &middot; 10 = " + w.Rp + " N/mm².");
+  }
+  r.hidden = false;
+  punkteZeigen();
+});
+
+el("btnWeiter").addEventListener("click", naechste);
+naechste();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+</body>
+</html>

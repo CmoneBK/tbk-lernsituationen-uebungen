@@ -1,0 +1,157 @@
+/* Gemeinsames Aussehen aller Übungen und Trainings.
+ *
+ * Eingebunden mit einer Zeile im head - der Pfad zählt aus der Datei heraus:
+ *     <link rel="stylesheet" href="../../assets/uebung.css">
+ *
+ * Seiten-spezifisches CSS (Balken, Zeichnungen, Sonderfälle) gehört danach in
+ * ein eigenes <style> in der Seite selbst. Was mehr als eine Übung braucht,
+ * gehört hierher.
+ */
+
+:root{
+  --bg:#f7f7f5; --fg:#1a1a1a; --muted:#5f5f5a;
+  --card:#fff; --border:#e3e3df; --border-stark:#cbd5e1;
+  --accent:#2b6cb0; --accent-fg:#fff;
+  --ok:#16a34a; --warn:#ca8a04; --bad:#dc2626;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#151517; --fg:#ececec; --muted:#a0a0a0;
+    --card:#1e1e21; --border:#2c2c30; --border-stark:#3d3d44;
+    --accent:#5b9bd5; --accent-fg:#0b0b0c;
+    --ok:#4ade80; --warn:#facc15; --bad:#f87171;
+    --shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
+  }
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0; background:var(--bg); color:var(--fg);
+  font:16px/1.7 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+}
+a{color:var(--accent)}
+.wrap{width:100%; max-width:760px; margin:0 auto; padding:0 20px}
+[hidden]{display:none!important}
+
+/* --- Kopf --- */
+/* Der Rücklink schwebt oben links; das Polster hält den Titel darunter frei. */
+header{padding:72px 0 8px}
+.herkunft{
+  font-size:13px; font-weight:700; text-transform:uppercase;
+  letter-spacing:.06em; color:var(--muted); margin:0 0 6px;
+}
+h1{font-size:clamp(24px,4vw,32px); letter-spacing:-.5px; margin:0 0 10px}
+.lead{color:var(--muted); font-size:17px; margin:0}
+
+/* --- Gliederung --- */
+h2{font-size:20px; margin:44px 0 4px; padding-top:24px; border-top:1px solid var(--border)}
+h2 .nr{
+  display:inline-flex; align-items:center; justify-content:center;
+  width:26px; height:26px; border-radius:50%; margin-right:10px;
+  background:var(--accent); color:var(--accent-fg);
+  font-size:13px; font-weight:700; vertical-align:2px;
+}
+h3{font-size:16px; margin:26px 0 6px}
+
+.box{
+  background:var(--card); border:1px solid var(--border); border-radius:12px;
+  padding:18px 20px; box-shadow:var(--shadow); margin:18px 0;
+}
+.box > :first-child{margin-top:0}
+.box > :last-child{margin-bottom:0}
+.auftrag{border-left:4px solid var(--accent)}
+
+/* --- Eingabefelder ---
+   Bewusst kein Flex im Label: sonst wird jedes <sub> zu einem eigenen
+   Flex-Element und Formelzeichen wie my-G brechen in eine neue Zeile um. */
+.felder{display:flex; flex-wrap:wrap; gap:16px}
+.feld{display:block; flex:1 1 180px; font-size:14px; color:var(--muted)}
+.feld > select,
+.feld > input{
+  display:block; width:100%; margin-top:4px;
+  font:inherit; font-size:15px; color:var(--fg); background:var(--card);
+  border:1px solid var(--border-stark); border-radius:8px; padding:8px 10px;
+}
+.feld > input[type=range]{padding:0; border:0; background:none; accent-color:var(--accent)}
+.feld > select:focus,
+.feld > input:focus{outline:2px solid var(--accent); outline-offset:1px}
+
+button.knopf{
+  font:600 15px/1 inherit; cursor:pointer;
+  background:var(--accent); color:var(--accent-fg);
+  border:1px solid var(--accent); border-radius:999px; padding:11px 20px;
+}
+button.knopf.leise{background:transparent; color:var(--fg); border-color:var(--border-stark)}
+button.knopf:hover{filter:brightness(1.08)}
+button.knopf.leise:hover{border-color:var(--accent); color:var(--accent); filter:none}
+button.knopf:focus-visible{outline:2px solid var(--fg); outline-offset:2px}
+
+/* --- Rückmeldung --- */
+.rueckmeldung{
+  margin:18px 0 0; padding:14px 16px; border-radius:10px;
+  border:1px solid var(--border-stark); background:var(--bg); font-size:15px;
+}
+.rueckmeldung strong{display:block; margin-bottom:2px}
+.rueckmeldung.ja{border-color:var(--ok)}
+.rueckmeldung.fast{border-color:var(--warn)}
+.rueckmeldung.nein{border-color:var(--bad)}
+
+/* --- Ergebniszeilen --- */
+.ergebnis{display:flex; flex-wrap:wrap; gap:12px; margin:16px 0 0}
+.ez{
+  flex:1 1 150px; background:var(--bg); border:1px solid var(--border);
+  border-radius:10px; padding:10px 14px;
+}
+.ez .l{display:block; font-size:13px; color:var(--muted)}
+.ez .v{font-size:20px; font-weight:700; font-variant-numeric:tabular-nums}
+.ez .e{font-size:13px; color:var(--muted)}
+
+/* --- Tabellen --- */
+table{border-collapse:collapse; width:100%; font-size:15px; margin:8px 0 0}
+th, td{text-align:left; padding:8px 10px; border-bottom:1px solid var(--border)}
+th{font-size:13px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); font-weight:700}
+td.zahl, th.zahl{text-align:right}
+td.zahl{font-variant-numeric:tabular-nums}
+tr.summe td{font-weight:700; border-bottom:0}
+.tabellenrahmen{overflow-x:auto}
+
+/* --- Lösungen --- */
+details{
+  border:1px solid var(--border); border-radius:10px;
+  padding:12px 16px; margin:12px 0; background:var(--card);
+}
+details[open]{box-shadow:var(--shadow)}
+summary{cursor:pointer; font-weight:600; font-size:15px}
+summary::marker{color:var(--accent)}
+details > p:last-child{margin-bottom:0}
+
+.merksatz{
+  border-left:4px solid var(--ok); background:var(--card);
+  border-radius:0 12px 12px 0; padding:18px 20px; margin:32px 0 0;
+  box-shadow:var(--shadow); font-size:17px;
+}
+
+/* --- Werkzeug-Link --- */
+a.werkzeug{
+  display:inline-flex; align-items:center; gap:8px;
+  font-weight:600; font-size:15px; text-decoration:none;
+  border:1px solid var(--accent); border-radius:999px;
+  padding:8px 16px; margin:6px 8px 0 0;
+}
+a.werkzeug::after{content:"\2197"; font-weight:400}
+a.werkzeug:hover{background:var(--accent); color:var(--accent-fg)}
+
+.fussnote{color:var(--muted); font-size:13px}
+footer{
+  text-align:center; color:var(--muted); font-size:13px;
+  padding:40px 0 32px; border-top:1px solid var(--border); margin-top:48px;
+}
+footer a{color:var(--muted)}
+
+@media print{
+  details{border:0}
+  details > *{display:block}
+  a.werkzeug, button.knopf{display:none}
+}

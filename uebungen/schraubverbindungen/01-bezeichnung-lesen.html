@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eine Bezeichnung lesen</title>
+<meta name="description" content="ISO 4014 – M12 × 60 – 8.8: Was steckt hinter jeder Stelle? Und welche Länge brauchst du wirklich?">
+<meta name="dauer" content="15 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+
+  /* Die Bezeichnung als anklickbare Bausteine. */
+  .bez{
+    display:flex; flex-wrap:wrap; gap:8px; align-items:center;
+    margin:4px 0 0; font-size:18px;
+  }
+  .bez button{
+    font:700 18px/1.2 inherit; cursor:pointer;
+    background:var(--bg); color:var(--fg);
+    border:1px solid var(--border-stark); border-radius:8px; padding:8px 12px;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .bez button:hover{border-color:var(--accent)}
+  .bez button[aria-pressed="true"]{
+    background:var(--accent); border-color:var(--accent); color:var(--accent-fg);
+  }
+  .bez .trenn{color:var(--muted)}
+  .bez-hinweis{margin-top:14px; font-size:14px; color:var(--muted)}
+
+  /* Ergebnis des Längen-Rechners. */
+  .stapel{margin:16px 0 0}
+  .stapel td:first-child{width:60%}
+  .lupe{font-size:22px; font-weight:700; font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Schraubverbindungen</p>
+    <h1>Eine Bezeichnung lesen</h1>
+    <p class="lead">Auf der Zeichnung steht eine Zeile. Sie enthält alles, was
+      der Einkauf und die Montage wissen müssen &ndash; wenn man sie lesen kann.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Auf der Stückliste steht:</strong></p>
+      <p style="font-size:19px"><strong>Sechskantschraube ISO 4014 &ndash; M12 &times; 60 &ndash; 8.8</strong></p>
+      <p>Fünf Angaben, jede mit einer eigenen Aufgabe.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Die Bausteine</h2>
+    <p>Klicke jeden Baustein an. Rate erst, lies dann nach.</p>
+
+    <div class="box">
+      <div class="bez" id="bez">
+        <button type="button" data-t="form"  aria-pressed="false">Sechskantschraube</button>
+        <button type="button" data-t="norm"  aria-pressed="false">ISO 4014</button>
+        <span class="trenn">&ndash;</span>
+        <button type="button" data-t="gew"   aria-pressed="false">M12</button>
+        <span class="trenn">&times;</span>
+        <button type="button" data-t="laenge" aria-pressed="false">60</button>
+        <span class="trenn">&ndash;</span>
+        <button type="button" data-t="klasse" aria-pressed="false">8.8</button>
+      </div>
+      <div class="bez-hinweis" id="bezText">Noch nichts ausgewählt.</div>
+    </div>
+
+    <h2><span class="nr">2</span>Drei Stolperstellen</h2>
+
+    <details>
+      <summary>a) Die 60 ist die Länge &ndash; aber wovon genau?</summary>
+      <p>Bei der Sechskantschraube ist <strong>l = 60 mm die Länge ohne Kopf</strong>,
+        also ab der Kopfauflagefläche gemessen. Die Gesamthöhe der Schraube ist
+        größer: 60 mm + Kopfhöhe k ≈ 7,5 mm.</p>
+      <p><strong>Die Ausnahme:</strong> Bei <em>Senkkopfschrauben</em> (ISO 10642,
+        früher DIN 7991) zählt der Kopf mit, denn er verschwindet ja im Bauteil.
+        Dort ist l die <em>Gesamtlänge</em>. Wer das verwechselt, bestellt eine
+        Schraube, die um die Kopfhöhe danebenliegt.</p>
+    </details>
+
+    <details>
+      <summary>b) ISO 4014 oder ISO 4017 &ndash; wo ist der Unterschied?</summary>
+      <p><strong>ISO 4014</strong> (früher DIN 931): Schraube <em>mit Schaft</em>,
+        das Gewinde reicht nur über einen Teil der Länge.<br>
+        <strong>ISO 4017</strong> (früher DIN 933): <em>Vollgewinde</em> bis zum Kopf.</p>
+      <p>Der Schaft ist kein Zufall. Er hat zwei Vorteile: Er <strong>zentriert</strong>
+        das Bauteil im Loch, und er macht die Schraube <strong>nachgiebiger</strong> &ndash;
+        gut bei schwingender Belastung, weil dann ein kleinerer Anteil der Betriebskraft
+        in der Schraube landet. Vollgewinde nimmt man, wenn die Klemmlänge klein ist
+        oder stark variiert.</p>
+      <p><strong>Wichtige Regel:</strong> Der glatte Schaft darf nicht in die Mutter
+        hineinragen &ndash; sonst lässt sich die Verbindung nicht spannen. Der
+        Rechner unten prüft das mit.</p>
+    </details>
+
+    <details>
+      <summary>c) Wo bleibt der Kopf, die Schlüsselweite, der Spannungsquerschnitt?</summary>
+      <p>Gar nicht in der Bezeichnung &ndash; und das ist Absicht. Wer <em>ISO 4014</em>
+        und <em>M12</em> kennt, kann alles Weitere nachschlagen: Schlüsselweite
+        <strong>SW 18</strong>, Kopfhöhe k = 7,5 mm, Steigung P = 1,75 mm,
+        Spannungsquerschnitt A<sub>S</sub> = 84,3 mm².</p>
+      <p>Die Norm ist also nicht Bürokratie, sondern eine Abkürzung: Sie ersetzt
+        ein Dutzend Maße durch eine Nummer. Schlag die vier Werte einmal in deinem
+        Tabellenbuch nach &ndash; danach weißt du, wo sie stehen.</p>
+    </details>
+
+    <h2><span class="nr">3</span>Die richtige Länge wählen</h2>
+    <p>Jetzt andersherum: Du kennst die Verbindung und suchst die Bezeichnung.
+      Stelle die Verbindung ein und wähle eine Normlänge.</p>
+
+    <div class="box">
+      <div class="felder">
+        <label class="feld">Gewinde
+          <select id="lGewinde"></select>
+        </label>
+        <label class="feld">Obere Platte t<sub>1</sub> in mm
+          <input type="number" id="lT1" min="2" max="80" step="1" value="20">
+        </label>
+        <label class="feld">Untere Platte t<sub>2</sub> in mm
+          <input type="number" id="lT2" min="2" max="80" step="1" value="25">
+        </label>
+        <label class="feld">Gewählte Normlänge l in mm
+          <select id="lWahl"></select>
+        </label>
+      </div>
+
+      <div class="tabellenrahmen">
+        <table class="stapel">
+          <thead>
+            <tr><th>Was die Schraube überbrücken muss</th><th class="zahl">mm</th></tr>
+          </thead>
+          <tbody id="stapelBody"></tbody>
+        </table>
+      </div>
+
+      <div class="ergebnis">
+        <div class="ez"><span class="l">Mindestens nötig</span>
+          <span class="v lupe" id="lMin">&ndash;</span> <span class="e">mm</span></div>
+        <div class="ez"><span class="l">Nächste Normlänge</span>
+          <span class="v lupe" id="lEmpf">&ndash;</span> <span class="e">mm</span></div>
+      </div>
+
+      <div class="rueckmeldung" id="lRueck"></div>
+
+      <p class="fussnote">Normlängen nach ISO 4014 &middot; Mutterhöhe nach ISO 4032 &middot;
+        Scheibe nach ISO 7089 &middot; Überstand: zwei Gewindegänge.
+        Schlag die Werte ruhig gegen dein Tabellenbuch gegen.</p>
+    </div>
+
+    <details>
+      <summary>Lösung für die Ausgangslage: t<sub>1</sub> = 20 mm, t<sub>2</sub> = 25 mm, M12</summary>
+      <p>Klemmlänge 45 mm + Scheibe 2,5 mm + Mutter 10,8 mm + Überstand 3,5 mm
+        = <strong>61,8 mm</strong>. Die nächste Normlänge ist <strong>65 mm</strong>.</p>
+      <p>Die Bezeichnung lautet damit:
+        <strong>Sechskantschraube ISO 4014 &ndash; M12 &times; 65 &ndash; 8.8</strong>.</p>
+      <p>Und die eingangs genannte Schraube mit 60 mm? Die ist <strong>zu kurz</strong> &ndash;
+        die Mutter greift nicht vollständig. Genau deshalb lohnt sich das Nachrechnen.</p>
+    </details>
+
+    <h2><span class="nr">4</span>Übertragen</h2>
+
+    <details>
+      <summary>1. Warum steht in der Bezeichnung die Festigkeitsklasse, aber kein Werkstoff?</summary>
+      <p>Weil die Klasse die <em>Eigenschaft</em> zusichert, nicht den Weg dorthin.
+        8.8 heißt: Zugfestigkeit R<sub>m</sub> ≈ 800 N/mm², Streckgrenze
+        R<sub>p0,2</sub> ≈ 640 N/mm². Ob der Hersteller das mit einem Vergütungsstahl
+        C35 oder 34Cr4 erreicht, ist für die Verbindung unerheblich &ndash; und
+        lässt ihm Spielraum. Mehr dazu in der Übung
+        <em>Festigkeitsklassen deuten</em>.</p>
+    </details>
+
+    <details>
+      <summary>2. Auf einer alten Zeichnung steht „DIN 933 M10 × 30 – 8.8“. Ist das noch gültig?</summary>
+      <p>Inhaltlich ja, formal veraltet. DIN 933 ist in <strong>ISO 4017</strong>
+        aufgegangen &ndash; Vollgewinde-Sechskantschraube. Die Maße sind bis auf
+        Kleinigkeiten identisch, du kannst also weiterbauen. Neue Zeichnungen
+        bekommen die ISO-Bezeichnung. Für die Werkstatt heißt das vor allem:
+        <em>Vollgewinde</em>, kein Schaft.</p>
+    </details>
+
+    <details>
+      <summary>3. Die Stückliste nennt eine Schraube ohne Festigkeitsklasse. Was tun?</summary>
+      <p>Nachfragen, nicht raten. Ohne Klasse ist die zulässige Vorspannkraft nicht
+        bestimmt &ndash; und damit weder das Anziehdrehmoment noch die übertragbare
+        Querkraft. Handelsübliche Baumarktware liegt oft bei 4.6 und hält nur etwa
+        ein Drittel dessen, was eine 8.8 aushält. Für tragende Verbindungen ist das
+        der Unterschied zwischen „hält“ und „hält nicht“.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Die Bezeichnung nennt nur das, was man nicht
+      nachschlagen kann. Alles andere steckt in der Norm &ndash; und im Tabellenbuch.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>Der Reiter <em>Aufbau</em> im Werkzeug zeigt dieselbe Schraube maßstäblich
+      und beschriftet jedes Maß.</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="maschinenelemente-schrauben-schraubverbindungen.html">Werkzeug Schraubverbindungen öffnen</a>
+    </p>
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+      Maßgebend sind Norm und Tabellenbuch.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Metrisches ISO-Regelgewinde mit den Maßen, die für die Längenwahl zählen.
+   m  = Mutterhöhe ISO 4032
+   sW = Scheibendicke ISO 7089
+   b  = Gewindelänge ISO 4014 für l <= 125 mm (2d + 6)
+   Zahlen wie im Werkzeug "Maschinenelemente: Schrauben - Schraubverbindungen". */
+var SCHRAUBEN = {
+  M4:  {d:4,  P:0.70, s:7,  k:2.8,  m:3.2,  sW:0.8},
+  M5:  {d:5,  P:0.80, s:8,  k:3.5,  m:4.7,  sW:1.0},
+  M6:  {d:6,  P:1.00, s:10, k:4.0,  m:5.2,  sW:1.6},
+  M8:  {d:8,  P:1.25, s:13, k:5.3,  m:6.8,  sW:1.6},
+  M10: {d:10, P:1.50, s:16, k:6.4,  m:8.4,  sW:2.0},
+  M12: {d:12, P:1.75, s:18, k:7.5,  m:10.8, sW:2.5},
+  M16: {d:16, P:2.00, s:24, k:10.0, m:14.8, sW:3.0},
+  M20: {d:20, P:2.50, s:30, k:12.5, m:18.0, sW:3.0},
+  M24: {d:24, P:3.00, s:36, k:15.0, m:21.5, sW:4.0}
+};
+var GROESSEN = ["M4","M5","M6","M8","M10","M12","M16","M20","M24"];
+var NORMLAENGEN = [10,12,16,20,25,30,35,40,45,50,55,60,65,70,80,90,100,110,120];
+
+var TEXTE = {
+  form: "<strong>Sechskantschraube</strong> &ndash; die Kopfform. Sie bestimmt das " +
+        "Werkzeug: Sechskant heißt Maul- oder Ringschlüssel von außen. " +
+        "Alternativen sind Zylinderkopf mit Innensechskant (ISO 4762) oder " +
+        "Senkkopf (ISO 10642), wenn der Kopf nicht auftragen darf.",
+  norm: "<strong>ISO 4014</strong> &ndash; die Norm, und damit alle Maße des Kopfes " +
+        "und die Gewindelänge. 4014 heißt: <em>mit Schaft</em>. Der Nachbar " +
+        "ISO 4017 wäre Vollgewinde. Früher hießen die beiden DIN 931 und DIN 933.",
+  gew:  "<strong>M12</strong> &ndash; metrisches ISO-Regelgewinde mit " +
+        "Nenndurchmesser d = 12 mm. Die Steigung P = 1,75 mm steht nicht dabei, " +
+        "weil sie beim Regelgewinde eindeutig ist. Nur beim <em>Feingewinde</em> " +
+        "muss sie mit: M12&times;1,5.",
+  laenge: "<strong>60</strong> &ndash; die Länge l in mm, bei dieser Kopfform " +
+        "<em>ohne</em> den Kopf gemessen. Ob sie reicht, entscheidet nicht der " +
+        "Wunsch, sondern die Rechnung &ndash; siehe Teil 3.",
+  klasse: "<strong>8.8</strong> &ndash; die Festigkeitsklasse. Erste Zahl mal 100 " +
+        "ergibt die Zugfestigkeit R<sub>m</sub> = 800 N/mm², beide Zahlen mal 10 " +
+        "die Streckgrenze R<sub>p0,2</sub> = 640 N/mm². Sie entscheidet, wie fest " +
+        "angezogen werden darf."
+};
+
+function el(id){ return document.getElementById(id); }
+function zahl(x, n){ return x.toFixed(n === undefined ? 1 : n).replace(".", ","); }
+
+/* ---------- Teil 1: Bausteine ---------- */
+
+var knoepfe = [].slice.call(document.querySelectorAll("#bez button"));
+knoepfe.forEach(function(b){
+  b.addEventListener("click", function(){
+    knoepfe.forEach(function(o){ o.setAttribute("aria-pressed", String(o === b)); });
+    el("bezText").innerHTML = TEXTE[b.dataset.t];
+  });
+});
+
+/* ---------- Teil 3: Längenwahl ---------- */
+
+function auswahlFuellen(sel, liste, start){
+  liste.forEach(function(w){
+    var o = document.createElement("option");
+    o.value = w; o.textContent = w;
+    if(String(w) === String(start)) o.selected = true;
+    sel.appendChild(o);
+  });
+}
+auswahlFuellen(el("lGewinde"), GROESSEN, "M12");
+auswahlFuellen(el("lWahl"), NORMLAENGEN, 60);
+
+function ganzzahl(wert, min, max, ersatz){
+  var x = parseFloat(wert);
+  if(isNaN(x)) return ersatz;
+  return Math.min(max, Math.max(min, x));
+}
+
+function neuRechnen(){
+  var g  = SCHRAUBEN[el("lGewinde").value];
+  var t1 = ganzzahl(el("lT1").value, 2, 80, 20);
+  var t2 = ganzzahl(el("lT2").value, 2, 80, 25);
+  var ueberstand = 2 * g.P;                 /* mindestens zwei Gewindegänge */
+  var klemm = t1 + t2;
+  var lMin  = klemm + g.sW + g.m + ueberstand;
+
+  var posten = [
+    ["Klemmlänge t<sub>1</sub> + t<sub>2</sub>", klemm],
+    ["Scheibe unter der Mutter", g.sW],
+    ["Mutterhöhe m", g.m],
+    ["Überstand (2 Gewindegänge)", ueberstand]
+  ];
+  el("stapelBody").innerHTML = posten.map(function(p){
+    return '<tr><td>' + p[0] + '</td><td class="zahl">' + zahl(p[1]) + '</td></tr>';
+  }).join("") +
+  '<tr class="summe"><td>Summe</td><td class="zahl">' + zahl(lMin) + '</td></tr>';
+
+  var empf = NORMLAENGEN.filter(function(l){ return l >= lMin; })[0];
+  el("lMin").textContent  = zahl(lMin);
+  el("lEmpf").textContent = empf ? empf : "> 120";
+
+  /* Gewindelänge nach ISO 4014: b = 2d + 6 (für l <= 125 mm).
+     Der glatte Schaft ist l - b und darf die Klemmlänge nicht überschreiten,
+     sonst sitzt er in der Mutter und die Verbindung lässt sich nicht spannen. */
+  var gewaehlt = parseInt(el("lWahl").value, 10);
+  var b = 2 * g.d + 6;
+  var schaft = Math.max(0, gewaehlt - b);
+
+  var r = el("lRueck");
+  if(gewaehlt < lMin){
+    r.className = "rueckmeldung nein";
+    r.innerHTML = "<strong>Zu kurz.</strong> " + gewaehlt + " mm reichen nicht &ndash; " +
+      "nötig sind " + zahl(lMin) + " mm. Die Mutter greift nicht vollständig, " +
+      "die Verbindung trägt nicht. Nimm " + (empf ? empf + " mm." : "eine längere Schraube.");
+  } else if(schaft > klemm){
+    r.className = "rueckmeldung fast";
+    r.innerHTML = "<strong>Lang genug, aber unbrauchbar.</strong> Der glatte Schaft ist " +
+      zahl(schaft) + " mm lang und damit länger als die Klemmlänge (" + zahl(klemm) +
+      " mm). Er ragt in die Mutter &ndash; die Verbindung lässt sich nicht spannen. " +
+      "Nimm eine kürzere Schraube oder Vollgewinde nach ISO 4017.";
+  } else if(empf && gewaehlt > empf + 10){
+    r.className = "rueckmeldung fast";
+    r.innerHTML = "<strong>Passt, ist aber unnötig lang.</strong> " + empf +
+      " mm würden reichen. Überstehende Gewinde stören beim Bauen und sind eine " +
+      "Verletzungsgefahr.";
+  } else {
+    r.className = "rueckmeldung ja";
+    r.innerHTML = "<strong>Passt.</strong> " + gewaehlt + " mm decken die nötigen " +
+      zahl(lMin) + " mm ab, und der Schaft (" + zahl(schaft) + " mm) bleibt innerhalb " +
+      "der Klemmlänge. Bezeichnung: <strong>Sechskantschraube ISO 4014 &ndash; " +
+      el("lGewinde").value + " &times; " + gewaehlt + " &ndash; 8.8</strong>";
+  }
+}
+
+["lGewinde","lT1","lT2","lWahl"].forEach(function(id){
+  el(id).addEventListener("input", neuRechnen);
+  el(id).addEventListener("change", neuRechnen);
+});
+neuRechnen();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+</body>
+</html>

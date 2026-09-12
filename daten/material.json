@@ -13,8 +13,28 @@
     ],
     "inhalt": [
       {
+        "titel": "Eine Bezeichnung lesen",
+        "url": "uebungen/schraubverbindungen/01-bezeichnung-lesen.html"
+      },
+      {
+        "titel": "Vier Schnitte, drei Fehler",
+        "url": "uebungen/schraubverbindungen/02-schnittdarstellung-pruefen.html"
+      },
+      {
         "titel": "Wohin geht das Anziehdrehmoment?",
         "url": "uebungen/schraubverbindungen/03-wohin-geht-das-drehmoment.html"
+      },
+      {
+        "titel": "Gleiches Drehmoment, andere Spannkraft",
+        "url": "uebungen/schraubverbindungen/04-gleiches-drehmoment-andere-spannkraft.html"
+      },
+      {
+        "titel": "Hält die Konsole?",
+        "url": "uebungen/schraubverbindungen/05-querkraft-durch-reibung.html"
+      },
+      {
+        "titel": "Was die zwei Zahlen verraten",
+        "url": "uebungen/schraubverbindungen/06-festigkeitsklassen-deuten.html"
       }
     ]
   }
