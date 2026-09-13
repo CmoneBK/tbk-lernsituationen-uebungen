@@ -86,10 +86,12 @@
       <summary>1. Woher kommt der Spannungsquerschnitt A<sub>S</sub>?</summary>
       <p>Aus dem Tabellenbuch &ndash; oder gerechnet. Maßgebend ist nicht der
         Nenndurchmesser d, sondern ein Mittel aus Flanken- und Kerndurchmesser:</p>
-      <p>d<sub>2</sub> = d &minus; 0,6495 &middot; P &nbsp;&middot;&nbsp;
-         d<sub>3</sub> = d &minus; 1,2269 &middot; P<br>
-         d<sub>S</sub> = (d<sub>2</sub> + d<sub>3</sub>) / 2 &nbsp;&middot;&nbsp;
-         A<sub>S</sub> = &pi;/4 &middot; d<sub>S</sub>²</p>
+      <div class="rechenweg">
+        d<sub>2</sub> = d &minus; 0,6495 &middot; P<br>
+        d<sub>3</sub> = d &minus; 1,2269 &middot; P<br>
+        d<sub>S</sub> = (d<sub>2</sub> + d<sub>3</sub>) / 2<br>
+        A<sub>S</sub> = &pi;/4 &middot; d<sub>S</sub>²
+      </div>
       <p>Für M12: d<sub>2</sub> = 10,86 mm, d<sub>3</sub> = 9,85 mm,
         d<sub>S</sub> = 10,36 mm, A<sub>S</sub> = <strong>84,3 mm²</strong> &ndash;
         genau der Tabellenwert.</p>
@@ -286,8 +288,11 @@ function wegBauen(){
   return ""
     + "<span class=\"schritt\">1. Spannungsquerschnitt</span>"
     + "d<sub>2</sub> = " + m.d + " &minus; 0,6495 &middot; " + zahl(m.P, 2) + " = <b>"
-      + zahl(m.d2, 2) + " mm</b> &middot; d<sub>3</sub> = <b>" + zahl(m.d3, 2) + " mm</b><br>"
-    + "A<sub>S</sub> = &pi;/4 &middot; " + zahl(m.dS, 2) + "² = <b>" + zahl(m.As, 1) + " mm²</b>"
+      + zahl(m.d2, 2) + " mm</b><br>"
+    + "d<sub>3</sub> = " + m.d + " &minus; 1,2269 &middot; " + zahl(m.P, 2) + " = <b>"
+      + zahl(m.d3, 2) + " mm</b><br>"
+    + "A<sub>S</sub> = &pi;/4 &middot; (" + zahl(m.dS, 2) + " mm)² = <b>"
+      + zahl(m.As, 1) + " mm²</b>"
     + buch("d<sub>2</sub>, d<sub>3</sub> und A<sub>S</sub> stehen in der Gewindetabelle "
         + "des Tabellenbuchs &ndash; für " + aufgabe.groesse + " ist A<sub>S</sub> = "
         + zahl(m.As, m.As < 100 ? 1 : 0) + " mm². Rechnen musst du das nur, wenn "
@@ -297,9 +302,9 @@ function wegBauen(){
     + "Torsion je Zug: k = 1,5 &middot; (d<sub>2</sub>/d<sub>S</sub>) &middot; "
       + "(P/(&pi; &middot; d<sub>2</sub>) + 1,155 &middot; &mu;) = <b>"
       + zahl(l.kT, 3) + "</b><br>"
-    + "F<sub>M,zul</sub> = 0,9 &middot; " + l.Rp + " &middot; " + zahl(l.m.As, 1)
-      + " / &radic;(1 + 3 &middot; " + zahl(l.kT, 3) + "²) = <b>"
-      + zahl(l.FM / 1000, 1) + " kN</b>"
+    + "F<sub>M,zul</sub> = 0,9 &middot; " + l.Rp + " N/mm² &middot; "
+      + zahl(l.m.As, 1) + " mm² / &radic;(1 + 3 &middot; " + zahl(l.kT, 3)
+      + "²) = " + zahl(l.FM, 0) + " N = <b>" + zahl(l.FM / 1000, 1) + " kN</b>"
     + buch(inTabelle
         ? "Beides &ndash; Vorspannkraft und Drehmoment &ndash; steht in der Tabelle "
           + "<i>Maximale Vorspannkräfte und Anziehdrehmomente</i>: Zeile "

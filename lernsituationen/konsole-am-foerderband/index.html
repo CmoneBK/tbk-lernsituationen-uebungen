@@ -269,7 +269,7 @@
       <p>Nach Annahme 1 dreht die Konsole um die untere Schraubenreihe. Das
         Moment wird von einem Kräftepaar mit dem Hebelarm h aufgenommen:</p>
       <p class="merksatz" style="margin:8px 0">F<sub>Z,oben</sub> = M / h
-        = 600 N&middot;m / 0,12 m = 5,0 kN für die obere Reihe,
+        = 600 N&middot;m / 0,12 m = 5 000 N = 5,0 kN für die obere Reihe,
         also <strong>2,5 kN je Schraube</strong></p>
       <p>Die unteren Schrauben werden durch das Moment nicht zusätzlich gezogen
         &ndash; dort drückt die Konsole gegen die Stütze.</p>
@@ -429,18 +429,32 @@
         diese Einsenkung ist später der Verlust an Vorspannkraft. Das
         Tabellenbuch rechnet das im Abschnitt <em>Flächenpressung an
         Schraubenkopf- und Mutterauflageflächen</em>:</p>
-      <p class="merksatz" style="margin:8px 0">A<sub>P</sub> = &pi;/4 &middot;
-        (d<sub>K(w)</sub>² &minus; d<sub>h</sub>²) &nbsp;&middot;&nbsp;
-        p<sub>vorh</sub> = F<sub>V</sub> / A<sub>P</sub> &nbsp;&middot;&nbsp;
-        p<sub>max</sub> = p<sub>vorh</sub> &middot; 1,4 &nbsp;&middot;&nbsp;
-        S<sub>P</sub> = p<sub>G</sub> / p<sub>max</sub> &ge; 1</p>
+      <div class="tabellenrahmen">
+        <table>
+          <tbody>
+            <tr><td>Auflagefläche</td>
+                <td>A<sub>P</sub> = &pi;/4 &middot; (d<sub>K(w)</sub>²
+                  &minus; d<sub>h</sub>²)</td></tr>
+            <tr><td>vorhandene Pressung</td>
+                <td>p<sub>vorh</sub> = F<sub>V</sub> / A<sub>P</sub></td></tr>
+            <tr><td>maximale Pressung</td>
+                <td>p<sub>max</sub> = F<sub>V,max</sub> / A<sub>P</sub> &middot; 1,4</td></tr>
+            <tr><td>Nachweis</td>
+                <td>S<sub>P</sub> = p<sub>G</sub> / p<sub>max</sub> &ge; 1</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="fussnote">F<sub>V,max</sub> ist die größte Vorspannkraft, die
+        auftreten kann &ndash; hier der Tabellenwert 29,6 kN, mit dem auch
+        angezogen wird. Deshalb ist p<sub>max</sub> hier schlicht das 1,4-fache
+        von p<sub>vorh</sub>.</p>
 
       <p><strong>Ohne Scheibe.</strong> Der Sechskantkopf einer M10 liegt auf
         d<sub>K(w)</sub> = 14,6 mm auf, das Loch ist 11 mm:</p>
       <div class="tabellenrahmen">
         <table>
           <tbody>
-            <tr><td>Auflagefläche</td><td class="zahl">A<sub>P</sub> = 72 mm²</td></tr>
+            <tr><td>Auflagefläche</td><td class="zahl">A<sub>P</sub> = &pi;/4 &middot; ((14,6 mm)² &minus; (11 mm)²) = 72 mm²</td></tr>
             <tr><td>vorhandene Pressung</td><td class="zahl">p<sub>vorh</sub> = 29 600 N / 72 mm² = 409 N/mm²</td></tr>
             <tr><td>maximale Pressung</td><td class="zahl">p<sub>max</sub> = 409 &middot; 1,4 = 573 N/mm²</td></tr>
             <tr><td>Grenze für S235JR</td><td class="zahl">p<sub>G</sub> = 490 N/mm²</td></tr>
@@ -456,7 +470,7 @@
       <div class="tabellenrahmen">
         <table>
           <tbody>
-            <tr><td>Auflagefläche</td><td class="zahl">A<sub>P</sub> = &pi;/4 &middot; (20² &minus; 11²) = 219 mm²</td></tr>
+            <tr><td>Auflagefläche</td><td class="zahl">A<sub>P</sub> = &pi;/4 &middot; ((20 mm)² &minus; (11 mm)²) = 219 mm²</td></tr>
             <tr><td>vorhandene Pressung</td><td class="zahl">p<sub>vorh</sub> = 135 N/mm²</td></tr>
             <tr class="summe"><td>Sicherheit</td><td class="zahl">S<sub>P</sub> = 490 / 189 = 2,6 &ndash; <strong>in Ordnung</strong></td></tr>
           </tbody>
