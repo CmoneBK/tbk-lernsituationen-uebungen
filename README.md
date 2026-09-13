@@ -254,13 +254,13 @@ Ein Teil, der nicht überall hingehört, sagt das selbst — an der Überschrift
 oder am `summary`:
 
 ```html
-<h2 data-bg-ohne="bfs-hs10 bfs-mr">Die verspannte Verbindung</h2>
+<h2 data-bg-ohne="bfs-hs10 bfs-for">Die verspannte Verbindung</h2>
 ```
 
 Eine ganze Seite nimmt sich im `head` aus:
 
 ```html
-<meta name="bg-ohne" content="bfs-hs10 bfs-mr">
+<meta name="bg-ohne" content="bfs-hs10 bfs-for">
 ```
 
 Dann fehlt sie in der Übersicht und auf der Paketseite; wer sie trotzdem
@@ -269,7 +269,7 @@ Dann fehlt sie in der Übersicht und auf der Paketseite; wer sie trotzdem
 **Kein Attribut heißt: gehört überall dazu.** Das ist die richtige Vorgabe;
 neue Inhalte erscheinen erst einmal für alle.
 
-Die sieben Schlüssel sind `bfs-hs10`, `bfs-mr`, `hbfs-c2`, `fos-c3`, `im`,
+Die sieben Schlüssel sind `bfs-hs10`, `bfs-for`, `hbfs-c2`, `fos-c3`, `im`,
 `zm` und `tech`. Welcher Inhalt zu welchem Bildungsgang gehört und warum, steht
 mitsamt den Bildungsplänen in `bildungsgaenge/` — dieser Ordner gehört wie
 `tabellenbuch/` nicht ins Repo.

@@ -16,7 +16,7 @@
  *
  * Ein Teil, der nicht überall hingehört, sagt das selbst:
  *
- *     <h2 data-bg-ohne="bfs-hs10 bfs-mr">Die verspannte Verbindung</h2>
+ *     <h2 data-bg-ohne="bfs-hs10 bfs-for">Die verspannte Verbindung</h2>
  *
  * Kein Attribut heißt: gehört überall dazu. Das ist die richtige Vorgabe -
  * neue Inhalte erscheinen erst einmal für alle, und nur was wirklich zu hoch
@@ -24,7 +24,7 @@
  *
  * Eine ganze Seite nimmt sich genauso aus:
  *
- *     <meta name="bg-ohne" content="bfs-hs10 bfs-mr">
+ *     <meta name="bg-ohne" content="bfs-hs10 bfs-for">
  *
  * Dann verschwindet sie aus der Übersicht, und wer sie trotzdem öffnet,
  * bekommt oben einen Hinweis statt einer leeren Seite.
@@ -45,8 +45,8 @@
   var LISTE = [
     { schluessel: 'bfs-hs10', kurz: 'BFS (HS10)',
       name: 'Berufsfachschule – Hauptschulabschluss 10' },
-    { schluessel: 'bfs-mr', kurz: 'BFS (MR)',
-      name: 'Berufsfachschule – Mittlere Reife' },
+    { schluessel: 'bfs-for', kurz: 'BFS (FOR)',
+      name: 'Berufsfachschule – mittlerer Schulabschluss (FOR)' },
     { schluessel: 'hbfs-c2', kurz: 'HBFS (C2)',
       name: 'Höhere Berufsfachschule – Maschinen-/Automatisierungstechnik' },
     { schluessel: 'fos-c3', kurz: 'FOS (C3)',
@@ -73,17 +73,27 @@
     return null;
   }
 
+  /* Früher hieß der Abschluss "Mittlere Reife". Der Bildungsplan spricht vom
+     mittleren Schulabschluss (Fachoberschulreife), deshalb "bfs-for". Wer den
+     alten Schlüssel gespeichert hat oder in einem alten Link mitbringt, soll
+     nicht stillschweigend wieder alles sehen. */
+  var FRUEHER = { 'bfs-mr': 'bfs-for' };
+
+  function aufloesen(w) {
+    if (FRUEHER[w]) return FRUEHER[w];
+    return kennt(w) ? w : '';
+  }
+
   /* Die Adresse schlägt den Speicher - ein weitergegebener Link soll zeigen,
      was der Absender gemeint hat, nicht was der Empfänger eingestellt hat. */
   function lesen() {
     try {
       var p = new URLSearchParams(location.search).get(PARAM);
-      if (p && kennt(p)) return p;
+      if (p) { var a = aufloesen(p); if (a) return a; }
       if (p === '') return '';
     } catch (e) { /* weiter mit dem Speicher */ }
     try {
-      var w = global.localStorage.getItem(SCHLUESSEL);
-      return kennt(w) ? w : '';
+      return aufloesen(global.localStorage.getItem(SCHLUESSEL));
     } catch (e) { return ''; }
   }
 

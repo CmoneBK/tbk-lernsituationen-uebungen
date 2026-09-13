@@ -393,7 +393,7 @@ function karteHtml(e, typ) {
 
 /* Dieselben Schluessel wie in assets/bildungsgang.js. Hier wird nur gezaehlt,
    deshalb reicht die Liste - die Namen stehen dort. */
-const BILDUNGSGAENGE = ['bfs-hs10', 'bfs-mr', 'hbfs-c2', 'fos-c3', 'im', 'zm', 'tech'];
+const BILDUNGSGAENGE = ['bfs-hs10', 'bfs-for', 'hbfs-c2', 'fos-c3', 'im', 'zm', 'tech'];
 
 /* Ein Paket ist fuer einen Bildungsgang nur dann nichts, wenn jede einzelne
    Uebung darin nichts fuer ihn ist. Sonst bleibt die Karte stehen und die
