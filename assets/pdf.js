@@ -41,6 +41,14 @@
     /* Striche, die WinAnsi nicht kennt - sonst steht dort ein Fragezeichen,
        und die Breite passt auch nicht mehr. */
     '‐': '-', '‑': '-', '‒': '-',
+    /* Griechisch kennt WinAnsi nicht. Der ausgeschriebene Name ist lesbar,
+       ein Fragezeichen ist es nicht. Mikro steht oben schon. */
+    'α': 'alpha', 'β': 'beta', 'γ': 'gamma', 'δ': 'delta',
+    'ε': 'epsilon', 'ζ': 'zeta', 'η': 'eta', 'θ': 'theta',
+    'λ': 'lambda', 'ξ': 'xi', 'π': 'pi', 'ρ': 'rho',
+    'σ': 'sigma', 'τ': 'tau', 'φ': 'phi', 'χ': 'chi',
+    'ψ': 'psi', 'ω': 'omega', 'ν': 'ny',
+    'Δ': 'Delta', 'Σ': 'Sigma', 'Φ': 'Phi', 'Ω': 'Omega',
     /* Unsichtbares: auf Papier ohne Aufgabe. */
     '­': '', '⁠': '', '﻿': '', ' ': ' '
   };
@@ -78,7 +86,10 @@
     }
     messFeld.font = (fett ? 'bold ' : '') + (kursiv ? 'italic ' : '')
       + groesse + 'px Helvetica, Arial, sans-serif';
-    return messFeld.measureText(text).width;
+    /* Gemessen wird die umgesetzte Fassung, nicht das Original: Aus einem
+       Zeichen koennen mehrere werden ("alpha"), und dann waere der Vorschub
+       zu klein - das naechste Wort rutschte darauf. */
+    return messFeld.measureText(nachWinAnsi(text)).width;
   }
 
   /* ---------- Bytes ---------- */
