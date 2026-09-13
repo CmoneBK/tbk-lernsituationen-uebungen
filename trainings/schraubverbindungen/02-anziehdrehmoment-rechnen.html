@@ -23,6 +23,12 @@
   }
   .rechenweg b{font-weight:700}
   .rechenweg .schritt{display:block; color:var(--muted); font-size:12.5px; line-height:1.5}
+  /* Der Hinweis, dass dieser Schritt auch im Tabellenbuch steht. */
+  .rechenweg .buch{
+    display:block; margin:6px 0 2px; padding:7px 10px; font-size:12.5px;
+    line-height:1.5; border-left:3px solid var(--ok); border-radius:0 8px 8px 0;
+    background:rgba(22,163,74,.10);
+  }
   .bilanz{font-size:19px; font-weight:700; margin:0 0 8px}
 </style>
 </head>
@@ -267,11 +273,18 @@ function nah(wert, soll){
 
 function wegBauen(){
   var l = aufgabe.loesung, m = l.m;
+  /* Die Drehmomenttabelle hat nur die Spalten 0,08 / 0,12 / 0,16. */
+  var inTabelle = [0.08, 0.12, 0.16].indexOf(aufgabe.my) !== -1;
+  function buch(text){ return "<span class=\"buch\"><b>Nachschlagen:</b> " + text + "</span>"; }
   return ""
     + "<span class=\"schritt\">1. Spannungsquerschnitt</span>"
     + "d<sub>2</sub> = " + m.d + " &minus; 0,6495 &middot; " + zahl(m.P, 2) + " = <b>"
       + zahl(m.d2, 2) + " mm</b> &middot; d<sub>3</sub> = <b>" + zahl(m.d3, 2) + " mm</b><br>"
     + "A<sub>S</sub> = &pi;/4 &middot; " + zahl(m.dS, 2) + "² = <b>" + zahl(m.As, 1) + " mm²</b>"
+    + buch("d<sub>2</sub>, d<sub>3</sub> und A<sub>S</sub> stehen in der Gewindetabelle "
+        + "des Tabellenbuchs &ndash; für " + aufgabe.groesse + " ist A<sub>S</sub> = "
+        + zahl(m.As, m.As < 100 ? 1 : 0) + " mm². Rechnen musst du das nur, wenn "
+        + "die Zeile fehlt.")
     + "<span class=\"schritt\">2. Vorspannkraft, mit &nu; = 0,9 und R<sub>p0,2</sub> = "
       + l.Rp + " N/mm²</span>"
     + "Torsion je Zug: k = 1,5 &middot; (d<sub>2</sub>/d<sub>S</sub>) &middot; "
@@ -280,6 +293,17 @@ function wegBauen(){
     + "F<sub>M,zul</sub> = 0,9 &middot; " + l.Rp + " &middot; " + zahl(l.m.As, 1)
       + " / &radic;(1 + 3 &middot; " + zahl(l.kT, 3) + "²) = <b>"
       + zahl(l.FM / 1000, 1) + " kN</b>"
+    + buch(inTabelle
+        ? "Beides &ndash; Vorspannkraft und Drehmoment &ndash; steht in der Tabelle "
+          + "<i>Maximale Vorspannkräfte und Anziehdrehmomente</i>: Zeile "
+          + aufgabe.groesse + ", Klasse " + aufgabe.klasse + ", Spalte &mu; = "
+          + zahl(aufgabe.my, 2) + ". Dort findest du " + zahl(l.FM / 1000, 1)
+          + " kN und " + zahl(l.MA, l.MA < 10 ? 1 : 0) + " N&middot;m. Die Rechnung "
+          + "zeigt, woher die Zahlen kommen &ndash; in der Prüfung ist der Blick "
+          + "ins Buch schneller."
+        : "Die Tabelle hat nur die Spalten &mu; = 0,08 / 0,12 / 0,16. Für &mu; = "
+          + zahl(aufgabe.my, 2) + " liegt der Wert dazwischen &ndash; hier hilft "
+          + "nur die Rechnung.")
     + "<span class=\"schritt\">3. Anziehdrehmoment aus den drei Anteilen "
       + "(Steigung, Gewinde, Kopf)</span>"
     + "M<sub>A</sub> = " + zahl(l.FM / 1000, 1) + " kN &middot; ("
