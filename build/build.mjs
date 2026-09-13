@@ -56,6 +56,7 @@ const TYPEN = [
 
 const BACK_NAV = 'assets/back-nav.js';
 const WZ_LINK = 'assets/werkzeug-link.js';
+const BILDUNGSGANG = 'assets/bildungsgang.js';
 const QR = 'assets/qr.js';
 const BAUKASTEN = 'assets/baukasten.js';
 const PDF = 'assets/pdf.js';
@@ -126,6 +127,8 @@ async function seiteLesen(datei, { imPaket = false, baukasten = false } = {}) {
   // Uebungen und Trainings lassen sich fuer eine Lerngruppe zuschneiden. Der
   // QR-Code gehoert dazu, deshalb beide Bausteine und in dieser Reihenfolge.
   if (baukasten) {
+    // Vor dem Baukasten: Er liest die Wahl und leitet daraus die Haekchen ab.
+    noetig.push({ pfad: BILDUNGSGANG, attr: '' });
     noetig.push({ pfad: QR, attr: '' });
     noetig.push({ pfad: BAUKASTEN, attr: '' });
     noetig.push({ pfad: PDF, attr: '' });
@@ -177,6 +180,9 @@ async function seiteLesen(datei, { imPaket = false, baukasten = false } = {}) {
     titel,
     beschreibung: metaWert(text, 'description'),
     dauer: metaWert(text, 'dauer'),
+    // Bildungsgaenge, fuer die die Seite nicht vorgesehen ist. Uebersicht und
+    // Paketseite blenden sie dann aus.
+    bgOhne: metaWert(text, 'bg-ohne'),
     url: rel,
     geaendert,
   };
@@ -368,9 +374,34 @@ function karteHtml(e, typ) {
     ? `<span class="anzahl">${escHtml(anzahlText(e.inhalt.length, typ.einheit))}</span>`
     : '';
 
+  /* Wie viele Teile bleiben je Bildungsgang? Nur was abweicht, steht hier -
+     die Uebersicht schreibt die Zahl dann um. */
+  const jeBg = {};
+  for (const k of BILDUNGSGAENGE) {
+    const n = e.inhalt.filter((i) => !(i.bgOhne || '').split(/\s+/).includes(k)).length;
+    if (n !== e.inhalt.length) jeBg[k] = n;
+  }
+  const zahlen = e.inhalt.length && Object.keys(jeBg).length
+    ? ` data-bg-anzahl='${escHtml(JSON.stringify(jeBg))}'` : '';
+
+  const ohne = bgOhneGemeinsam(e);
   return `<a class="card" href="${escHtml(e.url)}"` +
-         ` data-typ="${escHtml(e.typ)}" data-suche="${escHtml(suche)}">` +
+         ` data-typ="${escHtml(e.typ)}" data-suche="${escHtml(suche)}"` +
+         (ohne ? ` data-bg-ohne="${escHtml(ohne)}"` : '') + zahlen + '>' +
          `<span class="kartenname">${escHtml(e.name)}</span>${zusatz}</a>`;
+}
+
+/* Dieselben Schluessel wie in assets/bildungsgang.js. Hier wird nur gezaehlt,
+   deshalb reicht die Liste - die Namen stehen dort. */
+const BILDUNGSGAENGE = ['bfs-hs10', 'bfs-mr', 'hbfs-c2', 'fos-c3', 'im', 'zm', 'tech'];
+
+/* Ein Paket ist fuer einen Bildungsgang nur dann nichts, wenn jede einzelne
+   Uebung darin nichts fuer ihn ist. Sonst bleibt die Karte stehen und die
+   Paketseite zeigt, was uebrig ist. */
+function bgOhneGemeinsam(e) {
+  if (!e.inhalt.length) return e.bgOhne || '';
+  const listen = e.inhalt.map((i) => (i.bgOhne || '').split(/\s+/).filter(Boolean));
+  return listen[0].filter((k) => listen.every((l) => l.includes(k))).join(' ');
 }
 
 function gitterHtml(eintraege, typ, einzug) {
@@ -454,8 +485,9 @@ function paketInhalt(e) {
   for (const i of e.inhalt) {
     const dauer = i.dauer ? `<span class="dauer">${escHtml(i.dauer)}</span>` : '';
     const besch = i.beschreibung ? `<span class="besch">${escHtml(i.beschreibung)}</span>` : '';
+    const ohne = i.bgOhne ? ` data-bg-ohne="${escHtml(i.bgOhne)}"` : '';
     zeilen.push(
-      `        <li><a class="eintrag" href="${escHtml(i.datei)}">` +
+      `        <li${ohne}><a class="eintrag" href="${escHtml(i.datei)}">` +
       `<span class="eintrag-kopf"><span class="eintrag-name">${escHtml(i.titel)}</span>${dauer}</span>` +
       `${besch}</a></li>`,
     );

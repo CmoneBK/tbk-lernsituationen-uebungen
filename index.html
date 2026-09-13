@@ -50,6 +50,11 @@
     padding:18px 0 14px; margin-top:22px; border-bottom:1px solid var(--border);
   }
   .filter-inner{display:flex; flex-wrap:wrap; gap:10px; align-items:center}
+  .bg-zeile{
+    margin:18px 0 0; padding:12px 14px; border-radius:10px;
+    background:var(--card); border:1px solid var(--border);
+  }
+  .bg-zeile:empty{display:none}
   .chip{
     appearance:none; cursor:pointer; font:inherit; font-size:14px; font-weight:600;
     background:var(--chip); color:var(--fg); border:1px solid var(--border);
@@ -104,6 +109,7 @@
   @media (prefers-reduced-motion:reduce){a.card{transition:none}a.card:hover{transform:none}}
 </style>
 <script src="assets/thema.js"></script>
+<script src="assets/bildungsgang.js"></script>
 </head>
 <body>
   <header class="wrap">
@@ -122,6 +128,8 @@
     </div>
   </div>
 
+  <div class="wrap"><div class="bg-zeile" id="tbk-bg"></div></div>
+
   <main class="wrap" id="tbk-inhalt">
   <section class="typ" data-typ="lernsituationen">
     <h2 class="typ-titel">Lernsituationen</h2>
@@ -131,7 +139,7 @@
       <div class="gruppe">
         <h4 class="kat-titel">Schrauben</h4>
         <div class="grid">
-          <a class="card" href="lernsituationen/konsole-am-foerderband/index.html" data-typ="lernsituationen" data-suche="konsole am förderband maschinenelemente schrauben eine rollenbahn wird verlängert: kräfte an der verbindung, schraubenwahl, montageplan und abnahme – vom auftrag bis zum prüfprotokoll."><span class="kartenname">Konsole am Förderband</span></a>
+          <a class="card" href="lernsituationen/konsole-am-foerderband/index.html" data-typ="lernsituationen" data-suche="konsole am förderband maschinenelemente schrauben eine rollenbahn wird verlängert: kräfte an der verbindung, schraubenwahl, montageplan und abnahme – vom auftrag bis zum prüfprotokoll." data-bg-ohne="bfs-hs10 bfs-mr"><span class="kartenname">Konsole am Förderband</span></a>
         </div>
       </div>
     </div>
@@ -145,7 +153,7 @@
       <div class="gruppe">
         <h4 class="kat-titel">Schrauben</h4>
         <div class="grid">
-          <a class="card" href="uebungen/schraubverbindungen/index.html" data-typ="uebungen" data-suche="schraubverbindungen maschinenelemente schrauben sechs übungen rund um die schraubverbindung – von der bezeichnung über das anziehdrehmoment bis zur übertragbaren querkraft. eine bezeichnung lesen vier schnitte, drei fehler wohin geht das anziehdrehmoment? gleiches drehmoment, andere spannkraft hält die konsole? was die zwei zahlen verraten"><span class="kartenname">Schraubverbindungen</span><span class="anzahl">6 Übungen</span></a>
+          <a class="card" href="uebungen/schraubverbindungen/index.html" data-typ="uebungen" data-suche="schraubverbindungen maschinenelemente schrauben sechs übungen rund um die schraubverbindung – von der bezeichnung über das anziehdrehmoment bis zur übertragbaren querkraft. eine bezeichnung lesen vier schnitte, drei fehler wohin geht das anziehdrehmoment? gleiches drehmoment, andere spannkraft hält die konsole? was die zwei zahlen verraten" data-bg-anzahl='{&quot;bfs-hs10&quot;:3,&quot;bfs-mr&quot;:4}'><span class="kartenname">Schraubverbindungen</span><span class="anzahl">6 Übungen</span></a>
         </div>
       </div>
     </div>
@@ -159,7 +167,7 @@
       <div class="gruppe">
         <h4 class="kat-titel">Schrauben</h4>
         <div class="grid">
-          <a class="card" href="trainings/schraubverbindungen/index.html" data-typ="trainings" data-suche="schraubverbindungen maschinenelemente schrauben wiederholung mit rückmeldung – begriffe, rechenweg und die regeln der schnittdarstellung. begriffe und formelzeichen anziehdrehmoment rechnen schraffur-schnellcheck"><span class="kartenname">Schraubverbindungen</span><span class="anzahl">3 Trainings</span></a>
+          <a class="card" href="trainings/schraubverbindungen/index.html" data-typ="trainings" data-suche="schraubverbindungen maschinenelemente schrauben wiederholung mit rückmeldung – begriffe, rechenweg und die regeln der schnittdarstellung. begriffe und formelzeichen anziehdrehmoment rechnen schraffur-schnellcheck" data-bg-anzahl='{&quot;bfs-hs10&quot;:2,&quot;bfs-mr&quot;:2}'><span class="kartenname">Schraubverbindungen</span><span class="anzahl">3 Trainings</span></a>
         </div>
       </div>
     </div>
@@ -198,10 +206,35 @@
 
   chips.forEach(function (c) {
     if (c.dataset.filter === 'alle') return;
-    var n = karten.filter(function (k) { return k.dataset.typ === c.dataset.filter; }).length;
-    if (!n) { c.hidden = true; return; }
-    c.insertAdjacentHTML('beforeend', '<span class="n">' + n + '</span>');
+    c.insertAdjacentHTML('beforeend', '<span class="n"></span>');
   });
+
+  /* Die Zahl am Reiter und die Zahl auf der Karte muessen zum Zuschnitt
+     passen - sonst steht dort "6 Uebungen", wo nur drei zu sehen sind. */
+  function zahlenNachziehen(bg) {
+    var B = window.tbkBildungsgang;
+    chips.forEach(function (c) {
+      if (c.dataset.filter === 'alle') return;
+      var n = karten.filter(function (k) {
+        return k.dataset.typ === c.dataset.filter && (!B || B.gilt(k, bg));
+      }).length;
+      c.hidden = !n;
+      c.querySelector('.n').textContent = n;
+    });
+
+    karten.forEach(function (k) {
+      var feld = k.querySelector('.anzahl');
+      if (!feld) return;
+      if (!feld.dataset.voll) feld.dataset.voll = feld.textContent;
+      var roh = k.dataset.bgAnzahl;
+      if (!bg || !roh) { feld.textContent = feld.dataset.voll; return; }
+      var n;
+      try { n = JSON.parse(roh)[bg]; } catch (e) { n = undefined; }
+      if (n === undefined) { feld.textContent = feld.dataset.voll; return; }
+      /* Die Einheit steht schon in der vollen Fassung - nur die Zahl tauschen. */
+      feld.textContent = feld.dataset.voll.replace(/^\d+/, String(n));
+    });
+  }
 
   function sichtbar(el) { return !el.hidden; }
 
@@ -209,8 +242,14 @@
     var q = suche.value.trim().toLowerCase();
     var treffer = 0;
 
+    var B = window.tbkBildungsgang;
+    var bg = B ? B.lesen() : '';
+    zahlenNachziehen(bg);
+
     karten.forEach(function (k) {
-      var passt = (typ === 'alle' || k.dataset.typ === typ) &&
+      /* Was der Bildungsplan nicht hergibt, steht hier gar nicht erst. */
+      var passt = (!B || B.gilt(k, bg)) &&
+                  (typ === 'alle' || k.dataset.typ === typ) &&
                   (!q || k.dataset.suche.indexOf(q) !== -1);
       k.hidden = !passt;
       if (passt) treffer++;
@@ -237,6 +276,23 @@
     });
   });
   suche.addEventListener('input', anwenden);
+
+  /* Der Bildungsgang gilt fuer die ganze Seite t-bk.de - hier wird er
+     gewaehlt, in den Uebungen wirkt er weiter. */
+  if (window.tbkBildungsgang) {
+    var w = window.tbkBildungsgang.waehler(function () { anwenden(); });
+    var zeile = document.getElementById('tbk-bg');
+    zeile.appendChild(w.knoten);
+    var hinweis = document.createElement('p');
+    hinweis.className = 'bg-hinweis';
+    hinweis.textContent = 'Zeigt nur, was im Bildungsplan vorgesehen ist – '
+      + 'in den Übungen wirkt die Wahl weiter und lässt sich dort ändern.';
+    zeile.appendChild(hinweis);
+    window.tbkBildungsgang.beiFremderWahl(function (neu) {
+      w.feld.value = neu;
+      anwenden();
+    });
+  }
 
   anwenden();
 })();

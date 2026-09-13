@@ -6,3 +6,6 @@ node_modules/
 
 # Abgelesene Tabellenbuch-Werte: Arbeitsgrundlage, nicht zum Veroeffentlichen.
 tabellenbuch/
+
+# Auswertung der Bildungsplaene: Arbeitsgrundlage, nicht zum Veroeffentlichen.
+bildungsgaenge/

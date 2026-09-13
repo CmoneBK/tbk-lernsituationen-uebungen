@@ -101,6 +101,7 @@
   }
 </style>
 <script src="../../assets/thema.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
 </head>
 <body>
   <header class="wrap">
@@ -110,9 +111,50 @@
     <span class="anzahl-oben">{{ANZAHL}}</span>
   </header>
 
+  <div class="wrap"><div class="bg-zeile" id="tbk-bg"></div></div>
+
   <main class="wrap">
 <!-- INHALT -->
   </main>
+
+<script>
+/* Der Bildungsgang gilt fuer die ganze Seite t-bk.de. Hier bestimmt er, welche
+   Uebungen des Pakets ueberhaupt aufgelistet werden - abgewaehlt wird nichts
+   unerreichbar, die Seiten selbst bleiben offen. */
+(function () {
+  var B = window.tbkBildungsgang;
+  if (!B) return;
+  var zeilen = [].slice.call(document.querySelectorAll('.liste > li'));
+  var leer = document.createElement('p');
+  leer.className = 'bg-hinweis';
+  leer.hidden = true;
+  leer.textContent = 'Für diesen Bildungsgang ist hier nichts vorgesehen.';
+  var liste = document.querySelector('.liste');
+  if (liste) liste.parentNode.insertBefore(leer, liste.nextSibling);
+
+  function anwenden() {
+    var bg = B.lesen();
+    var da = 0;
+    zeilen.forEach(function (li) {
+      var passt = B.gilt(li, bg);
+      li.hidden = !passt;
+      if (passt) da++;
+    });
+    leer.hidden = da > 0;
+  }
+
+  var w = B.waehler(anwenden);
+  var zeile = document.getElementById('tbk-bg');
+  zeile.appendChild(w.knoten);
+  var hinweis = document.createElement('p');
+  hinweis.className = 'bg-hinweis';
+  hinweis.textContent = 'Zeigt nur, was im Bildungsplan vorgesehen ist – '
+    + 'in der Übung selbst lässt sich die Wahl ändern.';
+  zeile.appendChild(hinweis);
+  B.beiFremderWahl(function (neu) { w.feld.value = neu; anwenden(); });
+  anwenden();
+})();
+</script>
 
   <footer class="wrap">
     &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>

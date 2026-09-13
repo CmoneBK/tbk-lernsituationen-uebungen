@@ -103,6 +103,7 @@
   }
 </style>
 <script src="../../assets/thema.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
 </head>
 <body>
   <header class="wrap">
@@ -112,6 +113,8 @@
     <span class="anzahl-oben">3 Trainings</span>
   </header>
 
+  <div class="wrap"><div class="bg-zeile" id="tbk-bg"></div></div>
+
   <main class="wrap">
       <div class="werkzeuge">
         <p class="werkzeuge-lead">Passendes interaktives Werkzeug:</p>
@@ -120,10 +123,49 @@
 
       <ol class="liste">
         <li><a class="eintrag" href="01-begriffe-und-formelzeichen.html"><span class="eintrag-kopf"><span class="eintrag-name">Begriffe und Formelzeichen</span><span class="dauer">10 min</span></span><span class="besch">Alltagssprache, Fachbegriff, Formelzeichen – dieselbe Sache, drei Ebenen. Mit Rückmeldung und Wiederholung der Fehler.</span></a></li>
-        <li><a class="eintrag" href="02-anziehdrehmoment-rechnen.html"><span class="eintrag-kopf"><span class="eintrag-name">Anziehdrehmoment rechnen</span><span class="dauer">20 min</span></span><span class="besch">Zufallsaufgaben zu Vorspannkraft und Anziehdrehmoment – mit Toleranz, Rückmeldung und vollständigem Rechenweg.</span></a></li>
+        <li data-bg-ohne="bfs-hs10 bfs-mr"><a class="eintrag" href="02-anziehdrehmoment-rechnen.html"><span class="eintrag-kopf"><span class="eintrag-name">Anziehdrehmoment rechnen</span><span class="dauer">20 min</span></span><span class="besch">Zufallsaufgaben zu Vorspannkraft und Anziehdrehmoment – mit Toleranz, Rückmeldung und vollständigem Rechenweg.</span></a></li>
         <li><a class="eintrag" href="03-schraffur-schnellcheck.html"><span class="eintrag-kopf"><span class="eintrag-name">Schraffur-Schnellcheck</span><span class="dauer">10 min</span></span><span class="besch">Zwanzig Aussagen zur Schnittdarstellung, richtig oder falsch – mit Uhr und sofortiger Begründung.</span></a></li>
       </ol>
   </main>
+
+<script>
+/* Der Bildungsgang gilt fuer die ganze Seite t-bk.de. Hier bestimmt er, welche
+   Uebungen des Pakets ueberhaupt aufgelistet werden - abgewaehlt wird nichts
+   unerreichbar, die Seiten selbst bleiben offen. */
+(function () {
+  var B = window.tbkBildungsgang;
+  if (!B) return;
+  var zeilen = [].slice.call(document.querySelectorAll('.liste > li'));
+  var leer = document.createElement('p');
+  leer.className = 'bg-hinweis';
+  leer.hidden = true;
+  leer.textContent = 'Für diesen Bildungsgang ist hier nichts vorgesehen.';
+  var liste = document.querySelector('.liste');
+  if (liste) liste.parentNode.insertBefore(leer, liste.nextSibling);
+
+  function anwenden() {
+    var bg = B.lesen();
+    var da = 0;
+    zeilen.forEach(function (li) {
+      var passt = B.gilt(li, bg);
+      li.hidden = !passt;
+      if (passt) da++;
+    });
+    leer.hidden = da > 0;
+  }
+
+  var w = B.waehler(anwenden);
+  var zeile = document.getElementById('tbk-bg');
+  zeile.appendChild(w.knoten);
+  var hinweis = document.createElement('p');
+  hinweis.className = 'bg-hinweis';
+  hinweis.textContent = 'Zeigt nur, was im Bildungsplan vorgesehen ist – '
+    + 'in der Übung selbst lässt sich die Wahl ändern.';
+  zeile.appendChild(hinweis);
+  B.beiFremderWahl(function (neu) { w.feld.value = neu; anwenden(); });
+  anwenden();
+})();
+</script>
 
   <footer class="wrap">
     &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>

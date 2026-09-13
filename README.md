@@ -34,6 +34,7 @@ trainings/<paket>/                  Trainingspaket – index.html wird ERZEUGT
 assets/uebung.css        gemeinsames Aussehen aller Übungen und Trainings
 assets/zeichnen.js       Bausteine für Zeichnungen (Maße, Schraffur, Diagramme)
 assets/baukasten.js      Übungen zuschneiden und als Link weitergeben
+assets/bildungsgang.js   Zuschnitt nach Bildungsgang – die Voreinstellung dafür
 assets/qr.js             QR-Code für diesen Link
 assets/export.js         Ausgabe als PDF und als Word-Datei
 assets/pdf.js            schlanker PDF-Schreiber für den Direkt-Download
@@ -242,6 +243,40 @@ Build in jede Übung und jedes Training selbst ein. Zu tun ist dafür nichts –
 außer die Gliederung mit `h2` und `details` aufzubauen, wie es die Vorlage
 ohnehin vormacht.
 
+### Voreinstellung nach Bildungsgang
+
+Oben im selben Fenster steht die Wahl des Bildungsgangs. Sie setzt die Häkchen
+auf das, was der Bildungsplan hergibt — mehr nicht: Danach lässt sich alles
+wieder ändern. Gemerkt wird sie im `localStorage` (`tbk-bildungsgang`) und gilt
+damit für den ganzen Bereich; weitergeben lässt sie sich als `?bg=…`.
+
+Ein Teil, der nicht überall hingehört, sagt das selbst — an der Überschrift
+oder am `summary`:
+
+```html
+<h2 data-bg-ohne="bfs-hs10 bfs-mr">Die verspannte Verbindung</h2>
+```
+
+Eine ganze Seite nimmt sich im `head` aus:
+
+```html
+<meta name="bg-ohne" content="bfs-hs10 bfs-mr">
+```
+
+Dann fehlt sie in der Übersicht und auf der Paketseite; wer sie trotzdem
+öffnet, bekommt oben eine Zeile, die das sagt — gesperrt ist nichts.
+
+**Kein Attribut heißt: gehört überall dazu.** Das ist die richtige Vorgabe;
+neue Inhalte erscheinen erst einmal für alle.
+
+Die sieben Schlüssel sind `bfs-hs10`, `bfs-mr`, `hbfs-c2`, `fos-c3`, `im`,
+`zm` und `tech`. Welcher Inhalt zu welchem Bildungsgang gehört und warum, steht
+mitsamt den Bildungsplänen in `bildungsgaenge/` — dieser Ordner gehört wie
+`tabellenbuch/` nicht ins Repo.
+
+Steht ein Zuschnitt als `?ohne=…` in der Adresse, gilt der und nicht der
+Bildungsgang: Jemand hat genau diese Zusammenstellung weitergegeben.
+
 Der QR-Code entsteht im Browser, ohne Dienst und ohne Fremdbibliothek
 (`assets/qr.js`, Byte-Modus, Fehlerkorrektur M, bis Version 10). Das ist
 Bedingung, weil die Seite [nichts von fremden Servern lädt](#-trackingfrei--ohne-ausnahme).
@@ -370,7 +405,9 @@ Kein `npm install` nötig – der Generator kommt ohne Abhängigkeiten aus
   `assets/thema.js` immer, und zwar in den `head`,
   `assets/werkzeug-link.js` bei einem Werkzeug-Link, `assets/zahlenfeld.js`
   bei einem Feld vom Typ `number` oder `range`, und in Übungen, Trainings wie
-  Lernsituationen `qr.js`, `baukasten.js`, `pdf.js`, `export.js`.
+  Lernsituationen `bildungsgang.js`, `qr.js`, `baukasten.js`, `pdf.js`,
+  `export.js` – in dieser Reihenfolge, weil der Baukasten die Wahl des
+  Bildungsgangs liest.
 * **Front-Matter entfernen.** Ein `--- … ---`-Block am Dateianfang stammt aus dem
   Jekyll-Workflow des Werkzeuge-Repos. Ohne Jekyll stünde er als Text auf der
   Seite; er wird entfernt, ein dort notierter `title` aber vorher übernommen.

@@ -163,3 +163,12 @@ footer a{color:var(--muted)}
   details > *{display:block}
   a.werkzeug, button.knopf{display:none}
 }
+
+/* Der Umschalter fuer den Bildungsgang - auf der Uebersicht und auf den
+   Paketseiten. Das Auswahlfeld selbst bringt assets/bildungsgang.js mit. */
+.bg-zeile{
+  margin: 18px 0 0; padding: 12px 14px; border-radius: 10px;
+  background: var(--card); border: 1px solid var(--border);
+}
+.bg-zeile:empty{ display: none }
+@media print{ .bg-zeile{ display: none } }

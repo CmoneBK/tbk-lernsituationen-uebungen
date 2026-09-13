@@ -2,6 +2,7 @@
  *
  * Eingebunden mit einer Zeile vor dem schließenden body-Tag:
  *
+ *     <script src="../../assets/bildungsgang.js"></script>
  *     <script src="../../assets/qr.js"></script>
  *     <script src="../../assets/baukasten.js"></script>
  *
@@ -16,6 +17,10 @@
  * weiterhin auf dasselbe. Wird eine Überschrift umformuliert, findet der Link
  * sie nicht mehr - dann erscheint dieser Teil wieder, statt dass der falsche
  * verschwindet. Das ist die harmlosere Richtung.
+ *
+ * Wer oben im Fenster seinen Bildungsgang wählt, bekommt den Zuschnitt
+ * vorgegeben, den der Bildungsplan hergibt (assets/bildungsgang.js). Das setzt
+ * nur die Häkchen: Danach lässt sich alles wieder anders einstellen.
  */
 (function () {
   'use strict';
@@ -98,10 +103,16 @@
         name: beschriftung(h2),
         kopf: h2,
         knoten: knoten,
+        /* Wo ein data-bg-ohne stehen darf: an der Überschrift oder am Block,
+           je nachdem, was die Seite hergibt. */
+        marker: [h2],
         fragen: fragen.map(function (d) {
           var s = d.querySelector('summary');
           var name = s ? s.textContent.replace(/\s+/g, ' ').trim() : 'Aufgabe';
-          return { id: eindeutig(kennung(name)), name: name, knoten: [d] };
+          return {
+            id: eindeutig(kennung(name)), name: name, knoten: [d],
+            marker: [d, s]
+          };
         })
       });
     });
@@ -156,11 +167,57 @@
     });
   }
 
-  function adresse(aus) {
+  /* ---------- Bildungsgang ---------- */
+
+  function bg() { return window.tbkBildungsgang || null; }
+
+  /* Was der Bildungsplan dieses Bildungsgangs nicht hergibt. Ohne Wahl bleibt
+     alles sichtbar. */
+  function vorauswahl(teile, wahl) {
+    var aus = {};
+    var B = bg();
+    if (!B || !wahl) return aus;
+    teile.forEach(function (t) {
+      if (!B.giltEines(t.marker, wahl)) aus[t.id] = true;
+      t.fragen.forEach(function (f) {
+        if (!B.giltEines(f.marker, wahl)) aus[f.id] = true;
+      });
+    });
+    return aus;
+  }
+
+  /* Gehört die ganze Seite nicht zum gewählten Bildungsgang, wird sie nicht
+     versteckt - sie bekommt oben eine Zeile, die das sagt. Wer hier gelandet
+     ist, wollte meistens hierhin. */
+  function seitenhinweis(wahl) {
+    var alt = document.getElementById('bk-bg-seite');
+    if (alt) alt.remove();
+    var B = bg();
+    if (!B || !wahl || B.seiteGilt(wahl)) return;
+
+    var haupt = document.querySelector('main');
+    if (!haupt) return;
+    var e = B.eintrag(wahl);
+
+    var zeile = document.createElement('p');
+    zeile.id = 'bk-bg-seite';
+    zeile.setAttribute('data-druck', 'weg');
+    zeile.innerHTML = 'Diese ' + TYP + ' ist im Bildungsplan von <b></b> nicht '
+      + 'vorgesehen. Sie steht trotzdem vollständig zur Verfügung.';
+    zeile.querySelector('b').textContent = e ? e.name : wahl;
+    haupt.insertBefore(zeile, haupt.firstChild);
+  }
+
+  function adresse(aus, wahl) {
     var u = new URL(location.href);
     var liste = Object.keys(aus).filter(function (k) { return aus[k]; });
     if (liste.length) u.searchParams.set(PARAM, liste.join('.'));
     else u.searchParams.delete(PARAM);
+    var B = bg();
+    if (B) {
+      if (wahl) u.searchParams.set(B.PARAM, wahl);
+      else u.searchParams.delete(B.PARAM);
+    }
     return u.href;
   }
 
@@ -274,6 +331,14 @@
     + '#bk-link{width:100%;font:12.5px/1.4 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;'
     + 'padding:8px 10px;border-radius:8px;color:inherit;background:var(--bg,#f7f7f5);'
     + 'border:1px solid var(--border-stark,#cbd5e1)}'
+    + '#bk-bildungsgang{margin:0 0 12px;padding:0 0 12px;'
+    + 'border-bottom:1px solid var(--border,#e3e3df)}'
+    + '#bk-bg-seite{margin:0 0 18px;padding:11px 14px;border-radius:10px;'
+    + 'border:1px solid var(--border-stark,#cbd5e1);background:var(--bg,#f7f7f5);'
+    + 'font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;'
+    + 'color:var(--muted,#5f5f5a)}'
+    + '#bk-bg-seite b{color:var(--fg,#1a1a1a)}'
+    + '@media print{#bk-bg-seite{display:none!important}}'
     + '#bk-qr{display:flex;justify-content:center;margin:14px 0 4px}'
     + '#bk-qr svg{width:148px;height:148px;border-radius:8px}'
     + '@media (max-width:640px){#bk-tafel{right:8px;left:8px;bottom:74px;width:auto;'
@@ -285,8 +350,18 @@
     stil.textContent = CSS;
     document.head.appendChild(stil);
 
-    var aus = ausLesen();
+    var B = bg();
+    var wahl = B ? B.lesen() : '';
+
+    /* Steht ein Zuschnitt in der Adresse, gilt der: Jemand hat genau diese
+       Zusammenstellung weitergegeben. Sonst entscheidet der Bildungsgang. */
+    var aus;
+    try {
+      aus = new URLSearchParams(location.search).has(PARAM)
+        ? ausLesen() : vorauswahl(teile, wahl);
+    } catch (e) { aus = vorauswahl(teile, wahl); }
     anwenden(teile, aus);
+    seitenhinweis(wahl);
 
     var knopf = document.createElement('button');
     knopf.type = 'button';
@@ -319,6 +394,7 @@
     tafel.innerHTML =
       '<button type="button" id="bk-schliessen" aria-label="Schließen">&times;</button>'
       + '<h2>' + TYP + ' anpassen</h2>'
+      + '<div id="bk-bildungsgang"></div>'
       + '<p class="bk-hinweis">Häkchen entfernen, um Teile wegzulassen. Die Auswahl '
       + 'wirkt sofort auf der Seite hinter diesem Fenster.</p>'
       + '<ul class="bk-liste">' + liste + '</ul>'
@@ -347,6 +423,35 @@
       });
     });
 
+    /* Die Wahl setzt die Häkchen neu - alles Handgemachte wird dabei
+       verworfen, das ist der Sinn einer Voreinstellung. */
+    if (B) {
+      var w = B.waehler(function (neu) {
+        wahl = neu;
+        aus = vorauswahl(teile, wahl);
+        anwenden(teile, aus);
+        seitenhinweis(wahl);
+        try { history.replaceState(null, '', adresse(aus, wahl)); } catch (e) { /* file:// */ }
+        stand();
+      });
+      tafel.querySelector('#bk-bildungsgang').appendChild(w.knoten);
+
+      var erklaerung = document.createElement('p');
+      erklaerung.className = 'bg-hinweis';
+      erklaerung.textContent = 'Setzt die Auswahl auf das, was der Bildungsplan '
+        + 'vorsieht. Danach lässt sich alles weiter verändern.';
+      tafel.querySelector('#bk-bildungsgang').appendChild(erklaerung);
+
+      B.beiFremderWahl(function (neu) {
+        wahl = neu;
+        w.feld.value = neu;
+        aus = vorauswahl(teile, wahl);
+        anwenden(teile, aus);
+        seitenhinweis(wahl);
+        stand();
+      });
+    }
+
     var kaestchen = [].slice.call(tafel.querySelectorAll('.bk-liste input'));
 
     function stand() {
@@ -362,21 +467,22 @@
         });
       });
 
-      var href = adresse(aus);
+      var href = adresse(aus, wahl);
       tafel.querySelector('#bk-link').value = href;
       qrZeichnen(tafel.querySelector('#bk-qr'), href);
 
       var weg = Object.keys(aus).length;
-      knopf.querySelector('span').textContent = weg
-        ? TYP + ' anpassen (' + weg + ' weniger)'
-        : TYP + ' anpassen';
+      var e = B && wahl ? B.eintrag(wahl) : null;
+      knopf.querySelector('span').textContent = e
+        ? TYP + ' anpassen · ' + e.kurz
+        : (weg ? TYP + ' anpassen (' + weg + ' weniger)' : TYP + ' anpassen');
     }
 
     function aendern(id, an) {
       if (an) delete aus[id]; else aus[id] = true;
       anwenden(teile, aus);
       /* Die Adresse mitziehen, damit ein Neuladen den Stand behält. */
-      try { history.replaceState(null, '', adresse(aus)); } catch (e) { /* file:// */ }
+      try { history.replaceState(null, '', adresse(aus, wahl)); } catch (e) { /* file:// */ }
       stand();
     }
 
@@ -386,8 +492,17 @@
 
     tafel.querySelector('#bk-alle').addEventListener('click', function () {
       Object.keys(aus).forEach(function (k) { delete aus[k]; });
+      /* Sonst stünde beim nächsten Laden wieder der Zuschnitt des
+         Bildungsgangs da - "alles" hieße dann nur "alles bis zum Neuladen". */
+      if (B && wahl) {
+        wahl = '';
+        B.schreiben('');
+        var feld = tafel.querySelector('#bk-bildungsgang select');
+        if (feld) feld.value = '';
+        seitenhinweis('');
+      }
       anwenden(teile, aus);
-      try { history.replaceState(null, '', adresse(aus)); } catch (e) { /* file:// */ }
+      try { history.replaceState(null, '', adresse(aus, wahl)); } catch (e) { /* file:// */ }
       stand();
     });
 
