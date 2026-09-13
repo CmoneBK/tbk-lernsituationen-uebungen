@@ -68,7 +68,8 @@
       <p>Weil die Haftreibung zwischen zwei Flächen von Dingen abhängt, die
         niemand auf der Zeichnung festlegt: Rauheit, Sauberkeit, Rostfilm,
         Ölreste, Flächenpressung. Für Stahl auf Stahl, trocken, findet man
-        typisch <strong>0,10 bis 0,20</strong> &ndash; also Faktor zwei.</p>
+        typisch <strong>0,10 bis 0,25</strong> &ndash; das Tabellenbuch nennt für
+        Stahl auf Stahl 0,25 trocken und 0,10 geschmiert.</p>
       <p>Für die Auslegung heißt das: <strong>Mit dem unteren Wert rechnen.</strong>
         Der obere ist Glück, kein Nachweis.</p>
       <p><strong>Manche Tabellenbücher vereinfachen</strong> und nennen einen
@@ -135,8 +136,13 @@
       <p><strong>Mit &mu;<sub>T</sub> = 0,10:</strong>
         F<sub>Q,zul</sub> = (0,10 &middot; 29,6 kN &middot; 4 &middot; 1) / 1,25 =
         <strong>9,5 kN</strong> &ndash; das reicht <em>nicht</em> für 12 kN.</p>
-      <p><strong>Mit &mu;<sub>T</sub> = 0,20:</strong>
-        F<sub>Q,zul</sub> = <strong>18,9 kN</strong> &ndash; das würde reichen.</p>
+      <p><strong>Mit &mu;<sub>T</sub> = 0,25:</strong>
+        F<sub>Q,zul</sub> = <strong>23,7 kN</strong> &ndash; das würde reichen.</p>
+      <p class="fussnote">Das Tabellenbuch schreibt unter seine Reibungstabelle:
+        <em>Die Richtwerte zeigen lediglich Tendenzen und unterliegen insbesondere
+        bei der Haftreibung großen Schwankungen. Verlässliche Reibzahlen können
+        nur anwendungsspezifische Versuche liefern.</em> Genau darum geht es
+        hier.</p>
       <p><strong>Antwort:</strong> Die Verbindung hält <em>vielleicht</em>. Und
         „vielleicht“ ist kein Nachweis. Maßgebend ist der untere Wert, also
         9,5 kN. <strong>Die Konsole ist so nicht ausreichend verschraubt.</strong></p>
@@ -260,10 +266,10 @@
     </p>
     <p class="fussnote"><strong>Woher die Zahlen stammen:</strong> Vorspannkräfte nach VDI 2230 &ndash;
       dieselben Werte wie in der Tabelle <em>Maximale Vorspannkräfte und
-      Anziehdrehmomente</em> des Tabellenbuchs. Die Reibungszahlen der
-      <em>Trennfuge</em> (nicht die des Gewindes) sind Anhaltswerte aus der
-      VDI 2230 und dem Stahlbau; sie streuen stark, und genau darum geht es in
-      dieser Übung. Die Rutschsicherheit ist eine Vorgabe der Aufgabe, kein
+      Anziehdrehmomente</em> des Tabellenbuchs. Die Haftreibungszahlen stehen
+      dort im Abschnitt <em>Reibungsarten, Reibungszahlen</em>; die gestrahlte
+      Fläche ist als einzige nicht von dort, sondern ein Anhaltswert aus dem
+      Stahlbau. Die Rutschsicherheit ist eine Vorgabe der Aufgabe, kein
       Tabellenwert.</p>
 
     <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
@@ -300,17 +306,23 @@ var KLASSENLISTE = ["4.6","5.6","8.8","10.9","12.9"];
 
 /* Anhaltswerte fuer die Haftreibungszahl in der Trennfuge. Sie streuen stark,
    deshalb immer ein Bereich statt einer Zahl. */
+/* Haftreibungszahlen aus dem Tabellenbuch, Abschnitt Reibung. Dort steht je
+   Paarung ein Wert fuer trocken und einer fuer geschmiert - die Spanne
+   dazwischen ist das, was man im Betrieb nicht in der Hand hat. Die
+   gestrahlten Flaechen stehen dort nicht; sie kommen aus dem Stahlbau. */
 var PAARUNGEN = [
-  {name:"Stahl auf Stahl, trocken",      von:0.10, bis:0.20, hinweis:""},
-  {name:"Stahl auf Stahl, geölt",        von:0.05, bis:0.12,
-   hinweis:"Öl in der Trennfuge ist der schlechteste Fall – geschmiert gehören Gewinde und Kopfauflage, nicht die Trennfuge."},
-  {name:"Stahl auf Stahl, gestrahlt",    von:0.20, bis:0.45,
-   hinweis:"Gestrahlte Flächen greifen ineinander. Im Stahlbau wird das gezielt genutzt."},
-  {name:"Stahl auf Gusseisen, trocken",  von:0.15, bis:0.25, hinweis:""},
-  {name:"Stahl auf Aluminium, trocken",  von:0.10, bis:0.20,
-   hinweis:"Aluminium ist weicher – die Verbindung setzt sich mit der Zeit stärker."},
-  {name:"Stahl auf Kunststoff, trocken", von:0.10, bis:0.25,
-   hinweis:"Kunststoff kriecht unter Druck. Die Vorspannkraft sinkt dauerhaft."}
+  {name:"Stahl auf Stahl",              von:0.10, bis:0.25,
+   hinweis:"Tabellenbuch: trocken 0,25, geschmiert 0,10. Öl in der Trennfuge ist der schlechteste Fall – geschmiert gehören Gewinde und Kopfauflage, nicht die Fuge."},
+  {name:"Stahl auf Gusseisen",          von:0.10, bis:0.20,
+   hinweis:"Tabellenbuch: trocken 0,20, geschmiert 0,10."},
+  {name:"Stahl auf Cu-Sn-Legierung",    von:0.10, bis:0.20,
+   hinweis:"Tabellenbuch: trocken 0,20, geschmiert 0,10. Bronze ist weicher – die Verbindung setzt sich stärker."},
+  {name:"Stahl auf Polyamid",           von:0.15, bis:0.30,
+   hinweis:"Tabellenbuch: trocken 0,30, geschmiert 0,15. Kunststoff kriecht unter Druck: Die Vorspannkraft sinkt dauerhaft."},
+  {name:"Stahl auf Holz",               von:0.10, bis:0.55,
+   hinweis:"Tabellenbuch: trocken 0,55, geschmiert 0,10 – Faktor fünfeinhalb. Hier hilft nur eine Formschlussverbindung."},
+  {name:"Stahl auf Stahl, gestrahlt",   von:0.20, bis:0.45,
+   hinweis:"Nicht im Tabellenbuch: Anhaltswert aus dem Stahlbau. Gestrahlte Flächen greifen ineinander; für gleitfeste Verbindungen wird das gezielt gemacht und geprüft."}
 ];
 
 var MY_ANZIEH = 0.12;   /* Reibung an Gewinde und Kopf beim Anziehen */
