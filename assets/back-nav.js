@@ -18,6 +18,14 @@
  *   GitHub Pages  /tbk-unterrichtsmaterial/lernsituationen/x.html -> /tbk-unterrichtsmaterial/
  *   t-bk.de       /unterrichtsmaterial/lernsituationen/x.html     -> /unterrichtsmaterial/
  *
+ * Zwei Angaben sind moeglich:
+ *
+ *     data-ziel="./"            wohin (Vorgabe: die Wurzel des Bereichs)
+ *     data-text="Startseite"    wie er heisst (Vorgabe: "Uebersicht")
+ *
+ * Damit tragen auch die Bereichsseiten denselben Knopf - vorher stand dort
+ * eine blaue Textzeile, waehrend jede Inhaltsseite den schwebenden Knopf hatte.
+ *
  * Die Seiten bringen sehr unterschiedliche (helle wie dunkle) Designs mit,
  * darum eigene ID und !important bei allem, was globale Resets der Seiten
  * (z. B. "* { font-family: ... }") sonst ueberschreiben wuerden.
@@ -39,9 +47,19 @@
   // Innerhalb eines Uebungs- oder Trainingspakets soll der Ruecklink zur
   // Paketuebersicht fuehren, nicht bis zur Startseite des Materialbereichs.
   // build/build.mjs traegt dafuer data-ziel="./" ein.
-  var ziel = self && self.dataset && self.dataset.ziel
-    ? new URL(self.dataset.ziel, location.href).href
-    : wurzel;
+  var zielRoh = self && self.dataset ? self.dataset.ziel : '';
+  var ziel = zielRoh ? new URL(zielRoh, location.href).href : wurzel;
+
+  /* Ein "/" zeigt auf die Wurzel der Domain, und die gibt es nur auf t-bk.de:
+     Auf GitHub Pages waere das die Profilseite, lokal das Dateisystem. Dort
+     erscheint der Ruecklink deshalb gar nicht. */
+  if (zielRoh === '/' && (location.protocol === 'file:'
+      || /(^|\.)github\.io$/.test(location.hostname))) return;
+
+  /* Beschriftung. "zur" passt zu beiden bisherigen Zielen (Uebersicht,
+     Startseite); fuer alles andere gibt es data-titel. */
+  var text = (self && self.dataset && self.dataset.text) || 'Übersicht';
+  var titel = (self && self.dataset && self.dataset.titel) || ('Zurück zur ' + text);
 
   var css = '' +
     '#tbk-back{' +
@@ -76,13 +94,14 @@
   var a = document.createElement('a');
   a.id = 'tbk-back';
   a.href = ziel;
-  a.title = 'Zurück zur Übersicht';
-  a.setAttribute('aria-label', 'Zurück zur Übersicht');
+  a.title = titel;
+  a.setAttribute('aria-label', titel);
   a.innerHTML =
     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" ' +
     'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' +
     '<path d="M19 12H5M12 19l-7-7 7-7"/></svg>' +
-    '<span class="tbk-back-label">Übersicht</span>';
+    '<span class="tbk-back-label"></span>';
+  a.querySelector('.tbk-back-label').textContent = text;
 
   function einfuegen() {
     (document.head || document.documentElement).appendChild(style);

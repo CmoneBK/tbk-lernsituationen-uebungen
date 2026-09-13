@@ -40,7 +40,7 @@ assets/export.js         Ausgabe als PDF und als Word-Datei
 assets/pdf.js            schlanker PDF-Schreiber für den Direkt-Download
 assets/thema.js          Umschalter hell / dunkel für den ganzen Bereich
 assets/zahlenfeld.js     Mausrad in Zahlenfeldern, ohne die Seite zu verschieben
-assets/back-nav.js       Rücklink „← Übersicht“ – einzige Quelle
+assets/back-nav.js       Rücklink als schwebender Knopf – einzige Quelle
 assets/werkzeug-link.js  löst Links auf die Werkzeuge je nach Umgebung auf
 daten/kategorien.csv     Reihenfolge der Bereiche und Unterkategorien
 daten/material.json      erzeugt: Bestand als Liste (für weitere Auswertungen)
@@ -437,6 +437,27 @@ Materialbereichs – unabhängig von Ablagetiefe und Ausspielpfad.
 Innerhalb eines Pakets wäre das aber einen Schritt zu weit: Von einer Übung
 will man zurück zum Paket, nicht bis zur Startseite. Dafür trägt der Build am
 Skript-Tag `data-ziel="./"` ein.
+
+Zwei Angaben sind möglich:
+
+| Attribut | Wirkung |
+| --- | --- |
+| `data-ziel="./"` | wohin (Vorgabe: die Wurzel des Bereichs) |
+| `data-text="Startseite"` | wie er heißt (Vorgabe: „Übersicht") |
+
+Damit tragen auch die Bereichsseiten denselben Knopf — die Übersicht des
+Materials, die der Werkzeuge, Impressum und Datenschutz. Vorher stand dort
+eine blaue Textzeile, während jede Inhaltsseite den schwebenden Knopf hatte.
+
+Ein `data-ziel="/"` zeigt auf die Wurzel der Domain, und die gibt es nur auf
+t-bk.de: Auf GitHub Pages wäre das die Profilseite, lokal das Dateisystem.
+Dort erscheint der Rücklink deshalb gar nicht — das entscheidet der Baustein
+selbst.
+
+**Platz lassen:** Der Knopf schwebt oben links. Liegt die Überschrift darunter,
+deckt er ihren ersten Buchstaben zu. Die Seiten geben ihm deshalb oben etwa
+56–62 px Luft — und zwar an einem Selektor, der auch greift: `header{…}` wird
+von einem `.wrap` an demselben Element ausgestochen.
 
 Aussehen oder Ziel ändert man also ausschließlich in `assets/back-nav.js`.
 Der Block verwendet eine eigene ID (`#tbk-back`) und `!important`, damit ihn

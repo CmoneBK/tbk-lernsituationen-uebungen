@@ -38,9 +38,9 @@
   }
   a{color:var(--accent)}
   .wrap{width:100%; max-width:960px; margin:0 auto; padding:0 20px}
-  header{padding:48px 0 8px}
-  .back{display:inline-block; margin-bottom:18px; font-size:14px; text-decoration:none}
-  .back:hover{text-decoration:underline}
+  /* Platz fuer den schwebenden Ruecklink. header.wrap, weil die Klasse
+     .wrap ein blosses header sonst aussticht. */
+  header.wrap{padding-top:62px; padding-bottom:8px}
   h1{font-size:clamp(26px,4vw,34px); letter-spacing:-.5px; margin:0 0 10px}
   .lead{color:var(--muted); font-size:17px; margin:0}
 
@@ -113,7 +113,6 @@
 </head>
 <body>
   <header class="wrap">
-    <a class="back" id="tbk-home" href="/" hidden>&larr; Startseite</a>
     <h1>Unterrichtsmaterial</h1>
     <p class="lead">Lernsituationen, &Uuml;bungen und Trainings &ndash; direkt im Browser, ohne Anmeldung.</p>
   </header>
@@ -180,16 +179,6 @@
   </footer>
 
 <script>
-/* Startseiten-Link nur dort zeigen, wo es eine gibt: auf t-bk.de liegt der
-   Bereich unter /unterrichtsmaterial/, auf GitHub Pages waere "/" dagegen die
-   Profilseite und nicht dieses Projekt. Genauso beim lokalen file-Test. */
-(function () {
-  var h = location.hostname;
-  if (location.protocol !== 'file:' && !/(^|\.)github\.io$/.test(h)) {
-    document.getElementById('tbk-home').hidden = false;
-  }
-})();
-
 /* Filter und Suche: rein clientseitig, ohne Abhaengigkeiten. Sichtbar bleibt
    eine Karte, wenn Typ UND Suchbegriff passen; anschliessend werden leer
    gewordene Gruppen, Bereiche und Abschnitte ausgeblendet, damit keine
@@ -297,5 +286,6 @@
   anwenden();
 })();
 </script>
+<script src="assets/back-nav.js" data-ziel="/" data-text="Startseite"></script>
 </body>
 </html>
