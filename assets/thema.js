@@ -53,12 +53,21 @@
     try { window.localStorage.setItem(SCHLUESSEL, wert); } catch (e) { /* egal */ }
   }
 
-  /* Setzt das Attribut. Bei "system" wird es entfernt, damit wieder die
-     Media-Regel greift. */
+  /* Was das System gerade sagt. */
+  function systemDunkel() {
+    return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  }
+
+  /* Setzt die Attribute. data-thema traegt die Wahl (bei "system" gar nichts,
+     damit die Media-Regel greift), data-thema-effektiv das Ergebnis daraus -
+     immer hell oder dunkel. Das zweite brauchen die Werkzeuge: Sie faerben um
+     und muessen wissen, wohin. */
   function anwenden(wert) {
     var html = document.documentElement;
     if (wert === 'system') html.removeAttribute('data-thema');
     else html.setAttribute('data-thema', wert);
+    html.setAttribute('data-thema-effektiv',
+      wert === 'system' ? (systemDunkel() ? 'dunkel' : 'hell') : wert);
   }
 
   /* Sofort, noch vor dem ersten Zeichnen: Sonst blitzt die falsche Palette
@@ -123,6 +132,14 @@
          Zeichnung eingefaerbt hat, bekommt es ueber dieses Ereignis mit. */
       document.dispatchEvent(new CustomEvent('tbk-thema', { detail: aktuell }));
     });
+  }
+
+  /* Stellt das Geraet waehrend des Lesens um, zieht "System" mit. */
+  if (window.matchMedia) {
+    var abfrage = window.matchMedia('(prefers-color-scheme: dark)');
+    var reagieren = function () { if (aktuell === 'system') anwenden('system'); };
+    if (abfrage.addEventListener) abfrage.addEventListener('change', reagieren);
+    else if (abfrage.addListener) abfrage.addListener(reagieren);
   }
 
   /* Ist die Seite mehrfach offen, ziehen die anderen Tabs mit. */
