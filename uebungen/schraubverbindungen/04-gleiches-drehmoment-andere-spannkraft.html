@@ -163,8 +163,17 @@
         <summary>1. Was ist der „Anziehfaktor“ &alpha;<sub>A</sub> &ndash; und wo steckt er in dieser Übung?</summary>
         <p>Er ist genau das Verhältnis, das oben rechts steht: das Verhältnis von
           größter zu kleinster erreichbarer Vorspannkraft bei einem Anziehverfahren.
-          Für das Anziehen nach Drehmoment liegt er typisch bei
-          <strong>1,6 bis 2,0</strong>, bei unbekannter Reibung auch darüber.</p>
+          Das Tabellenbuch nennt drei Zeilen:</p>
+        <div class="tabellenrahmen">
+          <table>
+            <thead><tr><th>Methode</th><th class="zahl">Faktor &alpha;<sub>A</sub></th></tr></thead>
+            <tbody>
+              <tr><td>Drehmomentschlüssel</td><td class="zahl">1,6 &hellip; 2,5</td></tr>
+              <tr><td>Schlagschrauber</td><td class="zahl">2,5 &hellip; 4</td></tr>
+              <tr><td>von Hand</td><td class="zahl">3 &hellip; 4</td></tr>
+            </tbody>
+          </table>
+        </div>
         <p>In der Auslegung legt man die Verbindung deshalb auf
           F<sub>M,min</sub> aus und prüft die Schraube gegen
           &alpha;<sub>A</sub> &middot; F<sub>M,min</sub>. Man bezahlt die
@@ -179,15 +188,23 @@
                   <th class="zahl">Schraube muss können</th><th>reicht</th></tr>
             </thead>
             <tbody>
-              <tr><td>nach Drehmoment, Reibung unbekannt</td><td class="zahl">1,6</td>
+              <tr><td>Drehmomentschlüssel, Reibung bekannt</td><td class="zahl">1,6</td>
                   <td class="zahl">1,6 &middot; 20 = 32 kN</td>
                   <td>M10 (29,6 kN) reicht nicht &rarr; <strong>M12</strong></td></tr>
-              <tr><td>nach Drehwinkel</td><td class="zahl">1,2</td>
-                  <td class="zahl">1,2 &middot; 20 = 24 kN</td>
-                  <td><strong>M10</strong> (29,6 kN) reicht</td></tr>
+              <tr><td>Drehmomentschlüssel, Reibung unsicher</td><td class="zahl">2,5</td>
+                  <td class="zahl">2,5 &middot; 20 = 50 kN</td>
+                  <td>M12 (43,1 kN) reicht nicht &rarr; <strong>M16</strong></td></tr>
+              <tr><td>Schlagschrauber</td><td class="zahl">4</td>
+                  <td class="zahl">4 &middot; 20 = 80 kN</td>
+                  <td>M16 (76,8 kN) reicht knapp nicht &rarr; <strong>M20</strong></td></tr>
             </tbody>
           </table>
         </div>
+        <p class="fussnote">Drehwinkel- und streckgrenzgesteuertes Anziehen
+          kommt mit &alpha;<sub>A</sub> = 1,0 &hellip; 1,2 aus. Das steht nicht
+          in dieser Tabelle, sondern in der VDI 2230 &ndash; im Betrieb findet man
+          es an Motorenprüfständen und in der Montagelinie, selten in der
+          Instandhaltung.</p>
         <p>Dieselbe Verbindung, dieselbe Last &ndash; und trotzdem eine
           Schraubengröße Unterschied. Bezahlt wird nicht die Kraft, sondern das
           <em>Nichtwissen</em> über die Reibung. Bei 200 Schrauben an einer
@@ -276,7 +293,13 @@
         <a class="werkzeug" data-werkzeug="maschinenelemente-schrauben-schraubverbindungen.html"
            data-fach="1">Werkzeug Schraubverbindungen öffnen</a>
       </p>
-      <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+      <p class="fussnote"><strong>Woher die Zahlen stammen:</strong> Vorspannkräfte und Anziehdrehmomente
+      nach VDI 2230 wie im Tabellenbuch, Anziehfaktoren aus dessen Tabelle
+      <em>Anziehfaktoren</em>, Festigkeitsklassen nach ISO 898-1. Der
+      Kopfauflagedurchmesser d<sub>w</sub> stammt aus der Maßtabelle der
+      ISO 4014.</p>
+
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
         Sie ersetzen keine Auslegung nach VDI 2230 und keine Herstellerangaben.</p>
     </div>
 
