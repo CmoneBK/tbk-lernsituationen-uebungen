@@ -3,3 +3,6 @@ Thumbs.db
 *.swp
 .vscode/
 node_modules/
+
+# Abgelesene Tabellenbuch-Werte: Arbeitsgrundlage, nicht zum Veroeffentlichen.
+tabellenbuch/

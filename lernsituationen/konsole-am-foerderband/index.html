@@ -332,9 +332,14 @@
           untere Schraubenreihe. Tatsächlich liegt er etwas tiefer, an der
           Kante der Konsole &ndash; der Hebelarm wäre also größer und die Zugkraft
           kleiner. Auch das liegt auf der sicheren Seite.</li>
-        <li><strong>Das Setzen.</strong> Statt der Setzbeträge aus der Tabelle
-          nehmen wir pauschal 10 %. Bei mehr als drei Trennfugen oder bei
-          weichen Zwischenlagen reicht das nicht mehr.</li>
+        <li><strong>Das Setzen.</strong> Der Setzkraftverlust F<sub>Z</sub>
+          steht in der Formel des Tabellenbuchs
+          (F<sub>Mmax</sub> = &alpha;<sub>A</sub> &middot; (F<sub>K</sub> +
+          F<sub>PA</sub> + F<sub>Z</sub>)), Zahlenwerte nennt es dafür aber
+          nicht &ndash; die Fußnote sagt sogar, er werde oft vernachlässigt.
+          Unsere pauschalen 10 % sind also eine eigene Annahme auf der sicheren
+          Seite. Bei mehr als drei Trennfugen oder weichen Zwischenlagen reicht
+          sie nicht mehr; dann gehören die Setzbeträge der VDI 2230 gerechnet.</li>
       </ul>
       <p>Wer eine solche Verbindung für die Serie auslegt, rechnet nach
         VDI 2230. Für eine Konsole in der Instandhaltung ist die Abschätzung
@@ -546,14 +551,49 @@
 
     <details>
       <summary>3. Muss die Verbindung gesichert werden?</summary>
-      <p>Eine planmäßig vorgespannte Verbindung sichert sich im Wesentlichen
-        selbst: Solange die Vorspannkraft steht, kann sich nichts losdrehen.
-        Federringe bringen bei hochfesten Schrauben nichts &ndash; sie sind
-        weicher als die Schraube und flachen unter der Vorspannkraft ab.</p>
-      <p>Sinnvoll sind hier: saubere Auflageflächen, Scheiben unter Kopf und
-        Mutter (nötig wegen der Flächenpressung, siehe Teil 4), Anziehen mit
-        Drehmoment und das Nachziehen. Wer zusätzlich sichern will, nimmt Sperrzahnschrauben oder
-        Klebstoff &ndash; und weiß, dass beides die Demontage erschwert.</p>
+      <p>Das Tabellenbuch sagt es im ersten Satz des Abschnitts
+        <em>Schraubensicherungen</em>: <strong>Bei ausreichend dimensionierten
+        und zuverlässig montierten Verbindungen ist im Allgemeinen keine
+        Schraubensicherung notwendig.</strong> Die Klemmkraft verhindert das
+        Verschieben der Teile &ndash; und damit auch das Losdrehen.</p>
+      <p>Zwei Dinge können sie trotzdem kosten:</p>
+      <ul>
+        <li><strong>Lockern</strong> durch hohe Flächenpressung: Das Material
+          gibt unter dem Kopf nach (Setzen), die Vorspannkraft sinkt. Abhilfe
+          sind wenige Trennfugen, glatte Oberflächen und &ndash; genau unser Fall
+          &ndash; Scheiben, die die Pressung verteilen.</li>
+        <li><strong>Losdrehen</strong> bei dynamisch <em>quer</em> zur Achse
+          belasteten Verbindungen. Das kann bis zum vollständigen selbsttätigen
+          Losdrehen gehen. Unsere Konsole wird quer belastet, aber nicht
+          schwingend: Eine Palette setzt auf, das war es.</li>
+      </ul>
+      <p>Die Sicherungselemente teilt das Buch nach ihrer Wirkung in drei
+        Gruppen &ndash; die erste ist die wichtigste Erkenntnis:</p>
+      <div class="tabellenrahmen">
+        <table>
+          <tbody>
+            <tr><td><strong>unwirksam</strong></td>
+                <td>Federring, Federscheibe, Zahnscheibe, Fächerscheibe,
+                  Kontermutter &ndash; die vier Scheiben sind als Normen
+                  <em>zurückgezogen</em></td></tr>
+            <tr><td><strong>Verliersicherung</strong></td>
+                <td>Sicherungsblech, Kronenmutter mit Splint, Drahtsicherung,
+                  Muttern mit Polyamid-Einsatz &ndash; lassen teilweises
+                  Losdrehen zu, verhindern aber das Auseinanderfallen</td></tr>
+            <tr><td><strong>Losdrehsicherung</strong></td>
+                <td>Sperrkantscheiben, selbsthemmendes Scheibenpaar,
+                  mikroverkapselter Klebstoff im Gewinde &ndash; die Vorspannkraft
+                  bleibt annähernd erhalten</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>Für die Konsole heißt das:</strong> saubere Auflageflächen,
+        Scheiben unter Kopf und Mutter, mit Drehmoment anziehen, nachziehen.
+        Ein Federring darunter wäre kein Gewinn, sondern eine zusätzliche
+        Trennfuge, die sich setzt. Wer wegen der Erschütterungen der Anlage
+        zusätzlich sichern will, nimmt eine <em>Losdrehsicherung</em> &ndash;
+        und weiß, dass Klebstoff die Demontage erschwert und nur zwischen
+        &minus;50 °C und 150 °C arbeitet.</p>
     </details>
 
     <p class="schritt">Schritt 6 &middot; Kontrollieren</p>
