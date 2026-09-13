@@ -85,10 +85,16 @@
         <div><span class="l">Abstand von der Stütze</span><span class="v">a = 250 mm</span></div>
         <div><span class="l">Schrauben</span><span class="v">4 Stück</span></div>
         <div><span class="l">Reihenabstand</span><span class="v">h = 120 mm</span></div>
-        <div><span class="l">Reibungszahl</span><span class="v">&mu; = 0,12</span></div>
+        <div><span class="l">Reibung in der Trennfuge</span><span class="v">&mu;<sub>T</sub> = 0,10</span></div>
         <div><span class="l">geforderte Rutschsicherheit</span><span class="v">S<sub>R</sub> = 1,3</span></div>
       </div>
-      <p style="margin-top:14px">Stütze und Konsole aus S235, der Flansch der
+      <p style="margin-top:14px">Für die Trennfuge ist der <em>geschmierte</em>
+        Wert angesetzt: Das Tabellenbuch nennt für Stahl auf Stahl 0,25 trocken
+        und 0,10 geschmiert &ndash; und beim Anziehen kommt Öl an die Fläche.
+        Ausgelegt wird mit dem unteren Wert. Nicht zu verwechseln mit der
+        Reibung beim Anziehen (Gewinde und Kopf): Dort gilt &mu; = 0,12, die
+        Spalte der Drehmomenttabelle.</p>
+      <p>Stütze und Konsole aus S235, der Flansch der
         Stütze ist 10 mm dick. Die Konsole hat vier Durchgangslöcher
         &oslash; 11 mm &ndash; das ist die Reihe <em>mittel</em> nach
         DIN EN 20273, der Normalfall für M10. Die Last enthält bereits einen
@@ -151,9 +157,10 @@
         Faktor fängt auf, was man nicht genau weiß &ndash; wie fettig die Flächen
         wirklich sind, ob die Vorspannkraft durch Setzen nachlässt, ob die Last
         beim Aufsetzen einer Palette kurz höher ist.</p>
-      <p>Gerechnet wird damit so: <em>F</em><sub>Kl,erf</sub> =
-        F<sub>Q</sub> &middot; S<sub>R</sub> / (&mu; &middot; n &middot; i), mit
-        n = Anzahl der Schrauben und i = Anzahl der Reibflächen (hier eine).</p>
+      <p>Gerechnet wird damit in zwei Schritten, so wie im Tabellenbuch: erst
+        die Betriebskraft je Schraube F<sub>B</sub> = F<sub>Q</sub> / n, dann
+        F<sub>verf</sub> = &phi; &middot; F<sub>B</sub> / &mu;<sub>T</sub>. Die
+        Rutschsicherheit heißt dort &phi;.</p>
     </details>
 
     <p class="schritt">Schritt 3 &middot; Planen</p>
@@ -181,8 +188,10 @@
           vor.</li>
         <li><strong>Für das Setzen werden pauschal 10 % aufgeschlagen</strong>,
           statt die Setzbeträge einzeln anzusetzen.</li>
-        <li><strong>&mu; = 0,12 gilt für die ganze Fuge</strong> &ndash; Stahl auf
-          Stahl, leicht geölt.</li>
+        <li><strong>&mu;<sub>T</sub> = 0,10 gilt für die ganze Fuge</strong>
+          &ndash; Stahl auf Stahl, geschmiert, nach dem Tabellenbuch. Für das
+          Anziehen gilt dagegen &mu; = 0,12: eine andere Reibung an einer
+          anderen Stelle.</li>
       </ol>
       <p style="margin-bottom:6px">Gerechnet wird mit fünf Formeln, in dieser Reihenfolge:</p>
       <div class="tabellenrahmen">
@@ -289,8 +298,8 @@
       <summary>Schritt 4: Die Vorspannkraft gegen das Rutschen</summary>
       <p>Jetzt passt die Formel aus dem Tabellenbuch, Zeichen für Zeichen:</p>
       <p class="merksatz" style="margin:8px 0">F<sub>verf</sub> =
-        &phi; &middot; F<sub>B</sub> / &mu;
-        = 1,3 &middot; 0,6 kN / 0,12 = <strong>6,5 kN je Schraube</strong></p>
+        &phi; &middot; F<sub>B</sub> / &mu;<sub>T</sub>
+        = 1,3 &middot; 0,6 kN / 0,10 = <strong>7,8 kN je Schraube</strong></p>
       <p>So viel muss jede Schraube mindestens klemmen, damit die Konsole nicht
         abrutscht &ndash; mit der geforderten Sicherheit &phi; = 1,3 gegen das
         Rutschen.</p>
@@ -306,14 +315,14 @@
         Zugkraft aus dem Moment aufnehmen, ohne dass die Klemmkraft darunter
         leidet. Nach Annahme 4 wird beides schlicht addiert:</p>
       <p class="merksatz" style="margin:8px 0">F<sub>V,erf</sub> =
-        F<sub>verf</sub> + F<sub>Z,oben</sub> = 6,5 kN + 2,5 kN
-        = <strong>9,0 kN</strong></p>
+        F<sub>verf</sub> + F<sub>Z,oben</sub> = 7,8 kN + 2,5 kN
+        = <strong>10,3 kN</strong></p>
       <p>Mit dem Zuschlag von 10 % für das Setzen (Annahme 5) sind das
-        <strong>rund 10 kN</strong>, die jede obere Schraube nach der Montage
+        <strong>rund 11 kN</strong>, die jede obere Schraube nach der Montage
         noch aufbringen muss. Das ist der Wert, an dem sich die Schraubenwahl
         entscheidet.</p>
       <p class="fussnote">Für die unteren Schrauben reicht F<sub>verf</sub> =
-        6,5 kN &ndash; sie werden vom Moment nicht gezogen. Angezogen wird
+        7,8 kN &ndash; sie werden vom Moment nicht gezogen. Angezogen wird
         trotzdem überall gleich: vier Schrauben, ein Drehmoment, keine
         Verwechslung auf der Baustelle.</p>
     </details>
@@ -349,7 +358,7 @@
     <p class="schritt">Schritt 4 &middot; Entscheiden</p>
     <h2><span class="nr">4</span>Die Schraube wählen</h2>
 
-    <p>Nötig sind rund 10 kN je oberer Schraube. Welche Schraube bringt das auf?
+    <p>Nötig sind rund 11 kN je oberer Schraube. Welche Schraube bringt das auf?
       Die zulässige Montagevorspannkraft F<sub>M,zul</sub> hängt von Größe,
       Festigkeitsklasse und Reibung ab &ndash; hier für &mu; = 0,12:</p>
 
@@ -358,7 +367,7 @@
         <thead>
           <tr><th>Schraube</th><th class="zahl">A<sub>S</sub></th>
             <th class="zahl">F<sub>M,zul</sub></th><th class="zahl">M<sub>A</sub></th>
-            <th>reicht für 10 kN?</th></tr>
+            <th>reicht für 11 kN?</th></tr>
         </thead>
         <tbody>
           <tr><td>M8 &middot; 5.6</td><td class="zahl">36,6 mm²</td><td class="zahl">8,7 kN</td><td class="zahl">11,5 N&middot;m</td><td>nein</td></tr>
@@ -406,7 +415,7 @@
         Schrauben</em> Erfahrungswerte für die Vorspannkraft &ndash; die Kraft,
         die bei einer von Hand angezogenen Schraube ungefähr ankommt. Für M10
         sind das rund <strong>16 kN</strong>.</p>
-      <p>Nötig sind 10 kN. Die Verbindung ist also nicht grenzwertig: Selbst
+      <p>Nötig sind 11 kN. Die Verbindung ist also nicht grenzwertig: Selbst
         ohne Drehmomentschlüssel läge man darüber. Das ist kein Freibrief,
         sondern eine Plausibilitätsprüfung &ndash; wenn die Rechnung eine Kraft
         verlangt, die weit über dem Erfahrungswert liegt, hat man sich
@@ -462,8 +471,8 @@
 
     <details>
       <summary>Welche Schraube nehmt ihr &ndash; und warum?</summary>
-      <p>Rechnerisch reicht <strong>M8 8.8</strong>: 10 kN von 18,6 kN sind
-        53 % Ausnutzung. Trotzdem ist <strong>M10 8.8</strong> hier die bessere
+      <p>Rechnerisch reicht <strong>M8 8.8</strong>: 11,3 kN von 18,6 kN sind
+        61 % Ausnutzung. Trotzdem ist <strong>M10 8.8</strong> hier die bessere
         Wahl, und zwar aus Gründen, die nicht in der Rechnung stehen:</p>
       <ul>
         <li><strong>Die Löcher sind da.</strong> Die Konsole hat &oslash; 11 mm.
@@ -475,8 +484,8 @@
           aus S235. Schon M10 braucht dafür Scheiben – die Rechnung dazu steht
           im Abschnitt darüber.</li>
         <li><strong>Reserve für die Wirklichkeit.</strong> Verzinkte Flächen,
-          Farbreste, eine Palette, die härter aufsetzt als gedacht: Mit 33 %
-          Ausnutzung bleibt Luft, mit 53 % weniger.</li>
+          Farbreste, eine Palette, die härter aufsetzt als gedacht: Mit 38 %
+          Ausnutzung bleibt Luft, mit 61 % weniger.</li>
         <li><strong>Gleichteile.</strong> Die übrigen Konsolen der Bahn sind mit
           M10 geschraubt. Ein Schlüssel, eine Sorte im Regal, ein Drehmoment.</li>
       </ul>
@@ -924,8 +933,8 @@ var SOLL = [
   {id:"aM",  wert:600, einheit:"N·m", name:"Kippmoment"},
   {id:"aFZ", wert:2.5, einheit:"kN",  name:"Zugkraft je oberer Schraube"},
   {id:"aFB", wert:0.6, einheit:"kN",  name:"Querkraft je Schraube"},
-  {id:"aFK", wert:6.5, einheit:"kN",  name:"Vorspannkraft gegen Rutschen"},
-  {id:"aFV", wert:9.0, einheit:"kN",  name:"Vorspannkraft insgesamt"}
+  {id:"aFK", wert:7.8, einheit:"kN",  name:"Vorspannkraft gegen Rutschen"},
+  {id:"aFV", wert:10.3, einheit:"kN", name:"Vorspannkraft insgesamt"}
 ];
 
 function zahl(x){
@@ -952,8 +961,8 @@ el("btnPruefen").addEventListener("click", function(){
   } else if(!daneben.length && !offen.length){
     r.className = "rueckmeldung ja";
     text = "<strong>Alle fünf stimmen.</strong>Damit steht, was jede obere "
-      + "Schraube können muss: rund 9 kN, mit dem Zuschlag fürs Setzen rund "
-      + "10 kN. Weiter zur Schraubenwahl.";
+      + "Schraube können muss: rund 10 kN, mit dem Zuschlag fürs Setzen rund "
+      + "11 kN. Weiter zur Schraubenwahl.";
   } else {
     r.className = "rueckmeldung " + (daneben.length > 1 ? "nein" : "fast");
     text = "<strong>" + passt.length + " von " + SOLL.length + " stimmen.</strong>";

@@ -58,27 +58,34 @@
         Rutschsicherheit</span>
     </div>
 
-    <p>Bevor du rechnest: <strong>Schlag &mu;<sub>T</sub> für „Stahl auf Stahl,
-      trocken“ in deinem Tabellenbuch nach.</strong> Dir wird auffallen, dass dort
-      kein Wert steht, sondern ein <em>Bereich</em>. Genau darum geht es in dieser
-      Übung.</p>
+    <p>Bevor du rechnest: <strong>Schlag die Haftreibungszahl für Stahl auf
+      Stahl in deinem Tabellenbuch nach.</strong> Du findest dort zwei Zahlen
+      &ndash; eine für trocken und eine für geschmiert. Die Frage, um die es in
+      dieser Übung geht, ist: <em>Welche davon gilt für eure Trennfuge?</em></p>
 
     <details>
-      <summary>Warum ist &mu;<sub>T</sub> ein Bereich und keine Zahl?</summary>
-      <p>Weil die Haftreibung zwischen zwei Flächen von Dingen abhängt, die
-        niemand auf der Zeichnung festlegt: Rauheit, Sauberkeit, Rostfilm,
-        Ölreste, Flächenpressung. Für Stahl auf Stahl, trocken, findet man
-        typisch <strong>0,10 bis 0,25</strong> &ndash; das Tabellenbuch nennt für
-        Stahl auf Stahl 0,25 trocken und 0,10 geschmiert.</p>
-      <p>Für die Auslegung heißt das: <strong>Mit dem unteren Wert rechnen.</strong>
-        Der obere ist Glück, kein Nachweis.</p>
-      <p><strong>Manche Tabellenbücher vereinfachen</strong> und nennen einen
-        einzelnen Wert, etwa &mu;<sub>T</sub> = 0,15 für Stahl auf Stahl. Das
-        macht die Rechnung eindeutig &ndash; und verschweigt die Streuung. Im
-        Rechner unten kannst du bei der Werkstoffpaarung
-        <em>eigener Wert aus dem Tabellenbuch</em> wählen und deine Zahl
-        eintragen. Vergleiche dann mit dem Bereich: Der Einzelwert liefert ein
-        sauberes Ja oder Nein, wo in Wirklichkeit ein Vielleicht steht.</p>
+      <summary>Im Buch steht eine Zahl &ndash; warum rechnen wir mit einem Bereich?</summary>
+      <p>Das Tabellenbuch nennt für Stahl auf Stahl die Haftreibungszahl
+        <strong>0,25 trocken</strong> und <strong>0,10 geschmiert</strong>. Zwei
+        klare Zahlen, kein Bereich. Der Bereich entsteht erst durch eine Frage,
+        die die Tabelle nicht beantwortet: <strong>In welchem Zustand ist die
+        Fuge wirklich?</strong></p>
+      <ul>
+        <li>Beim Anziehen wird das Gewinde geölt &ndash; ein Tropfen läuft in die
+          Fuge, und aus 0,25 werden 0,10.</li>
+        <li>Konservierungsmittel, Zinkspritzer, Farbreste, Rostfilm: Nichts davon
+          steht auf der Zeichnung, alles ändert die Reibung.</li>
+        <li>Wer die Teile entfettet, bekommt 0,25 &ndash; aber nur, solange es so
+          bleibt. Beim nächsten Ausbau ist die Fläche eingeölt.</li>
+      </ul>
+      <p>Deshalb rechnet man in der Auslegung <strong>mit dem unteren Wert</strong>.
+        Der obere ist Glück, kein Nachweis. Unter seiner Reibungstabelle schreibt
+        das Tabellenbuch das selbst: Die Richtwerte zeigen <em>lediglich
+        Tendenzen</em> und schwanken besonders bei der Haftreibung stark.</p>
+      <p>Im Rechner unten kannst du bei der Werkstoffpaarung <em>eigener Wert aus
+        dem Tabellenbuch</em> wählen und deine abgelesene Zahl eintragen.
+        Vergleiche dann mit dem Bereich: Der Einzelwert liefert ein sauberes Ja
+        oder Nein, wo in Wirklichkeit ein Vielleicht steht.</p>
     </details>
 
     <h2><span class="nr">2</span>Rechnen</h2>
@@ -97,7 +104,7 @@
           <select id="ePaarung"></select>
         </label>
         <label class="feld" id="eigenFeld" hidden>&mu;<sub>T</sub> aus dem Tabellenbuch
-          <input type="number" id="eMyEigen" min="0.02" max="0.60" step="0.01" value="0.15">
+          <input type="number" id="eMyEigen" min="0.02" max="0.60" step="0.01" value="0.25">
         </label>
         <label class="feld">Anzahl Schrauben n<sub>S</sub>
           <input type="number" id="eNs" min="1" max="24" step="1" value="4">
@@ -421,9 +428,9 @@ function neuRechnen(){
 
   var paarung;
   if(istEigen){
-    var w = grenze(el("eMyEigen").value, 0.02, 0.60, 0.15);
+    var w = grenze(el("eMyEigen").value, 0.02, 0.60, 0.25);
     paarung = {name:"eigener Wert", von:w, bis:w,
-      hinweis:"ein einzelner Wert verdeckt, dass die Reibung streut"};
+      hinweis:"Ein einzelner Wert aus der Tabelle gilt fuer einen Zustand der Fuge - trocken oder geschmiert. Er verdeckt, dass dieser Zustand nicht garantiert ist."};
   } else {
     paarung = PAARUNGEN[parseInt(el("ePaarung").value, 10)];
   }
