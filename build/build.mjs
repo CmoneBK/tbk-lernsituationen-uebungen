@@ -61,6 +61,7 @@ const BAUKASTEN = 'assets/baukasten.js';
 const PDF = 'assets/pdf.js';
 const EXPORT = 'assets/export.js';
 const ZAHLENFELD = 'assets/zahlenfeld.js';
+const THEMA = 'assets/thema.js';
 
 /* ---------- kleine Helfer ---------- */
 
@@ -129,6 +130,22 @@ async function seiteLesen(datei, { imPaket = false, baukasten = false } = {}) {
     noetig.push({ pfad: BAUKASTEN, attr: '' });
     noetig.push({ pfad: PDF, attr: '' });
     noetig.push({ pfad: EXPORT, attr: '' });
+  }
+
+  /* Der Umschalter hell/dunkel gehoert in den head: Laeuft er erst am
+     Dateiende, blitzt beim Laden kurz die falsche Palette auf. */
+  if (!text.includes(THEMA)) {
+    const src = '../'.repeat(tiefe) + THEMA;
+    const zeile = `<script src="${src}"></script>
+`;
+    const kopf = text.match(/([ 	]*)<\/head>/i);
+    if (kopf) {
+      text = text.replace(/[ 	]*<\/head>/i, `${kopf[1]}${zeile}${kopf[1]}</head>`);
+      geaendert = true;
+      warnen(rel, `${THEMA} ergänzt (${src})`);
+    } else {
+      warnen(rel, 'kein schließendes head-Tag – thema.js nicht eingefügt');
+    }
   }
 
   for (const { pfad, attr } of noetig) {

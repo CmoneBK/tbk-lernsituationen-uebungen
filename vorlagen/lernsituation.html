@@ -17,12 +17,19 @@
     --card:#fff; --border:#e3e3df; --accent:#2b6cb0;
     --shadow:0 1px 3px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.05);
   }
+  /* Drei Zustände: System, ausdrücklich hell, ausdrücklich dunkel. Den
+     Schalter dafür trägt build/build.mjs als assets/thema.js nach. */
   @media (prefers-color-scheme:dark){
-    :root{
+    :root:not([data-thema="hell"]){
       --bg:#151517; --fg:#ececec; --muted:#a0a0a0;
       --card:#1e1e21; --border:#2c2c30; --accent:#5b9bd5;
       --shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
     }
+  }
+  :root[data-thema="dunkel"]{
+    --bg:#151517; --fg:#ececec; --muted:#a0a0a0;
+    --card:#1e1e21; --border:#2c2c30; --accent:#5b9bd5;
+    --shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
   }
   *{box-sizing:border-box}
   body{

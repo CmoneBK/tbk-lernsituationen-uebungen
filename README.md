@@ -37,6 +37,7 @@ assets/baukasten.js      Übungen zuschneiden und als Link weitergeben
 assets/qr.js             QR-Code für diesen Link
 assets/export.js         Ausgabe als PDF und als Word-Datei
 assets/pdf.js            schlanker PDF-Schreiber für den Direkt-Download
+assets/thema.js          Umschalter hell / dunkel für den ganzen Bereich
 assets/zahlenfeld.js     Mausrad in Zahlenfeldern, ohne die Seite zu verschieben
 assets/back-nav.js       Rücklink „← Übersicht“ – einzige Quelle
 assets/werkzeug-link.js  löst Links auf die Werkzeuge je nach Umgebung auf
@@ -121,6 +122,41 @@ und nur zu ergänzen, was dieses eine Dokument braucht: Dann sehen Kästen,
 Eingaben und Lösungen überall gleich aus, und die Ausgabe als PDF oder Word
 verhält sich wie in den Übungen. `vorlagen/lernsituation.html` zeigt den
 eigenständigen Weg, `lernsituationen/konsole-am-foerderband/` den gemeinsamen.
+
+### Hell oder dunkel
+
+Oben rechts steht auf jeder Seite ein Schalter mit drei Zuständen:
+
+| | |
+| --- | --- |
+| **System** | folgt der Einstellung von Betriebssystem und Browser – die Vorgabe |
+| **Hell** | erzwingt die helle Palette |
+| **Dunkel** | erzwingt die dunkle |
+
+Die Wahl gilt für den **ganzen Materialbereich** – Übersicht, Paketseiten,
+Übungen, Trainings, Lernsituationen. Gemerkt wird sie im `localStorage`, also
+auf dem Gerät; übertragen wird nichts.
+
+Umgesetzt ist das als `data-thema` am `html`-Element. Wer eigene Farben
+definiert, braucht deshalb drei Regeln statt zwei:
+
+```css
+:root{ /* helle Farben */ }
+@media (prefers-color-scheme:dark){
+  :root:not([data-thema="hell"]){ /* dunkle Farben */ }
+}
+:root[data-thema="dunkel"]{ /* dieselben dunklen Farben */ }
+```
+
+Zwei Dinge, die man dabei wissen sollte:
+
+* **`assets/thema.js` gehört in den `head`**, nicht ans Dateiende. Läuft es
+  später, blitzt beim Laden kurz die falsche Palette auf. Der Build trägt die
+  Zeile dort selbst ein.
+* **Die Ausgabe bleibt hell.** `assets/export.js` schaltet dafür auf
+  `html.ex-hell` um – und muss das ausdrücklich gewählte dunkle Thema
+  ausstechen, deshalb steht dort `html.ex-hell, html.ex-hell[data-thema]`.
+  Ohne das zweite Stück Selektor käme das PDF dunkel heraus.
 
 ### Zahlen einstellen
 
@@ -331,6 +367,7 @@ Kein `npm install` nötig – der Generator kommt ohne Abhängigkeiten aus
 * **Bausteine nachtragen.** Was eine Seite braucht, trägt der Build vor dem
   schließenden `body`-Tag ein, mit der zur Ablagetiefe passenden Anzahl `../`:
   `assets/back-nav.js` immer (in einem Paket mit `data-ziel="./"`),
+  `assets/thema.js` immer, und zwar in den `head`,
   `assets/werkzeug-link.js` bei einem Werkzeug-Link, `assets/zahlenfeld.js`
   bei einem Feld vom Typ `number` oder `range`, und in Übungen, Trainings wie
   Lernsituationen `qr.js`, `baukasten.js`, `pdf.js`, `export.js`.
@@ -441,6 +478,7 @@ erwünscht – sie laden nichts nach. `assets/uebung.css` nutzt genau die.
 | Unterkategorie wird ignoriert | ` - ` ohne Leerzeichen geschrieben |
 | `--- title: … ---` steht sichtbar auf der Seite | Front-Matter; einmal `node build/build.mjs` laufen lassen |
 | Rücklink fehlt | `assets/back-nav.js` nicht erreichbar – Anzahl der `../` prüfen |
+| Umschalter fehlt oder die Seite bleibt dunkel | `assets/thema.js` fehlt im `head`, oder die eigenen Farben der Seite kennen die drei Regeln von oben nicht |
 | Mausrad verstellt den Wert nicht | Das Feld hat keinen Fokus (erst hineinklicken), oder `assets/zahlenfeld.js` fehlt – einmal `node build/build.mjs` laufen lassen |
 | Rücklink springt zu weit zurück | `data-ziel="./"` am Skript-Tag fehlt (Datei liegt in einem Paket) |
 | Werkzeug-Link führt ins Leere | `data-werkzeug` statt `href` verwenden; Dateiname muss dem im Werkzeuge-Repo entsprechen |

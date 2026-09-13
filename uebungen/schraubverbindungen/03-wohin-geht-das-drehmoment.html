@@ -10,9 +10,12 @@
 <style>
   /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
   :root{--spann:#16a34a; --gewinde:#ca8a04; --kopf:#dc2626}
+  /* Dieselben drei Zustände wie in assets/uebung.css, damit der Umschalter
+     auch diese Farben mitnimmt. */
   @media (prefers-color-scheme:dark){
-    :root{--spann:#4ade80; --gewinde:#facc15; --kopf:#f87171}
+    :root:not([data-thema="hell"]){--spann:#4ade80; --gewinde:#facc15; --kopf:#f87171}
   }
+  :root[data-thema="dunkel"]{--spann:#4ade80; --gewinde:#facc15; --kopf:#f87171}
 
   /* Schätz-Schieber: hier bewusst eine Zeile, damit Wert und Regler
      nebeneinander stehen. */
@@ -37,6 +40,7 @@
 
   @media (prefers-reduced-motion:reduce){.balken span{transition:none}}
 </style>
+<script src="../../assets/thema.js"></script>
 </head>
 <body>
   <header class="wrap">

@@ -17,13 +17,19 @@
     --card:#fff; --border:#e3e3df; --accent:#2b6cb0; --accent-fg:#fff;
     --chip:#fff; --shadow:0 1px 3px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.05);
   }
+  /* Dunkel gilt, wenn das System dunkel steht - es sei denn, im
+     Materialbereich wurde ausdruecklich hell gewaehlt (assets/thema.js). */
   @media (prefers-color-scheme:dark){
-    :root{
+    :root:not([data-thema="hell"]){
       --bg:#151517; --fg:#ececec; --muted:#a0a0a0;
       --card:#1e1e21; --border:#2c2c30; --accent:#5b9bd5; --accent-fg:#0b0b0c;
-      --chip:#1e1e21; --shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
-    }
+      --chip:#1e1e21; --shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);}
   }
+  /* Ausdruecklich dunkel gewaehlt - auch auf einem hellen System. */
+  :root[data-thema="dunkel"]{
+      --bg:#151517; --fg:#ececec; --muted:#a0a0a0;
+      --card:#1e1e21; --border:#2c2c30; --accent:#5b9bd5; --accent-fg:#0b0b0c;
+      --chip:#1e1e21; --shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);}
   *{box-sizing:border-box}
   html{-webkit-text-size-adjust:100%}
   body{
@@ -97,6 +103,7 @@
   footer a{color:var(--muted)}
   @media (prefers-reduced-motion:reduce){a.card{transition:none}a.card:hover{transform:none}}
 </style>
+<script src="assets/thema.js"></script>
 </head>
 <body>
   <header class="wrap">

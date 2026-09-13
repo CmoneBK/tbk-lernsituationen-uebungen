@@ -661,7 +661,10 @@
     /* Für die Ausgabe: helle Farben, keine Bedienelemente, keine Seitenumbrüche
        mitten in einer Zeichnung. */
     + '@media print{'
-    + ':root{--bg:#fff;--fg:#111;--muted:#555;--card:#fff;--border:#bbb;'
+    /* Mit dem Attribut, damit diese Regel auch das ausdrücklich gewählte
+       dunkle Thema aussticht - :root[data-thema="dunkel"] waere sonst
+       spezifischer. */
+    + ':root, :root[data-thema]{--bg:#fff;--fg:#111;--muted:#555;--card:#fff;--border:#bbb;'
     + '--border-stark:#888;--accent:#164e8a;--accent-fg:#fff;--shadow:none}'
     /* Ohne diese Angabe lassen Browser Hintergrundfarben beim Drucken weg -
        und damit genau die Information, die in gefärbten Balken und Bändern
@@ -688,7 +691,7 @@
     + 'right:2px;bottom:2px;background:currentColor}'
     /* Nur waehrend des Rasterns gesetzt; hoehere Spezifitaet als :root, damit
        sie die Vorgaben aus assets/uebung.css sicher ueberschreibt. */
-    + 'html.ex-hell{--bg:#fff;--fg:#111;--muted:#555;--card:#fff;--border:#bbb;'
+    + 'html.ex-hell, html.ex-hell[data-thema]{--bg:#fff;--fg:#111;--muted:#555;--card:#fff;--border:#bbb;'
     + '--border-stark:#888;--accent:#164e8a;--accent-fg:#fff;'
     + '--ok:#15803d;--warn:#a16207;--bad:#b91c1c;--shadow:none}';
 

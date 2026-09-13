@@ -15,15 +15,23 @@
   --ok:#16a34a; --warn:#ca8a04; --bad:#dc2626;
   --shadow:0 1px 3px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.05);
 }
+/* Dunkel gilt, wenn das System dunkel steht - es sei denn, im
+   Materialbereich wurde ausdruecklich hell gewaehlt (assets/thema.js). */
 @media (prefers-color-scheme:dark){
-  :root{
+  :root:not([data-thema="hell"]){
     --bg:#151517; --fg:#ececec; --muted:#a0a0a0;
     --card:#1e1e21; --border:#2c2c30; --border-stark:#3d3d44;
     --accent:#5b9bd5; --accent-fg:#0b0b0c;
     --ok:#4ade80; --warn:#facc15; --bad:#f87171;
-    --shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);
-  }
+    --shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);}
 }
+/* Ausdruecklich dunkel gewaehlt - auch auf einem hellen System. */
+:root[data-thema="dunkel"]{
+    --bg:#151517; --fg:#ececec; --muted:#a0a0a0;
+    --card:#1e1e21; --border:#2c2c30; --border-stark:#3d3d44;
+    --accent:#5b9bd5; --accent-fg:#0b0b0c;
+    --ok:#4ade80; --warn:#facc15; --bad:#f87171;
+    --shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);}
 
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
