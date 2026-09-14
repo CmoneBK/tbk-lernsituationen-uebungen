@@ -136,6 +136,12 @@
     <figure class="bild" id="bildVerbindung"></figure>
 
     <div class="box">
+      <label class="sw" data-druck="weg" style="margin-bottom:12px">
+        <input type="checkbox" id="lRoentgen">
+        <span class="track"></span>Scheibe und Mutter aufschneiden
+      </label>
+      <p class="fussnote" id="lRoentgenHinweis" data-druck="weg"
+         style="margin:-6px 0 14px"></p>
       <div class="felder">
         <label class="feld">Gewinde
           <select id="lGewinde"></select>
@@ -325,7 +331,9 @@ function bildBausteine(){
   var svg = bild("bildBausteine", 452, 202,
     "Sechskantschraube M12 mal 60 in Ansicht, bemaßt mit Kopfhöhe, " +
     "Schlüsselweite, Gewindedurchmesser, Gewindelänge und Länge",
-    "Sechskantschraube ISO 4014 &ndash; M12 &times; 60 &ndash; 8.8");
+    "Sechskantschraube ISO 4014 &ndash; M12 &times; 60 &ndash; 8.8 &middot; " +
+    "Der Kopf ist &uuml;ber Ecke gezeichnet: Umriss ist das Eckenma&szlig; " +
+    "<em>e</em>, die Schl&uuml;sselweite SW 18 liegt quer dazu.");
 
   var t = schraube(svg, {x:x, y:y, s:s, d:g.d, P:g.P, k:g.k, sw:g.s,
     l:60, b:2 * g.d + 6,
@@ -333,7 +341,8 @@ function bildBausteine(){
 
   /* Kennzeichnung auf dem Kopf. */
   var gKlasse = gruppe(svg, "klasse");
-  txt(gKlasse, (x + t.kopfEnde) / 2, y + 5, "8.8", {fett:true, groesse:13});
+  /* Die Kennzeichnung steht auf dem Kopf, nicht auf der Mittellinie. */
+  txt(gKlasse, (x + t.kopfEnde) / 2, y - 7, "8.8", {fett:true, groesse:13});
 
   /* Maße den Bausteinen zuordnen, die sie festlegen. */
   var gForm = svg.querySelector('.teil[data-t="form"]');
@@ -341,11 +350,20 @@ function bildBausteine(){
   var gGew  = svg.querySelector('.teil[data-t="gew"]');
   var gLae  = gruppe(svg, "laenge");
 
-  massV(gForm, y - t.rk, y + t.rk, x - 16, "SW " + g.s, x, true);
-  mass(gForm, x, t.kopfEnde, 30, "k = " + String(g.k).replace(".", ","), y - t.rk);
-  mass(gNorm, t.gewindeVon, t.ende, 30, "b = " + (2 * g.d + 6), y - t.rd);
-  massV(gGew, y - t.rd, y + t.rd, t.ende + 22, "d = " + g.d, t.ende);
-  mass(gLae, t.kopfEnde, t.ende, 178, "l = 60", y + t.rd);
+  /* Ueber Ecke gesehen ist der Umriss das Eckenmass. Die Schluesselweite
+     laege quer zur Zeichenebene - sie hier zu bemassen waere erfunden. */
+  massV(gForm, y - t.rE, y + t.rE, x - 16,
+        "e = " + eckenmass(g.s).toFixed(1).replace(".", ","), x, true);
+  /* Am freien Kopfende liegt die Kontur auf der Stirnflaeche (rS), an der
+     Auflageflaeche auf dem Eckenmass (rE). */
+  mass(gForm, x, t.kopfEnde, 30, "k = " + String(g.k).replace(".", ","),
+       [y - t.rS, y - t.rE]);
+  /* Am Gewindeanfang liegt die Kontur bei rd, am Ende - wegen der Fase -
+     um die Fasenbreite naeher an der Achse. */
+  mass(gNorm, t.gewindeVon, t.ende, 30, "b = " + (2 * g.d + 6),
+       [y - t.rd, y - t.rd + t.fase]);
+  massV(gGew, y - t.rd, y + t.rd, t.ende + 22, "d = " + g.d, t.zylEnde);
+  mass(gLae, t.kopfEnde, t.ende, 178, "l = 60", [y + t.rd, y + t.rd - t.fase]);
 
   return svg;
 }
@@ -473,11 +491,31 @@ function verbindung(svg, o){
   var t = schraube(svg, {x:x, y:y, s:s, d:g.d, P:g.P, k:g.k, sw:g.s,
                          l:o.l, b:2 * g.d + 6});
 
-  /* Scheibe und Mutter zuletzt und ohne Füllung: Sie werden nie geschnitten,
-     ihre Umrisse müssen aber über der Schraube sichtbar bleiben. */
+  /* Scheibe und Mutter werden im Längsschnitt nicht geschnitten - sie
+     verdecken die Schraube. Für diese Übung lässt sich das umstellen: Dann
+     werden beide aufgeschnitten, also schraffiert wie jedes geschnittene
+     Teil. Der Hinweis in der Zeichnung sagt, dass Normteile so nicht
+     gezeichnet werden. */
   var gTeile = gruppe(svg);
-  kasten(gTeile, xScheibe, y - rd - 14, g.sW * s, 2 * rd + 28);
-  kasten(gTeile, xMutter,  y - g.s * s / 2, g.m * s, g.s * s);
+  if(o.roentgen){
+    var mR = schraffur(svg, o.id + "R", -45);
+    /* Aufgeschnitten heißt: ober- und unterhalb der Schraube Werkstoff,
+       dazwischen sieht man die Schraube - die bleibt ungeschnitten. */
+    [[xScheibe, g.sW * s, rd + 14], [xMutter, g.m * s, g.s * s / 2]]
+      .forEach(function(teil){
+        [[y - teil[2], teil[2] - rd], [y + rd, teil[2] - rd]].forEach(function(p){
+          kasten(gTeile, teil[0], p[0], teil[1], p[1], {fuell:mR});
+        });
+      });
+    txt(gTeile, xScheibe + 4, y + g.s * s / 2 + 30,
+        "Schnitt durch Scheibe und Mutter – Normteile werden so nicht gezeichnet",
+        {anker:"start", groesse:10, deckung:.9});
+  }else{
+    kasten(gTeile, xScheibe, y - rd - 14, g.sW * s, 2 * rd + 28,
+           {fuell:"var(--card)"});
+    sechskantAnsicht(gTeile, {waagerecht:true, achse:y, von:xMutter,
+      bis:xMutter + g.m * s, sw:g.s, s:s, faseAn:"bis", fuell:"var(--card)"});
+  }
 
   /* Maße oben: was eingestellt wurde. */
   mass(svg, kopfEnde, kopfEnde + o.t1 * s, y - wand - 16,
@@ -498,7 +536,9 @@ function verbindung(svg, o){
   var yM = y + wand + 22;
   mass(svg, kopfEnde, kopfEnde + lMin * s, yM,
        "nötig " + zahl(lMin) + " mm", y + wand);
-  mass(svg, kopfEnde, t.ende, yM + 30, "gewählt l = " + o.l, yM + 6);
+  /* Beide Punkte liegen auf der Schraube - die Masshilfslinien fangen
+     deshalb an ihrer Kante an, nicht auf halber Strecke. */
+  mass(svg, kopfEnde, t.ende, yM + 30, "gewählt l = " + o.l, y + rd);
 
   return {lMin:lMin, ende:t.ende, noetigBis:kopfEnde + lMin * s,
           kopfEnde:kopfEnde, gewindeVon:t.gewindeVon, klemm:klemm, y:y, wand:wand};
@@ -543,8 +583,14 @@ auswahlFuellen(el("lWahl"), NORMLAENGEN, 60);
 
 /* Eine Verbindung in ein vorhandenes Bild zeichnen, samt Urteil. So kann die
    Lösung zwei Fälle untereinander zeigen und Teil 3 einen einzelnen. */
+function roentgen(){
+  var f = el("lRoentgen");
+  return !f || f.checked;
+}
+
 function verbindungInSvg(svg, id, g, t1, t2, l, y, s, titel){
-  var r = verbindung(svg, {id:id, g:g, s:s, x:56, y:y, t1:t1, t2:t2, l:l});
+  var r = verbindung(svg, {id:id, g:g, s:s, x:56, y:y, t1:t1, t2:t2, l:l,
+                           roentgen:roentgen()});
   var schaft = Math.max(0, l - (2 * g.d + 6));
 
   if(titel) txt(svg, 56, y - r.wand - 34, titel, {anker:"start", fett:true});
@@ -666,10 +712,26 @@ function neuRechnen(){
   }
 }
 
-["lGewinde","lT1","lT2","lWahl"].forEach(function(id){
-  el(id).addEventListener("input", neuRechnen);
-  el(id).addEventListener("change", neuRechnen);
+/* Der Durchblick aendert beide Bilder - das der Aufgabe und das der
+   Loesung. */
+function hinweisSetzen(){
+  el("lRoentgenHinweis").innerHTML = roentgen()
+    ? "<strong>Abweichung von der Norm.</strong> Scheibe und Mutter sind hier "
+      + "aufgeschnitten, damit sichtbar wird, wie weit die Schraube reicht. "
+      + "Nach DIN ISO 128-50 werden sie im L&auml;ngsschnitt <em>nicht</em> "
+      + "geschnitten \u2013 in einer echten Zeichnung d&uuml;rfte das so nicht "
+      + "stehen."
+    : "Normdarstellung: Scheibe und Mutter werden nicht geschnitten und "
+      + "verdecken die Schraube. Wie weit sie reicht, verr&auml;t das Ma&szlig;.";
+}
+
+["lGewinde","lT1","lT2","lWahl","lRoentgen"].forEach(function(id){
+  el(id).addEventListener("input", function(){ neuRechnen(); zeichneLoesung();
+    hinweisSetzen(); });
+  el(id).addEventListener("change", function(){ neuRechnen(); zeichneLoesung();
+    hinweisSetzen(); });
 });
+hinweisSetzen();
 neuRechnen();
 </script>
 

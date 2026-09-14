@@ -496,13 +496,39 @@ neuRechnen();
 
 /* Schraubensymbol, Achse waagerecht, Kopf rechts - so sitzt die Schraube in
    der Konsole: Kopf außen, Gewinde im Gestell. */
-function schraubeLinks(g, x, y, laenge, rd, rk){
-  kasten(g, x, y - rk, 13, 2 * rk, {fuell:"var(--card)"});
-  kasten(g, x - laenge, y - rd, laenge, 2 * rd, {fuell:"var(--card)"});
+/* Sechskantschraube ISO 4017 M10, Achse waagerecht, Kopf rechts - so sitzt
+   die Schraube in der Konsole: Kopf außen, Gewinde im Gestell. Alle Maße in
+   Millimetern, s ist der Maßstab in Pixeln je Millimeter. */
+function schraubeLinks(g, x, y, laenge, s){
+  var rd = 5 * s;                      /* Außendurchmesser d = 10 */
+  var r3 = (10 - 1.2269 * 1.5) * s / 2;/* Kerndurchmesser, Steigung 1,5 */
+  var kx = 6.4 * s;                    /* Kopfhöhe k */
+  var ende = x - laenge * s;
+  var gewVon = x - 10 * s;             /* 10 mm Schaft ohne Gewinde */
+  var fase = rd * 0.4;
+
+  /* Schaft zuerst: quer zur Achse hat er keine Kante, nur die beiden
+     Mantellinien, das Gewinde und die Fase am Ende. */
+  kasten(g, ende, y - rd, x - ende, 2 * rd,
+         {fuell:"var(--card)", ohneRand:true});
+  [-1, 1].forEach(function(v){
+    linie(g, ende + fase, y + v * rd, x, y + v * rd, BREIT);
+    /* Kerndurchmesser schmal, endet an der Fase. */
+    linie(g, ende + fase, y + v * r3, gewVon, y + v * r3, SCHMAL);
+    /* Fase am Schraubenende. */
+    linie(g, ende, y + v * (rd - fase), ende + fase, y + v * rd, BREIT);
+  });
+  linie(g, ende, y - (rd - fase), ende, y + (rd - fase), BREIT);
+  /* Gewindeende: breite Vollinie quer zur Achse. */
+  linie(g, gewVon, y - rd, gewVon, y + rd, BREIT);
+  /* Der Kopf sitzt rechts, die Fase also am rechten, freien Ende. */
+  sechskantAnsicht(g, {waagerecht:true, achse:y, von:x, bis:x + kx,
+    sw:17, s:s, faseAn:"bis"});
 }
 
 /* Vier Schrauben im Rechteck, Blick auf die Trennfuge. */
-function schraubenbild(g, x, y, b, h, spalten, zeilen, r, beschriftung){
+function schraubenbild(g, x, y, b, h, spalten, zeilen, r, beschriftung, s){
+  s = s || 1;
   kasten(g, x, y, b, h, {fuell:"none"});
   for(var i = 0; i < spalten; i++){
     for(var j = 0; j < zeilen; j++){
@@ -510,16 +536,23 @@ function schraubenbild(g, x, y, b, h, spalten, zeilen, r, beschriftung){
       var cy = y + h * (j + 1) / (zeilen + 1);
       svgEl("circle", {cx:cx, cy:cy, r:r, fill:"none",
         stroke:"currentColor", "stroke-width":BREIT}, g);
-      linie(g, cx - r - 4, cy, cx + r + 4, cy, SCHMAL, {strich:"7 2 1 2", deckung:.5});
-      linie(g, cx, cy - r - 4, cx, cy + r + 4, SCHMAL, {strich:"7 2 1 2", deckung:.5});
+      linie(g, cx - r - 4 * s, cy, cx + r + 4 * s, cy, SCHMAL,
+        {strich:"12 2 2 2"});
+      linie(g, cx, cy - r - 4 * s, cx, cy + r + 4 * s, SCHMAL,
+        {strich:"12 2 2 2"});
     }
   }
-  if(beschriftung) txt(g, x + b / 2, y + h + 20, beschriftung, {groesse:11});
+  if(beschriftung) txt(g, x + b / 2, y + h + 20 * s, beschriftung,
+    {groesse:11 * s});
 }
 
 /* Die Ausgangslage: Konsole am Gestell, vier Schrauben, Querkraft nach unten. */
 function bildAusgangslage(){
-  var svg = bild("bildAusgangslage", 452, 268,
+  /* Zwei Pixel je Millimeter. Beim vorigen Maßstab war die Linienbreite ein
+     Fünftel des Schaftdurchmessers - Kernlinie und Mantellinie liefen
+     ineinander. */
+  var s = 2;
+  var svg = bild("bildAusgangslage", 452 * s, 268 * s,
     "Links die Konsole im Schnitt: sie ist an ein senkrechtes Gestell " +
     "geschraubt und trägt am freien Ende eine Querkraft von 12 Kilonewton. " +
     "Rechts der Blick auf die Trennfuge mit vier Schrauben M10",
@@ -529,40 +562,108 @@ function bildAusgangslage(){
   var m = schraffur(svg, "ag1", 45);
   var mK = schraffur(svg, "ag2", -45);
 
-  /* Gestell */
-  kasten(svg, 24, 28, 34, 190, {fuell:m});
-  txt(svg, 41, 238, "Gestell", {groesse:10.5, deckung:.8});
+  /* Die Maße der Verschraubung in Millimetern. Eine Schraube darf im
+     Grundloch nicht aufsetzen: Das Kernloch reicht tiefer als das Gewinde,
+     das Gewinde tiefer als die Einschraubtiefe. */
+  var rd = 5 * s;                      /* Schaft M10 */
+  var r3 = (10 - 1.2269 * 1.5) * s / 2;/* Kerndurchmesser */
+  var rL = 5.5 * s;                    /* Durchgangsloch ⌀ 11 */
+  var xG = 12 * s, xF = 58 * s, xA = 80 * s;
+  var yO = 28 * s, yU = 218 * s;
+  var reihen = [72 * s, 174 * s];
+  var xEnde = xF - 18 * s;             /* Einschraubtiefe 18 */
+  var xGew = xF - 24 * s;              /* Gewindetiefe 24 */
+  var xBohr = xF - 28 * s;             /* Bohrtiefe 28 */
+  var spitze = r3 / Math.tan(60 * Math.PI / 180);   /* 120 Grad */
 
-  /* Konsole: Flansch an der Wand, Arm nach rechts */
-  var gK = gruppe(svg);
-  svgEl("polygon", {points:"58,44 80,44 80,104 206,104 206,132 80,132 80,202 58,202",
-    fill:mK, stroke:"currentColor", "stroke-width":BREIT}, gK);
-  txt(svg, 150, 152, "Konsole", {groesse:10.5, deckung:.8});
-
-  /* Zwei der vier Schrauben sind im Schnitt zu sehen. */
-  [72, 174].forEach(function(y){
-    schraubeLinks(gruppe(svg), 80, y, 44, 5, 11);
+  /* Gestell: Fläche zuerst, Umriss einzeln - an den Bohrungen ist die
+     Stirnfläche unterbrochen. */
+  kasten(svg, xG, yO, xF - xG, yU - yO, {fuell:m, ohneRand:true});
+  reihen.forEach(function(y){
+    /* Das Kernloch ist Hohlraum: Die Schraffur wird bis zum Kerndurchmesser
+       weggenommen, der Gewindegang darüber bleibt schraffiert. */
+    svgEl("path", {d:"M" + xF + "," + (y - r3)
+      + " L" + xBohr + "," + (y - r3)
+      + " L" + (xBohr - spitze) + "," + y
+      + " L" + xBohr + "," + (y + r3)
+      + " L" + xF + "," + (y + r3) + " Z",
+      fill:"var(--card)", stroke:"none"}, svg);
+    [-1, 1].forEach(function(v){
+      /* Kerndurchmesser breit - er begrenzt die Schraffur. */
+      linie(svg, xF, y + v * r3, xBohr, y + v * r3, BREIT);
+      linie(svg, xBohr, y + v * r3, xBohr - spitze, y, BREIT);
+      /* Nenndurchmesser des Innengewindes schmal, im Werkstoff liegend. */
+      linie(svg, xF, y + v * rd, xGew, y + v * rd, SCHMAL);
+    });
+    linie(svg, xGew, y - rd, xGew, y + rd, BREIT);   /* Gewindeende */
   });
-  txt(svg, 100, 60, "4 × M10", {anker:"start", groesse:10.5, deckung:.85});
+  linie(svg, xG, yO, xF, yO, BREIT);
+  linie(svg, xG, yU, xF, yU, BREIT);
+  linie(svg, xG, yO, xG, yU, BREIT);
+  /* Rechte Stirnfläche: Zwischen den Bohrungen, nicht über sie hinweg. */
+  var kanten = [yO, reihen[0] - rd, reihen[0] + rd, reihen[1] - rd,
+    reihen[1] + rd, yU];
+  for(var i = 0; i < kanten.length; i += 2){
+    linie(svg, xF, kanten[i], xF, kanten[i + 1], BREIT);
+  }
+  txt(svg, 35 * s, 238 * s, "Gestell", {groesse:10.5 * s, deckung:.8});
+
+  /* Konsole: Flansch an der Wand, Arm nach rechts. Auch hier der Umriss
+     einzeln - der Flansch hat zwei Durchgangslöcher. */
+  var ecken = [[58, 44], [80, 44], [80, 104], [206, 104], [206, 132],
+    [80, 132], [80, 202], [58, 202]].map(function(p){
+      return [p[0] * s, p[1] * s];
+    });
+  svgEl("polygon", {points:ecken.join(" "), fill:mK, stroke:"none"}, svg);
+  reihen.forEach(function(y){
+    kasten(svg, xF, y - rL, xA - xF, 2 * rL,
+      {fuell:"var(--card)", ohneRand:true});
+    [-1, 1].forEach(function(v){
+      linie(svg, xF, y + v * rL, xA, y + v * rL, BREIT);
+    });
+  });
+  for(var j = 0; j < ecken.length - 1; j++){
+    linie(svg, ecken[j][0], ecken[j][1], ecken[j + 1][0], ecken[j + 1][1], BREIT);
+  }
+  /* Die linke Stirnfläche des Flansches: in Stücken zwischen den Löchern. */
+  var lk = [202 * s, reihen[1] + rL, reihen[1] - rL, reihen[0] + rL,
+    reihen[0] - rL, 44 * s];
+  for(var n = 0; n < lk.length; n += 2){
+    linie(svg, xF, lk[n], xF, lk[n + 1], BREIT);
+  }
+  txt(svg, 150 * s, 152 * s, "Konsole", {groesse:10.5 * s, deckung:.8});
+
+  /* Zwei der vier Schrauben sind im Schnitt zu sehen. Sie liegen vor allem
+     anderen - deshalb zuletzt. Die Mittellinie steht beiderseits über. */
+  reihen.forEach(function(y){
+    schraubeLinks(gruppe(svg), xA, y, 40, s);
+    /* Die Mittellinie zuletzt: Sie ist keine Kante, sondern eine Linie der
+       Zeichnung - sie laeuft ueber das Bauteil hinweg, nicht dahinter. */
+    achse(svg, xBohr - spitze - 8 * s, xA + 14 * s, y);
+  });
+  txt(svg, 100 * s, 60 * s, "4 × M10",
+      {anker:"start", groesse:10.5 * s, deckung:.85});
 
   /* Trennfuge hervorheben - dort entsteht die Haltekraft. */
   var gT = svgEl("g", {style:"color:var(--accent)"}, svg);
-  linie(gT, 58, 24, 58, 212, SCHMAL, {strich:"5 4"});
+  linie(gT, xF, 24 * s, xF, 212 * s, SCHMAL, {strich:"5 4"});
   /* Rechts neben der Linie und ueber allem anderen: mittig gesetzt haengt die
      Unterlaenge des g sonst im Gestell. */
-  txt(gT, 64, 18, "Trennfuge – hier wirkt μ",
-      {anker:"start", groesse:10.5});
+  txt(gT, 64 * s, 18 * s, "Trennfuge – hier wirkt μ",
+      {anker:"start", groesse:10.5 * s});
 
   /* Querkraft am freien Ende */
   var gF = svgEl("g", {style:"color:var(--bad)"}, svg);
-  linie(gF, 224, 118, 224, 196, BREIT);
-  linie(gF, 224, 200, 218, 188, BREIT);
-  linie(gF, 224, 200, 230, 188, BREIT);
-  txt(gF, 224, 216, "Querkraft 12 kN", {groesse:11, fett:true});
+  linie(gF, 224 * s, 118 * s, 224 * s, 196 * s, BREIT);
+  linie(gF, 224 * s, 200 * s, 218 * s, 188 * s, BREIT);
+  linie(gF, 224 * s, 200 * s, 230 * s, 188 * s, BREIT);
+  txt(gF, 224 * s, 216 * s, "Querkraft 12 kN", {groesse:11 * s, fett:true});
 
   /* Blick auf die Trennfuge */
-  txt(svg, 300, 26, "Blick auf die Trennfuge", {anker:"start", fett:true, groesse:11.5});
-  schraubenbild(gruppe(svg), 306, 46, 118, 150, 2, 2, 9, "4 × M10, eine Trennfuge");
+  txt(svg, 300 * s, 26 * s, "Blick auf die Trennfuge",
+      {anker:"start", fett:true, groesse:11.5 * s});
+  schraubenbild(gruppe(svg), 306 * s, 46 * s, 118 * s, 150 * s, 2, 2, 9 * s,
+    "4 × M10, eine Trennfuge", s);
 
   return svg;
 }
@@ -594,7 +695,9 @@ function bildMehrSchrauben(){
 
 /* Weg 3: eine zweite Trennfuge verdoppelt die Reibfläche. */
 function bildTrennfugen(){
-  var svg = bild("bildTrennfugen", 452, 300,
+  /* Zwei Pixel je Millimeter - siehe bildAusgangslage. */
+  var s = 2;
+  var svg = bild("bildTrennfugen", 452 * s, 300 * s,
     "Oben die Konsole auf einem Blech mit einer Trennfuge, unten zwischen " +
     "zwei Blechen mit zwei Trennfugen",
     "Dieselben vier Schrauben, dieselbe Vorspannkraft \u2013 und die " +
@@ -606,52 +709,83 @@ function bildTrennfugen(){
   function zeile(y, lagenZahl, titel, wert, farbe){
     var mA = schraffur(svg, "tf" + y + "a", 45);
     var mB = schraffur(svg, "tf" + y + "b", -45);
-    var x = 150, dick = 30, h = 44;
+    var x = 150 * s, dick = 30 * s, h = 44 * s;
+    /* Maße der Verschraubung M10 nach ISO 4017 und ISO 4032. */
+    var rd = 5 * s;                    /* Schaft ⌀ 10 */
+    var r3 = (10 - 1.2269 * 1.5) * s / 2;
+    var rL = 5.5 * s;                  /* Durchgangsloch ⌀ 11 */
+    var k = 6.4 * s, mu = 8.4 * s;     /* Kopfhöhe, Mutterhöhe */
+    var fase = rd * 0.4;
 
-    txt(svg, 24, y + 5, titel, {anker:"start", fett:true, groesse:11});
+    txt(svg, 24 * s, y + 5 * s, titel,
+        {anker:"start", fett:true, groesse:11 * s});
 
+    /* Aneinandergrenzende Bauteile bekommen verschiedene Schraffurrichtungen.
+       Die dritte Lage grenzt nicht an die erste - sie darf wieder wie diese
+       schraffiert sein. */
     var muster = lagenZahl === 3 ? [mA, mB, mA] : [mA, mB];
     muster.forEach(function(m, i){
-      [[y - h, h - 7], [y + 7, h - 7]].forEach(function(p){
+      [[y - h, h - rL], [y + rL, h - rL]].forEach(function(p){
         kasten(svg, x + i * dick, p[0], dick, p[1], {fuell:m});
       });
     });
 
     var breite = lagenZahl * dick;
-    kasten(svg, x - 15, y - 17, 15, 34, {fuell:"var(--card)"});
-    kasten(svg, x, y - 5, breite + 14, 10, {fuell:"var(--card)"});
-    kasten(svg, x + breite + 14, y - 17, 15, 34, {fuell:"var(--card)"});
+    var sBis = x + breite + mu + 3 * s;   /* zwei Gewindegänge Überstand */
+    var gewVon = x + breite - 10 * s;
+
+    /* Schraube: Schaft mit Gewinde, dann Kopf und Mutter - beide liegen am
+       Blechstapel an, nicht daneben. Sie kommen zuletzt, sie liegen vorn. */
+    kasten(svg, x, y - rd, sBis - x, 2 * rd,
+           {fuell:"var(--card)", ohneRand:true});
+    [-1, 1].forEach(function(v){
+      linie(svg, x, y + v * rd, sBis - fase, y + v * rd, BREIT);
+      linie(svg, sBis - fase, y + v * rd, sBis, y + v * (rd - fase), BREIT);
+      linie(svg, gewVon, y + v * r3, sBis - fase + (rd - r3), y + v * r3,
+            SCHMAL);
+    });
+    linie(svg, sBis, y - (rd - fase), sBis, y + (rd - fase), BREIT);
+    /* Gewindeende: breite Vollinie quer zur Achse. */
+    linie(svg, gewVon, y - rd, gewVon, y + rd, BREIT);
+
+    sechskantAnsicht(svg, {waagerecht:true, achse:y, von:x + breite,
+      bis:x + breite + mu, sw:17, s:s, faseAn:"bis"});
+    sechskantAnsicht(svg, {waagerecht:true, achse:y, von:x - k, bis:x,
+      sw:17, s:s, faseAn:"von"});
+    achse(svg, x - k - 8 * s, sBis + 8 * s, y);
 
     /* Die Trennfugen markieren - sie tragen die Last. */
     var g = svgEl("g", {style:"color:var(--accent)"}, svg);
     for(var i = 1; i < lagenZahl; i++){
       var xf = x + i * dick;
-      linie(g, xf, y - h - 16, xf, y - h + 2, SCHMAL, {strich:"4 3"});
+      linie(g, xf, y - h - 16 * s, xf, y - h + 2 * s, SCHMAL, {strich:"4 3"});
     }
-    txt(g, x + breite / 2, y - h - 22,
+    txt(g, x + breite / 2, y - h - 22 * s,
         (lagenZahl - 1) + (lagenZahl === 2 ? " Trennfuge" : " Trennfugen"),
-        {groesse:10.5});
+        {groesse:10.5 * s});
 
     /* Die Konsole ist die mittlere Lage - einmal benannt genuegt. */
-    txt(svg, x + dick * (lagenZahl === 3 ? 1.5 : 1.5), y + h + 16,
+    txt(svg, x + dick * 1.5, y + h + 16 * s,
         lagenZahl === 3 ? "Konsole zwischen zwei Blechen" : "Konsole auf einem Blech",
-        {groesse:9.5, deckung:.75});
+        {groesse:9.5 * s, deckung:.75});
 
     var gW = svgEl("g", {style:"color:var(--" + farbe + ")"}, svg);
-    txt(gW, 428, y + 6, wert, {anker:"end", fett:true, groesse:14});
+    txt(gW, 428 * s, y + 6 * s, wert,
+        {anker:"end", fett:true, groesse:14 * s});
   }
 
   /* Reichlich Abstand: die untere Zeile traegt ihre Beschriftung oben, die
      obere ihre unten - die duerfen sich nicht begegnen. */
-  zeile(80,  2, "aufgelegt",   "9,5 kN",  "bad");
-  zeile(232, 3, "eingeklemmt", "18,9 kN", "ok");
+  zeile(80 * s,  2, "aufgelegt",   "9,5 kN",  "bad");
+  zeile(232 * s, 3, "eingeklemmt", "18,9 kN", "ok");
 
   return svg;
 }
 
 /* Weg 4: Formschluss nimmt die Querkraft direkt auf. */
 function bildFormschluss(){
-  var svg = bild("bildFormschluss", 452, 278,
+  var s = 2;                           /* Pixel je Millimeter */
+  var svg = bild("bildFormschluss", 452 * s, 278 * s,
     "Links wird die Querkraft nur über die Reibung in der Trennfuge "
     + "übertragen, rechts zusätzlich formschlüssig über einen Passstift, "
     + "der die Trennfuge kreuzt",
@@ -661,57 +795,83 @@ function bildFormschluss(){
   function seite(x0, mitStift, titel, hinweis, farbe){
     var mA = schraffur(svg, "fs" + x0 + "a", 45);
     var mB = schraffur(svg, "fs" + x0 + "b", -45);
-    var y = 132, dick = 34, h = 48;
+    var y = 132 * s, dick = 34 * s, h = 48 * s;
+    var rd = 5 * s, rL = 5.5 * s;
+    var r3 = (10 - 1.2269 * 1.5) * s / 2;
+    var k = 6.4 * s, mu = 8.4 * s, fase = rd * 0.4;
+    var sBis = x0 + dick + mu + 3 * s;
+    var gewVon = x0 + dick - 10 * s;
 
-    txt(svg, x0, 26, titel, {fett:true});
+    txt(svg, x0, 26 * s, titel, {fett:true, groesse:13 * s});
 
-    /* Zwei Bauteile, Trennfuge genau bei x0. */
+    /* Zwei Bauteile, Trennfuge genau bei x0. Aneinandergrenzend, also
+       gegenläufig schraffiert. */
     [[x0 - dick, mA], [x0, mB]].forEach(function(l){
-      [[y - h, h - 7], [y + 7, h - 7]].forEach(function(p){
+      [[y - h, h - rL], [y + rL, h - rL]].forEach(function(p){
         kasten(svg, l[0], p[0], dick, p[1], {fuell:l[1]});
       });
     });
 
-    /* Schraube: Kopf und Mutter liegen am Bauteil an, nicht daneben. */
-    kasten(svg, x0 - dick - 15, y - 16, 15, 32, {fuell:"var(--card)"});
-    kasten(svg, x0 - dick, y - 5, 2 * dick, 10, {fuell:"var(--card)"});
-    kasten(svg, x0 + dick, y - 16, 15, 32, {fuell:"var(--card)"});
+    /* Schraube: Kopf und Mutter liegen am Bauteil an, nicht daneben.
+       Der Schaft dazwischen hat nur zwei Kanten. */
+    kasten(svg, x0 - dick, y - rd, sBis - (x0 - dick), 2 * rd,
+           {fuell:"var(--card)", ohneRand:true});
+    [-1, 1].forEach(function(v){
+      linie(svg, x0 - dick, y + v * rd, sBis - fase, y + v * rd, BREIT);
+      linie(svg, sBis - fase, y + v * rd, sBis, y + v * (rd - fase), BREIT);
+      linie(svg, gewVon, y + v * r3, sBis - fase + (rd - r3), y + v * r3,
+            SCHMAL);
+    });
+    linie(svg, sBis, y - (rd - fase), sBis, y + (rd - fase), BREIT);
+    linie(svg, gewVon, y - rd, gewVon, y + rd, BREIT);   /* Gewindeende */
+    sechskantAnsicht(svg, {waagerecht:true, achse:y, von:x0 - dick - k,
+      bis:x0 - dick, sw:17, s:s, faseAn:"von"});
+    sechskantAnsicht(svg, {waagerecht:true, achse:y, von:x0 + dick,
+      bis:x0 + dick + mu, sw:17, s:s, faseAn:"bis"});
+    achse(svg, x0 - dick - k - 8 * s, sBis + 8 * s, y);
 
     /* Die Last haengt am rechten Bauteil - der Pfeil setzt deshalb an dessen
        Unterkante an und nicht an der Mutter. */
     var xL = x0 + dick / 2;
     var gL = svgEl("g", {style:"color:var(--bad)"}, svg);
-    linie(gL, xL, y + h - 4, xL, y + h + 28, BREIT);
-    linie(gL, xL - 5, y + h + 20, xL, y + h + 30, BREIT);
-    linie(gL, xL + 5, y + h + 20, xL, y + h + 30, BREIT);
-    txt(gL, xL, y + h + 48, "Querkraft", {groesse:11, fett:true});
+    linie(gL, xL, y + h - 4 * s, xL, y + h + 28 * s, BREIT);
+    linie(gL, xL - 5 * s, y + h + 20 * s, xL, y + h + 30 * s, BREIT);
+    linie(gL, xL + 5 * s, y + h + 20 * s, xL, y + h + 30 * s, BREIT);
+    txt(gL, xL, y + h + 48 * s, "Querkraft", {groesse:11 * s, fett:true});
 
     if(mitStift){
-      /* Der Stift sitzt vollstaendig im Werkstoff: keine Kopf, keine Mutter,
-         die Enden liegen buendig in den Bohrungen. */
+      /* Der Stift sitzt in einer Bohrung durch beide Bauteile. Er wird
+         laengs nicht geschnitten: keine Schraffur, dafuer seine Kontur - und
+         die Trennfuge verschwindet hinter ihm. */
+      var yS = y - h + 20 * s, rSt = 6 * s, lSt = 26 * s;
+      kasten(svg, x0 - lSt, yS - rSt, 2 * lSt, 2 * rSt,
+             {fuell:"var(--card)", strich:BREIT});
+      achse(svg, x0 - lSt - 8 * s, x0 + lSt + 8 * s, yS);
       var gS = svgEl("g", {style:"color:var(--ok)"}, svg);
-      kasten(gS, x0 - 26, y - h + 12, 52, 16, {fuell:"var(--card)"});
-      txt(gS, x0, y - h - 8, "Passstift", {groesse:10.5});
-      linie(gS, x0, y - h + 32, x0, y - h + 44, BREIT);
-      linie(gS, x0 - 5, y - h + 38, x0, y - h + 44, BREIT);
-      linie(gS, x0 + 5, y - h + 38, x0, y - h + 44, BREIT);
+      linie(gS, x0 + lSt, yS - rSt, x0 + lSt + 16 * s, yS - 20 * s, SCHMAL,
+            {deckung:.8});
+      txt(gS, x0 + lSt + 18 * s, yS - 24 * s, "Passstift",
+          {anker:"start", groesse:10.5 * s});
+      linie(gS, x0, yS + rSt + 6 * s, x0, yS + rSt + 20 * s, BREIT);
+      linie(gS, x0 - 5 * s, yS + rSt + 14 * s, x0, yS + rSt + 20 * s, BREIT);
+      linie(gS, x0 + 5 * s, yS + rSt + 14 * s, x0, yS + rSt + 20 * s, BREIT);
     } else {
       /* Ohne Formschluss haelt nur die Reibung laengs der Trennfuge. */
       var gR = svgEl("g", {style:"color:var(--warn)"}, svg);
       [-1, 1].forEach(function(v){
-        linie(gR, x0, y + v * 18, x0, y + v * 38, BREIT);
-        linie(gR, x0 - 5, y + v * 32, x0, y + v * 38, BREIT);
-        linie(gR, x0 + 5, y + v * 32, x0, y + v * 38, BREIT);
+        linie(gR, x0, y + v * 18 * s, x0, y + v * 38 * s, BREIT);
+        linie(gR, x0 - 5 * s, y + v * 32 * s, x0, y + v * 38 * s, BREIT);
+        linie(gR, x0 + 5 * s, y + v * 32 * s, x0, y + v * 38 * s, BREIT);
       });
-      txt(gR, x0, y - h - 8, "nur Reibung", {groesse:10.5});
+      txt(gR, x0, y - h - 8 * s, "nur Reibung", {groesse:10.5 * s});
     }
 
     var g = svgEl("g", {style:"color:var(--" + farbe + ")"}, svg);
-    txt(g, x0, 258, hinweis, {groesse:11, fett:true});
+    txt(g, x0, 258 * s, hinweis, {groesse:11 * s, fett:true});
   }
 
-  seite(120, false, "nur Schrauben", "hängt an μ", "warn");
-  seite(340, true,  "mit Passstift", "μ ist egal",     "ok");
+  seite(120 * s, false, "nur Schrauben", "hängt an μ", "warn");
+  seite(340 * s, true,  "mit Passstift", "μ ist egal",     "ok");
 
   return svg;
 }
@@ -737,7 +897,32 @@ function bildSpiel(){
     [[y - 72, 72 - rLoch], [y + rLoch, 72 - rLoch]].forEach(function(p){
       kasten(svg, x0, p[0], dick, p[1], {fuell:m});
     });
-    kasten(svg, x0 - 26, y - rSchaft, dick + 52, 2 * rSchaft, {fuell:"var(--card)"});
+    /* Die Schraube ist links und rechts angeschnitten - sie hoert dort nicht
+       auf. Statt einer Stirnflaeche steht deshalb eine Bruchlinie. */
+    kasten(svg, x0 - 26, y - rSchaft, dick + 52, 2 * rSchaft,
+           {fuell:"var(--card)", ohneRand:true});
+    [-1, 1].forEach(function(v){
+      linie(svg, x0 - 26, y + v * rSchaft, x0 + dick + 26, y + v * rSchaft,
+            BREIT);
+    });
+    [x0 - 26, x0 + dick + 26].forEach(function(xb){
+      svgEl("path", {d:"M" + xb + "," + (y - rSchaft)
+        + " L" + xb + "," + (y - rSchaft * 0.35)
+        + " L" + (xb - 5) + "," + (y - rSchaft * 0.1)
+        + " L" + (xb + 5) + "," + (y + rSchaft * 0.1)
+        + " L" + xb + "," + (y + rSchaft * 0.35)
+        + " L" + xb + "," + (y + rSchaft),
+        fill:"none", stroke:"currentColor", "stroke-width":SCHMAL}, svg);
+    });
+    /* Durch das Spiel sieht man in die Bohrung: Wo sie an die Stirnflaeche
+       stoesst, liegt eine Koerperkante. Ohne sie stuende das Loch offen. */
+    if(spiel > 0){
+      [x0, x0 + dick].forEach(function(xw){
+        [-1, 1].forEach(function(v){
+          linie(svg, xw, y + v * rSchaft, xw, y + v * rLoch, BREIT);
+        });
+      });
+    }
     achse(svg, x0 - 34, x0 + dick + 34, y);
 
     var g = svgEl("g", {style:"color:var(--" + farbe + ")"}, svg);

@@ -168,8 +168,8 @@
 
 var ACHSE = 85;
 var X = {kopfL:26, kopfR:60, platte1:60, fuge:126, platte2:192, scheibe:192,
-         scheibeR:199, mutterL:199, mutterR:229, ende:250};
-var Y = {kopf:19, schaft:10, kern:7.5, loch:13, platte:70, scheibe:16, gew:150};
+         scheibeR:199, mutterL:199, mutterR:229, gew:150, ende:250};
+var Y = {kopf:19, schaft:10, kern:7.5, loch:13, platte:70, scheibe:16};
 
 /* fehler: "schraffiert" | "gleich" | "gewinde" | null (richtig) */
 function zeichnen(bild, fehler){
@@ -185,43 +185,101 @@ function zeichnen(bild, fehler){
     /* Ober- und Unterteil der Platte, dazwischen das Durchgangsloch. */
     [[19, ACHSE - Y.loch], [ACHSE + Y.loch, 151]].forEach(function(p){
       svgEl("rect", {x:x1, y:p[0], width:x2 - x1, height:p[1] - p[0],
-        fill:fuellung, stroke:"currentColor", "stroke-width":2.2}, svg);
+        fill:fuellung, stroke:"currentColor", "stroke-width":BREIT}, svg);
     });
   }
   platte(X.platte1, X.fuge, mA);
   platte(X.fuge, X.platte2, mB);
 
-  /* Schraube: Kopf und Schaft. Beim Fehler "schraffiert" bekommen Schraube und
-     Mutter eine Schraffur - genau das, was die Norm verbietet. */
+  /* Die Trennfuge laeuft durch das Durchgangsloch weiter: Durch das Spiel
+     blickt man auf die Bohrungswand dahinter. Erst die Schraube verdeckt
+     sie. Deshalb vom Schaft bis zum Lochrand. */
+  [-1, 1].forEach(function(v){
+    svgEl("line", {x1:X.fuge, y1:ACHSE + v * Y.schaft, x2:X.fuge,
+      y2:ACHSE + v * Y.loch, stroke:"currentColor", "stroke-width":BREIT}, svg);
+  });
+
+  /* Schraube: Beim Fehler "schraffiert" bekommen Schraube und Mutter eine
+     Schraffur - genau das, was die Norm verbietet. */
   var fuell = fehler === "schraffiert" ? mA : "none";
 
-  svgEl("rect", {x:X.kopfL, y:ACHSE - Y.kopf,
-    width:X.kopfR - X.kopfL, height:2 * Y.kopf,
-    fill:fuell, stroke:"currentColor", "stroke-width":2.2}, svg);
-  svgEl("rect", {x:X.kopfR, y:ACHSE - Y.schaft,
-    width:X.ende - 12 - X.kopfR, height:2 * Y.schaft,
-    fill:fuell, stroke:"currentColor", "stroke-width":2.2}, svg);
+  /* Nicht geschnittene Teile sind undurchsichtig. Sie brauchen deshalb eine
+     deckende Flaeche und muessen NACH dem gezeichnet werden, was sie
+     verdecken - sonst scheint der Schaft durch den Kopf. */
+  function deckend(x1, y1, x2, y2){
+    svgEl("rect", {x:x1, y:y1, width:x2 - x1, height:y2 - y1,
+      fill:"var(--card)", stroke:"none"}, svg);
+  }
 
-  /* Gewinde: Aussendurchmesser breit, Kerndurchmesser schmal.
-     Beim Fehler "gewinde" sind die beiden Strichstaerken vertauscht. */
+  /* Erst Schaft und Gewinde ... */
+  deckend(X.kopfR, ACHSE - Y.schaft, X.ende - 12, ACHSE + Y.schaft);
+  if(fuell !== "none"){
+    svgEl("rect", {x:X.kopfR, y:ACHSE - Y.schaft, width:X.ende - 12 - X.kopfR,
+      height:2 * Y.schaft, fill:fuell, stroke:"none"}, svg);
+  }
   var breitAussen = fehler !== "gewinde";
-  [[Y.schaft, breitAussen ? 2.2 : 0.9], [Y.kern, breitAussen ? 0.9 : 2.2]].forEach(function(l){
-    [ACHSE - l[0], ACHSE + l[0]].forEach(function(y){
-      svgEl("line", {x1:X.gew, y1:y, x2:X.ende - 12, y2:y,
-        stroke:"currentColor", "stroke-width":l[1]}, svg);
+  [[Y.schaft, breitAussen ? BREIT : SCHMAL], [Y.kern, breitAussen ? SCHMAL : BREIT]]
+    .forEach(function(l){
+      [-1, 1].forEach(function(v){
+        svgEl("line", {x1:X.gew, y1:ACHSE + v * l[0], x2:X.ende - 12,
+          y2:ACHSE + v * l[0], stroke:"currentColor", "stroke-width":l[1]}, svg);
+      });
     });
+  [-1, 1].forEach(function(v){
+    svgEl("line", {x1:X.kopfR, y1:ACHSE + v * Y.schaft, x2:X.gew,
+      y2:ACHSE + v * Y.schaft, stroke:"currentColor", "stroke-width":BREIT}, svg);
   });
+  /* Wo das Gewinde anfaengt, steht eine breite Vollinie quer zur Achse -
+     ohne sie enden die Kernlinien im Nichts. */
+  svgEl("line", {x1:X.gew, y1:ACHSE - Y.schaft, x2:X.gew, y2:ACHSE + Y.schaft,
+    stroke:"currentColor", "stroke-width":BREIT}, svg);
+  svgEl("line", {x1:X.ende - 12, y1:ACHSE - Y.schaft, x2:X.ende - 12,
+    y2:ACHSE + Y.schaft, stroke:"currentColor", "stroke-width":BREIT}, svg);
 
-  /* Scheibe und Mutter - ebenfalls nie geschnitten. */
-  [[X.scheibe, X.scheibeR, Y.scheibe], [X.mutterL, X.mutterR, Y.kopf]].forEach(function(t){
-    svgEl("rect", {x:t[0], y:ACHSE - t[2],
-      width:t[1] - t[0], height:2 * t[2],
-      fill:fuell, stroke:"currentColor", "stroke-width":2.2}, svg);
-  });
+  /* ... dann Kopf, Scheibe und Mutter darueber. */
+  /* Geschnitten sieht ein Sechskant anders aus als in Ansicht: Man blickt
+     auf die Schnittflaeche, es gibt keine Fasenboegen. Der eingebaute Fehler
+     soll falsch sein, nicht schlampig. */
+  function sechskant(von, bis, fase){
+    deckend(von, ACHSE - Y.kopf * 1.16, bis, ACHSE + Y.kopf * 1.16);
+    if(fehler === "schraffiert"){
+      svgEl("rect", {x:von, y:ACHSE - Y.kopf, width:bis - von, height:2 * Y.kopf,
+        fill:fuell, stroke:"currentColor", "stroke-width":BREIT}, svg);
+    }else{
+      sechskantAnsicht(svg, {waagerecht:true, achse:ACHSE, von:von, bis:bis,
+        sw:2 * Y.kopf, s:1, faseAn:fase, fuell:"var(--card)"});
+    }
+  }
+  sechskant(X.kopfL, X.kopfR, "von");
+
+  deckend(X.scheibe, ACHSE - Y.scheibe, X.scheibeR, ACHSE + Y.scheibe);
+  svgEl("rect", {x:X.scheibe, y:ACHSE - Y.scheibe,
+    width:X.scheibeR - X.scheibe, height:2 * Y.scheibe,
+    fill:fuell, stroke:"currentColor", "stroke-width":BREIT}, svg);
+
+  /* Der Ueberstand hinter der Mutter liegt vor ihr - also zuletzt. */
+  deckend(X.mutterR, ACHSE - Y.schaft, X.ende - 12, ACHSE + Y.schaft);
+  if(fuell !== "none"){
+    svgEl("rect", {x:X.mutterR, y:ACHSE - Y.schaft, width:X.ende - 12 - X.mutterR,
+      height:2 * Y.schaft, fill:fuell, stroke:"none"}, svg);
+  }
+  [[Y.schaft, breitAussen ? BREIT : SCHMAL], [Y.kern, breitAussen ? SCHMAL : BREIT]]
+    .forEach(function(l){
+      [-1, 1].forEach(function(v){
+        svgEl("line", {x1:X.mutterR, y1:ACHSE + v * l[0], x2:X.ende - 12,
+          y2:ACHSE + v * l[0], stroke:"currentColor", "stroke-width":l[1]}, svg);
+      });
+    });
+  svgEl("line", {x1:X.ende - 12, y1:ACHSE - Y.schaft, x2:X.ende - 12,
+    y2:ACHSE + Y.schaft, stroke:"currentColor", "stroke-width":BREIT}, svg);
+
+
+  deckend(X.mutterL, ACHSE - Y.kopf * 1.16, X.mutterR, ACHSE + Y.kopf * 1.16);
+  sechskant(X.mutterL, X.mutterR, "bis");
 
   /* Mittellinie zuletzt, damit sie ueber den Flaechen liegt. */
   svgEl("line", {x1:14, y1:ACHSE, x2:X.ende - 2, y2:ACHSE,
-    stroke:"currentColor", "stroke-width":0.8, "stroke-dasharray":"9 3 2 3", opacity:0.55}, svg);
+    stroke:"currentColor", "stroke-width":SCHMAL, "stroke-dasharray":"12 2 2 2"}, svg);
 
   return svg;
 }
@@ -321,7 +379,7 @@ function bildGewindelinien(){
   /* Werkstoff reicht von außen bis zur breiten Linie - die Schraffur läuft
      dabei über die schmale Linie hinweg. Genau das ist die Regel. */
   [y - aussen, y + rD1].forEach(function(oben){
-    kasten(svg, x3, oben, x4 - x3, aussen - rD1, {fuell:m, strich:0.01});
+    kasten(svg, x3, oben, x4 - x3, aussen - rD1, {fuell:m, ohneRand:true});
   });
   [-1, 1].forEach(function(v){
     linie(svg, x3, y + v * aussen, x4, y + v * aussen, BREIT);   /* Bauteilkante */
@@ -332,14 +390,15 @@ function bildGewindelinien(){
   linie(svg, x4, y - aussen, x4, y + aussen, BREIT);
   achse(svg, x3 - 8, x4 + 8, y);
 
-  txt(svg, x4 + 6, y - rD + 4,  "schmal: d",  {anker:"start", groesse:10.5, deckung:.85});
-  txt(svg, x4 + 6, y + rD1 + 4, "breit: d₃", {anker:"start", groesse:10.5, deckung:.85});
+  txt(svg, 448, y - rD + 4, "schmal: d", {anker:"end", groesse:10.5, deckung:.85});
+  /* Rechtsbuendig am Bildrand - links davon steht die Zeichnung. */
+  txt(svg, 448, y + rD1 + 4, "breit: d₃", {anker:"end", groesse:10.5, deckung:.85});
 
   var gH = svgEl("g", {style:"color:var(--accent)"}, svg);
   linie(gH, x3 + 46, y + aussen + 4, x3 + 46, y + rD1 + 2, SCHMAL, {strich:"4 3"});
-  txt(gH, x3, y + aussen + 26, "Schraffur endet an der breiten Linie",
+  txt(gH, x3, y + aussen + 26, "Schraffur endet an der breiten",
       {anker:"start", groesse:10.5});
-  txt(gH, x3, y + aussen + 42, "– über die schmale hinweg",
+  txt(gH, x3, y + aussen + 42, "Linie – über die schmale hinweg",
       {anker:"start", groesse:10.5});
 
   return svg;
@@ -371,7 +430,7 @@ function bildWelle(){
   /* Schnittverlauf A-A quer zur Welle */
   var xA = gx1 + 132;
   var gA = svgEl("g", {style:"color:var(--accent)"}, svg);
-  linie(gA, xA, y - gh - 20, xA, y + gh + 8, SCHMAL, {strich:"10 3 2 3"});
+  linie(gA, xA, y - gh - 20, xA, y + gh + 8, SCHMAL, {strich:"12 2 2 2"});
   txt(gA, xA, y - gh - 26, "A – A", {groesse:11, fett:true});
 
   /* --- rechts: Querschnitt mit Nut --- */
@@ -386,7 +445,7 @@ function bildWelle(){
        " A " + r + " " + r + " 0 1 0 " + (cx + nutB / 2) + " " + (cy - r) +
        " L " + (cx + nutB / 2) + " " + (cy - r + nutT) +
        " L " + (cx - nutB / 2) + " " + (cy - r + nutT) + " Z",
-    fill: mQ, stroke:"currentColor", "stroke-width":2.2}, svg);
+    fill: mQ, stroke:"currentColor", "stroke-width":BREIT}, svg);
   txt(svg, cx + r + 10, cy - r + 6, "Nut", {anker:"start", groesse:10.5, deckung:.85});
   txt(svg, cx, y + 82, "jetzt geschnitten – also schraffiert",
       {groesse:10.5, deckung:.8});
@@ -411,8 +470,8 @@ function bildTrennfuge(){
 
     /* Fläche zuerst, Umriss danach: so bleibt die mittlere Linie eine Linie
        und nicht die Kante zweier Kästen. */
-    kasten(svg, x0, y - h, br, 2 * h, {fuell:mA, strich:0.01});
-    kasten(svg, x0 + br, y - h, br, 2 * h, {fuell:mB, strich:0.01});
+    kasten(svg, x0, y - h, br, 2 * h, {fuell:mA, ohneRand:true});
+    kasten(svg, x0 + br, y - h, br, 2 * h, {fuell:mB, ohneRand:true});
     kasten(svg, x0, y - h, 2 * br, 2 * h);
     linie(svg, x0 + br, y - h, x0 + br, y + h, BREIT);
 
