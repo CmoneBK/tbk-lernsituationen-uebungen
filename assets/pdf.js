@@ -37,7 +37,7 @@
     '₅': '5', '₆': '6', '₇': '7', '₈': '8', '₉': '9',
     'ₚ': 'p', 'ₜ': 't', 'ₘ': 'm', 'ᴿ': 'R', 'ᶠ': 'f',
     '⌀': 'd', '·': '·', '✓': 'x', '✗': 'x',
-    '▶': '>', '−': '-',
+    '▶': '>', '−': '-', '≈': '~',
     /* Striche, die WinAnsi nicht kennt - sonst steht dort ein Fragezeichen,
        und die Breite passt auch nicht mehr. */
     '‐': '-', '‑': '-', '‒': '-',
