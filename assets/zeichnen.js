@@ -120,6 +120,9 @@ function achse(g, x1, x2, y){
 /* Schraffur für geschnittene Bauteile. Die ID muss je Bild eindeutig sein,
    sonst greifen alle Bilder auf dasselbe Muster zu. */
 function schraffur(svg, id, winkel){
+  /* Teilen sich mehrere Flaechen dieselbe Schraffur, wird das Muster nur
+     einmal angelegt - sonst stehen doppelte IDs im SVG. */
+  if(svg.querySelector("#" + id)) return "url(#" + id + ")";
   var defs = svg.querySelector("defs") || svgEl("defs", {}, svg);
   var p = svgEl("pattern", {id:id, width:7, height:7,
     patternUnits:"userSpaceOnUse",
@@ -283,3 +286,193 @@ function kurve(g, achs, punkte, opt){
   if(opt.deckung) a.opacity = opt.deckung;
   return svgEl("path", a, g);
 }
+
+/* ---------------------------------------------------------- Fügeverbindungen
+ *
+ * Schematische Bilder der Verbindungen aus der Lektion "Fügeverfahren im
+ * Überblick". Bewusst schlicht: Es geht um die Frage, wo die Kraft übergeht -
+ * nicht um eine normgerechte Zeichnung.
+ *
+ *     var svg = bild("bildId", 220, 140, "Beschreibung");
+ *     fuegebild(svg, "schraube");
+ *
+ * Die Namen sind dieselben wie im Werkzeug, damit beide vom selben reden:
+ *   kraft   schraube, pressverband, klemmverbindung, spannsatz
+ *   form    passfeder, zahnwelle, stift, schnapp, bolzen, falz
+ *   stoff   schweissen, loeten, kleben
+ *   sonder  nieten, clinchen, schraubkleben
+ */
+
+var FUEGEBILDER = {};
+var fbZaehler = 0;
+
+function fuegebild(svg, art){
+  var g = svgEl("g", {}, svg);
+  var fn = FUEGEBILDER[art];
+  if(fn) fn(g, svg, "fb" + (fbZaehler++));
+  return g;
+}
+
+/* Ein Bauteil: Kasten mit Schraffur, damit man zwei Teile unterscheidet.
+   Die Kennung muss je Bild eindeutig sein - sonst zeigen alle Bilder auf
+   dasselbe Muster, und beim Entfernen des ersten verschwindet der Rest. */
+function fbTeil(g, svg, kennung, x, y, w, h, nr){
+  var m = schraffur(svg, kennung + "_" + nr, nr === 1 ? 45 : -45);
+  return kasten(g, x, y, w, h, {fuell:m});
+}
+
+FUEGEBILDER.schraube = function(g, svg, k){
+  fbTeil(g, svg, k, 30, 40, 160, 26, 1);
+  fbTeil(g, svg, k, 30, 66, 160, 26, 2);
+  kasten(g, 96, 22, 28, 18);                          /* Kopf */
+  kasten(g, 104, 40, 12, 52);                         /* Schaft */
+  kasten(g, 94, 92, 32, 16);                          /* Mutter */
+  linie(g, 110, 14, 110, 118, SCHMAL, {strich:"9 3 2 3"});
+  txt(g, 110, 132, "Reibung in der Trennfuge", {groesse:10.5, deckung:0.75});
+};
+
+FUEGEBILDER.pressverband = function(g, svg, k){
+  fbTeil(g, svg, k, 20, 58, 180, 24, 1);              /* Welle */
+  fbTeil(g, svg, k, 74, 30, 72, 28, 2);               /* Nabe oben */
+  fbTeil(g, svg, k, 74, 82, 72, 28, 2);               /* Nabe unten */
+  linie(g, 10, 70, 210, 70, SCHMAL, {strich:"9 3 2 3"});
+  txt(g, 110, 132, "Übermaß presst Welle und Nabe", {groesse:10.5, deckung:0.75});
+};
+
+FUEGEBILDER.klemmverbindung = function(g, svg, k){
+  fbTeil(g, svg, k, 20, 60, 180, 20, 1);
+  fbTeil(g, svg, k, 66, 28, 84, 32, 2);
+  fbTeil(g, svg, k, 66, 80, 84, 32, 2);
+  linie(g, 150, 28, 150, 112, SCHMAL);                /* Schlitz */
+  kasten(g, 150, 40, 26, 12);                         /* Klemmschraube */
+  kasten(g, 150, 88, 26, 12);
+  linie(g, 10, 70, 210, 70, SCHMAL, {strich:"9 3 2 3"});
+  txt(g, 110, 132, "Geschlitzte Nabe wird zugezogen", {groesse:10.5, deckung:0.75});
+};
+
+FUEGEBILDER.spannsatz = function(g, svg, k){
+  fbTeil(g, svg, k, 20, 60, 180, 20, 1);
+  fbTeil(g, svg, k, 70, 24, 80, 22, 2);
+  fbTeil(g, svg, k, 70, 94, 80, 22, 2);
+  svgEl("path", {d:"M74 46 L146 46 L134 60 L86 60 Z", fill:"none",
+    stroke:"currentColor", "stroke-width":BREIT}, g);
+  svgEl("path", {d:"M74 94 L146 94 L134 80 L86 80 Z", fill:"none",
+    stroke:"currentColor", "stroke-width":BREIT}, g);
+  linie(g, 10, 70, 210, 70, SCHMAL, {strich:"9 3 2 3"});
+  txt(g, 110, 132, "Kegelringe erzeugen den Druck", {groesse:10.5, deckung:0.75});
+};
+
+FUEGEBILDER.passfeder = function(g, svg, k){
+  fbTeil(g, svg, k, 20, 60, 180, 24, 1);
+  fbTeil(g, svg, k, 74, 26, 72, 34, 2);
+  fbTeil(g, svg, k, 74, 84, 72, 26, 2);
+  kasten(g, 92, 52, 36, 16);                          /* Feder in der Nut */
+  linie(g, 10, 72, 210, 72, SCHMAL, {strich:"9 3 2 3"});
+  txt(g, 110, 132, "Feder liegt in beiden Nuten", {groesse:10.5, deckung:0.75});
+};
+
+FUEGEBILDER.zahnwelle = function(g, svg, k){
+  fbTeil(g, svg, k, 20, 58, 180, 24, 1);
+  for(var i = 0; i < 6; i++){
+    kasten(g, 80 + i * 12, 48, 8, 10);
+    kasten(g, 80 + i * 12, 82, 8, 10);
+  }
+  fbTeil(g, svg, k, 74, 26, 84, 22, 2);
+  fbTeil(g, svg, k, 74, 92, 84, 22, 2);
+  linie(g, 10, 70, 210, 70, SCHMAL, {strich:"9 3 2 3"});
+  txt(g, 110, 132, "Viele Zähne teilen die Last", {groesse:10.5, deckung:0.75});
+};
+
+FUEGEBILDER.stift = function(g, svg, k){
+  fbTeil(g, svg, k, 20, 58, 180, 24, 1);
+  fbTeil(g, svg, k, 74, 30, 72, 28, 2);
+  fbTeil(g, svg, k, 74, 82, 72, 28, 2);
+  kasten(g, 104, 30, 12, 80);                         /* Querstift */
+  txt(g, 110, 132, "Stift quer durch beide Teile", {groesse:10.5, deckung:0.75});
+};
+
+FUEGEBILDER.schnapp = function(g, svg, k){
+  fbTeil(g, svg, k, 24, 40, 92, 24, 1);
+  svgEl("path", {d:"M116 40 L150 40 L150 58 L164 58 L164 70 L138 70 L138 52 L116 52 Z",
+    fill:"none", stroke:"currentColor", "stroke-width":BREIT}, g);
+  fbTeil(g, svg, k, 24, 78, 140, 24, 2);
+  kasten(g, 138, 58, 26, 20);
+  txt(g, 110, 132, "Haken rastet hinter der Kante ein", {groesse:10.5, deckung:0.75});
+};
+
+FUEGEBILDER.bolzen = function(g, svg, k){
+  fbTeil(g, svg, k, 24, 36, 60, 20, 1);
+  fbTeil(g, svg, k, 24, 84, 60, 20, 1);
+  fbTeil(g, svg, k, 84, 58, 96, 24, 2);
+  kasten(g, 100, 28, 16, 84);                         /* Bolzen */
+  linie(g, 98, 106, 118, 106, SCHMAL);                /* Splint */
+  linie(g, 108, 106, 108, 118, SCHMAL);
+  txt(g, 110, 132, "Bolzen gesichert mit Splint", {groesse:10.5, deckung:0.75});
+};
+
+FUEGEBILDER.falz = function(g, svg){
+  svgEl("path", {d:"M20 54 L122 54 L122 80 L104 80 L104 68 L20 68 Z",
+    fill:"none", stroke:"currentColor", "stroke-width":BREIT}, g);
+  svgEl("path", {d:"M200 80 L114 80 L114 46 L132 46 L132 66 L200 66 Z",
+    fill:"none", stroke:"currentColor", "stroke-width":BREIT}, g);
+  txt(g, 110, 132, "Blechränder ineinander umgelegt", {groesse:10.5, deckung:0.75});
+};
+
+FUEGEBILDER.schweissen = function(g, svg, k){
+  fbTeil(g, svg, k, 20, 46, 80, 34, 1);
+  fbTeil(g, svg, k, 120, 46, 80, 34, 2);
+  /* Die Naht sitzt im Stoss und steht oben und unten leicht ueber - so, wie
+     sie nach dem Schweissen aussieht. */
+  svgEl("path", {d:"M100 46 Q110 40 120 46 L120 80 Q110 86 100 80 Z",
+    fill:"currentColor", stroke:"currentColor", "stroke-width":BREIT,
+    "stroke-linejoin":"round"}, g);
+  txt(g, 110, 120, "Werkstoff selbst aufgeschmolzen", {groesse:10.5, deckung:0.75});
+};
+
+FUEGEBILDER.loeten = function(g, svg, k){
+  fbTeil(g, svg, k, 20, 40, 110, 24, 1);
+  fbTeil(g, svg, k, 90, 67, 110, 24, 2);
+  /* Der Spalt ist schmal - das ist der Unterschied zum Kleben. */
+  kasten(g, 90, 63, 40, 4, {fuell:"currentColor", ohneRand:true});
+  txt(g, 110, 120, "Lot füllt den schmalen Spalt", {groesse:10.5, deckung:0.75});
+};
+
+FUEGEBILDER.kleben = function(g, svg, k){
+  fbTeil(g, svg, k, 20, 34, 110, 24, 1);
+  fbTeil(g, svg, k, 90, 65, 110, 24, 2);
+  /* Deutlich dickere Schicht als beim Loeten, und laenger ueberlappt. */
+  kasten(g, 90, 58, 40, 7, {fuell:"currentColor", ohneRand:true});
+  txt(g, 110, 120, "Klebschicht überträgt durch Haftung",
+      {groesse:10.5, deckung:0.75});
+};
+
+FUEGEBILDER.nieten = function(g, svg, k){
+  fbTeil(g, svg, k, 20, 50, 180, 18, 1);
+  fbTeil(g, svg, k, 20, 68, 180, 18, 2);
+  kasten(g, 100, 50, 20, 36);                         /* Schaft */
+  svgEl("path", {d:"M92 50 L128 50 L120 36 L100 36 Z", fill:"none",
+    stroke:"currentColor", "stroke-width":BREIT}, g);
+  svgEl("path", {d:"M92 86 L128 86 L120 100 L100 100 Z", fill:"none",
+    stroke:"currentColor", "stroke-width":BREIT}, g);
+  txt(g, 110, 124, "Schaft gestaucht: füllt und zieht zusammen",
+      {groesse:10.5, deckung:0.75});
+};
+
+FUEGEBILDER.clinchen = function(g){
+  svgEl("path", {d:"M20 50 L90 50 L96 66 L124 66 L130 50 L200 50 L200 64 L130 64 "
+    + "L126 78 L94 78 L90 64 L20 64 Z", fill:"none", stroke:"currentColor",
+    "stroke-width":BREIT}, g);
+  svgEl("path", {d:"M20 64 L90 64 L94 78 L126 78 L130 64 L200 64 L200 78 L134 78 "
+    + "L130 92 L90 92 L86 78 L20 78 Z", fill:"none", stroke:"currentColor",
+    "stroke-width":BREIT, opacity:0.75}, g);
+  txt(g, 110, 124, "Bleche ineinander durchgesetzt", {groesse:10.5, deckung:0.75});
+};
+
+FUEGEBILDER.schraubkleben = function(g, svg, k){
+  fbTeil(g, svg, k, 30, 56, 160, 46, 1);
+  kasten(g, 96, 22, 28, 16);                          /* Kopf */
+  kasten(g, 104, 38, 12, 56);                         /* Schaft im Gewinde */
+  linie(g, 103, 56, 103, 94, 3.4);                    /* Klebstoff im Gewinde */
+  linie(g, 117, 56, 117, 94, 3.4);
+  txt(g, 110, 124, "Gewinde zusätzlich verklebt", {groesse:10.5, deckung:0.75});
+};
