@@ -442,20 +442,20 @@ var fbZaehler = 0;
    Vorlesesoftware bekommt sonst nur den Namen des Verfahrens zu hoeren. */
 var FUEGETEXT = {
   schraube: "Zwei Bauteile im Schnitt, von einer Sechskantschraube mit Mutter zusammengezogen",
-  pressverband: "Welle im Schnitt, darauf eine Nabe ohne Nut - der Sitz entsteht durch Uebermass",
-  klemmverbindung: "Geschlitzte Nabe auf glatter Welle, von einer Schraube zugezogen",
+  pressverband: "Links der Querschnitt: Welle in der Nabe, ohne Nut und ohne Verzahnung. Rechts ein Schaubild: Die Nabe wird mit Kraft auf die Welle gepresst",
+  klemmverbindung: "Querschnitt: Die Nabe ist bis zur Bohrung geschlitzt, eine Schraube quer zum Schlitz zieht sie auf der Welle zusammen",
   spannsatz: "Kegelringe zwischen Welle und Nabe, axial verspannt",
-  passfeder: "Welle mit Nut, darin die Passfeder, darueber die Nabe",
-  zahnwelle: "Welle mit Verzahnung am Umfang, Nabe mit Gegenverzahnung",
-  stift: "Zwei Teile, quer durchbohrt und mit einem Stift verbunden",
-  schnapp: "Federnder Haken, der hinter einer Kante einrastet",
-  bolzen: "Bolzen durch zwei Augen, mit einem Splint gesichert",
+  passfeder: "Querschnitt: Welle und Nabe haben je eine Nut, die Passfeder liegt in beiden. Ueber ihrem Ruecken bleibt Spiel",
+  zahnwelle: "Querschnitt: Die Welle traegt Zaehne am ganzen Umfang, die Nabe die Gegenverzahnung",
+  stift: "Laengsschnitt: Welle und Nabe sind quer durchbohrt, ein Stift steckt durch beide",
+  schnapp: "Ein federnder Haken ist durch ein Loch im Blech gesteckt, seine Nase liegt unter dem Blech",
+  bolzen: "Laengsschnitt: Ein Bolzen steckt durch die beiden Schenkel einer Gabel und das Auge dazwischen, gesichert mit einem Splint",
   falz: "Zwei Blechkanten umgelegt und ineinander gehakt",
   schweissen: "Zwei Bauteile im Stoss, dazwischen eine Schweissnaht",
   loeten: "Zwei Teile mit schmalem Spalt, darin das Lot",
   kleben: "Zwei Bauteile ueberlappt, dazwischen die Klebschicht",
   nieten: "Zwei Bleche, von einem Niet mit Setzkopf und Schliesskopf zusammengehalten",
-  clinchen: "Zwei Bleche, ohne Zusatzteil ineinander durchgesetzt",
+  clinchen: "Zwei Bleche ohne Zusatzteil ineinander durchgesetzt - der Napf wird nach unten breiter und haelt dadurch",
   schraubkleben: "Schraube im Gewinde, Klebstoff in den Gewindegaengen"
 };
 
@@ -485,6 +485,25 @@ function fbVoll(g, x, y, w, h){
   return kasten(g, x, y, w, h, {fuell:"var(--card)"});
 }
 function fbWelle(g, x, y, w, h){ return fbVoll(g, x, y, w, h); }
+
+/* Kreis mit breiter Umrisskante - der Querschnitt runder Teile. */
+function fbKreis(g, cx, cy, r, fuell){
+  return svgEl("circle", {cx:cx, cy:cy, r:r, fill:fuell || "none",
+    stroke:"currentColor", "stroke-width":BREIT}, g);
+}
+
+/* Mittellinienkreuz, das ueber den Umriss hinaussteht. */
+function fbKreuz(g, cx, cy, r){
+  linie(g, cx - r - 7, cy, cx + r + 7, cy, SCHMAL, {strich:"12 2 2 2"});
+  linie(g, cx, cy - r - 7, cx, cy + r + 7, SCHMAL, {strich:"12 2 2 2"});
+}
+
+/* Ein Vieleck aus Punktpaaren. */
+function fbVieleck(g, punkte, fuell, strich){
+  return svgEl("polygon", {points:punkte.join(" "), fill:fuell || "none",
+    stroke:strich === false ? "none" : "currentColor",
+    "stroke-width":BREIT}, g);
+}
 
 /* Mittellinie waagerecht bzw. senkrecht. */
 function fbAchse(g, x1, x2, y){ achse(g, x1, x2, y); }
@@ -526,120 +545,253 @@ FUEGEBILDER.schraube = function(g, svg, k){
 };
 
 FUEGEBILDER.pressverband = function(g, svg, k){
-  fbTeil(g, svg, k, 74, 30, 72, 28, 2);               /* Nabe oben */
-  fbTeil(g, svg, k, 74, 82, 72, 28, 2);               /* Nabe unten */
-  fbWelle(g, 20, 58, 180, 24);                        /* Welle, ungeschnitten */
-  fbAchse(g, 10, 210, 70);
-  txt(g, 110, 132, "Übermaß presst", {groesse:9.5, deckung:0.75});
+  /* Zwei Bilder nebeneinander. Der Pressverband hat kein Formelement - im
+     Querschnitt sind es zwei Kreise, und genau das ist die Aussage. Was ihn
+     ausmacht, sieht man erst beim Fuegen, deshalb rechts das Schaubild. */
+  var mW = schraffur(svg, k + "_1", 45), mN = schraffur(svg, k + "_2", -45);
+
+  /* Links: Querschnitt. Quer geschnitten wird auch die Welle - die Regel,
+     dass sie ungeschnitten bleibt, gilt nur laengs zur Achse. */
+  var cx = 54, cy = 58, rW = 15, rN = 32;
+  fbKreis(g, cx, cy, rN, mN);
+  fbKreis(g, cx, cy, rW, "var(--card)");
+  fbKreis(g, cx, cy, rW, mW);
+  fbKreuz(g, cx, cy, rN);
+
+  /* Rechts: Schaubild, kein Schnitt - also keine Schraffur. */
+  var y = 58, rw = 10, rn = 22, ex = 5, exW = ex * rw / rn;
+  var xL = 118, xR = 212, nL = 150, nR = 184;
+
+  function ruecken(x, r, rx){          /* ferne Stirnflaeche: nur ihr Ruecken */
+    svgEl("path", {d:"M" + x + "," + (y - r) + " A" + rx + "," + r
+      + " 0 0 0 " + x + "," + (y + r), fill:"none", stroke:"currentColor",
+      "stroke-width":BREIT}, g);
+  }
+  ruecken(xL, rw, exW);
+  [-1, 1].forEach(function(v){
+    linie(g, xL, y + v * rw, nL, y + v * rw, BREIT);
+  });
+  /* Die Nabe ist undurchsichtig: Was von der Welle in ihr steckt, sieht man
+     nicht. */
+  svgEl("path", {d:"M" + nL + "," + (y - rn) + " L" + nR + "," + (y - rn)
+    + " A" + ex + "," + rn + " 0 0 1 " + nR + "," + (y + rn)
+    + " L" + nL + "," + (y + rn)
+    + " A" + ex + "," + rn + " 0 0 1 " + nL + "," + (y - rn) + " Z",
+    fill:"var(--card)", stroke:"currentColor", "stroke-width":BREIT}, g);
+  svgEl("ellipse", {cx:nR, cy:y, rx:exW, ry:rw, fill:"var(--card)",
+    stroke:"currentColor", "stroke-width":BREIT}, g);
+  [-1, 1].forEach(function(v){
+    linie(g, nR, y + v * rw, xR, y + v * rw, BREIT);
+  });
+  svgEl("ellipse", {cx:xR, cy:y, rx:exW, ry:rw, fill:"var(--card)",
+    stroke:"currentColor", "stroke-width":BREIT}, g);
+
+  /* Der Pfeil erklaert das Fuegen und gehoert nicht zur Zeichnung. */
+  var e = svgEl("g", {"class":"erklaer"}, g);
+  linie(e, 206, 22, 172, 22, BREIT);
+  pfeil(e, 166, 22, -1, 0);
+  txt(e, 186, 14, "aufpressen", {groesse:9.5, deckung:0.8});
+
+  txt(g, 110, 132, "Übermaß presst – kein Formelement",
+      {groesse:9.5, deckung:0.75});
 };
 
 FUEGEBILDER.klemmverbindung = function(g, svg, k){
-  fbTeil(g, svg, k, 66, 28, 84, 32, 2);
-  fbTeil(g, svg, k, 66, 80, 84, 32, 2);
-  fbWelle(g, 20, 60, 180, 20);
-  linie(g, 150, 28, 150, 60, SCHMAL);                 /* Schlitz */
-  linie(g, 150, 80, 150, 112, SCHMAL);
-  /* Klemmschraube quer durch den Schlitz: Kopf, Schaft, Gewinde. */
-  [44, 96].forEach(function(y){
-    fbVoll(g, 128, y - 4, 44, 8);
-    linie(g, 158, y - 4, 158, y + 4, BREIT);          /* Gewindeende */
-    [-1, 1].forEach(function(v){
-      linie(g, 158, y + v * 2.6, 172, y + v * 2.6, SCHMAL);
-    });
-    sechskantAnsicht(g, {waagerecht:true, achse:y, von:128, bis:116,
-      sw:16, s:1, faseAn:"von"});
+  /* Querschnitt: Erst quer zur Achse sieht man den Schlitz - und ohne ihn
+     ist die Klemmnabe von einem Pressverband nicht zu unterscheiden. */
+  var cx = 92, cy = 62, rW = 20, rN = 42, hs = 3;
+  var ax = cx + 48, ay = 34;           /* Auge: rechte Kante, halbe Hoehe */
+  var mW = schraffur(svg, k + "_1", 45), mN = schraffur(svg, k + "_2", -45);
+
+  /* Die Nabe ist Kreis und Auge in einem Stueck - also auch ein Umriss.
+     Wo das Auge anfaengt, hoert der Kreisbogen auf. */
+  var xk = cx + Math.sqrt(rN * rN - ay * ay);
+  var umriss = "M" + xk + "," + (cy - ay)
+    + " L" + ax + "," + (cy - ay)
+    + " L" + ax + "," + (cy + ay)
+    + " L" + xk + "," + (cy + ay)
+    + " A" + rN + "," + rN + " 0 1 1 " + xk + "," + (cy - ay) + " Z";
+  svgEl("path", {d:umriss, fill:mN, stroke:"currentColor",
+    "stroke-width":BREIT}, g);
+
+  /* Der Schlitz reicht von der Bohrung bis nach aussen durch das Auge. Er
+     macht die Nabe federnd. */
+  var xi = cx + Math.sqrt(rW * rW - hs * hs);
+  kasten(g, xi, cy - hs, ax - xi, 2 * hs, {fuell:"var(--card)", ohneRand:true});
+  [-1, 1].forEach(function(v){
+    linie(g, xi, cy + v * hs, ax, cy + v * hs, BREIT);
   });
-  fbAchse(g, 10, 210, 70);
-  txt(g, 110, 132, "Nabe wird zugezogen", {groesse:9.5, deckung:0.75});
+
+  svgEl("circle", {cx:cx, cy:cy, r:rW, fill:"var(--card)", stroke:"none"}, g);
+  fbKreis(g, cx, cy, rW, mW);
+  fbKreuz(g, cx, cy, rN);
+
+  /* Klemmschraube quer zum Schlitz, im Auge. Sie ist nicht geschnitten:
+     deckende Flaeche, Kanten, Gewinde - aussen breit, Kern schmal. */
+  var sx = cx + 34, rd = 6, r3 = 4.2;
+  var oben = cy - ay - 2, unten = cy + ay - 4;
+  fbVoll(g, sx - rd, oben, 2 * rd, unten - oben);
+  [-1, 1].forEach(function(v){
+    linie(g, sx + v * r3, cy + 6, sx + v * r3, unten - 2, SCHMAL);
+  });
+  linie(g, sx - rd, cy + 6, sx + rd, cy + 6, BREIT);   /* Gewindeende */
+  sechskantAnsicht(g, {achse:sx, von:oben - 14, bis:oben, sw:18, s:1,
+    faseAn:"von"});
+  linie(g, sx, oben - 22, sx, unten + 8, SCHMAL, {strich:"12 2 2 2"});
+
+  txt(g, 110, 132, "Schlitz zugezogen – Nabe klemmt",
+      {groesse:9.5, deckung:0.75});
 };
 
 FUEGEBILDER.spannsatz = function(g, svg, k){
-  fbTeil(g, svg, k, 70, 20, 80, 26, 2);               /* Nabe */
-  fbTeil(g, svg, k, 70, 94, 80, 26, 2);
-  /* Die Kegelringe sind eigene Teile und werden mitgeschnitten - dritter
-     Schraffurwinkel, damit sie von der Nabe zu unterscheiden sind. */
-  var mR = schraffur(svg, k + "_3", 20);
-  svgEl("path", {d:"M74 46 L146 46 L134 60 L86 60 Z", fill:mR,
-    stroke:"currentColor", "stroke-width":BREIT}, g);
-  svgEl("path", {d:"M74 94 L146 94 L134 80 L86 80 Z", fill:mR,
-    stroke:"currentColor", "stroke-width":BREIT}, g);
-  fbWelle(g, 20, 60, 180, 20);
-  fbAchse(g, 10, 210, 70);
+  /* Hier bleibt der Laengsschnitt: Der Kegel wirkt axial, quer zur Achse
+     waeren es nur konzentrische Kreise. */
+  /* Vier Teile grenzen aneinander: Nabe, Aussenring, Innenring, Welle.
+     Drei davon sind geschnitten und brauchen drei Schraffurrichtungen. */
+  var y = 66, rw = 12;
+  var mA = schraffur(svg, k + "_1", 45), mI = schraffur(svg, k + "_3", 20);
+  fbTeil(g, svg, k, 66, 14, 92, 24, 2);               /* Nabe */
+  fbTeil(g, svg, k, 66, 94, 92, 24, 2);
+  /* Zwei Ringe, die sich ineinander schieben: der aeussere innen kegelig,
+     der innere aussen kegelig. Beim Anziehen keilen sie sich. */
+  [-1, 1].forEach(function(v){
+    var a = y - v * 28, b = y - v * 12;               /* aussen, innen */
+    fbVieleck(g, [[72, a], [152, a], [152, a + v * 3], [72, b - v * 2]], mA);
+    fbVieleck(g, [[72, b - v * 2], [152, a + v * 3], [152, b], [72, b]], mI);
+  });
+  fbWelle(g, 16, y - rw, 188, 2 * rw);                /* Welle, ungeschnitten */
+  fbAchse(g, 8, 212, y);
   txt(g, 110, 132, "Kegelringe pressen", {groesse:9.5, deckung:0.75});
 };
 
 FUEGEBILDER.passfeder = function(g, svg, k){
-  /* Nabe mit Nut: der Ausschnitt gehoert in die Kontur, nicht daruebergelegt. */
-  svgEl("path", {d:"M74 26 L146 26 L146 60 L128 60 L128 52 L92 52 L92 60 L74 60 Z",
-    fill:schraffur(svg, k + "_2", -45), stroke:"currentColor",
-    "stroke-width":BREIT}, g);
-  fbTeil(g, svg, k, 74, 84, 72, 26, 2);
-  /* Welle mit Nut. */
-  svgEl("path", {d:"M20 60 L92 60 L92 68 L128 68 L128 60 L200 60 L200 84 L20 84 Z",
-    fill:"var(--card)", stroke:"currentColor", "stroke-width":BREIT}, g);
-  /* Die Feder wird nicht geschnitten. */
-  fbVoll(g, 92, 52, 36, 16);
-  fbAchse(g, 10, 210, 72);
+  /* Querschnitt: Nur quer sieht man beide Nuten und die Feder darin. */
+  var cx = 110, cy = 60, rW = 26, rN = 50, nb = 11;
+  var tW = 11, tN = 9;                                /* Nuttiefen */
+  var mW = schraffur(svg, k + "_1", 45), mN = schraffur(svg, k + "_2", -45);
+  var mF = schraffur(svg, k + "_3", 20);
+  var yW = cy - Math.sqrt(rW * rW - nb * nb);         /* Nut trifft die Welle */
+
+  fbKreis(g, cx, cy, rN, mN);
+  /* Nur die Flaeche freistellen, nicht schon die Kante ziehen - die bringt
+     die genutete Welle mit, und dort fehlt sie an der Nut. */
+  svgEl("circle", {cx:cx, cy:cy, r:rW, fill:"var(--card)", stroke:"none"}, g);
+  /* Nut in der Nabe: Der Ausschnitt nimmt die Schraffur wieder weg. */
+  kasten(g, cx - nb, yW - tN, 2 * nb, tN + 2, {fuell:"var(--card)",
+    ohneRand:true});
+  [-1, 1].forEach(function(v){
+    linie(g, cx + v * nb, yW - tN, cx + v * nb, yW, BREIT);
+  });
+  linie(g, cx - nb, yW - tN, cx + nb, yW - tN, BREIT);
+
+  /* Welle mit Nut: ein Umriss, kein aufgesetztes Rechteck. */
+  svgEl("path", {d:"M" + (cx - nb) + "," + yW
+    + " L" + (cx - nb) + "," + (yW + tW)
+    + " L" + (cx + nb) + "," + (yW + tW)
+    + " L" + (cx + nb) + "," + yW
+    + " A" + rW + "," + rW + " 0 1 1 " + (cx - nb) + "," + yW + " Z",
+    fill:mW, stroke:"currentColor", "stroke-width":BREIT}, g);
+
+  /* Die Feder wird quer geschnitten - also schraffiert, in dritter Richtung.
+     Ueber ihrem Ruecken bleibt Spiel: Sie traegt an den Flanken. */
+  kasten(g, cx - nb, yW - tN + 3, 2 * nb, tW + tN - 3, {fuell:"var(--card)"});
+  kasten(g, cx - nb, yW - tN + 3, 2 * nb, tW + tN - 3, {fuell:mF});
+  fbKreuz(g, cx, cy, rN);
   txt(g, 110, 132, "Feder in beiden Nuten", {groesse:9.5, deckung:0.75});
 };
 
 FUEGEBILDER.zahnwelle = function(g, svg, k){
-  fbTeil(g, svg, k, 74, 26, 84, 22, 2);
-  fbTeil(g, svg, k, 74, 92, 84, 22, 2);
-  fbVoll(g, 20, 58, 180, 24);                         /* Welle, ungeschnitten */
-  /* Die Zaehne sind angeformt - sie gehoeren zur Welle und bekommen deshalb
-     dieselbe deckende Flaeche und eine breite Kante. */
-  for(var i = 0; i < 6; i++){
-    fbVoll(g, 78 + i * 13, 48, 9, 10);
-    fbVoll(g, 78 + i * 13, 82, 9, 10);
+  /* Querschnitt: Die Zaehne laufen um den ganzen Umfang - laengs sieht man
+     davon nur Striche. */
+  var cx = 110, cy = 60, rF = 24, rK = 32, rN = 50, z = 8;
+  var mW = schraffur(svg, k + "_1", 45), mN = schraffur(svg, k + "_2", -45);
+
+  /* Das Zahnprofil einmal berechnen: Fuss - Flanke - Kopf - Flanke - Fuss. */
+  var p = [];
+  for(var i = 0; i < z; i++){
+    var a = i * 2 * Math.PI / z;
+    [[-0.30, rF], [-0.15, rK], [0.15, rK], [0.30, rF]].forEach(function(q){
+      p.push([(cx + Math.cos(a + q[0]) * q[1]).toFixed(1),
+              (cy + Math.sin(a + q[0]) * q[1]).toFixed(1)]);
+    });
   }
-  fbAchse(g, 10, 210, 70);
+  fbKreis(g, cx, cy, rN, mN);
+  /* Die Bohrung der Nabe ist die Gegenverzahnung - dasselbe Profil. */
+  fbVieleck(g, p, "var(--card)", false);
+  fbVieleck(g, p, mW);
+  fbKreuz(g, cx, cy, rN);
   txt(g, 110, 132, "Zähne teilen die Last", {groesse:9.5, deckung:0.75});
 };
 
 FUEGEBILDER.stift = function(g, svg, k){
-  fbTeil(g, svg, k, 20, 58, 180, 24, 1);
-  fbTeil(g, svg, k, 74, 30, 72, 28, 2);
-  fbTeil(g, svg, k, 74, 82, 72, 28, 2);
-  fbVoll(g, 104, 30, 12, 80);                         /* Stift, ungeschnitten */
+  /* Laengsschnitt: Die Welle wird laengs nicht geschnitten und bleibt
+     deshalb ohne Schraffur - die Nabe um sie herum ist geschnitten. */
+  var y = 70, rw = 15;
+  fbTeil(g, svg, k, 74, 30, 72, y - rw - 30, 2);
+  fbTeil(g, svg, k, 74, y + rw, 72, 110 - (y + rw), 2);
+  fbWelle(g, 16, y - rw, 188, 2 * rw);
+  fbVoll(g, 103, 30, 14, 80);                         /* Stift, ungeschnitten */
+  fbAchse(g, 8, 212, y);
   fbAchseV(g, 22, 118, 110);
-  txt(g, 110, 132, "Stift quer durch beide Teile", {groesse:9.5, deckung:0.75});
+  txt(g, 110, 132, "Stift quer durch Welle und Nabe",
+      {groesse:9.5, deckung:0.75});
 };
 
 FUEGEBILDER.schnapp = function(g, svg, k){
-  fbTeil(g, svg, k, 24, 40, 92, 24, 1);
-  /* Der Haken gehoert zum oberen Teil - dieselbe Schraffur, eine Kontur. */
-  svgEl("path", {d:"M116 40 L150 40 L150 58 L164 58 L164 70 L138 70 L138 52 L116 52 Z",
-    fill:schraffur(svg, k + "_1", 45), stroke:"currentColor",
-    "stroke-width":BREIT}, g);
-  fbTeil(g, svg, k, 24, 78, 114, 24, 2);
-  /* Die Kante, hinter der der Haken sitzt. */
-  fbTeil(g, svg, k, 138, 70, 26, 32, 2);
-  txt(g, 110, 132, "Haken rastet hinter der Kante ein", {groesse:9.5, deckung:0.75});
+  /* Der Haken steckt durch ein Loch im Blech, seine Nase liegt darunter.
+     Die schraegen Flanken sind die Einfuehrschraegen, die waagerechte
+     Flaeche darueber haelt. */
+  var m1 = schraffur(svg, k + "_1", 45);
+  fbTeil(g, svg, k, 20, 70, 80, 22, 2);               /* Blech, links */
+  fbTeil(g, svg, k, 136, 70, 64, 22, 2);              /* Blech, rechts */
+  /* Der Haken steht im Loch mit Spiel - sonst koennte er beim Stecken nicht
+     ausweichen. Seine Nase greift links und rechts deutlich unter das Blech. */
+  fbVieleck(g, [[104, 32], [132, 32], [132, 92], [148, 92], [134, 112],
+    [102, 112], [88, 92], [104, 92]], m1);
+  /* Der Pfeil zeigt, wie gefuegt wird - Erklaerung, keine Zeichnung. Er
+     steht ueber dem Haken, nicht ueber dem Blech. */
+  var e = svgEl("g", {"class":"erklaer"}, g);
+  linie(e, 118, 8, 118, 22, BREIT);
+  pfeil(e, 118, 28, 0, 1);
+  txt(e, 100, 20, "stecken", {anker:"end", groesse:9.5, deckung:0.8});
+  txt(g, 110, 132, "Nase rastet unter dem Blech ein",
+      {groesse:9.5, deckung:0.75});
 };
 
 FUEGEBILDER.bolzen = function(g, svg, k){
-  fbTeil(g, svg, k, 24, 36, 60, 20, 1);
-  fbTeil(g, svg, k, 24, 84, 60, 20, 1);
-  fbTeil(g, svg, k, 84, 58, 96, 24, 2);
-  fbVoll(g, 100, 28, 16, 84);                         /* Bolzen, ungeschnitten */
-  /* Splint: zwei Schenkel durch die Querbohrung. */
-  linie(g, 98, 104, 118, 104, BREIT);
-  linie(g, 105, 104, 105, 118, SCHMAL);
-  linie(g, 111, 104, 111, 118, SCHMAL);
-  fbAchseV(g, 20, 124, 108);
-  txt(g, 110, 132, "Bolzen gesichert mit Splint", {groesse:9.5, deckung:0.75});
+  /* Laengsschnitt durch den Bolzen: Gabel, Lasche, Gabel. Der Bolzen selbst
+     wird laengs nicht geschnitten. */
+  var y = 66, rb = 13;
+  fbTeil(g, svg, k, 46, 28, 26, 76, 1);               /* Gabel, beide Schenkel */
+  fbTeil(g, svg, k, 148, 28, 26, 76, 1);
+  fbTeil(g, svg, k, 72, 36, 76, 60, 2);               /* Lasche dazwischen */
+  fbVoll(g, 30, y - rb, 174, 2 * rb);                 /* Bolzen */
+  fbVoll(g, 22, y - 20, 8, 40);                       /* Bolzenkopf */
+  /* Splint durch die Querbohrung: Ring oben, Schenkel unten gespreizt. */
+  [-1, 1].forEach(function(v){
+    linie(g, 192 + v * 3, y - rb, 192 + v * 3, y + rb, SCHMAL);
+  });
+  /* Oben die Oese, unten die beiden aufgebogenen Schenkel - so sieht man,
+     dass es ein Splint ist und keine zweite Bohrung. */
+  svgEl("path", {d:"M186," + (y - rb) + " A6,8 0 0 1 198," + (y - rb),
+    fill:"none", stroke:"currentColor", "stroke-width":SCHMAL}, g);
+  linie(g, 189, y + rb, 181, y + rb + 16, SCHMAL);
+  linie(g, 195, y + rb, 203, y + rb + 16, SCHMAL);
+  fbAchse(g, 14, 212, y);
+  txt(g, 110, 132, "Bolzen im Auge, mit Splint gesichert",
+      {groesse:9.5, deckung:0.75});
 };
 
 FUEGEBILDER.falz = function(g, svg, k){
-  /* Zwei duenne Bleche, ineinander umgelegt - geschnitten, also schraffiert. */
-  svgEl("path", {d:"M20 54 L122 54 L122 80 L104 80 L104 68 L20 68 Z",
-    fill:schraffur(svg, k + "_1", 45), stroke:"currentColor",
-    "stroke-width":BREIT}, g);
-  svgEl("path", {d:"M200 80 L114 80 L114 46 L132 46 L132 66 L200 66 Z",
-    fill:schraffur(svg, k + "_2", -45), stroke:"currentColor",
-    "stroke-width":BREIT}, g);
-  txt(g, 110, 132, "Blechränder ineinander umgelegt", {groesse:9.5, deckung:0.75});
+  /* Zwei Blechraender, jeder um 180 Grad umgelegt und ineinander gehakt -
+     vier Lagen uebereinander. Vorher war es eine blosse Stufe. */
+  var m1 = schraffur(svg, k + "_1", 45), m2 = schraffur(svg, k + "_2", -45);
+  fbVieleck(g, [[20, 44], [150, 44], [150, 71], [105, 71], [105, 62],
+    [141, 62], [141, 53], [20, 53]], m1);
+  fbVieleck(g, [[200, 80], [80, 80], [80, 53], [132, 53], [132, 62],
+    [89, 62], [89, 71], [200, 71]], m2);
+  txt(g, 110, 132, "Blechränder ineinander gehakt",
+      {groesse:9.5, deckung:0.75});
 };
 
 FUEGEBILDER.schweissen = function(g, svg, k){
@@ -670,25 +822,40 @@ FUEGEBILDER.kleben = function(g, svg, k){
 };
 
 FUEGEBILDER.nieten = function(g, svg, k){
-  fbTeil(g, svg, k, 20, 50, 180, 18, 1);
-  fbTeil(g, svg, k, 20, 68, 180, 18, 2);
-  /* Der Niet wird nicht geschnitten: Schaft und beide Koepfe deckend. */
-  svgEl("path", {d:"M92 38 L128 38 L128 50 L120 50 L120 86 L128 86 L128 98 "
-    + "L92 98 L92 86 L100 86 L100 50 L92 50 Z", fill:"var(--card)",
-    stroke:"currentColor", "stroke-width":BREIT}, g);
-  fbAchseV(g, 28, 108, 110);
-  txt(g, 110, 124, "Schaft füllt und klemmt", {groesse:9.5, deckung:0.75});
+  /* Halbrundniet: Setzkopf und Schliesskopf sind Kalotten, nicht Kloetze.
+     Kopfdurchmesser rund 1,6 d, Kopfhoehe rund 0,6 d. */
+  var cx = 110, rd = 10, rk = 16, hk = 12, o = 50, u = 86;
+  fbTeil(g, svg, k, 20, o, 180, (u - o) / 2, 1);
+  fbTeil(g, svg, k, 20, (o + u) / 2, 180, (u - o) / 2, 2);
+  /* Der Niet wird nicht geschnitten: eine deckende Flaeche, eine Kontur. */
+  svgEl("path", {d:"M" + (cx - rk) + "," + o
+    + " A" + rk + "," + hk + " 0 0 1 " + (cx + rk) + "," + o
+    + " L" + (cx + rd) + "," + o
+    + " L" + (cx + rd) + "," + u
+    + " L" + (cx + rk) + "," + u
+    + " A" + rk + "," + hk + " 0 0 0 " + (cx - rk) + "," + u
+    + " L" + (cx - rd) + "," + u
+    + " L" + (cx - rd) + "," + o + " Z",
+    fill:"var(--card)", stroke:"currentColor", "stroke-width":BREIT}, g);
+  fbAchseV(g, 30, 108, cx);
+  txt(g, 110, 132, "Schaft füllt, Köpfe halten", {groesse:9.5, deckung:0.75});
 };
 
 FUEGEBILDER.clinchen = function(g, svg, k){
-  /* Zwei Bleche ineinander durchgesetzt - beide geschnitten, gegenlaeufig. */
-  svgEl("path", {d:"M20 50 L90 50 L96 66 L124 66 L130 50 L200 50 L200 64 L130 64 "
-    + "L126 78 L94 78 L90 64 L20 64 Z", fill:schraffur(svg, k + "_1", 45),
-    stroke:"currentColor", "stroke-width":BREIT}, g);
-  svgEl("path", {d:"M20 64 L90 64 L94 78 L126 78 L130 64 L200 64 L200 78 L134 78 "
-    + "L130 92 L90 92 L86 78 L20 78 Z", fill:schraffur(svg, k + "_2", -45),
-    stroke:"currentColor", "stroke-width":BREIT}, g);
-  txt(g, 110, 124, "Bleche ineinander durchgesetzt", {groesse:9.5, deckung:0.75});
+  /* Der Napf wird nach unten breiter - diese Hinterschneidung haelt die
+     Verbindung. Ohne sie waeren es nur zwei durchgedrueckte Bleche. */
+  /* Beide Bleche folgen derselben Napfform. Die Wand laeuft nach unten
+     auseinander - diese Hinterschneidung haelt die Verbindung.
+     Die Blechdicke ist senkrecht zur Wand abgetragen, nicht senkrecht nach
+     unten: Sonst wird die schraege Wand zum Strich. */
+  fbVieleck(g, [[16, 44], [96.7, 44], [82.7, 78], [137.3, 78], [123.3, 44],
+    [204, 44], [204, 53], [136.7, 53], [150.7, 87], [69.3, 87], [83.3, 53],
+    [16, 53]], schraffur(svg, k + "_1", 45));
+  fbVieleck(g, [[16, 53], [83.3, 53], [69.3, 87], [150.7, 87], [136.7, 53],
+    [204, 53], [204, 62], [150.2, 62], [164.2, 96], [55.9, 96], [69.9, 62],
+    [16, 62]], schraffur(svg, k + "_2", -45));
+  txt(g, 110, 132, "Bleche hinterschnitten durchgesetzt",
+      {groesse:9.5, deckung:0.75});
 };
 
 FUEGEBILDER.schraubkleben = function(g, svg, k){
