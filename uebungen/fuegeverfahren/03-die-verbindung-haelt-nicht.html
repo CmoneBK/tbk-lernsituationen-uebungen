@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Die Verbindung hält nicht</title>
+<meta name="description" content="Vier Schadensfälle aus der Werkstatt: Der Befund steht daneben – woran lag es wirklich?">
+<meta name="dauer" content="20 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/zeichnen.js"></script>
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .schaden{border:1px solid var(--border); border-radius:12px; padding:14px 16px;
+    margin:0 0 16px; background:var(--card)}
+  .schaden h3{margin:0 0 6px; font-size:1.02rem}
+  .schaden .zwei{display:grid; gap:14px; grid-template-columns:220px 1fr;
+    align-items:start}
+  @media (max-width:640px){ .schaden .zwei{grid-template-columns:1fr} }
+  .schaden figure{margin:0}
+  .schaden svg{width:100%; height:auto; display:block}
+  .schaden label{display:block; font-size:13.5px; font-weight:600; margin:10px 0 5px}
+  .schaden select{width:100%; font:inherit; font-size:14px; padding:8px 9px;
+    border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark)}
+  .schaden select:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+  .befund{font-size:14px; margin:0 0 6px}
+  .befund strong{color:var(--bad)}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Fügeverfahren im Überblick</p>
+    <h1>Die Verbindung hält nicht</h1>
+    <p class="lead">Vier Schäden aus der Werkstatt. Das Verfahren war jedes Mal
+      grundsätzlich brauchbar – nur nicht für <em>diese</em> Anforderung.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Ausgangslage:</strong> Vier Verbindungen sind ausgefallen. Der Befund
+      steht jeweils daneben – was man sieht, wenn man das Bauteil auseinandernimmt.</p>
+      <p>Die Frage ist nicht „welches Verfahren wäre besser gewesen", sondern:
+      <strong>Woran lag es wirklich?</strong> Zu jedem Fall stehen vier Erklärungen
+      zur Wahl. Drei davon beschreiben etwas, das es tatsächlich gibt – sie sind nur
+      nicht die Ursache.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Vier Befunde</h2>
+
+    <div id="schaeden"></div>
+
+    <details>
+      <summary>Lösung: was schiefging und was stattdessen zu tun war</summary>
+      <div id="loesungen"></div>
+    </details>
+
+    <h2><span class="nr">2</span>Die typischen Fehlgriffe</h2>
+    <p>Vier Fehler kommen immer wieder vor. Sie haben nichts mit schlechter Arbeit zu
+    tun, sondern mit einer Anforderung, an die beim Auswählen niemand gedacht hat.</p>
+
+    <div class="tabellenrahmen">
+      <table>
+        <thead>
+          <tr><th>Fehlgriff</th><th>Woran man es merkt</th><th>Der bessere Weg</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Formschluss bei wechselnder Last</td>
+            <td>ausgeschlagene Nuten und Bohrungen, Klappern im Betrieb</td>
+            <td>spielfreier Kraftschluss (Spannsatz, Pressverband) oder Formschluss
+              ohne Spiel (Polygonprofil)</td>
+          </tr>
+          <tr>
+            <td>Klebung auf Schälen belastet</td>
+            <td>die Schicht löst sich vom Rand her ab, oft schon bei kleiner Last</td>
+            <td>so gestalten, dass die Klebung auf Scherung oder Druck arbeitet
+              (Überlappstoß statt Stumpfstoß)</td>
+          </tr>
+          <tr>
+            <td>Schweißen an beschichtetem Blech</td>
+            <td>Poren in der Naht, Zinkdämpfe, verbrannte Beschichtung ringsum</td>
+            <td>Beschichtung entfernen und nachbehandeln – oder ein kaltes Verfahren
+              wählen (Clinchen, Kleben, Blindniet)</td>
+          </tr>
+          <tr>
+            <td>Kraftschluss ohne Klemmlänge</td>
+            <td>die Verbindung lockert sich schon nach kurzer Zeit</td>
+            <td>dickere Klemmlänge schaffen oder auf ein Verfahren für dünne Bleche
+              wechseln</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2><span class="nr">3</span>Übertragen</h2>
+
+    <details>
+      <summary>1. „Dann nehmen wir eben eine größere Schraube." Hilft das bei einer
+        Verbindung, die rutscht?</summary>
+      <p>Nur, wenn sie auch stärker angezogen wird. Was eine kraftschlüssige Verbindung
+      hält, ist die <em>Vorspannkraft</em> – nicht der Durchmesser. Eine größere Schraube
+      erlaubt eine höhere Vorspannkraft, aber erst das Anziehen erzeugt sie. Bleibt das
+      Drehmoment gleich, ändert sich fast nichts.</p>
+      <p>Oft ist die Reibung das eigentliche Problem: mehr Schrauben, eine rauere
+      Trennfuge oder ein zweites Reibpaar bringen mehr als ein größerer Durchmesser.</p>
+    </details>
+
+    <details>
+      <summary>2. Eine Klebung soll mehr tragen. Länger oder breiter überlappen?</summary>
+      <p><strong>Breiter.</strong> Die Spannung in einer Klebung sitzt an den Rändern
+      der Überlappung; die Mitte trägt kaum mit. Wird die Überlappung länger, wächst
+      vor allem die untätige Mitte. Eine breitere Klebung dagegen bekommt mehr belastete
+      Randlänge – die Bruchlast steigt fast im gleichen Maß.</p>
+    </details>
+
+    <details>
+      <summary>3. Warum steht in der Werkstatt manchmal „erst heften, dann schweißen"?</summary>
+      <p>Weil die Wärme das Bauteil verzieht. Heftstellen halten die Teile in Lage,
+      solange die Naht entsteht. Das gehört zur Gestaltung der Verbindung dazu – und es
+      ist derselbe Gedanke wie beim Löten, wo eine Vorrichtung oder ein Rändelpresssitz
+      die Position sichert, bis das Lot erstarrt ist.</p>
+    </details>
+
+    <details>
+      <summary>4. Eine Verbindung hält, klappert aber. Ist sie in Ordnung?</summary>
+      <p>Nein. Klappern heißt Spiel, und Spiel unter wechselnder Last heißt Verschleiß:
+      Bei jedem Lastwechsel schlägt das Bauteil an, die Flächen werden ausgeschlagen,
+      das Spiel wird größer. Das ist kein Zustand, sondern ein Verlauf – die Verbindung
+      wird von allein schlechter. Deshalb bewertet die Auswahlhilfe „wechselnde oder
+      stoßartige Last" beim Formschluss negativ.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Eine Verbindung fällt selten aus, weil das Verfahren
+      falsch war. Sie fällt aus, weil eine Anforderung beim Auswählen nicht auf dem
+      Zettel stand.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-ueberblick.html">Werkzeug „Fügeverfahren im Überblick“ öffnen</a>
+    </p>
+    <p class="fussnote">Die Zeichnungen zeigen die Verbindung im Neuzustand – den
+      Schaden beschreibt der Befund daneben.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Vier Schadensfaelle. Je Fall vier Erklaerungen: drei davon klingen
+   plausibel und beschreiben etwas, das es wirklich gibt - sie sind nur nicht
+   die Ursache. Eine Liste allgemeiner Anforderungen wuerde hier nicht tragen:
+   Beim verzinkten Blech ist es der Oberflaechenzustand, bei der Klebung die
+   Beanspruchungsart. */
+var SCHAEDEN = [
+  {
+    art: "passfeder", name: "Antrieb einer Stanzmaschine",
+    befund: "Nach vier Monaten klappert das Zahnrad auf der Welle. Wellennut und "
+      + "Nabennut sind an den Flanken ausgeschlagen, die Passfeder ist einseitig "
+      + "eingelaufen.",
+    antworten: [
+      "Die Passfeder war aus zu weichem Werkstoff.",
+      "Der Formschluss hat Spiel – bei stoßartiger Last schlägt er aus.",
+      "Das Drehmoment war zu hoch für den Wellendurchmesser.",
+      "Die Nabe saß nicht mittig auf der Welle."
+    ],
+    richtig: 1,
+    warum: "Eine Stanzmaschine belastet stoßartig, und jede Passfederverbindung "
+      + "hat etwas Spiel. Bei jedem Stoß schlägt die Feder gegen die Flanke; die "
+      + "Flächen werden ausgeschlagen, das Spiel wächst, die Schläge werden "
+      + "härter. Das ist kein Zustand, sondern ein Verlauf – die Verbindung wird "
+      + "von allein schlechter. Der Formschluss ist hier nicht falsch, er ist die "
+      + "falsche Wahl für wechselnde Last.",
+    stattdessen: "Ein spielfreier Kraftschluss: Kegelspannsatz oder Pressverband. "
+      + "Muss die Passfeder bleiben, kombiniert man sie mit einem Spannsatz oder "
+      + "geht auf ein Polygonprofil."
+  },
+  {
+    art: "kleben", name: "Abdeckblech an einem Gehäuse",
+    befund: "Das aufgeklebte Blech löst sich an einer Kante und lässt sich dann "
+      + "mit der Hand weiter abziehen. Die Klebschicht ist gleichmäßig, das Blech "
+      + "war entfettet, der Klebstoff vollständig ausgehärtet.",
+    antworten: [
+      "Die Klebefläche war zu klein.",
+      "Der Klebstoff war für Metall ungeeignet.",
+      "Die Klebung wurde auf Schälen belastet statt auf Scherung.",
+      "Die Aushärtezeit war zu kurz."
+    ],
+    richtig: 2,
+    warum: "Beim Schälen greift die Last nur an der vordersten Kante an – die "
+      + "übrige Fläche trägt gar nicht mit. Ist die Kante einmal offen, wandert "
+      + "der Riss von allein weiter, und die Größe der Klebefläche hilft nicht "
+      + "mehr. Das Tabellenbuch sagt es deutlich: Klebeverbindungen sollen auf Druck "
+      + "oder Scherung beansprucht werden; Zug-, Schäl- und Biegebeanspruchung sind "
+      + "zu vermeiden.",
+    stattdessen: "So gestalten, dass die Klebefläche auf Scherung arbeitet – "
+      + "Überlappstoß statt aufgesetztem Blech. Die Kanten zusätzlich mechanisch "
+      + "sichern (Falz, Clinchpunkt), damit dort kein Riss beginnen kann."
+  },
+  {
+    art: "schweissen", name: "Halter an einem verzinkten Blech",
+    befund: "Die Naht ist porig und unregelmäßig. Rings um die Naht ist die "
+      + "Verzinkung verbrannt; nach wenigen Wochen zeigt sich dort Rost.",
+    antworten: [
+      "Der Zusatzwerkstoff passte nicht zum Grundwerkstoff.",
+      "Es wurde mit zu geringer Stromstärke geschweißt.",
+      "Das Blech war für eine Schweißnaht zu dick.",
+      "Die Beschichtung durfte nicht aufgeschmolzen werden – Zink verdampft."
+    ],
+    richtig: 3,
+    warum: "Zink verdampft weit unter der Schmelztemperatur von Stahl. Der Dampf "
+      + "treibt in die erstarrende Naht und hinterlässt Poren, und ringsum ist der "
+      + "Korrosionsschutz weg – deshalb der Rost. Schweißen setzt voraus, dass man "
+      + "den Grundwerkstoff aufschmelzen darf. Hier durfte man das nicht, ohne die "
+      + "Beschichtung vorher zu entfernen und hinterher zu ersetzen.",
+    stattdessen: "Zink an der Nahtstelle entfernen und nachbehandeln – oder ein "
+      + "kaltes Verfahren wählen: Clinchen, Blindniet, Kleben."
+  },
+  {
+    art: "schraube", name: "Konsole an einem Blechschrank",
+    befund: "Die Konsole ist nach kurzer Zeit locker. Die Schrauben sitzen noch, "
+      + "lassen sich aber von Hand weiterdrehen. Das Blech ist an den Löchern "
+      + "eingedellt.",
+    antworten: [
+      "Es fehlte die Klemmlänge – im dünnen Blech entsteht kaum Vorspannkraft.",
+      "Die Festigkeitsklasse der Schrauben war zu niedrig.",
+      "Die Schrauben waren zu kurz gewählt.",
+      "Es wurde ohne Drehmomentschlüssel angezogen."
+    ],
+    richtig: 0,
+    warum: "Bei 1,5 mm Blech ist fast keine Klemmlänge da. Die Schraube wird beim "
+      + "Anziehen kaum gedehnt – schon ein geringes Setzen der Auflageflächen "
+      + "verbraucht die ganze Vorspannkraft. Dazu drückt sich der Kopf ins dünne "
+      + "Blech ein, was die Dellen erklärt. Die Verbindung war nicht zu schwach "
+      + "angezogen; sie konnte gar keine Vorspannkraft halten.",
+    stattdessen: "Klemmlänge schaffen: Distanzhülse, Verstärkungsblech, größere "
+      + "Unterlegscheibe. Oder ein Verfahren nehmen, das für dünne Bleche gemacht "
+      + "ist – Blindniet, Clinchen, Falz."
+  }
+];
+
+function el(id){ return document.getElementById(id); }
+
+function aufbauen(){
+  var ziel = el("schaeden"), loes = el("loesungen");
+
+  SCHAEDEN.forEach(function(s, i){
+    var k = document.createElement("div");
+    k.className = "schaden";
+    k.innerHTML = "<h3>" + (i + 1) + ". " + s.name + "</h3>"
+      + '<div class="zwei"><figure id="bild' + i + '"></figure><div>'
+      + '<p class="befund"><strong>Befund:</strong> ' + s.befund + "</p>"
+      + '<label for="a' + i + '">Woran lag es?</label>'
+      + "</div></div>";
+
+    var feld = document.createElement("select");
+    feld.id = "a" + i;
+    feld.setAttribute("data-druck", "ankreuzen");
+    var o0 = document.createElement("option");
+    o0.value = "";
+    o0.textContent = "— bitte wählen —";
+    feld.appendChild(o0);
+    s.antworten.forEach(function(text, j){
+      var o = document.createElement("option");
+      o.value = String(j);
+      o.textContent = text;
+      feld.appendChild(o);
+    });
+    feld.addEventListener("change", pruefen);
+    k.querySelector(".zwei > div").appendChild(feld);
+
+    var r = document.createElement("div");
+    r.className = "rueckmeldung";
+    r.id = "r" + i;
+    r.hidden = true;
+    k.querySelector(".zwei > div").appendChild(r);
+
+    ziel.appendChild(k);
+
+    fuegebild(bild("bild" + i, 220, 140, s.name), s.art);
+
+    var abs = document.createElement("div");
+    abs.innerHTML = "<p><strong>" + (i + 1) + ". " + s.name + " – "
+      + s.antworten[s.richtig] + "</strong> " + s.warum
+      + "</p><p><em>Stattdessen:</em> " + s.stattdessen + "</p>";
+    loes.appendChild(abs);
+  });
+}
+
+function pruefen(){
+  SCHAEDEN.forEach(function(s, i){
+    var f = el("a" + i), r = el("r" + i);
+    if(!f.value){ r.hidden = true; return; }
+    r.hidden = false;
+    if(Number(f.value) === s.richtig){
+      r.className = "rueckmeldung ja";
+      r.innerHTML = "<strong>Genau die.</strong> Die Begründung steht unten in der "
+        + "Lösung.";
+    } else {
+      r.className = "rueckmeldung fast";
+      r.innerHTML = "<strong>Noch nicht.</strong> Lies den Befund noch einmal: "
+        + "Er beschreibt, <em>wie</em> die Verbindung versagt hat – daraus folgt, "
+        + "was gefehlt hat.";
+    }
+  });
+}
+
+aufbauen();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

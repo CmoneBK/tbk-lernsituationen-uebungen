@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Begriffe der Fügetechnik</title>
+<meta name="description" content="Fachbegriff und Alltagssprache in beide Richtungen – mit wählbarer Richtung, Umfang und einer Tafel zum Nachlesen.">
+<meta name="dauer" content="10 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .frage{font-size:21px; line-height:1.4; font-weight:700; margin:0 0 4px;
+    min-height:1.4em}
+  .fragezeile{font-size:13.5px; color:var(--muted); margin:0 0 16px}
+  .wahl{display:grid; gap:10px; grid-template-columns:1fr 1fr}
+  @media (max-width:640px){ .wahl{grid-template-columns:1fr} }
+  .wahl button{
+    font:600 15px/1.35 inherit; cursor:pointer; padding:13px 15px; text-align:left;
+    border-radius:10px; border:1px solid var(--border-stark);
+    background:var(--bg); color:var(--fg);
+  }
+  .wahl button:hover:not(:disabled){border-color:var(--accent)}
+  .wahl button:disabled{cursor:default; opacity:.6}
+  .wahl button.war{opacity:1}
+  .wahl button.war.ok{border-color:var(--ok); background:rgba(22,163,74,.14)}
+  .wahl button.war.nein{border-color:var(--bad); background:rgba(220,38,38,.12)}
+
+  .uhr{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:13px; color:var(--muted); margin:0 0 10px;
+    font-variant-numeric:tabular-nums}
+  .fortschritt{height:8px; border-radius:999px; background:var(--border);
+    overflow:hidden; margin:0 0 16px}
+  .fortschritt i{display:block; height:100%; background:var(--accent);
+    transition:width .2s ease}
+  .bilanz{font-size:19px; font-weight:700; margin:0 0 8px}
+  .rueckblick{list-style:none; margin:12px 0 0; padding:0}
+  .rueckblick li{display:flex; gap:10px; align-items:baseline; padding:5px 0;
+    border-top:1px solid var(--border); font-size:14px}
+  .rueckblick .marke{font-weight:700; flex:0 0 auto}
+  .rueckblick .marke.ok{color:var(--ok)}
+  .rueckblick .marke.nein{color:var(--bad)}
+  .einstellung{display:flex; flex-wrap:wrap; gap:14px; align-items:flex-end}
+  .einstellung > div{flex:1 1 190px}
+  .einstellung label{display:block; font-size:13px; font-weight:700; margin:0 0 5px}
+  .einstellung select{width:100%; font:inherit; font-size:14px; padding:8px 9px;
+    border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark)}
+  .einstellung select:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+  table.tafel td:first-child{font-weight:600}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Fügeverfahren im Überblick</p>
+    <h1>Begriffe der Fügetechnik</h1>
+    <p class="lead">Vierzig Wörter, die in jeder Werkstatt fallen – in beide
+      Richtungen geübt.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Worum es geht:</strong> Wer „die Schicht, die klebt" sagt, wird
+      verstanden. Wer <em>Adhäsion</em> sagt, wird auch von der Kollegin am nächsten
+      Werk verstanden – und findet den Begriff im Tabellenbuch wieder.</p>
+      <p>Beide Richtungen sind wichtig: den Fachbegriff erklären können <em>und</em>
+      zu einer Umschreibung den Fachbegriff finden.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Durchgang</h2>
+
+    <div class="box">
+      <div class="einstellung">
+        <div>
+          <label for="richtung">Richtung</label>
+          <select id="richtung">
+            <option value="fach2alltag">Fachbegriff → was er bedeutet</option>
+            <option value="alltag2fach">Umschreibung → welcher Fachbegriff?</option>
+            <option value="gemischt" selected>gemischt</option>
+          </select>
+        </div>
+        <div>
+          <label for="umfang">Wie viele Begriffe?</label>
+          <select id="umfang"></select>
+        </div>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="uhr">
+        <span id="stand">Begriff 1 von 12</span>
+        <span id="zeit">0:00</span>
+      </div>
+      <div class="fortschritt"><i id="balken" style="width:0%"></i></div>
+
+      <p class="frage" id="frage">&ndash;</p>
+      <p class="fragezeile" id="fragezeile"></p>
+
+      <div class="wahl" id="wahl"></div>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+
+      <p>
+        <button type="button" class="knopf" id="btnWeiter" hidden>Weiter</button>
+        <button type="button" class="knopf leise" id="btnNeu">Von vorn</button>
+      </p>
+    </div>
+
+    <div id="ende" hidden>
+      <h3>Ergebnis</h3>
+      <div class="box">
+        <p class="bilanz" id="bilanz">&ndash;</p>
+        <p id="urteil"></p>
+        <div id="rueckblick"></div>
+      </div>
+    </div>
+
+    <h2><span class="nr">2</span>Die Tafel</h2>
+    <p>Alle Begriffe mit ihrer Umschreibung. Zum Nachlesen vor dem Durchgang – oder
+    danach, wenn etwas hängen geblieben ist.</p>
+
+    <div class="tabellenrahmen">
+      <table class="tafel">
+        <thead><tr><th>Fachbegriff</th><th>Was er bedeutet</th></tr></thead>
+        <tbody id="tafel"></tbody>
+      </table>
+    </div>
+
+    <h2><span class="nr">3</span>Warum zwei Ebenen?</h2>
+
+    <details>
+      <summary>1. Reicht die Alltagssprache nicht?</summary>
+      <p>Für den Moment ja, auf Dauer nicht. „Die Schicht, die klebt" beschreibt etwas,
+      aber sie trennt nicht zwischen <em>Adhäsion</em> (die Haftung an der Oberfläche)
+      und <em>Kohäsion</em> (der Zusammenhalt im Klebstoff selbst). Genau dieser
+      Unterschied entscheidet, ob eine Klebung am Blech abgeht oder in der Mitte
+      aufreißt – und damit, was man dagegen tut.</p>
+      <p>Dazu kommt: Im Gespräch mit Kolleginnen, Meistern und Lieferanten ist der
+      Fachbegriff die gemeinsame Sprache. Wer ihn nicht hat, muss jedes Mal umständlich
+      umschreiben – und wird leicht missverstanden.</p>
+    </details>
+
+    <details>
+      <summary>2. Muss man das alles auswendig können?</summary>
+      <p>Auswendig aufsagen muss niemand. Aber <em>wiedererkennen</em> muss man sie:
+      Wenn im Tabellenbuch „Lötspaltbreite" steht oder auf der Zeichnung
+      „Wärmeeinflusszone", muss klar sein, wovon die Rede ist. Dafür reicht es, die
+      Begriffe oft genug gesehen zu haben – genau dafür ist dieses Training da.</p>
+    </details>
+
+    <details>
+      <summary>3. Warum stehen manche Begriffe scheinbar doppelt da?</summary>
+      <p>Weil sie verschiedene Dinge meinen, die im Alltag gleich klingen.
+      <em>Grundwerkstoff</em> und <em>Zusatzwerkstoff</em> sind beim Schweißen zwei
+      verschiedene Sachen; <em>Setzkopf</em> und <em>Schließkopf</em> sind die beiden
+      Enden desselben Niets – nur entsteht der eine beim Herstellen und der andere
+      beim Setzen. Wer sie verwechselt, beschreibt die falsche Seite des Bauteils.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Der Fachbegriff ist keine Verzierung. Er ist die
+      kürzeste Art, genau eine Sache zu meinen.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>Im Werkzeug lassen sich dieselben Begriffe im Fließtext ein- und ausschalten –
+    jedes Wort ist einzeln anklickbar.</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-ueberblick.html" data-fach="1">Werkzeug „Fügeverfahren im Überblick“ öffnen</a>
+    </p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Dieselben Begriffe wie im Werkzeug - und in derselben Fassung, damit beide
+   vom selben reden. "f" ist der Fachbegriff, "a" die alltagssprachliche
+   Umschreibung. */
+var BEGRIFFE = [
+  {f:"Fügen", a:"zwei oder mehr Werkstücke dauerhaft zusammenbringen"},
+  {f:"Kraftschluss", a:"Halt durch Reibung"},
+  {f:"Formschluss", a:"Halt durch ineinandergreifende Formen"},
+  {f:"Stoffschluss", a:"Halt durch eine verbindende Schicht"},
+  {f:"Normalkraft", a:"Kraft senkrecht auf die Fläche"},
+  {f:"Reibkraft", a:"Kraft aus der Reibung"},
+  {f:"Reibungszahl", a:"Kennzahl für die Reibung"},
+  {f:"Vorspannkraft", a:"Spannkraft der angezogenen Schraube"},
+  {f:"Flächenpressung", a:"Pressung auf die Berührfläche"},
+  {f:"Trennfuge", a:"Berührstelle zwischen zwei Bauteilen"},
+  {f:"Querkraft", a:"Kraft von der Seite"},
+  {f:"Drehmoment", a:"das Drehen der Welle"},
+  {f:"Abscheren", a:"Durchtrennen quer zur Achse"},
+  {f:"Scherquerschnitt", a:"Querschnitt, der abgeschert wird"},
+  {f:"Kerbwirkung", a:"Spannungsspitze an einem Absatz"},
+  {f:"lösbar", a:"wieder auseinandernehmbar"},
+  {f:"unlösbar", a:"nur durch Zerstören trennbar"},
+  {f:"Übermaß", a:"Maß, um das die Welle größer ist als die Bohrung"},
+  {f:"Pressverband", a:"Sitz durch Aufschrumpfen oder Einpressen"},
+  {f:"Passfeder", a:"Leiste in der Nut"},
+  {f:"Wirkfläche", a:"Fläche, die die Kraft überträgt"},
+  {f:"Spiel", a:"bisschen Luft zwischen den Teilen"},
+  {f:"Grundwerkstoff", a:"der Werkstoff der Bauteile selbst"},
+  {f:"Zusatzwerkstoff", a:"Draht oder Stab, der beim Schweißen zugeführt wird"},
+  {f:"Schmelzbad", a:"Metall, das gerade flüssig ist"},
+  {f:"Lot", a:"Metall mit niedrigerem Schmelzpunkt"},
+  {f:"Lötspalt", a:"schmaler Zwischenraum, den das Lot füllt"},
+  {f:"Kapillarwirkung", a:"das Hineinziehen der Flüssigkeit in einen engen Spalt"},
+  {f:"Flussmittel", a:"Stoff, der die Oberfläche zum Löten sauber hält"},
+  {f:"Wärmeeinflusszone", a:"Zone, die die Hitze verändert hat"},
+  {f:"Benetzung", a:"Verteilung der Flüssigkeit auf der Oberfläche"},
+  {f:"Adhäsion", a:"Haftung an der Oberfläche"},
+  {f:"Kohäsion", a:"Festigkeit im Klebstoff selbst"},
+  {f:"Fügefläche", a:"Fläche, an der verbunden wird"},
+  {f:"Schälbeanspruchung", a:"Belastung, die eine Schicht von der Kante her abzieht"},
+  {f:"Umformen", a:"Verformen ohne Späne"},
+  {f:"Setzkopf", a:"Kopf, den der Niet schon mitbringt"},
+  {f:"Schließkopf", a:"Kopf, der beim Nieten erst entsteht"},
+  {f:"Durchsetzfügen", a:"Clinchen – Bleche ineinander drücken"},
+  {f:"Verbindungselement", a:"Teil, das die Verbindung herstellt"},
+  {f:"elastisch", a:"federnd, geht von allein zurück"},
+  {f:"plastisch", a:"bleibend verformt"}
+];
+
+function el(id){ return document.getElementById(id); }
+
+var runde = [], nr = 0, treffer = 0, offen = true, start = 0, uhr = null;
+
+function mischen(liste){
+  var a = liste.slice();
+  for(var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+function umfangFuellen(){
+  var feld = el("umfang"), vorher = Number(feld.value) || 0;
+  feld.textContent = "";
+  for(var n = 5; n <= BEGRIFFE.length; n++){
+    var o = document.createElement("option");
+    o.value = String(n);
+    o.textContent = n + (n === BEGRIFFE.length ? " (alle)" : "");
+    feld.appendChild(o);
+  }
+  feld.value = String(Math.min(Math.max(vorher || 12, 5), BEGRIFFE.length));
+}
+
+function zeitText(ms){
+  var s = Math.floor(ms / 1000);
+  return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2);
+}
+
+function uhrLaufen(){
+  if(uhr) clearInterval(uhr);
+  start = Date.now();
+  uhr = setInterval(function(){
+    el("zeit").textContent = zeitText(Date.now() - start);
+  }, 500);
+}
+
+function richtungFuer(){
+  var r = el("richtung").value;
+  if(r !== "gemischt") return r;
+  return Math.random() < 0.5 ? "fach2alltag" : "alltag2fach";
+}
+
+function neuerDurchgang(){
+  umfangFuellen();
+  runde = mischen(BEGRIFFE).slice(0, Number(el("umfang").value)).map(function(b){
+    return {begriff:b, richtung:richtungFuer()};
+  });
+  nr = 0;
+  treffer = 0;
+  el("ende").hidden = true;
+  el("rueckblick").textContent = "";
+  uhrLaufen();
+  zeigen();
+}
+
+/* Drei Ablenker aus derselben Liste - nie der gesuchte Begriff selbst. */
+function ablenker(richtig){
+  var rest = BEGRIFFE.filter(function(b){ return b.f !== richtig.f; });
+  return mischen(rest).slice(0, 3);
+}
+
+function zeigen(){
+  var e = runde[nr], b = e.begriff;
+  offen = true;
+
+  el("stand").textContent = "Begriff " + (nr + 1) + " von " + runde.length;
+  el("balken").style.width = (100 * nr / runde.length) + "%";
+
+  var fach = e.richtung === "fach2alltag";
+  el("frage").textContent = fach ? b.f : b.a;
+  el("fragezeile").textContent = fach
+    ? "Was bedeutet dieser Fachbegriff?"
+    : "Welcher Fachbegriff ist gemeint?";
+
+  var auswahl = mischen(ablenker(b).concat([b]));
+  var w = el("wahl");
+  w.textContent = "";
+  auswahl.forEach(function(k){
+    var kn = document.createElement("button");
+    kn.type = "button";
+    kn.textContent = fach ? k.a : k.f;
+    kn.addEventListener("click", function(){ antwort(k, kn); });
+    w.appendChild(kn);
+  });
+  e.auswahl = auswahl;
+
+  el("rueck").hidden = true;
+  el("btnWeiter").hidden = true;
+}
+
+function antwort(gewaehlt, knopf){
+  if(!offen) return;
+  offen = false;
+
+  var e = runde[nr], b = e.begriff;
+  var ok = gewaehlt.f === b.f;
+  if(ok) treffer++;
+  e.ok = ok;
+
+  var fach = e.richtung === "fach2alltag";
+  var knoepfe = el("wahl").querySelectorAll("button");
+  for(var i = 0; i < knoepfe.length; i++){
+    knoepfe[i].disabled = true;
+    if(e.auswahl[i].f === b.f) knoepfe[i].className = "war ok";
+  }
+  if(!ok) knopf.className = "war nein";
+
+  var r = el("rueck");
+  r.hidden = false;
+  r.className = "rueckmeldung " + (ok ? "ja" : "nein");
+  r.innerHTML = "<strong>" + b.f + "</strong> – " + b.a + "."
+    + (ok ? "" : " Gewählt war: <em>" + (fach ? gewaehlt.a : gewaehlt.f)
+      + "</em> – das gehört zu <strong>" + gewaehlt.f + "</strong>.");
+
+  el("btnWeiter").hidden = false;
+  el("btnWeiter").focus();
+}
+
+function weiter(){
+  nr++;
+  if(nr < runde.length){ zeigen(); return; }
+
+  if(uhr) clearInterval(uhr);
+  el("balken").style.width = "100%";
+  el("stand").textContent = "fertig";
+  el("ende").hidden = false;
+
+  el("bilanz").textContent = treffer + " von " + runde.length + " richtig, in "
+    + zeitText(Date.now() - start) + " min.";
+
+  var anteil = treffer / runde.length;
+  el("urteil").textContent = anteil === 1
+    ? "Sitzt. Nehmt beim nächsten Mal mehr Begriffe oder die andere Richtung."
+    : (anteil >= 0.8
+       ? "Fast vollständig – seht euch unten an, welche gefehlt haben."
+       : "Geht die Tafel einmal durch und startet dann neu. Es sind weniger, "
+         + "als es aussieht.");
+
+  var ul = document.createElement("ul");
+  ul.className = "rueckblick";
+  runde.forEach(function(e){
+    var li = document.createElement("li");
+    li.innerHTML = '<span class="marke ' + (e.ok ? "ok" : "nein") + '">'
+      + (e.ok ? "richtig" : "falsch") + "</span><span><strong>" + e.begriff.f
+      + "</strong> – " + e.begriff.a + "</span>";
+    ul.appendChild(li);
+  });
+  el("rueckblick").textContent = "";
+  el("rueckblick").appendChild(ul);
+  el("ende").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+function tafel(){
+  var ziel = el("tafel");
+  ziel.textContent = "";
+  BEGRIFFE.slice().sort(function(x, y){
+    return x.f.localeCompare(y.f, "de");
+  }).forEach(function(b){
+    var tr = document.createElement("tr");
+    tr.innerHTML = "<td>" + b.f + "</td><td>" + b.a + "</td>";
+    ziel.appendChild(tr);
+  });
+}
+
+el("btnWeiter").addEventListener("click", weiter);
+el("btnNeu").addEventListener("click", neuerDurchgang);
+el("richtung").addEventListener("change", neuerDurchgang);
+el("umfang").addEventListener("change", neuerDurchgang);
+
+tafel();
+neuerDurchgang();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

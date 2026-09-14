@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fertigungstechnik: Fügeverfahren - Der Gehäusedeckel</title>
+<meta name="description" content="Ein Gehäusedeckel, fünf Verbindungen: Anforderungen ziehen, Prinzip und Verfahren wählen, die Verschraubung nachweisen, Montage und Abnahme planen.">
+<meta name="dauer" content="240 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/zeichnen.js"></script>
+<style>
+  /* Nur was diese Lernsituation zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .bild{margin:16px 0 4px}
+  .bild svg{width:100%; height:auto; display:block}
+  .bild figcaption{font-size:13px; color:var(--muted); margin-top:6px; text-align:center}
+
+  /* Die Schritte der vollständigen Handlung als Marken über den Abschnitten. */
+  .schritt{
+    display:inline-block; font-size:12px; font-weight:700; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--accent); margin:26px 0 -4px;
+  }
+
+  .auftragskarte{
+    border-left:4px solid var(--accent); background:var(--card);
+    border-radius:0 12px 12px 0; padding:18px 20px; margin:16px 0;
+    box-shadow:var(--shadow);
+  }
+  .auftragskarte .von{font-size:13px; color:var(--muted); margin:0 0 8px}
+
+  .daten{display:flex; flex-wrap:wrap; gap:10px; margin:16px 0 0}
+  .daten div{
+    flex:1 1 150px; background:var(--bg); border:1px solid var(--border);
+    border-radius:10px; padding:10px 14px;
+  }
+  .daten .l{display:block; font-size:13px; color:var(--muted)}
+  .daten .v{font-size:18px; font-weight:700; font-variant-numeric:tabular-nums}
+
+  .haken{list-style:none; margin:8px 0 0; padding:0}
+  .haken li{padding:4px 0 4px 28px; position:relative}
+  .haken li::before{
+    content:"\2610"; position:absolute; left:0; top:2px;
+    font-size:18px; color:var(--muted);
+  }
+
+  .warnschild{
+    display:flex; gap:12px; align-items:flex-start;
+    border:1px solid var(--warn); border-left-width:4px; border-radius:10px;
+    background:var(--card); padding:12px 16px; margin:16px 0; font-size:15px;
+  }
+  .warnschild::before{content:"\26A0"; font-size:20px; line-height:1.1; color:var(--warn)}
+
+  /* Das Gesprächsprotokoll - Aussagen des Instandhalters, eine je Zeile. */
+  .protokoll{list-style:none; margin:14px 0 0; padding:0}
+  .protokoll li{
+    border-left:3px solid var(--border-stark); padding:6px 0 6px 14px;
+    margin:0 0 12px; font-size:15.5px;
+  }
+  .protokoll .wer{
+    display:block; font-size:12.5px; color:var(--muted); font-weight:700;
+    letter-spacing:.04em; margin:0 0 2px;
+  }
+
+  /* Die fünf Fügestellen, überall in derselben Reihenfolge und Farbe. */
+  .stelle{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:22px; height:22px; border-radius:50%; flex:0 0 auto;
+    background:var(--accent); color:#fff; font-size:13px; font-weight:700;
+    margin-right:8px; vertical-align:-4px;
+  }
+  table.stellen td:first-child{white-space:nowrap}
+  table.stellen select{
+    width:100%; font:inherit; font-size:14px; padding:7px 8px; border-radius:8px;
+    color:inherit; background:var(--bg); border:1px solid var(--border-stark);
+  }
+  table.stellen select:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+  .urteil{font-size:13.5px; line-height:1.4}
+  .urteil.ja{color:var(--ok)}
+  .urteil.nein{color:var(--bad)}
+
+  .rechenweg{
+    background:var(--bg); border:1px solid var(--border); border-radius:10px;
+    padding:14px 16px; margin:14px 0; font-variant-numeric:tabular-nums;
+  }
+  .rechenweg p{margin:0 0 9px}
+  .rechenweg p:last-child{margin:0}
+  .rechenweg .schluss{font-weight:700}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Lernsituation &middot; Fügeverfahren im Überblick</p>
+    <h1>Der Gehäusedeckel</h1>
+    <p class="lead">Ein Bauteil, fünf Verbindungen &ndash; und fünfmal eine andere
+      Antwort. Wer nur ein Verfahren kann, macht hier vier Fehler.</p>
+  </header>
+
+  <main class="wrap">
+
+    <p class="schritt">Schritt 1 &middot; Auftrag</p>
+    <h2><span class="nr">1</span>Der Auftrag</h2>
+
+    <div class="auftragskarte">
+      <p class="von">Werkstattauftrag 25-073 &middot; Instandhaltung &middot; Rührwerk R4</p>
+      <p>&bdquo;Am Rührwerk R4 ist der Getriebedeckel hinüber &ndash; beim letzten
+        Ölwechsel hat jemand das Schauglas herausgebrochen. Wir brauchen einen neuen
+        Deckel, und diesmal richtig.</p>
+      <p>Am alten Deckel war das Typenschild angenietet; durch die Nietlöcher ist Öl
+        gekommen. Die Tragöse war mit zwei Schrauben angesetzt und hat sich
+        losgerüttelt. Und der Deckel saß jedes Mal woanders, deshalb war die
+        Ölstandsmarke nie richtig.</p>
+      <p>Legt die Verbindungen am neuen Deckel fest, weist die Verschraubung nach
+        und schreibt auf, wie montiert wird. Nächsten Freitag ist Stillstand, dann
+        soll es passen.&ldquo;</p>
+    </div>
+
+    <figure class="bild" id="bildDeckel"></figure>
+
+    <div class="box">
+      <p><strong>Die fünf Verbindungen am neuen Deckel</strong></p>
+      <div class="tabellenrahmen">
+        <table class="stellen">
+          <thead><tr><th>Nr.</th><th>Verbindung</th><th>Was dort zusammenkommt</th></tr></thead>
+          <tbody>
+            <tr><td><span class="stelle">1</span></td>
+                <td>Deckel an Gehäuseflansch</td>
+                <td>S235 auf GJL-250, Öl unter Druck dahinter</td></tr>
+            <tr><td><span class="stelle">2</span></td>
+                <td>Lagesicherung des Deckels</td>
+                <td>S235 auf GJL-250, muss jedes Mal gleich sitzen</td></tr>
+            <tr><td><span class="stelle">3</span></td>
+                <td>Tragöse auf dem Deckel</td>
+                <td>S235 auf S235, hebt 18 kg beim Ausbau</td></tr>
+            <tr><td><span class="stelle">4</span></td>
+                <td>Typenschild auf dem Deckel</td>
+                <td>Aluminiumblech 0,8 mm auf S235</td></tr>
+            <tr><td><span class="stelle">5</span></td>
+                <td>Entlüftungsleitung am Stutzen</td>
+                <td>Kupferrohr &oslash; 10 in Messingfitting</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="box">
+      <p><strong>Was gegeben ist</strong></p>
+      <div class="daten">
+        <div><span class="l">Deckelöffnung</span><span class="v">&oslash; 200 mm</span></div>
+        <div><span class="l">Betriebsdruck im Gehäuse</span><span class="v">p = 6 bar</span></div>
+        <div><span class="l">Dichtfläche</span><span class="v">&oslash; 200 / &oslash; 230</span></div>
+        <div><span class="l">Mindestpressung der Dichtung</span><span class="v">p<sub>min</sub> = 4 N/mm&sup2;</span></div>
+        <div><span class="l">Deckel</span><span class="v">S235, 10 mm</span></div>
+        <div><span class="l">Gehäuseflansch</span><span class="v">GJL-250, 25 mm</span></div>
+        <div><span class="l">Schrauben am Umfang</span><span class="v">n = 8</span></div>
+        <div><span class="l">Lochkreis</span><span class="v">&oslash; 250 mm</span></div>
+        <div><span class="l">Angezogen mit</span><span class="v">Drehmomentschlüssel</span></div>
+      </div>
+      <p style="margin-top:14px">Die Mindestpressung der Dichtung kommt vom
+        Hersteller der Flachdichtung &ndash; das Tabellenbuch gibt dafür die Formel
+        (F<sub>K</sub> = p<sub>min</sub> &middot; A<sub>Dicht</sub>), nicht den Wert.
+        Alle anderen Zahlen dieser Lernsituation stehen im Tabellenbuch; wo, sagt
+        Teil 9.</p>
+    </div>
+
+    <div class="box auftrag">
+      <p><strong>Was am Ende vorliegen soll</strong></p>
+      <ul class="haken">
+        <li>Liste der Anforderungen, aus dem Auftragsgespräch abgeleitet</li>
+        <li>Für jede der fünf Stellen: Wirkprinzip und Verfahren, begründet</li>
+        <li>Für jede Stelle eine verworfene Alternative mit dem Grund</li>
+        <li>Nachweis der Verschraubung: Größe, Klasse, Anziehdrehmoment</li>
+        <li>Montageplan und Demontageplan</li>
+        <li>Schnittzeichnung der Verschraubung, Fügesymbole für die übrigen Stellen</li>
+        <li>Prüfprotokoll für die Abnahme</li>
+      </ul>
+    </div>
+
+    <p class="schritt">Schritt 2 &middot; Informieren</p>
+    <h2><span class="nr">2</span>Was wirklich gefordert ist</h2>
+
+    <p>Im Auftrag steht kein einziges Verfahren &ndash; aber jede Menge
+    Anforderungen. Sie stecken in dem, was der Instandhalter erzählt hat. Zieht sie
+    heraus, bevor ihr über Schrauben oder Schweißnähte redet.</p>
+
+    <ul class="protokoll">
+      <li><span class="wer">Instandhalter</span>&bdquo;Alle 2000 Betriebsstunden
+        muss der Deckel runter, Ölwechsel und Sichtprüfung. Das sind zwei- bis
+        dreimal im Jahr.&ldquo;</li>
+      <li><span class="wer">Instandhalter</span>&bdquo;Da drin steht Öl unter
+        Druck. Wenn da was rausläuft, steht die ganze Linie.&ldquo;</li>
+      <li><span class="wer">Instandhalter</span>&bdquo;Durch die Nietlöcher vom
+        Typenschild ist Öl gekommen. Wir haben das zweimal nachgedichtet, dann
+        haben wir das Schild abgemacht &ndash; und seitdem weiß keiner mehr, welches
+        Getriebe das ist.&ldquo;</li>
+      <li><span class="wer">Instandhalter</span>&bdquo;Das Ding wiegt achtzehn Kilo.
+        Von Hand hebt das keiner sauber raus, das muss an den Kran.&ldquo;</li>
+      <li><span class="wer">Instandhalter</span>&bdquo;Der Deckel saß jedes Mal ein
+        paar Grad anders. Die Ölstandsmarke muss aber genau über dem Schauglas
+        stehen, sonst lest ihr Mist ab.&ldquo;</li>
+      <li><span class="wer">Instandhalter</span>&bdquo;Die Tragöse war
+        angeschraubt. Bei dem Rührwerk rüttelt es ständig &ndash; nach einem halben
+        Jahr waren die Schrauben lose.&ldquo;</li>
+      <li><span class="wer">Instandhalter</span>&bdquo;Die Entlüftung ist ein
+        Kupferrohr. Das geht an einen Messingfitting, den wir schon
+        dranhaben.&ldquo;</li>
+      <li><span class="wer">Meister</span>&bdquo;Einer. Wir bauen keine Serie. Was
+        ihr braucht, holt ihr aus dem Lager.&ldquo;</li>
+    </ul>
+
+    <p>Tragt zuerst im Team ein, welche Anforderung in jedem Satz steckt. Dann
+    aufklappen.</p>
+
+    <details>
+      <summary>1. Die Anforderungen, Satz für Satz</summary>
+      <div class="tabellenrahmen">
+        <table>
+          <thead><tr><th>Aus dem Gespräch</th><th>Anforderung</th><th>betrifft</th></tr></thead>
+          <tbody>
+            <tr><td>alle 2000 h runter</td><td>muss zerstörungsfrei lösbar sein &ndash; und zwar oft</td><td>1, 2</td></tr>
+            <tr><td>Öl unter Druck</td><td>muss dicht sein</td><td>1, 5</td></tr>
+            <tr><td>Nietlöcher haben geleckt</td><td>kein Loch durch den Deckel &ndash; und trotzdem dauerhaft beschriftet</td><td>4</td></tr>
+            <tr><td>achtzehn Kilo, an den Kran</td><td>muss eine Hebelast von 18 kg sicher tragen</td><td>3</td></tr>
+            <tr><td>saß jedes Mal anders</td><td>genaue Lage dauerhaft sichern, wiederholbar</td><td>2</td></tr>
+            <tr><td>rüttelt ständig, Schrauben lose</td><td>hält bei wechselnder, stoßartiger Last</td><td>3</td></tr>
+            <tr><td>Kupfer an Messing</td><td>verschiedene Werkstoffe verbinden, dicht</td><td>5</td></tr>
+            <tr><td>Einzelstück aus dem Lager</td><td>keine Sonderteile, keine Vorrichtung, Werkstattmittel</td><td>alle</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Acht Sätze, acht Anforderungen &ndash; und keine davon nennt ein Verfahren.
+      Genau so kommt ein Auftrag in der Werkstatt an.</p>
+    </details>
+
+    <details>
+      <summary>2. Zwei Anforderungen widersprechen sich. Welche?</summary>
+      <p><strong>&bdquo;Muss dicht sein&ldquo;</strong> und
+      <strong>&bdquo;muss oft lösbar sein&ldquo;</strong> &ndash; an derselben
+      Stelle, nämlich Nr. 1.</p>
+      <p>Der Stoffschluss dichtet von selbst, lässt sich aber nur zerstörend lösen.
+      Der Kraftschluss lässt sich lösen, dichtet aber nicht von allein. Beides
+      zugleich gibt es in keinem der sechzehn Verfahren.</p>
+      <p>Aufgelöst wird das nicht durch ein Verfahren, sondern durch ein
+      <em>zusätzliches Teil</em>: eine Dichtung. Das Verfahren liefert die Kraft,
+      die Dichtung liefert die Dichtheit. Merkt euch den Zug &ndash; er kommt bei
+      fast jedem Deckel, jedem Flansch und jeder Rohrverbindung wieder.</p>
+    </details>
+
+    <details>
+      <summary>3. Warum die Nietlöcher überhaupt ein Problem waren</summary>
+      <p>Weil der Deckel eine <em>Wand des Druckraums</em> ist. Jedes Loch, das
+      hindurchgeht, ist ein möglicher Leckweg &ndash; auch ein Nietloch, das der Niet
+      ja &bdquo;ausfüllt&ldquo;. Ein gestauchter Nietschaft füllt die Bohrung
+      formschlüssig, aber er dichtet nicht; dafür bräuchte es einen Dichtniet oder
+      eine Dichtmasse.</p>
+      <p>Die Regel dahinter ist einfacher, als sie klingt: <strong>Verfahren, die
+      ein Loch brauchen, haben in einer Druckwand nichts verloren</strong> &ndash;
+      es sei denn, das Loch wird eigens abgedichtet. Das trifft Nieten, Schrauben,
+      Stifte und Clinchen gleichermaßen.</p>
+    </details>
+
+    <div class="warnschild">
+      <div>Die Anforderungen kommen aus dem Gespräch, nicht aus dem Katalog. Wer
+      mit &bdquo;wir nehmen Schrauben, das haben wir immer so gemacht&ldquo;
+      anfängt, hat die Hälfte davon nie gelesen.</div>
+    </div>
+
+    <p class="schritt">Schritt 3 &middot; Planen</p>
+    <h2><span class="nr">3</span>Das Prinzip je Fügestelle</h2>
+
+    <p>Erst das Prinzip, dann das Verfahren. Das ist keine Formsache: Steht das
+    Prinzip fest, bleiben höchstens noch vier Verfahren übrig &ndash; und die
+    unterscheiden sich dann nur noch in Aufwand und Werkstoff.</p>
+
+    <p>Entscheidet für jede Stelle, was die Kraft übertragen soll. Die Rückmeldung
+    sagt, ob die Anforderungen dazu passen.</p>
+
+    <div class="box">
+      <div class="tabellenrahmen">
+        <table class="stellen">
+          <thead>
+            <tr><th>Stelle</th><th>Wirkprinzip</th><th>Urteil</th></tr>
+          </thead>
+          <tbody id="prinzipien"></tbody>
+        </table>
+      </div>
+      <p style="margin-top:14px">
+        <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+        <button type="button" class="knopf leise" id="btnZurueck">Zurücksetzen</button>
+      </p>
+    </div>
+
+    <details>
+      <summary>Die Auflösung &ndash; und warum</summary>
+      <div id="aufloesung"></div>
+      <p>Auffällig: Drei der fünf Stellen sind Stoffschluss &ndash; und trotzdem
+      kommen drei <em>verschiedene</em> Verfahren heraus. Stoffschluss heißt nur,
+      dass eine Schicht die Kraft überträgt. Ob das aufgeschmolzener Grundwerkstoff,
+      ein Lot oder ein Klebstoff ist, entscheidet erst der nächste Schritt.</p>
+    </details>
+
+    <p class="schritt">Schritt 4 &middot; Entscheiden</p>
+    <h2><span class="nr">4</span>Das Verfahren &ndash; und was dagegen sprach</h2>
+
+    <p>Ein Verfahren zu nennen ist leicht. Eine Entscheidung wird daraus erst, wenn
+    ihr sagen könnt, was ihr <em>nicht</em> genommen habt und warum. Füllt die
+    rechte Spalte im Team aus, bevor ihr aufklappt.</p>
+
+    <div class="tabellenrahmen">
+      <table>
+        <thead>
+          <tr><th>Stelle</th><th>gewählt</th><th>naheliegende Alternative &ndash; und was dagegen spricht</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><span class="stelle">1</span> Deckel</td><td></td><td></td></tr>
+          <tr><td><span class="stelle">2</span> Lage</td><td></td><td></td></tr>
+          <tr><td><span class="stelle">3</span> Tragöse</td><td></td><td></td></tr>
+          <tr><td><span class="stelle">4</span> Schild</td><td></td><td></td></tr>
+          <tr><td><span class="stelle">5</span> Rohr</td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <details>
+      <summary>1. Deckel an Gehäuseflansch &ndash; Schraubverbindung mit Flachdichtung</summary>
+      <p>Acht Sechskantschrauben am Umfang, eingeschraubt in Grundlöcher im
+      Gussflansch, dazwischen eine Flachdichtung. Der Kraftschluss überträgt und
+      presst die Dichtung; die Dichtung erledigt die Dichtheit.</p>
+      <div class="tabellenrahmen">
+        <table>
+          <thead><tr><th>Verworfen</th><th>Grund</th></tr></thead>
+          <tbody>
+            <tr><td>Schweißen</td><td>unlösbar &ndash; und der Deckel muss dreimal im Jahr runter. Dazu Stahl auf Grauguss: schweißbar nur mit Sonderelektrode und Vorwärmen.</td></tr>
+            <tr><td>Kleben</td><td>ebenfalls unlösbar, und die Klebefläche stünde am Rand unter Schälbeanspruchung, sobald der Druck den Deckel anhebt.</td></tr>
+            <tr><td>Schnappverbindung</td><td>hält die nötige Kraft nicht und lässt sich nicht so anpressen, dass eine Dichtung trägt.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details>
+      <summary>2. Lagesicherung &ndash; zwei Zylinderstifte</summary>
+      <p>Zwei Zylinderstifte ISO 2338 im Flansch, so weit wie möglich auseinander.
+      Der Deckel wird über die Stifte aufgesetzt und sitzt dann jedes Mal gleich.
+      Die Stifte tragen keine Betriebslast &ndash; sie geben nur die Lage vor.</p>
+      <div class="tabellenrahmen">
+        <table>
+          <thead><tr><th>Verworfen</th><th>Grund</th></tr></thead>
+          <tbody>
+            <tr><td>Anrisse oder eine Körnermarke</td><td>Das ist kein Formschluss, sondern eine Bitte. Beim nächsten Einbau in der Nachtschicht steht der Deckel wieder schief.</td></tr>
+            <tr><td>Passschrauben statt Stifte</td><td>ginge, verteuert aber jede der acht Schrauben und macht die Montage empfindlich. Zwei Stifte reichen, um eine Lage festzulegen.</td></tr>
+            <tr><td>Nur eine Schraube als Passschraube</td><td>Ein Punkt legt die Lage nicht fest &ndash; der Deckel kann sich noch darum drehen. Für eine Lage braucht es zwei Punkte.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="warnschild">
+        <div>Die Stiftbohrungen gehen nur in den Flansch, nicht durch den Deckel
+        in den Ölraum. Sonst wäre es derselbe Fehler wie beim angenieteten
+        Typenschild.</div>
+      </div>
+    </details>
+
+    <details>
+      <summary>3. Tragöse &ndash; angeschweißt</summary>
+      <p>Eine Öse aus Flachstahl, mit einer umlaufenden Kehlnaht auf den Deckel
+      geschweißt. Stahl auf Stahl, unlösbar erwünscht, tragende Last, und die
+      Schweißnaht ist gegen das Rütteln unempfindlich, solange sie kerbarm
+      ausgeführt ist.</p>
+      <div class="tabellenrahmen">
+        <table>
+          <thead><tr><th>Verworfen</th><th>Grund</th></tr></thead>
+          <tbody>
+            <tr><td>Angeschraubt (die alte Lösung)</td><td>Genau das ist ausgefallen: Bei dauernder Erschütterung verliert eine kurz geklemmte Schraubverbindung ihre Vorspannkraft und dreht sich los.</td></tr>
+            <tr><td>Eingeschraubte Ringschraube DIN 580</td><td>bräuchte ein Gewinde im 10-mm-Deckel &ndash; entweder ein Sackloch mit zu wenig Einschraubtiefe oder ein Durchgangsloch in den Ölraum.</td></tr>
+            <tr><td>Geklebt</td><td>Eine Hebeöse zieht senkrecht an der Fläche. Das ist Zug- und Schälbeanspruchung, und genau davon rät das Tabellenbuch bei Klebungen ab.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="fussnote">Zur Schweißnaht selbst gibt es eine eigene Lektion mit
+      eigenen Übungen. Hier zählt nur die Entscheidung <em>für</em> das Schweißen.</p>
+    </details>
+
+    <details>
+      <summary>4. Typenschild &ndash; geklebt</summary>
+      <p>Aluminiumschild 0,8 mm, vollflächig aufgeklebt. Kein Loch, keine Wärme,
+      kein Verzug &ndash; und die Klebefläche wird nur auf Scherung beansprucht,
+      weil nichts daran zieht.</p>
+      <div class="tabellenrahmen">
+        <table>
+          <thead><tr><th>Verworfen</th><th>Grund</th></tr></thead>
+          <tbody>
+            <tr><td>Nieten (die alte Lösung)</td><td>Das Loch geht durch die Druckwand. Genau daher kam das Öl.</td></tr>
+            <tr><td>Schweißen oder Löten</td><td>Aluminium auf Stahl lässt sich nicht ohne Weiteres schweißen; die Wärme würde das dünne Schild und den Deckel verziehen, und das Schild wäre unleserlich.</td></tr>
+            <tr><td>Clinchen</td><td>braucht Zugang von beiden Seiten und verformt den Deckel &ndash; an einer Dichtfläche keine gute Idee.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Beim Klebstoff entscheidet die Betriebstemperatur. Das Getriebe wird im
+      Betrieb warm; ein Klebstoff mit 40 °C zulässiger Betriebstemperatur ist damit
+      raus. Die Übersicht im Tabellenbuch nennt für die üblichen Metallklebstoffe
+      50 bis 170 °C &ndash; danach wird ausgewählt, nicht nach dem Regal.</p>
+    </details>
+
+    <details>
+      <summary>5. Entlüftungsleitung &ndash; hartgelötet</summary>
+      <p>Kupferrohr in den Messingfitting geschoben und hartgelötet. Das
+      Tabellenbuch nennt als Anwendungsbeispiel für das Löten wörtlich
+      &bdquo;Rohre und Fittings&ldquo;. Der Spalt wird durch die Kapillarwirkung
+      gefüllt, das Lot haftet an beiden Werkstoffen, die Verbindung ist dicht.</p>
+      <div class="tabellenrahmen">
+        <table>
+          <thead><tr><th>Verworfen</th><th>Grund</th></tr></thead>
+          <tbody>
+            <tr><td>Schweißen</td><td>Kupfer und Messing schmelzen bei sehr verschiedenen Temperaturen; das Zink im Messing verdampft. Praktisch nicht beherrschbar.</td></tr>
+            <tr><td>Kleben</td><td>Öl, Wärme und der Druck in der Leitung sprechen dagegen &ndash; und eine Rohrklebung lässt sich kaum prüfen.</td></tr>
+            <tr><td>Klemmringverschraubung</td><td>Das wäre die ernsthafte Alternative: lösbar, dicht, kalt. Sie kostet mehr, braucht Bauraum für den Schlüssel und ein Teil, das im Lager sein muss. Wer sie wählt und das begründet, hat recht &ndash; hier wird gelötet, weil der Fitting schon dran ist.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Die Begründung für ein Verfahren steckt nicht in
+      seinen Vorteilen, sondern in den Nachteilen der anderen.
+    </div>
+
+    <p class="schritt">Schritt 5 &middot; Ausführen</p>
+    <h2><span class="nr">5</span>Die Verschraubung festlegen</h2>
+
+    <p>Für die Stellen 2 bis 5 ist mit der Wahl des Verfahrens alles Wesentliche
+    entschieden. Bei Stelle 1 nicht: Dort muss die Verbindung eine Dichtung pressen
+    <em>und</em> den Druck aushalten. Also muss eine Zahl her.</p>
+
+    <figure class="bild" id="bildSchnitt"></figure>
+
+    <h3 data-bg-ohne="bfs-hs10 bfs-for">Weg A &ndash; nachgerechnet</h3>
+
+    <div data-bg-ohne="bfs-hs10 bfs-for">
+      <details>
+        <summary>1. Welche Kräfte kommen an der Verschraubung an?</summary>
+        <p>Zwei, und sie kommen aus ganz verschiedenen Richtungen:</p>
+        <ul>
+          <li><strong>Die Dichtung will gepresst werden.</strong> Damit sie dichtet,
+            braucht sie eine Mindestpressung &ndash; gleichmäßig über die ganze
+            Ringfläche. Das Tabellenbuch schreibt das als Mindestklemmkraft
+            F<sub>K</sub> = p<sub>min</sub> &middot; A<sub>Dicht</sub>.</li>
+          <li><strong>Der Druck will den Deckel abheben.</strong> Der Öldruck wirkt
+            auf die ganze Deckelfläche und zieht an den Schrauben:
+            F<sub>A</sub> = p &middot; A.</li>
+        </ul>
+        <p>Der zweite Anteil landet aber nicht vollständig in den Schrauben. Ein Teil
+        entlastet die verspannten Teile. Das Kraftverhältnis &phi; sagt, wie es sich
+        aufteilt; für eine Schaftschraube nennt das Tabellenbuch &phi; &asymp; 0,6.
+        In der Verspannung der Bauteile fehlt dann
+        F<sub>PA</sub> = F<sub>A</sub> &middot; (1 &minus; &phi;) &ndash; und genau
+        das muss die Montagevorspannkraft mitbringen.</p>
+      </details>
+
+      <details>
+        <summary>2. Die Rechnung</summary>
+        <div class="rechenweg">
+          <p><strong>Abhebekraft aus dem Druck</strong></p>
+          <p>A = &pi;/4 &middot; (200 mm)&sup2; = 31 416 mm&sup2;</p>
+          <p>p = 6 bar = 0,6 N/mm&sup2;</p>
+          <p>F<sub>A</sub> = 0,6 N/mm&sup2; &middot; 31 416 mm&sup2;
+            = 18 850 N &asymp; 18,9 kN</p>
+        </div>
+        <div class="rechenweg">
+          <p><strong>Klemmkraft für die Dichtung</strong></p>
+          <p>A<sub>Dicht</sub> = &pi;/4 &middot; (230&sup2; &minus; 200&sup2;) mm&sup2;
+            = &pi;/4 &middot; 12 900 mm&sup2; = 10 132 mm&sup2;</p>
+          <p>F<sub>K</sub> = 4 N/mm&sup2; &middot; 10 132 mm&sup2;
+            = 40 528 N &asymp; 40,5 kN</p>
+        </div>
+        <div class="rechenweg">
+          <p><strong>Verlust an Verspannung durch den Betriebsdruck</strong></p>
+          <p>F<sub>PA</sub> = F<sub>A</sub> &middot; (1 &minus; &phi;)
+            = 18 850 N &middot; (1 &minus; 0,6) = 7 540 N &asymp; 7,5 kN</p>
+        </div>
+        <div class="rechenweg">
+          <p><strong>Montagevorspannkraft, alle acht Schrauben zusammen</strong></p>
+          <p>&alpha;<sub>A</sub> = 1,6 (Drehmomentschlüssel, unterer Wert der
+            Tabelle)</p>
+          <p>F<sub>Mmax</sub> = &alpha;<sub>A</sub> &middot; (F<sub>K</sub> + F<sub>PA</sub>)
+            = 1,6 &middot; (40 528 + 7 540) N = 76 909 N &asymp; 76,9 kN</p>
+          <p class="schluss">je Schraube: 76 909 N / 8 = 9 614 N &asymp; 9,6 kN</p>
+        </div>
+        <p>Der Setzkraftverlust F<sub>Z</sub> ist hier weggelassen. Das Tabellenbuch
+        nennt ihn in der Formel, gibt aber keine Zahlenwerte an &ndash; wir halten
+        das offen und fangen es über das Nachziehen auf (Teil 6).</p>
+      </details>
+
+      <details>
+        <summary>3. Die Schraube wählen und das Drehmoment bestimmen</summary>
+        <p>Gesucht ist eine Schraube, die 9,6 kN sicher aushält. Die Tabelle der
+        maximalen Vorspannkräfte nennt für eine Reibungszahl von 0,12 (phosphatiert,
+        leicht geölt):</p>
+        <div class="tabellenrahmen">
+          <table>
+            <thead><tr><th>Gewinde</th><th>Klasse</th><th class="zahl">F<sub>V</sub></th><th class="zahl">M<sub>A</sub></th></tr></thead>
+            <tbody>
+              <tr><td>M8</td><td>8.8</td><td class="zahl">18,6 kN</td><td class="zahl">24,6 N&middot;m</td></tr>
+              <tr><td>M10</td><td>8.8</td><td class="zahl">29,6 kN</td><td class="zahl">48 N&middot;m</td></tr>
+              <tr><td>M12</td><td>8.8</td><td class="zahl">43,0 kN</td><td class="zahl">84 N&middot;m</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>M8 &middot; 8.8</strong> reicht: 9,6 kN von 18,6 kN sind rund 52 %
+        der zulässigen Vorspannkraft.</p>
+        <div class="warnschild">
+          <div>Jetzt aber nicht mit 24,6 N&middot;m anziehen. Der Tabellenwert
+          gehört zur <em>vollen</em> Vorspannkraft von 18,6 kN &ndash; damit würde
+          die Dichtung mit dem Doppelten gepresst und plattgedrückt.</div>
+        </div>
+        <div class="rechenweg">
+          <p><strong>Anziehdrehmoment für die gesuchte Vorspannkraft</strong></p>
+          <p>Bei gleicher Reibung ist M<sub>A</sub> der Vorspannkraft proportional:</p>
+          <p>M<sub>A</sub> = 24,6 N&middot;m &middot; 9,6 kN / 18,6 kN
+            = 12,7 N&middot;m</p>
+          <p class="schluss">Angezogen wird mit rund 13 N&middot;m.</p>
+        </div>
+      </details>
+
+      <details>
+        <summary>4. Hält die Auflagefläche das aus?</summary>
+        <p>Der Schraubenkopf drückt auf den Deckel aus S235. Wenn die Pressung dort
+        zu hoch wird, gräbt sich der Kopf ein &ndash; und die Vorspannkraft ist
+        weg, ohne dass jemand etwas falsch gemacht hätte.</p>
+        <div class="rechenweg">
+          <p>d<sub>w</sub> = 11,6 mm (Kopfauflage M8) &middot; d<sub>h</sub> = 9,0 mm
+            (Durchgangsloch, Reihe mittel)</p>
+          <p>A<sub>P</sub> = &pi;/4 &middot; (11,6&sup2; &minus; 9,0&sup2;) mm&sup2;
+            = 42,1 mm&sup2;</p>
+          <p>p<sub>vorh</sub> = 9 614 N / 42,1 mm&sup2; = 228 N/mm&sup2;</p>
+          <p>p<sub>max</sub> = 228 N/mm&sup2; &middot; 1,4 = 320 N/mm&sup2;</p>
+          <p>p<sub>G</sub>(S235JR) = 490 N/mm&sup2;</p>
+          <p class="schluss">S<sub>P</sub> = 490 / 320 = 1,53 &ge; 1 &nbsp;&#10003;</p>
+        </div>
+        <p>Hätte der Deckel aus einer Aluminium-Gusslegierung bestanden
+        (p<sub>G</sub> = 200 N/mm&sup2;), wäre der Nachweis nicht aufgegangen &ndash;
+        dann bräuchte es Scheiben, um die Fläche zu vergrößern.</p>
+      </details>
+
+      <details>
+        <summary>5. Länge und Bezeichnung</summary>
+        <p>Das Gewinde sitzt im Grauguss. Das Tabellenbuch fordert für
+        Gusseisenwerkstoffe und Klasse 8.8 eine Mindesteinschraubtiefe von
+        1,5 &middot; d, also 1,5 &middot; 8 mm = 12 mm.</p>
+        <div class="rechenweg">
+          <p>Deckel 10 mm + Dichtung 2 mm + Einschraubtiefe 18 mm = 30 mm</p>
+          <p class="schluss">Sechskantschraube ISO 4017 &ndash; M8 &times; 30 &ndash; 8.8</p>
+        </div>
+        <p>Warum ISO 4017 (Gewinde bis zum Kopf) und nicht ISO 4014 (mit Schaft)?
+        Weil ISO 4014 die M8 erst ab 35 mm Länge führt und dort 13 mm glatter Schaft
+        sitzen &ndash; der käme im Gewindeloch zum Aufsetzen, bevor der Kopf
+        anliegt. Das Grundloch wird 22 mm tief, damit der Gewindeauslauf
+        (x &asymp; 3 &middot; P &asymp; 4 mm) Platz hat. Die Dichtung z&auml;hlt
+        beim Stapeln mit &ndash; wer sie vergisst, bestellt die Schraube 2 mm zu
+        kurz.</p>
+      </details>
+
+      <details>
+        <summary>6. Das Ergebnis auf einen Blick</summary>
+        <div class="daten">
+          <div><span class="l">Schraube</span><span class="v">M8 &times; 30</span></div>
+          <div><span class="l">Norm und Klasse</span><span class="v">ISO 4017 &middot; 8.8</span></div>
+          <div><span class="l">Anzahl</span><span class="v">8</span></div>
+          <div><span class="l">Anziehdrehmoment</span><span class="v">13 N&middot;m</span></div>
+          <div><span class="l">Durchgangsloch</span><span class="v">&oslash; 9,0 mm</span></div>
+          <div><span class="l">Vorspannkraft je Schraube</span><span class="v">9,6 kN</span></div>
+        </div>
+      </details>
+    </div>
+
+    <h3>Weg B &ndash; im Tabellenbuch nachgesehen</h3>
+
+    <p>Auch ohne die Rechnung lässt sich die Verschraubung sauber festlegen &ndash;
+    mit denselben Tabellen, nur andersherum benutzt. Dieser Weg genügt für die
+    Werkstatt, solange jemand die Vorgabe geprüft hat.</p>
+
+    <details>
+      <summary>1. Größe und Anzahl: was am Flansch üblich ist</summary>
+      <p>Am Gehäuseflansch sind acht Gewinde M8 vorhanden &ndash; die gibt das
+      Gussteil vor. Genau so kommen Verschraubungen in der Instandhaltung meistens
+      an: Die Größe steht fest, zu entscheiden ist, <em>womit</em> und <em>wie fest</em>
+      angezogen wird.</p>
+      <p>Nachrechnen l&auml;sst sich trotzdem, ob die acht Schrauben nicht zu weit
+      auseinanderstehen. Bei einem Lochkreis von &oslash; 250 mm betr&auml;gt der
+      Abstand zweier Schrauben &pi; &middot; 250 mm / 8 &asymp; 98 mm, also rund
+      12 &middot; d.</p>
+      <div class="warnschild">
+        <div>Wie weit sie stehen d&uuml;rfen, steht <strong>nicht</strong> im
+        Tabellenbuch. In der Werkstatt rechnet man mit dem F&uuml;nf- bis
+        Siebenfachen des Schraubendurchmessers; das ist Erfahrung, keine Norm,
+        und die Zahl schwankt je nach Quelle. Wer sie benutzt, muss sagen,
+        woher sie kommt &ndash; genauso wie bei der Mindestpressung der
+        Dichtung.</div>
+      </div>
+      <p>Zw&ouml;lf Durchmesser liegen danach deutlich über der Faustregel.
+      Getragen wird es hier von der
+      Steifigkeit des 10 mm dicken Deckels: Er biegt zwischen den Schrauben
+      kaum durch, deshalb bleibt die Dichtung auch dazwischen gepresst. W&auml;re
+      der Deckel aus 3-mm-Blech, w&uuml;rde er sich zwischen den Schrauben
+      zur&uuml;ckwölben &ndash; und genau dort tropft es dann.</p>
+    </details>
+
+    <details>
+      <summary>2. Festigkeitsklasse: 8.8 ist der Normalfall</summary>
+      <p>Das Tabellenbuch empfiehlt für Schrauben ohne aufwendige Kontrolle und bei
+      kleineren Durchmessern die Festigkeitsklasse <strong>8.8</strong>. Höher zu
+      gehen bringt hier nichts: Nicht die Schraube ist die Grenze, sondern die
+      Dichtung und das Gewinde im Grauguss.</p>
+    </details>
+
+    <details>
+      <summary>3. Das Anziehdrehmoment kommt aus der Tabelle &ndash; aber welches?</summary>
+      <p>In der Tabelle steht für M8 &middot; 8.8 bei &mu; = 0,12 ein Anziehdrehmoment
+      von <strong>24,6 N&middot;m</strong>. Das ist der Wert für die volle
+      Ausnutzung der Schraube.</p>
+      <p>Bei einem Deckel mit Dichtung will man das nicht. Eine Flachdichtung wird
+      plattgedrückt, wenn man sie überpresst &ndash; sie dichtet dann beim nächsten
+      Mal schlechter, nicht besser. Deshalb gibt der Hersteller des Getriebes ein
+      eigenes Anziehdrehmoment vor; hier sind es <strong>13 N&middot;m</strong>,
+      also gut die Hälfte.</p>
+      <p>Woran man sich hält, wenn keine Vorgabe da ist: <em>an den kleineren
+      Wert</em> &ndash; und dann nachziehen und auf Dichtheit prüfen. Fester geht
+      immer, plattgedrückt ist endgültig.</p>
+    </details>
+
+    <details>
+      <summary>4. Länge: zwei Zahlen addieren</summary>
+      <p>Deckeldicke plus Einschraubtiefe:</p>
+      <ul>
+        <li>Deckel: 10 mm</li>
+        <li>Dichtung: 2 mm &ndash; sie liegt mit im Stapel</li>
+        <li>Einschraubtiefe im Grauguss: mindestens 1,5 &middot; d = 12 mm
+          (Tabellenbuch, Mindesteinschraubtiefen). Es bleiben 18 mm &ndash;
+          reichlich genug.</li>
+      </ul>
+      <p>10 + 2 + 18 = 30 mm. Bestellt wird eine
+      <strong>Sechskantschraube ISO 4017 &ndash; M8 &times; 30 &ndash; 8.8</strong>
+      &ndash; Gewinde bis zum Kopf, damit kein glatter Schaft im Gewindeloch
+      aufsetzt.</p>
+    </details>
+
+    <div class="warnschild">
+      <div>Beide Wege führen zu derselben Schraube und demselben Drehmoment. Der
+      Unterschied ist, was man hinterher beantworten kann: Weg A sagt, <em>warum</em>
+      es 13 N&middot;m sind. Weg B sagt, <em>dass</em> es 13 N&middot;m sind.</div>
+    </div>
+
+    <p class="schritt">Schritt 6 &middot; Ausführen</p>
+    <h2><span class="nr">6</span>Montage und Demontage</h2>
+
+    <details>
+      <summary>1. In welcher Reihenfolge wird zusammengebaut?</summary>
+      <ol>
+        <li><strong>Tragöse anschweißen</strong> &ndash; zuerst, solange der Deckel
+          noch roh ist. Beim Schweißen entsteht Verzug; danach wird die Dichtfläche
+          plan gearbeitet, nicht vorher.</li>
+        <li><strong>Dichtfläche prüfen</strong> und Grat entfernen.</li>
+        <li><strong>Typenschild kleben</strong> &ndash; Fläche entfetten, Klebstoff
+          auftragen, aushärten lassen. Vor der Montage, weil das Getriebe hinterher
+          warm und ölig ist.</li>
+        <li><strong>Stifte setzen</strong>, Deckel probeweise auflegen, Lage prüfen.</li>
+        <li><strong>Dichtung einlegen</strong>, Deckel über die Stifte absenken.</li>
+        <li><strong>Schrauben über Kreuz anziehen</strong>, in drei Stufen: erst von
+          Hand anlegen, dann etwa die Hälfte, dann 13 N&middot;m.</li>
+        <li><strong>Entlüftungsrohr löten</strong> &ndash; zuletzt und in der Nähe
+          keiner Dichtung mehr Wärme; das Rohr ist dann schon ausgerichtet.</li>
+      </ol>
+      <p>Die Reihenfolge folgt einer einzigen Regel: <strong>Was Wärme einbringt,
+      kommt zuerst; was Wärme nicht verträgt, kommt zuletzt.</strong> Dazwischen
+      liegt alles, was Maß hält.</p>
+    </details>
+
+    <details>
+      <summary>2. Warum über Kreuz und in Stufen?</summary>
+      <p>Wer der Reihe nach rundherum anzieht, schiebt die Dichtung vor sich her: Die
+      erste Schraube presst, die gegenüberliegende Seite hebt ab, und am Ende ist
+      die Dichtung einseitig gequetscht. Über Kreuz zieht sich der Deckel
+      gleichmäßig heran.</p>
+      <p>In Stufen, weil sich die Dichtung setzt. Nach dem ersten Umlauf ist die
+      Schraube, die zuerst dran war, schon wieder lockerer &ndash; deshalb geht man
+      mindestens dreimal herum und beim letzten Umlauf so lange, bis der Schlüssel
+      bei keiner Schraube mehr auslöst.</p>
+    </details>
+
+    <details>
+      <summary>3. Nachziehen &ndash; wann und warum</summary>
+      <p>Nach der ersten Betriebsstunde, warm. Bis dahin hat sich die Dichtung
+      gesetzt, die Auflageflächen haben sich geglättet, und von der Vorspannkraft
+      ist ein Teil verschwunden. Das ist der Setzkraftverlust, für den das
+      Tabellenbuch keine Zahl nennt &ndash; man fängt ihn ein, statt ihn zu
+      rechnen.</p>
+      <p>Der Vorgang gehört ins Protokoll, mit Datum. Er ist die häufigste Ursache
+      dafür, dass ein Deckel nach zwei Wochen doch tropft.</p>
+    </details>
+
+    <details>
+      <summary>4. Und in zwei Jahren, wenn der Deckel wieder abmuss?</summary>
+      <div class="tabellenrahmen">
+        <table>
+          <thead><tr><th>Stelle</th><th>Beim Öffnen</th></tr></thead>
+          <tbody>
+            <tr><td><span class="stelle">1</span> Schrauben</td><td>über Kreuz lösen, damit sich der Deckel nicht verkantet. Schrauben sichten &ndash; Gewinde im Grauguss ist empfindlicher als die Schraube.</td></tr>
+            <tr><td><span class="stelle">2</span> Stifte</td><td>bleiben im Flansch. Der Deckel wird gerade abgehoben, nicht gekippt, sonst reißen die Stifte die Bohrungen aus.</td></tr>
+            <tr><td><span class="stelle">3</span> Tragöse</td><td>wird gebraucht &ndash; genau dafür ist sie da. Vor jedem Einsatz auf Risse an der Naht sichten.</td></tr>
+            <tr><td><span class="stelle">4</span> Typenschild</td><td>bleibt. Es soll ja dauerhaft sein.</td></tr>
+            <tr><td><span class="stelle">5</span> Lötstelle</td><td>bleibt. Die Leitung wird stattdessen an der Verschraubung weiter oben getrennt &ndash; deshalb sitzt dort eine.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Die Dichtung wird <em>immer</em> erneuert, auch wenn sie heil aussieht. Sie
+      hat sich der alten Fläche angepasst und passt beim zweiten Mal nicht mehr.</p>
+    </details>
+
+    <p class="schritt">Schritt 7 &middot; Kontrollieren</p>
+    <h2><span class="nr">7</span>Zeichnung und Abnahme</h2>
+
+    <details>
+      <summary>1. Was in die Zeichnung gehört</summary>
+      <p>Fünf Verbindungen, vier verschiedene Arten, sie anzugeben:</p>
+      <div class="tabellenrahmen">
+        <table>
+          <thead><tr><th>Stelle</th><th>Angabe in der Zeichnung</th></tr></thead>
+          <tbody>
+            <tr><td><span class="stelle">1</span> Schrauben</td><td>als Bauteil gezeichnet oder vereinfacht dargestellt, mit Bezeichnung in der Stückliste. Durchgangsloch &oslash; 9,0 bemaßt.</td></tr>
+            <tr><td><span class="stelle">2</span> Stifte</td><td>Bohrungen bemaßt und toleriert, Stifte in der Stückliste. Die Toleranz ist hier die eigentliche Angabe.</td></tr>
+            <tr><td><span class="stelle">3</span> Schweißnaht</td><td>Bezugslinie mit Nahtsymbol, Nahtdicke vor dem Symbol (z. B. a3), umlaufend gekennzeichnet.</td></tr>
+            <tr><td><span class="stelle">4</span> Klebung</td><td>eigenes Fügesymbol an der Bezugslinie &ndash; das Tabellenbuch führt es zusammen mit Falzen und Durchsetzfügen.</td></tr>
+            <tr><td><span class="stelle">5</span> Lötstelle</td><td>Nahtsymbol wie beim Schweißen, dazu die Angabe des Lötstoßes (Spaltlöten) und der Lotzufuhr.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Zeichnet die Verschraubung im Schnitt. Geprüft wird:</p>
+      <ul class="haken">
+        <li>Schraube bleibt ungeschnitten, keine Schraffur</li>
+        <li>Deckel und Flansch gegenläufig schraffiert &ndash; die Trennfuge ist zu sehen</li>
+        <li>Durchgangsloch größer gezeichnet als das Gewinde (&oslash; 9,0 zu M8)</li>
+        <li>Gewinde im Grundloch: Außendurchmesser schmal, Kerndurchmesser breit</li>
+        <li>Grundloch tiefer als das Gewinde, Bohrerspitze gezeichnet</li>
+        <li>Dichtung als eigenes Teil, nicht als Linie</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>2. Prüfprotokoll für die Abnahme</summary>
+      <div class="tabellenrahmen">
+        <table>
+          <thead>
+            <tr><th>Prüfpunkt</th><th>Soll</th><th>Ist</th><th>i.O.</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Schraubengröße, Norm, Klasse</td><td>ISO 4017 &middot; M8 &times; 30 &middot; 8.8</td><td></td><td></td></tr>
+            <tr><td>Anzahl Schrauben</td><td>8</td><td></td><td></td></tr>
+            <tr><td>Anziehdrehmoment</td><td>13 N&middot;m, über Kreuz, 3 Stufen</td><td></td><td></td></tr>
+            <tr><td>Nachgezogen nach 1 h Betrieb</td><td>ja, mit Datum</td><td></td><td></td></tr>
+            <tr><td>Dichtung neu, richtig sitzend</td><td>ja</td><td></td><td></td></tr>
+            <tr><td>Deckel auf Stiften, Marke über Schauglas</td><td>ja</td><td></td><td></td></tr>
+            <tr><td>Schweißnaht Tragöse</td><td>a3 umlaufend, rissfrei</td><td></td><td></td></tr>
+            <tr><td>Tragöse belastet geprüft</td><td>ja, mit 1,5-facher Last</td><td></td><td></td></tr>
+            <tr><td>Typenschild haftet, lesbar</td><td>ja</td><td></td><td></td></tr>
+            <tr><td>Lötstelle dicht</td><td>Druckprobe bestanden</td><td></td><td></td></tr>
+            <tr><td>Dichtheit nach 24 h</td><td>keine Leckage</td><td></td><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details>
+      <summary>3. Woran würde man merken, dass etwas nicht stimmt?</summary>
+      <ul>
+        <li><strong>Öl am unteren Deckelrand</strong> &ndash; Dichtung zu wenig
+          gepresst oder ungleichmäßig angezogen. Nicht einfach nachziehen: erst
+          prüfen, ob alle Schrauben dasselbe Moment haben.</li>
+        <li><strong>Ölfilm rings um eine einzelne Schraube</strong> &ndash; da geht
+          ein Loch durch, wo keines hingehört, oder das Gewinde im Guss ist
+          ausgerissen.</li>
+        <li><strong>Riss am Nahtübergang der Tragöse</strong> &ndash; Kerbwirkung
+          plus Erschütterung. Die Öse nicht mehr benutzen.</li>
+        <li><strong>Typenschild wellt sich an einer Ecke</strong> &ndash; die
+          Klebung schält. Sobald eine Kante offen ist, wandert sie weiter.</li>
+        <li><strong>Deckel lässt sich nicht auf die Stifte absenken</strong> &ndash;
+          Dichtung falsch eingelegt oder Stift verbogen. Nicht mit Gewalt; sonst ist
+          die Lage dauerhaft dahin.</li>
+      </ul>
+    </details>
+
+    <p class="schritt">Schritt 8 &middot; Bewerten</p>
+    <h2><span class="nr">8</span>Zurückschauen</h2>
+
+    <details>
+      <summary>Reflexion im Team</summary>
+      <ul>
+        <li>An welcher der fünf Stellen wart ihr euch uneinig &ndash; und was hat
+          entschieden: eine Anforderung oder eine Gewohnheit?</li>
+        <li>Drei Stellen sind Stoffschluss, mit drei verschiedenen Verfahren. Was
+          hat den Ausschlag gegeben: das Prinzip oder der Werkstoff?</li>
+        <li>Der Meister sagt: &bdquo;Nietet das Schild wieder an, ist schneller.&ldquo;
+          Was antwortet ihr in einem Satz?</li>
+        <li>Angenommen, das Getriebe stünde in einer Molkerei und müsste täglich
+          gereinigt werden. Welche eurer fünf Entscheidungen kippt?</li>
+        <li>Welche Anforderung habt ihr beim ersten Durchgang übersehen &ndash; und
+          woran lag es?</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>Bewertungsraster</summary>
+      <div class="tabellenrahmen">
+        <table>
+          <thead>
+            <tr><th>Kriterium</th><th class="zahl">Punkte</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Anforderungen vollständig aus dem Gespräch abgeleitet</td><td class="zahl">15</td></tr>
+            <tr><td>Wirkprinzip je Stelle richtig und begründet</td><td class="zahl">15</td></tr>
+            <tr><td>Verfahren gewählt und je eine Alternative begründet verworfen</td><td class="zahl">20</td></tr>
+            <tr><td>Verschraubung nachgewiesen oder belegt festgelegt</td><td class="zahl">20</td></tr>
+            <tr><td>Montage- und Demontageplan, Reihenfolge begründet</td><td class="zahl">15</td></tr>
+            <tr><td>Zeichnungsangaben und Prüfprotokoll brauchbar</td><td class="zahl">15</td></tr>
+            <tr class="summe"><td>Summe</td><td class="zahl">100</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="fussnote">Die Punkte für die Verschraubung gibt es auf beiden Wegen.
+      Wer rechnet, muss den Rechenweg belegen; wer nachschlägt, muss sagen, aus
+      welcher Tabelle die Zahl kommt und warum sie für diesen Fall gilt.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> An einem Bauteil sitzen selten zwei gleiche
+      Verbindungen. Wer nur ein Verfahren beherrscht, biegt sich die Anforderungen
+      so lange zurecht, bis sie dazu passen.
+    </div>
+
+    <h2><span class="nr">9</span>Material</h2>
+
+    <p>Das Werkzeug zeigt alle sechzehn Verfahren nebeneinander und hat die
+    Auswahlhilfe eingebaut, mit der sich Teil 3 durchspielen lässt:</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-ueberblick.html">Werkzeug &bdquo;Fügeverfahren im Überblick&ldquo; öffnen</a>
+    </p>
+    <p>Für den Nachweis in Teil 5 rechnet das Schraubenwerkzeug jede Variante durch:</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="maschinenelemente-schrauben-schraubverbindungen.html">Werkzeug Schraubverbindungen öffnen</a>
+    </p>
+
+    <p>Wer an einer Stelle hängt, findet dort den passenden Ausschnitt:</p>
+    <div class="tabellenrahmen">
+      <table>
+        <thead>
+          <tr><th>Wenn es hakt bei &hellip;</th><th>&hellip; hilft</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Wirkprinzip erkennen</td>
+              <td><a href="../../uebungen/fuegeverfahren/01-wo-geht-die-kraft-ueber.html">Übung 1 &middot; Wo geht die Kraft über?</a></td></tr>
+          <tr><td>Verfahren zu Anforderungen wählen</td>
+              <td><a href="../../uebungen/fuegeverfahren/02-welches-verfahren-passt.html">Übung 2 &middot; Welches Verfahren passt?</a></td></tr>
+          <tr><td>Typische Fehlgriffe</td>
+              <td><a href="../../uebungen/fuegeverfahren/03-die-verbindung-haelt-nicht.html">Übung 3 &middot; Die Verbindung hält nicht</a></td></tr>
+          <tr><td>Lösbarkeit und Demontage</td>
+              <td><a href="../../uebungen/fuegeverfahren/04-loesen-aber-wie.html">Übung 4 &middot; Lösen &ndash; aber wie?</a></td></tr>
+          <tr><td>Prinzip auf einen Blick</td>
+              <td><a href="../../trainings/fuegeverfahren/01-prinzip-schnellcheck.html">Training 1 &middot; Prinzip-Schnellcheck</a></td></tr>
+          <tr><td>Fachbegriffe</td>
+              <td><a href="../../trainings/fuegeverfahren/02-begriffe-der-fuegetechnik.html">Training 2 &middot; Begriffe der Fügetechnik</a></td></tr>
+          <tr><td>Eigenschaften der Verfahren</td>
+              <td><a href="../../trainings/fuegeverfahren/03-eigenschaften-zuordnen.html">Training 3 &middot; Eigenschaften zuordnen</a></td></tr>
+          <tr><td>Vorspannkraft und Drehmoment</td>
+              <td><a href="../../uebungen/schraubverbindungen/03-wohin-geht-das-drehmoment.html">Übung &middot; Wohin geht das Drehmoment?</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Im Tabellenbuch</h3>
+    <div class="tabellenrahmen">
+      <table>
+        <thead>
+          <tr><th>Abschnitt</th><th>gebraucht für</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Montage hochbeanspruchter Schraubenverbindungen</td>
+              <td>F<sub>K</sub> = p<sub>min</sub> &middot; A<sub>Dicht</sub>,
+                  F<sub>Mmax</sub>, Anziehfaktoren, Kraftverhältnis &phi;</td></tr>
+          <tr><td>Maximale Vorspannkräfte und Anziehdrehmomente</td>
+              <td>F<sub>V</sub> und M<sub>A</sub> für M8 &middot; 8.8 bei &mu; = 0,12</td></tr>
+          <tr><td>Flächenpressung an Schraubenkopfauflageflächen</td>
+              <td>A<sub>P</sub>, p<sub>max</sub>, Grenzflächenpressung S235JR</td></tr>
+          <tr><td>Mindesteinschraubtiefen in Grundlochgewinde</td>
+              <td>1,5 &middot; d für Gusseisen und Klasse 8.8, Auslauf x &asymp; 3 &middot; P</td></tr>
+          <tr><td>Durchgangslöcher, Sechskantschrauben ISO 4014/4017</td>
+              <td>d<sub>h</sub> = 9,0 mm, Kopfauflage d<sub>w</sub> = 11,6 mm,
+                  Nennlängen</td></tr>
+          <tr><td>Lötverbindungen &ndash; Gestaltungsregeln</td>
+              <td>Kapillarwirkung, Lötspaltbreite, Rohre und Fittings</td></tr>
+          <tr><td>Klebstoffe, Klebekonstruktionen</td>
+              <td>Betriebstemperaturen, Grundregel Druck und Scherung</td></tr>
+          <tr><td>Symbole für Schweißen und Löten &middot; Kleben, Falzen, Durchsetzfügen</td>
+              <td>Angaben in der Zeichnung für die Stellen 3, 4 und 5</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="fussnote" style="margin-top:12px">Die Mindestpressung der Dichtung
+    (p<sub>min</sub> = 4 N/mm&sup2;) ist die einzige Zahl, die nicht aus dem
+    Tabellenbuch stammt &ndash; sie kommt vom Dichtungshersteller. Das Tabellenbuch
+    gibt dafür die Formel, aber keine Werkstoffwerte. Seitenzahlen unterscheiden
+    sich je nach Auflage.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+function el(id){ return document.getElementById(id); }
+
+/* ---------- Die fünf Fügestellen ----------
+   Dieselbe Reihenfolge wie in allen Tabellen der Seite. */
+var STELLEN = [
+  {nr:1, name:"Deckel an Gehäuseflansch", prinzip:"kraft",
+   verfahren:"Schraubverbindung mit Flachdichtung",
+   grund:"Er muss dreimal im Jahr runter - das schließt den Stoffschluss aus. "
+     + "Ein Formschluss könnte die Dichtung nicht pressen. Bleibt der Kraftschluss: "
+     + "Die Schrauben erzeugen die Kraft, die Dichtung erledigt die Dichtheit."},
+  {nr:2, name:"Lagesicherung des Deckels", prinzip:"form",
+   verfahren:"zwei Zylinderstifte",
+   grund:"Gefordert ist eine genaue, wiederholbare Lage. Reibung kann rutschen, "
+     + "eine Schicht gibt keine Lage vor - nur eine Form legt fest, wo etwas sitzt."},
+  {nr:3, name:"Tragöse auf dem Deckel", prinzip:"stoff",
+   verfahren:"Schweißen",
+   grund:"Stahl auf Stahl, unlösbar erwünscht, dauernde Erschütterung. Die "
+     + "geschraubte Lösung ist genau daran ausgefallen, und ein Loch im Deckel "
+     + "wäre ein Leckweg."},
+  {nr:4, name:"Typenschild auf dem Deckel", prinzip:"stoff",
+   verfahren:"Kleben",
+   grund:"Kein Loch durch die Druckwand, keine Wärme an das dünne Schild, "
+     + "Aluminium auf Stahl. Das kann nur eine Schicht - und von den drei "
+     + "Stoffschlüssen nur der kalte."},
+  {nr:5, name:"Entlüftungsleitung am Stutzen", prinzip:"stoff",
+   verfahren:"Hartlöten",
+   grund:"Kupfer an Messing, dicht, ohne die Werkstoffe aufzuschmelzen. Genau "
+     + "dafür ist das Löten da; das Tabellenbuch nennt Rohre und Fittings als "
+     + "Anwendungsbeispiel."}
+];
+
+var PRINZIPIEN = [
+  {id:"kraft", text:"Kraftschluss - Reibung"},
+  {id:"form",  text:"Formschluss - ineinandergreifende Form"},
+  {id:"stoff", text:"Stoffschluss - verbindende Schicht"}
+];
+
+var NAME = {kraft:"Kraftschluss", form:"Formschluss", stoff:"Stoffschluss"};
+
+/* ---------- Teil 3: Prinzip je Stelle ---------- */
+function prinzipienBauen(){
+  var ziel = el("prinzipien");
+  ziel.textContent = "";
+  STELLEN.forEach(function(s, i){
+    var tr = document.createElement("tr");
+
+    var td1 = document.createElement("td");
+    td1.innerHTML = '<span class="stelle">' + s.nr + "</span>" + s.name;
+    tr.appendChild(td1);
+
+    var td2 = document.createElement("td");
+    var sel = document.createElement("select");
+    sel.id = "p" + i;
+    sel.setAttribute("data-druck", "ankreuzen");
+    sel.setAttribute("aria-label", "Wirkprinzip für " + s.name);
+    var leer = document.createElement("option");
+    leer.value = "";
+    leer.textContent = "bitte wählen";
+    sel.appendChild(leer);
+    PRINZIPIEN.forEach(function(p){
+      var o = document.createElement("option");
+      o.value = p.id;
+      o.textContent = p.text;
+      sel.appendChild(o);
+    });
+    td2.appendChild(sel);
+    tr.appendChild(td2);
+
+    var td3 = document.createElement("td");
+    td3.className = "urteil";
+    td3.id = "u" + i;
+    tr.appendChild(td3);
+
+    ziel.appendChild(tr);
+  });
+}
+
+function pruefen(){
+  var offen = 0;
+  STELLEN.forEach(function(s, i){
+    var wahl = el("p" + i).value;
+    var u = el("u" + i);
+    if(!wahl){ u.className = "urteil"; u.textContent = "noch offen"; offen++; return; }
+    if(wahl === s.prinzip){
+      u.className = "urteil ja";
+      u.textContent = "passt";
+    } else {
+      u.className = "urteil nein";
+      u.textContent = "noch nicht - lest die Anforderung zu Stelle " + s.nr
+        + " noch einmal";
+    }
+  });
+  if(offen === STELLEN.length){
+    el("u0").textContent = "erst wählen, dann prüfen";
+  }
+}
+
+function zuruecksetzen(){
+  STELLEN.forEach(function(s, i){
+    el("p" + i).value = "";
+    el("u" + i).className = "urteil";
+    el("u" + i).textContent = "";
+  });
+}
+
+function aufloesungBauen(){
+  var ziel = el("aufloesung");
+  ziel.textContent = "";
+  var rahmen = document.createElement("div");
+  rahmen.className = "tabellenrahmen";
+  var t = document.createElement("table");
+  t.innerHTML = "<thead><tr><th>Stelle</th><th>Prinzip</th><th>Verfahren</th>"
+    + "<th>Warum</th></tr></thead>";
+  var tb = document.createElement("tbody");
+  STELLEN.forEach(function(s){
+    var tr = document.createElement("tr");
+    tr.innerHTML = '<td><span class="stelle">' + s.nr + "</span></td><td>"
+      + NAME[s.prinzip] + "</td><td><strong>" + s.verfahren + "</strong></td><td>"
+      + s.grund + "</td>";
+    tb.appendChild(tr);
+  });
+  t.appendChild(tb);
+  rahmen.appendChild(t);
+  ziel.appendChild(rahmen);
+}
+
+/* ---------- Die Zeichnungen ----------
+   Gebaut aus den Bausteinen in assets/zeichnen.js. Gezeichnet wird in
+   currentColor, die Strichstärke steht am Element. */
+
+/* Draufsicht auf den Deckel mit den fünf Fügestellen. Der Maßstab ist grob -
+   es geht um die Lage der Stellen zueinander, nicht um Maße. */
+function bildDeckel(){
+  var svg = bild("bildDeckel", 620, 340,
+    "Draufsicht auf den Gehäusedeckel mit den fünf nummerierten Fügestellen: "
+    + "Schraubenkreis, zwei Stifte, Tragöse, Typenschild, Rohrstutzen.",
+    "Der neue Deckel in der Draufsicht. Die Ziffern gelten auf der ganzen Seite.");
+  var g = gruppe(svg);
+  var cx = 250, cy = 170, rA = 140, rL = 118, rD = 100;
+
+  /* Deckelrand, Lochkreis, Dichtfläche */
+  svgEl("circle", {cx:cx, cy:cy, r:rA, fill:"var(--card)",
+    stroke:"currentColor", "stroke-width":BREIT}, g);
+  svgEl("circle", {cx:cx, cy:cy, r:rL, fill:"none", stroke:"currentColor",
+    "stroke-width":SCHMAL, "stroke-dasharray":"10 3 2 3", opacity:.55}, g);
+  svgEl("circle", {cx:cx, cy:cy, r:rD, fill:"none", stroke:"currentColor",
+    "stroke-width":SCHMAL, opacity:.6}, g);
+  txt(g, cx, cy - rD + 16, "Dichtfläche", {groesse:10.5, deckung:.65});
+
+  /* Acht Schrauben auf dem Lochkreis */
+  for(var i = 0; i < 8; i++){
+    var w = Math.PI / 4 * i - Math.PI / 2;
+    var x = cx + rL * Math.cos(w), y = cy + rL * Math.sin(w);
+    svgEl("circle", {cx:x, cy:y, r:7, fill:"var(--bg)", stroke:"currentColor",
+      "stroke-width":BREIT}, g);
+    linie(g, x - 4.6, y, x + 4.6, y, SCHMAL, {deckung:.7});
+    linie(g, x, y - 4.6, x, y + 4.6, SCHMAL, {deckung:.7});
+  }
+
+  /* Zwei Stifte, weit auseinander */
+  [[-1, 0], [1, 0]].forEach(function(r){
+    var x = cx + r[0] * 128, y = cy + 46;
+    svgEl("circle", {cx:x, cy:y, r:5.5, fill:"currentColor"}, g);
+  });
+
+  /* Tragöse links oben */
+  var og = gruppe(g);
+  kasten(og, cx - 70, cy - 122, 34, 30, {fuell:"var(--bg)"});
+  svgEl("circle", {cx:cx - 53, cy:cy - 107, r:9, fill:"var(--card)",
+    stroke:"currentColor", "stroke-width":BREIT}, og);
+
+  /* Typenschild rechts */
+  kasten(g, cx + 18, cy - 34, 78, 40, {fuell:"var(--bg)"});
+  linie(g, cx + 26, cy - 20, cx + 88, cy - 20, SCHMAL, {deckung:.5});
+  linie(g, cx + 26, cy - 8, cx + 88, cy - 8, SCHMAL, {deckung:.5});
+  linie(g, cx + 26, cy + 4, cx + 70, cy + 4, SCHMAL, {deckung:.5});
+
+  /* Rohrstutzen: innerhalb der Dichtflaeche, sonst saesse er im Freien -
+     und weit genug von den Schrauben auf dem Lochkreis. */
+  var rg = gruppe(g);
+  var rsX = cx - 58, rsY = cy + 56;
+  svgEl("circle", {cx:rsX, cy:rsY, r:14, fill:"var(--bg)",
+    stroke:"currentColor", "stroke-width":BREIT}, rg);
+  svgEl("circle", {cx:rsX, cy:rsY, r:7, fill:"none",
+    stroke:"currentColor", "stroke-width":SCHMAL}, rg);
+
+  /* Hinweise mit Ziffern */
+  var hinweise = [
+    [1, cx + 99, cy - 84, cx + 175, cy - 118, "Schrauben 8 × M8", "start"],
+    [2, cx + 128, cy + 46, cx + 178, cy + 86, "Stifte", "start"],
+    [3, cx - 62, cy - 116, cx - 168, cy - 128, "Tragöse", "end"],
+    [4, cx + 96, cy - 14, cx + 178, cy - 22, "Typenschild", "start"],
+    [5, cx - 68, cy + 66, cx - 152, cy + 132, "Rohrstutzen", "end"]
+  ];
+  hinweise.forEach(function(h){
+    linie(g, h[1], h[2], h[3], h[4], SCHMAL, {deckung:.6});
+    var kx = h[3] + (h[6] === "start" ? 13 : -13);
+    svgEl("circle", {cx:kx, cy:h[4], r:10, fill:"currentColor"}, g);
+    var z = txt(g, kx, h[4] + 4, String(h[0]), {fett:true});
+    z.setAttribute("fill", "var(--card)");
+    txt(g, h[3] + (h[6] === "start" ? 28 : -28), h[4] + 4, h[5],
+        {anker:h[6], groesse:12});
+  });
+}
+
+/* Schnitt durch die Verschraubung: Schraube senkrecht, Kopf oben. Die
+   Schraube liegt in einer gedrehten Gruppe - gezeichnet wird sie waagerecht. */
+function bildSchnitt(){
+  var svg = bild("bildSchnitt", 620, 250,
+    "Schnitt durch die Verschraubung: Schraube M8 von oben durch den Deckel in "
+    + "das Grundlochgewinde im Gehäuseflansch, dazwischen die Flachdichtung.",
+    "Stelle 1 im Schnitt. Der Maßstab folgt den Blechdicken, nicht dem "
+    + "Durchmesser der Öffnung.");
+  var g = gruppe(svg);
+  var s = 3.4;                         /* Pixel je Millimeter */
+  var achseX = 250;
+  var yDeckel = 96, hDeckel = 10 * s;  /* 10 mm */
+  var yDicht = yDeckel + hDeckel, hDicht = 2 * s;
+  var yFlansch = yDicht + hDicht, hFlansch = 25 * s;
+
+  var mD = schraffur(svg, "sch_deckel", 45);
+  var mF = schraffur(svg, "sch_flansch", -45);
+
+  /* Deckel, links und rechts der Schraube */
+  [[achseX - 150, 132], [achseX + 18, 150]].forEach(function(r){
+    kasten(g, r[0], yDeckel, r[1], hDeckel, {fuell:mD});
+  });
+  /* Dichtung - schmal, dunkel, als eigenes Teil */
+  kasten(g, achseX - 150, yDicht, 132, hDicht, {fuell:"currentColor", strich:SCHMAL});
+  kasten(g, achseX + 18, yDicht, 150, hDicht, {fuell:"currentColor", strich:SCHMAL});
+  /* Flansch */
+  [[achseX - 150, 132], [achseX + 18, 150]].forEach(function(r){
+    kasten(g, r[0], yFlansch, r[1], hFlansch, {fuell:mF});
+  });
+
+  /* Durchgangsloch und Gewindegrundloch als Kanten */
+  var rh = 9.0 * s / 2;                /* Durchgangsloch 9,0 */
+  var rG = 8 * s / 2;                  /* Gewinde-Außen M8 */
+  var r3 = (8 - 1.2269 * 1.25) * s / 2;/* Kerndurchmesser */
+  var tGew = 18 * s, tBohr = 22 * s;
+
+  [-1, 1].forEach(function(v){
+    /* Gewindeflanken im Grundloch: außen schmal, Kern breit */
+    linie(g, achseX + v * rG, yFlansch, achseX + v * rG, yFlansch + tGew, SCHMAL);
+    linie(g, achseX + v * r3, yFlansch, achseX + v * r3, yFlansch + tBohr - 5, BREIT);
+  });
+  /* Bohrerspitze */
+  linie(g, achseX - r3, yFlansch + tBohr - 5, achseX, yFlansch + tBohr, BREIT);
+  linie(g, achseX + r3, yFlansch + tBohr - 5, achseX, yFlansch + tBohr, BREIT);
+  linie(g, achseX - rG, yFlansch + tGew, achseX + rG, yFlansch + tGew, SCHMAL);
+
+  /* Die Schraube, um 90 Grad gedreht: Kopf oben */
+  var gs = svgEl("g", {transform:"rotate(90 " + achseX + " " + yDeckel + ")"}, g);
+  schraube(gs, {x:achseX - 5.3 * s, y:yDeckel, s:s, d:8, sw:13, k:5.3,
+                l:30, b:30, P:1.25});
+
+  /* Maße */
+  massV(g, yDeckel, yDicht, achseX - 168, "10", achseX - 150, true);
+  massV(g, yFlansch, yFlansch + tGew, achseX - 168, "18", achseX - 150, true);
+  mass(g, achseX - rh, achseX + rh, yDeckel - 34, "⌀ 9", yDeckel);
+
+  txt(g, achseX - 84, yDeckel - 12, "Deckel S235", {groesse:11.5});
+  txt(g, achseX + 100, yFlansch + hFlansch - 14, "Flansch GJL-250", {groesse:11.5});
+  /* Die Dichtung ist nur 2 mm dick - die Benennung braucht eine Hinweislinie,
+     sonst steht sie im Flansch und meint scheinbar den. */
+  linie(g, achseX + 168, yDicht + hDicht / 2, achseX + 182, yDicht + 13, SCHMAL,
+        {deckung:.6});
+  txt(g, achseX + 186, yDicht + 17, "Dichtung", {groesse:11, anker:"start"});
+  txt(g, achseX, yDeckel - 68, "ISO 4017 - M8 × 30 - 8.8",
+      {groesse:12, fett:true});
+}
+
+prinzipienBauen();
+aufloesungBauen();
+el("btnPruefen").addEventListener("click", pruefen);
+el("btnZurueck").addEventListener("click", zuruecksetzen);
+bildDeckel();
+bildSchnitt();
+</script>
+
+<script src="../../assets/back-nav.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

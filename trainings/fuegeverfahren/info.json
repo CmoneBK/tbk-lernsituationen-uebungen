@@ -1,0 +1,15 @@
+{
+  "titel": "Fertigungstechnik: Fügeverfahren - Überblick",
+  "lead": "Drei Trainings zum Überblick: das Wirkprinzip auf einen Blick erkennen, die Fachbegriffe sicher haben, die Eigenschaften der Verfahren auseinanderhalten.",
+  "werkzeuge": [
+    {
+      "datei": "fertigungstechnik-fuegeverfahren-ueberblick.html",
+      "name": "Werkzeug Fügeverfahren im Überblick"
+    }
+  ],
+  "reihenfolge": [
+    "01-prinzip-schnellcheck.html",
+    "02-begriffe-der-fuegetechnik.html",
+    "03-eigenschaften-zuordnen.html"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "titel": "Fertigungstechnik: Fügeverfahren - Überblick",
+  "lead": "Vier Übungen zu den drei Wirkprinzipien: wo die Kraft übergeht, welches Verfahren zu welcher Anforderung passt, woran Verbindungen scheitern und wie man sie wieder auseinanderbekommt.",
+  "werkzeuge": [
+    {
+      "datei": "fertigungstechnik-fuegeverfahren-ueberblick.html",
+      "name": "Werkzeug Fügeverfahren im Überblick"
+    }
+  ],
+  "reihenfolge": [
+    "01-wo-geht-die-kraft-ueber.html",
+    "02-welches-verfahren-passt.html",
+    "03-die-verbindung-haelt-nicht.html",
+    "04-loesen-aber-wie.html"
+  ]
+}

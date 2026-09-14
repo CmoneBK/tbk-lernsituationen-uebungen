@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Welches Verfahren passt?</title>
+<meta name="description" content="Vier Aufträge mit Anforderungen: erst selbst entscheiden, dann mit der Auswahlhilfe des Werkzeugs vergleichen.">
+<meta name="dauer" content="25 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .auftragskarte{border:1px solid var(--border); border-radius:12px;
+    padding:14px 16px; margin:0 0 16px; background:var(--card)}
+  .auftragskarte h3{margin:0 0 6px; font-size:1.02rem}
+  .anforderungen{list-style:none; margin:8px 0 12px; padding:0;
+    display:flex; flex-wrap:wrap; gap:6px}
+  .anforderungen li{font-size:12.5px; font-weight:600; padding:4px 10px;
+    border-radius:999px; border:1px solid var(--border-stark); color:var(--muted)}
+  .wahlpaar{display:grid; gap:12px; grid-template-columns:1fr 1fr; margin:0 0 4px}
+  @media (max-width:640px){ .wahlpaar{grid-template-columns:1fr} }
+  .wahlpaar label{display:block; font-size:13.5px; font-weight:600; margin:0 0 5px}
+  .wahlpaar select{width:100%; font:inherit; font-size:14px; padding:8px 9px;
+    border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark)}
+  .wahlpaar select:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+  table.kriterien td.mitte, table.kriterien th.mitte{text-align:center}
+  .plus{color:var(--ok); font-weight:700}
+  .minus{color:var(--bad); font-weight:700}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Fügeverfahren im Überblick</p>
+    <h1>Welches Verfahren passt?</h1>
+    <p class="lead">Vier Aufträge, vier Anforderungslisten. Erst selbst entscheiden –
+      dann mit der Auswahlhilfe im Werkzeug vergleichen.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Ausgangslage:</strong> Ein Kunde beschreibt, was die Verbindung leisten
+      muss. Aus der Beschreibung werden Anforderungen – und aus den Anforderungen folgt
+      das Prinzip. Erst danach wird das Verfahren ausgewählt.</p>
+      <p>Diese Reihenfolge ist der eigentliche Inhalt der Übung: <em>Anforderung →
+      Prinzip → Verfahren.</em> Wer mit dem Verfahren anfängt („wir schweißen das"),
+      begründet hinterher nur noch.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Vier Aufträge</h2>
+
+    <div id="auftraege"></div>
+
+    <details>
+      <summary>Lösung: was passt, und was der Auftrag ausschließt</summary>
+      <div id="loesungen"></div>
+    </details>
+
+    <h2><span class="nr">2</span>Womit die Auswahlhilfe rechnet</h2>
+    <p>Das Werkzeug bewertet acht Anforderungen. Jede zieht die drei Prinzipien
+    unterschiedlich stark – so kommt eine Empfehlung zustande, und so lässt sie sich
+    nachvollziehen.</p>
+
+    <div class="tabellenrahmen">
+      <table class="kriterien">
+        <thead>
+          <tr><th>Anforderung</th><th class="mitte">Kraftschluss</th>
+            <th class="mitte">Formschluss</th><th class="mitte">Stoffschluss</th>
+            <th>Woran das liegt</th></tr>
+        </thead>
+        <tbody id="kriterien"></tbody>
+      </table>
+    </div>
+
+    <p class="fussnote">Die Zahlen sind kein Naturgesetz, sondern eine Gewichtung für
+      den Unterricht. Sie sollen ein Gespräch auslösen, keine Entscheidung ersetzen.</p>
+
+    <h2><span class="nr">3</span>Übertragen</h2>
+
+    <details>
+      <summary>1. Zwei Anforderungen widersprechen sich: „dicht" und „zerstörungsfrei
+        lösbar". Was tut man?</summary>
+      <p>Man trennt die beiden Aufgaben. Die Verbindung übernimmt das Halten – also
+      Kraftschluss, zum Beispiel eine Schraubverbindung. Das Dichten übernimmt ein
+      eigenes Bauteil: eine Dichtung, ein O-Ring, eine Flachdichtung. Genau deshalb
+      steht im Werkzeug bei der Schraubverbindung „dicht: nur mit Dichtung".</p>
+      <p>Der Stoffschluss dichtet von selbst, ist dafür aber nur zerstörend zu trennen.
+      Wer beides in <em>einer</em> Verbindung will, bekommt es nicht.</p>
+    </details>
+
+    <details>
+      <summary>2. Warum ist „sehr hohe Kräfte" kein guter erster Filter?</summary>
+      <p>Weil alle drei Prinzipien hohe Kräfte übertragen können – Pressverband,
+      Zahnwelle und Schweißnaht liegen alle weit oben. Die Anforderung trennt also
+      kaum. Was wirklich trennt, sind die Fragen nach <em>lösbar</em>, <em>dicht</em>
+      und <em>Werkstoffpaarung</em>: Dort sagt jedes Prinzip etwas anderes.</p>
+    </details>
+
+    <details>
+      <summary>3. Ein Kollege schlägt vor: „Kleben und zusätzlich nieten." Ist das
+        Unsinn?</summary>
+      <p>Nein, das ist gängige Praxis – im Fahrzeugbau heißt es Stanznietkleben. Die
+      Klebung überträgt flächig und dichtet, der Niet hält die Teile während des
+      Aushärtens zusammen und übernimmt Spitzenlasten. Die Kombination gleicht die
+      Schwäche der Klebung (Schälen, Aushärtezeit) mit einer Stärke des Formschlusses
+      aus. Im Werkzeug stehen solche Fälle unter „Sonderformen".</p>
+    </details>
+
+    <details>
+      <summary>4. Wann entscheidet nicht die Technik, sondern die Stückzahl?</summary>
+      <p>Sobald die Verbindung oft gemacht wird. Bei 40 Stück im Jahr darf eine Montage
+      zwei Minuten dauern; bei 40 000 Stück nicht. Dann gewinnen Verfahren, die in
+      Sekunden gehen und sich automatisieren lassen – Clinchen, Schnappverbindungen,
+      Punktschweißen. Deshalb steht „sehr schnelle Montage, große Stückzahl" als
+      eigene Anforderung in der Auswahlhilfe.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Erst die Anforderungen aufschreiben, dann das Prinzip
+      wählen, dann das Verfahren. Wer mit dem Verfahren beginnt, begründet nur noch.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>Im Werkzeug lassen sich dieselben Anforderungen anklicken – es zeigt dann für
+    jedes Prinzip, wie gut es passt und warum.</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-ueberblick.html">Werkzeug „Fügeverfahren im Überblick“ öffnen</a>
+    </p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Die vier Aufträge. "schliesst_aus" ist der Teil, auf den es ankommt: Nicht
+   was geht, sondern was der Auftrag verbietet. */
+var AUFTRAEGE = [
+  {
+    name: "Der Tankdeckel",
+    text: "Ein Behälter für Hydrauliköl bekommt einen Deckel. Er muss zur Wartung "
+      + "zweimal im Jahr geöffnet werden. Öl darf nicht austreten. Deckel und "
+      + "Behälter sind aus Stahlblech.",
+    anforderungen: ["zerstörungsfrei lösbar", "dicht"],
+    prinzip: "kraft",
+    verfahren: "schraube",
+    warum: "Lösbar schließt den Stoffschluss aus – eine Schweißnaht bekommt niemand "
+      + "zweimal im Jahr auf. Bleibt Kraft- oder Formschluss; dicht wird es bei "
+      + "beiden nur mit einer zusätzlichen Dichtung. Die Schraubverbindung presst "
+      + "die Dichtung gleichmäßig an und lässt sich beliebig oft öffnen.",
+    schliesst_aus: "Schweißen, Löten, Kleben (nur zerstörend zu trennen); "
+      + "Schnappverbindung (hält die Dichtung nicht gleichmäßig gepresst)."
+  },
+  {
+    name: "Das Blechgehäuse",
+    text: "Ein Gehäuse aus 1 mm dickem verzinktem Stahlblech wird in 30 000 Stück im "
+      + "Jahr gefertigt. Es muss nicht dicht sein und wird nie wieder geöffnet. Die "
+      + "Montage soll so schnell wie möglich gehen.",
+    anforderungen: ["dünne Bleche", "große Stückzahl", "nicht lösbar nötig"],
+    prinzip: "sonder",
+    verfahren: "clinchen",
+    warum: "Dünnes Blech schließt Schrauben praktisch aus – es fehlt die Klemmlänge, "
+      + "und jede Schraube kostet Montagezeit. Bei dieser Stückzahl zählt die "
+      + "Sekunde. Clinchen braucht kein Verbindungselement, geht in einem Hub und "
+      + "verträgt die Zinkschicht, die beim Schweißen verdampfen würde.",
+    schliesst_aus: "Schrauben (Zeit und Klemmlänge); Schweißen (Zink verdampft, "
+      + "Verzug im dünnen Blech); Kleben (Aushärtezeit bremst die Taktzeit)."
+  },
+  {
+    name: "Das Zahnrad auf der Welle",
+    text: "Ein Zahnrad überträgt ein wechselndes Drehmoment. Seine Lage auf der Welle "
+      + "muss genau stimmen und darf sich im Betrieb nicht verändern. Zum Wechseln "
+      + "des Rades soll die Welle nicht beschädigt werden.",
+    anforderungen: ["genaue Lage", "wechselnde Last", "zerstörungsfrei lösbar"],
+    prinzip: "kraft",
+    verfahren: "spannsatz",
+    warum: "Wechselnde Last und Formschluss vertragen sich schlecht: Jedes Spiel "
+      + "wird zum Schlag, und die Passfedernut kerbt die Welle. Ein Spannsatz hält "
+      + "spielfrei über Reibung, lässt sich lösen und braucht keine Nut. Wo die "
+      + "Kosten zählen, nimmt man trotzdem oft die Passfeder – dann aber mit dem "
+      + "Wissen, dass sie bei Lastwechsel ausschlägt.",
+    schliesst_aus: "Schweißen und Kleben (nicht lösbar); reine Passfeder bei stark "
+      + "wechselnder Last (Spiel führt zu Schlägen und Verschleiß)."
+  },
+  {
+    name: "Das Aluprofil am Stahlblech",
+    text: "Ein Aluminiumprofil wird an ein Stahlblech gesetzt. Die Verbindung soll "
+      + "flächig tragen, muss nicht gelöst werden und darf die Oberfläche nicht "
+      + "erwärmen – das Blech ist lackiert.",
+    anforderungen: ["verschiedene Werkstoffe", "keine Wärme", "flächig tragend"],
+    prinzip: "stoff",
+    verfahren: "kleben",
+    warum: "Zwei verschiedene Metalle schweißt man nicht ohne Weiteres zusammen, und "
+      + "Wärme scheidet wegen des Lacks ohnehin aus. Kleben verbindet beliebige "
+      + "Werkstoffe, trägt über die ganze Fläche und bleibt kalt. Es braucht dafür "
+      + "eine saubere, vorbehandelte Fläche und Aushärtezeit.",
+    schliesst_aus: "Schweißen (Werkstoffpaarung und Wärme); Löten (Wärme); "
+      + "Schrauben (punktuell statt flächig, Kontaktkorrosion an der Paarung)."
+  }
+];
+
+var PRINZIPIEN = {
+  kraft: "Kraftschluss", form: "Formschluss", stoff: "Stoffschluss",
+  sonder: "Sonderform (Kombination)"
+};
+
+var VERFAHREN = [
+  {id:"schraube", name:"Schraubverbindung", p:"kraft"},
+  {id:"pressverband", name:"Pressverband", p:"kraft"},
+  {id:"klemmverbindung", name:"Klemmverbindung", p:"kraft"},
+  {id:"spannsatz", name:"Kegelspannsatz", p:"kraft"},
+  {id:"passfeder", name:"Passfeder", p:"form"},
+  {id:"zahnwelle", name:"Zahnwellenverbindung", p:"form"},
+  {id:"stift", name:"Stiftverbindung", p:"form"},
+  {id:"schnapp", name:"Schnappverbindung", p:"form"},
+  {id:"bolzen", name:"Bolzen mit Splint", p:"form"},
+  {id:"falz", name:"Falzverbindung", p:"form"},
+  {id:"schweissen", name:"Schweißen", p:"stoff"},
+  {id:"loeten", name:"Löten", p:"stoff"},
+  {id:"kleben", name:"Kleben", p:"stoff"},
+  {id:"nieten", name:"Nieten", p:"sonder"},
+  {id:"clinchen", name:"Clinchen", p:"sonder"},
+  {id:"schraubkleben", name:"Geklebte Schraube", p:"sonder"}
+];
+
+/* Dieselben acht Kriterien wie im Werkzeug, mit denselben Gewichten. */
+var KRITERIEN = [
+  {frage:"Muss zerstörungsfrei lösbar sein", kraft:3, form:3, stoff:-4,
+   grund:"Kraft- und Formschluss lassen sich lösen, der Stoffschluss nur zerstörend."},
+  {frage:"Muss dicht sein (Flüssigkeit oder Gas)", kraft:0, form:-2, stoff:3,
+   grund:"Der Stoffschluss dichtet von selbst, der Kraftschluss nur mit Dichtung, "
+     + "der Formschluss gar nicht."},
+  {frage:"Verschiedene Werkstoffe verbinden", kraft:2, form:2, stoff:1,
+   grund:"Kraft und Form sind unabhängig vom Werkstoff; beim Stoffschluss bleiben "
+     + "nur Kleben und Löten."},
+  {frage:"Sehr hohe Kräfte übertragen", kraft:2, form:2, stoff:2,
+   grund:"Alle drei können es – diese Anforderung trennt kaum."},
+  {frage:"Dünne Bleche verbinden", kraft:-2, form:1, stoff:3,
+   grund:"Schrauben brauchen Klemmlänge; Falzen und Clinchen passen; Kleben und "
+     + "Punktschweißen sind hier zu Hause."},
+  {frage:"Genaue Lage dauerhaft sichern", kraft:1, form:3, stoff:2,
+   grund:"Kraftschluss kann bei Überlast rutschen, die Form gibt die Lage vor."},
+  {frage:"Wechselnde oder stoßartige Last", kraft:2, form:-2, stoff:1,
+   grund:"Kraftschluss ist spielfrei; beim Formschluss führt Spiel zu Schlägen "
+     + "und Verschleiß."},
+  {frage:"Sehr schnelle Montage, große Stückzahl", kraft:0, form:3, stoff:1,
+   grund:"Anziehen kostet Zeit, Schnappen und Clinchen gehen in Sekunden, "
+     + "Aushärtezeit bremst."}
+];
+
+function el(id){ return document.getElementById(id); }
+
+function auswahl(id, liste, leer){
+  var s = document.createElement("select");
+  s.id = id;
+  s.setAttribute("data-druck", "ankreuzen");
+  var o0 = document.createElement("option");
+  o0.value = "";
+  o0.textContent = leer;
+  s.appendChild(o0);
+  liste.forEach(function(e){
+    var o = document.createElement("option");
+    o.value = e.wert;
+    o.textContent = e.text;
+    s.appendChild(o);
+  });
+  return s;
+}
+
+function aufbauen(){
+  var ziel = el("auftraege"), loes = el("loesungen");
+
+  AUFTRAEGE.forEach(function(a, i){
+    var k = document.createElement("div");
+    k.className = "auftragskarte";
+    k.innerHTML = "<h3>" + (i + 1) + ". " + a.name + "</h3><p>" + a.text + "</p>"
+      + '<ul class="anforderungen">'
+      + a.anforderungen.map(function(x){ return "<li>" + x + "</li>"; }).join("")
+      + "</ul>";
+
+    var paar = document.createElement("div");
+    paar.className = "wahlpaar";
+
+    var lp = document.createElement("div");
+    lp.innerHTML = '<label for="p' + i + '">Welches Prinzip?</label>';
+    lp.appendChild(auswahl("p" + i, Object.keys(PRINZIPIEN).map(function(s){
+      return {wert:s, text:PRINZIPIEN[s]};
+    }), "— Prinzip wählen —"));
+
+    var lv = document.createElement("div");
+    lv.innerHTML = '<label for="v' + i + '">Welches Verfahren?</label>';
+    lv.appendChild(auswahl("v" + i, VERFAHREN.map(function(v){
+      return {wert:v.id, text:v.name};
+    }), "— Verfahren wählen —"));
+
+    paar.appendChild(lp);
+    paar.appendChild(lv);
+    k.appendChild(paar);
+
+    var r = document.createElement("div");
+    r.className = "rueckmeldung";
+    r.id = "r" + i;
+    r.hidden = true;
+    k.appendChild(r);
+
+    ziel.appendChild(k);
+
+    el("p" + i).addEventListener("change", pruefen);
+    el("v" + i).addEventListener("change", pruefen);
+
+    var abs = document.createElement("div");
+    var vname = VERFAHREN.filter(function(v){ return v.id === a.verfahren; })[0].name;
+    abs.innerHTML = "<p><strong>" + a.name + " – " + PRINZIPIEN[a.prinzip]
+      + ", zum Beispiel " + vname + ".</strong> " + a.warum
+      + "</p><p><em>Ausgeschlossen:</em> " + a.schliesst_aus + "</p>";
+    loes.appendChild(abs);
+  });
+}
+
+/* Das Prinzip ist die eigentliche Entscheidung. Beim Verfahren gibt es meist
+   mehr als eine vertretbare Antwort - deshalb wird dort nur geprueft, ob es
+   zum gewaehlten Prinzip passt. */
+function pruefen(){
+  AUFTRAEGE.forEach(function(a, i){
+    var p = el("p" + i).value, v = el("v" + i).value, r = el("r" + i);
+    if(!p && !v){ r.hidden = true; return; }
+    r.hidden = false;
+
+    if(!p || !v){
+      r.className = "rueckmeldung fast";
+      r.innerHTML = "<strong>Noch unvollständig.</strong> Erst das Prinzip, dann "
+        + "das Verfahren – in dieser Reihenfolge.";
+      return;
+    }
+
+    var gewaehlt = VERFAHREN.filter(function(x){ return x.id === v; })[0];
+    var passt = gewaehlt.p === p;
+
+    if(p === a.prinzip && passt){
+      r.className = "rueckmeldung ja";
+      r.innerHTML = "<strong>Das passt zusammen.</strong> "
+        + (v === a.verfahren
+           ? "Genau das Verfahren steht auch in der Lösung."
+           : "Ein anderes Verfahren als in der Lösung, aber dasselbe Prinzip – "
+             + "vergleicht eure Begründungen.");
+    } else if(!passt){
+      r.className = "rueckmeldung nein";
+      r.innerHTML = "<strong>Prinzip und Verfahren passen nicht zueinander.</strong> "
+        + gewaehlt.name + " ist " + PRINZIPIEN[gewaehlt.p] + ".";
+    } else {
+      r.className = "rueckmeldung fast";
+      r.innerHTML = "<strong>In sich stimmig, aber sieh dir die Anforderungen noch "
+        + "einmal an.</strong> Welche davon schließt etwas aus?";
+    }
+  });
+}
+
+function kriterienTabelle(){
+  var ziel = el("kriterien");
+  KRITERIEN.forEach(function(k){
+    var tr = document.createElement("tr");
+    function zelle(w){
+      return '<td class="mitte"><span class="' + (w > 0 ? "plus" : (w < 0 ? "minus" : ""))
+        + '">' + (w > 0 ? "+" : "") + w + "</span></td>";
+    }
+    tr.innerHTML = "<td>" + k.frage + "</td>" + zelle(k.kraft) + zelle(k.form)
+      + zelle(k.stoff) + "<td>" + k.grund + "</td>";
+    ziel.appendChild(tr);
+  });
+}
+
+aufbauen();
+kriterienTabelle();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

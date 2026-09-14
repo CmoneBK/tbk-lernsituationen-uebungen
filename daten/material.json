@@ -1,6 +1,24 @@
 [
   {
     "typ": "lernsituationen",
+    "bereich": "Fertigungstechnik",
+    "kategorie": "Fügeverfahren",
+    "name": "Der Gehäusedeckel",
+    "url": "lernsituationen/gehaeusedeckel/index.html",
+    "werkzeuge": [
+      {
+        "datei": "fertigungstechnik-fuegeverfahren-ueberblick.html",
+        "name": "Werkzeug Fügeverfahren im Überblick"
+      },
+      {
+        "datei": "maschinenelemente-schrauben-schraubverbindungen.html",
+        "name": "Werkzeug Schraubverbindungen"
+      }
+    ],
+    "inhalt": []
+  },
+  {
+    "typ": "lernsituationen",
     "bereich": "Maschinenelemente",
     "kategorie": "Schrauben",
     "name": "Konsole am Förderband",
@@ -12,6 +30,37 @@
       }
     ],
     "inhalt": []
+  },
+  {
+    "typ": "uebungen",
+    "bereich": "Fertigungstechnik",
+    "kategorie": "Fügeverfahren",
+    "name": "Überblick",
+    "url": "uebungen/fuegeverfahren/index.html",
+    "werkzeuge": [
+      {
+        "datei": "fertigungstechnik-fuegeverfahren-ueberblick.html",
+        "name": "Werkzeug Fügeverfahren im Überblick"
+      }
+    ],
+    "inhalt": [
+      {
+        "titel": "Wo geht die Kraft über?",
+        "url": "uebungen/fuegeverfahren/01-wo-geht-die-kraft-ueber.html"
+      },
+      {
+        "titel": "Welches Verfahren passt?",
+        "url": "uebungen/fuegeverfahren/02-welches-verfahren-passt.html"
+      },
+      {
+        "titel": "Die Verbindung hält nicht",
+        "url": "uebungen/fuegeverfahren/03-die-verbindung-haelt-nicht.html"
+      },
+      {
+        "titel": "Lösen – aber wie?",
+        "url": "uebungen/fuegeverfahren/04-loesen-aber-wie.html"
+      }
+    ]
   },
   {
     "typ": "uebungen",
@@ -49,6 +98,33 @@
       {
         "titel": "Was die zwei Zahlen verraten",
         "url": "uebungen/schraubverbindungen/06-festigkeitsklassen-deuten.html"
+      }
+    ]
+  },
+  {
+    "typ": "trainings",
+    "bereich": "Fertigungstechnik",
+    "kategorie": "Fügeverfahren",
+    "name": "Überblick",
+    "url": "trainings/fuegeverfahren/index.html",
+    "werkzeuge": [
+      {
+        "datei": "fertigungstechnik-fuegeverfahren-ueberblick.html",
+        "name": "Werkzeug Fügeverfahren im Überblick"
+      }
+    ],
+    "inhalt": [
+      {
+        "titel": "Prinzip-Schnellcheck",
+        "url": "trainings/fuegeverfahren/01-prinzip-schnellcheck.html"
+      },
+      {
+        "titel": "Begriffe der Fügetechnik",
+        "url": "trainings/fuegeverfahren/02-begriffe-der-fuegetechnik.html"
+      },
+      {
+        "titel": "Eigenschaften zuordnen",
+        "url": "trainings/fuegeverfahren/03-eigenschaften-zuordnen.html"
       }
     ]
   },

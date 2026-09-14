@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prinzip-Schnellcheck</title>
+<meta name="description" content="Ein Bild, drei Antworten: Kraft-, Form- oder Stoffschluss? Mit Uhr, drei Schwierigkeitsgraden und sofortiger Begründung.">
+<meta name="dauer" content="10 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/zeichnen.js"></script>
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .frage{font-size:19px; line-height:1.4; font-weight:600; margin:0 0 14px;
+    min-height:1.4em}
+  .wahl{display:flex; gap:10px; flex-wrap:wrap}
+  .wahl button{
+    flex:1 1 150px; font:700 15px/1.25 inherit; cursor:pointer; padding:14px 16px;
+    border-radius:10px; border:1px solid var(--border-stark);
+    background:var(--bg); color:var(--fg);
+  }
+  .wahl button:hover:not(:disabled){border-color:var(--accent)}
+  .wahl button:disabled{cursor:default; opacity:.6}
+  .wahl button.war{opacity:1}
+  .wahl button.war.ok{border-color:var(--ok); background:rgba(22,163,74,.14)}
+  .wahl button.war.nein{border-color:var(--bad); background:rgba(220,38,38,.12)}
+
+  .uhr{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:13px; color:var(--muted); margin:0 0 10px;
+    font-variant-numeric:tabular-nums}
+  .fortschritt{height:8px; border-radius:999px; background:var(--border);
+    overflow:hidden; margin:0 0 16px}
+  .fortschritt i{display:block; height:100%; background:var(--accent);
+    transition:width .2s ease}
+  .bild{margin:2px 0 14px}
+  .bild svg{width:100%; height:auto; display:block; max-width:420px;
+    margin-inline:auto}
+  .bilanz{font-size:19px; font-weight:700; margin:0 0 8px}
+  .rueckblick{list-style:none; margin:12px 0 0; padding:0}
+  .rueckblick li{display:flex; gap:10px; align-items:baseline; padding:5px 0;
+    border-top:1px solid var(--border); font-size:14px}
+  .rueckblick .marke{font-weight:700; flex:0 0 auto}
+  .rueckblick .marke.ok{color:var(--ok)}
+  .rueckblick .marke.nein{color:var(--bad)}
+  .einstellung{display:flex; flex-wrap:wrap; gap:14px; align-items:flex-end;
+    margin:0 0 4px}
+  .einstellung > div{flex:1 1 190px}
+  .einstellung label{display:block; font-size:13px; font-weight:700; margin:0 0 5px}
+  .einstellung select{width:100%; font:inherit; font-size:14px; padding:8px 9px;
+    border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark)}
+  .einstellung select:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+  .stufentext{font-size:13px; color:var(--muted); margin:8px 0 0}
+  table.verfahren td:first-child{font-weight:600; white-space:nowrap}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Fügeverfahren im Überblick</p>
+    <h1>Prinzip-Schnellcheck</h1>
+    <p class="lead">Ein Bild, eine Entscheidung: Was überträgt hier die Kraft –
+      Reibung, Form oder eine Schicht?</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>So läuft es:</strong> Ihr seht eine Verbindung. Entscheidet, welches
+      Wirkprinzip sie trägt. Nach jeder Antwort kommt sofort die Begründung – die ist
+      wichtiger als die Punktzahl.</p>
+      <p>Stellt euch den Durchgang so ein, wie ihr ihn braucht.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Durchgang</h2>
+
+    <div class="box">
+      <div class="einstellung">
+        <div>
+          <label for="stufe">Schwierigkeit</label>
+          <select id="stufe">
+            <option value="einfach">Einfach – eindeutige Verfahren</option>
+            <option value="mittel" selected>Mittel – auch die weniger häufigen</option>
+            <option value="schwer">Schwer – mit den Kombinationen</option>
+          </select>
+        </div>
+        <div>
+          <label for="umfang">Wie viele Verbindungen?</label>
+          <select id="umfang"></select>
+        </div>
+      </div>
+      <p class="stufentext" id="stufentext"></p>
+    </div>
+
+    <div class="box">
+      <div class="uhr">
+        <span id="stand">Verbindung 1 von 10</span>
+        <span id="zeit">0:00</span>
+      </div>
+      <div class="fortschritt"><i id="balken" style="width:0%"></i></div>
+
+      <figure class="bild" id="bildFrage"></figure>
+      <p class="frage" id="frage">&ndash;</p>
+
+      <div class="wahl" id="wahl"></div>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+
+      <p>
+        <button type="button" class="knopf" id="btnWeiter" hidden>Weiter</button>
+        <button type="button" class="knopf leise" id="btnNeu">Von vorn</button>
+      </p>
+    </div>
+
+    <div id="ende" hidden>
+      <h3>Ergebnis</h3>
+      <div class="box">
+        <p class="bilanz" id="bilanz">&ndash;</p>
+        <p id="urteil"></p>
+        <div id="rueckblick"></div>
+      </div>
+    </div>
+
+    <h2><span class="nr">2</span>Die Verfahren auf einen Blick</h2>
+    <p>Sechzehn Verbindungen, vier Gruppen. Wer die Tabelle einmal durchgeht, erkennt
+    das Muster: Die Frage ist immer dieselbe – was überträgt die Kraft?</p>
+
+    <div class="tabellenrahmen">
+      <table class="verfahren">
+        <thead>
+          <tr><th>Verbindung</th><th>Prinzip</th><th>Was überträgt</th></tr>
+        </thead>
+        <tbody id="tabelle"></tbody>
+      </table>
+    </div>
+
+    <h2><span class="nr">3</span>Woran man es erkennt</h2>
+
+    <details>
+      <summary>1. Die schnellste Frage, die fast immer reicht</summary>
+      <p><em>Was passiert, wenn ich die Verbindung überlaste?</em></p>
+      <ul>
+        <li>Sie <strong>rutscht</strong> → Kraftschluss. Die Reibung war am Ende.</li>
+        <li>Etwas <strong>bricht oder wird gequetscht</strong> → Formschluss. Die
+          tragende Form hat nachgegeben.</li>
+        <li>Eine <strong>Schicht reißt</strong> → Stoffschluss. Die Naht, das Lot oder
+          der Klebstoff war die Grenze.</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>2. Warum Nieten und Clinchen eine eigene Gruppe haben</summary>
+      <p>Weil bei beiden ein Teil <em>umgeformt</em> wird und dadurch zwei Dinge
+      zugleich entstehen: eine Form, die ineinandergreift, und eine Klemmung, die
+      zusammenzieht. Man kann sie in jede der beiden Spalten schreiben – und genau
+      deshalb stehen sie in keiner. Im Werkzeug heißen sie „Sonderformen".</p>
+      <p>Dasselbe gilt für die geklebte Schraube: kraftschlüssig in der Wirkung,
+      stoffschlüssig in der Sicherung.</p>
+    </details>
+
+    <details>
+      <summary>3. Ein Verfahren, zwei Prinzipien – geht das?</summary>
+      <p>Ja, und es ist gängige Praxis. Eine Presspassung <em>mit</em> Passfeder
+      kombiniert Kraft- und Formschluss: Der Pressverband überträgt im Normalbetrieb,
+      die Passfeder sichert gegen Durchrutschen bei Überlast. Im Flugzeug- und
+      Fahrzeugbau wird geklebt <em>und</em> genietet. Die Einteilung ordnet den
+      Blick – sie schreibt nicht vor, dass nur eines erlaubt ist.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Reibung, Form oder Schicht – mehr Möglichkeiten gibt
+      es nicht. Alles andere ist eine Kombination daraus.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-ueberblick.html">Werkzeug „Fügeverfahren im Überblick“ öffnen</a>
+    </p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Die sechzehn Verbindungen der Lektion, mit derselben Gruppierung. "stufe"
+   sagt, ab welcher Schwierigkeit sie im Durchgang auftaucht. */
+var VERFAHREN = [
+  {art:"schraube", name:"Schraubverbindung", gruppe:"kraft", stufe:1,
+   traegt:"Reibung in der Trennfuge",
+   warum:"Die angezogene Schraube presst die Bauteile zusammen. Übertragen wird "
+     + "über die Reibung – die Schraube selbst wird nicht auf Abscheren belastet."},
+  {art:"pressverband", name:"Pressverband", gruppe:"kraft", stufe:1,
+   traegt:"Reibung an der Sitzfläche",
+   warum:"Das Übermaß presst Welle und Nabe aneinander. Ohne Nut, ohne Zusatzteil – "
+     + "es hält allein die Reibung an der Fügefläche."},
+  {art:"klemmverbindung", name:"Klemmverbindung", gruppe:"kraft", stufe:2,
+   traegt:"Reibung an der Sitzfläche",
+   warum:"Die geschlitzte Nabe wird von einer Schraube zugezogen. Das erzeugt "
+     + "denselben Effekt wie ein Pressverband – nur einstellbar und wieder lösbar."},
+  {art:"spannsatz", name:"Kegelspannsatz", gruppe:"kraft", stufe:2,
+   traegt:"Reibung an der Sitzfläche",
+   warum:"Kegelringe werden axial verspannt und drücken radial nach außen und innen. "
+     + "Das Ergebnis ist ein lösbarer, spielfreier Kraftschluss."},
+
+  {art:"passfeder", name:"Passfeder", gruppe:"form", stufe:1,
+   traegt:"Seitenflanken der Nuten",
+   warum:"Die Feder liegt in zwei Nuten und drückt seitlich. Oben hat sie Luft – der "
+     + "Rücken trägt nicht mit."},
+  {art:"zahnwelle", name:"Zahnwellenverbindung", gruppe:"form", stufe:1,
+   traegt:"Zahnflanken",
+   warum:"Viele Zähne teilen sich die Last. Dasselbe Prinzip wie die Passfeder, nur "
+     + "auf den ganzen Umfang verteilt – und deshalb deutlich belastbarer."},
+  {art:"stift", name:"Stiftverbindung", gruppe:"form", stufe:1,
+   traegt:"Stiftquerschnitt in der Bohrung",
+   warum:"Der Stift liegt quer durch beide Teile. Er wird auf Abscheren belastet und "
+     + "gibt zugleich die Lage vor."},
+  {art:"schnapp", name:"Schnappverbindung", gruppe:"form", stufe:1,
+   traegt:"Haken hinter der Kante",
+   warum:"Der Haken federt beim Fügen zurück und legt sich hinter eine Kante. Halten "
+     + "tut allein diese Kante – nicht die Federkraft."},
+  {art:"bolzen", name:"Bolzen mit Splint", gruppe:"form", stufe:2,
+   traegt:"Bolzen in den Augen",
+   warum:"Der Bolzen überträgt quer, der Splint hält ihn nur an seinem Platz. Er "
+     + "trägt keine Betriebslast – er sichert."},
+  {art:"falz", name:"Falzverbindung", gruppe:"form", stufe:1,
+   traegt:"ineinander umgelegte Blechränder",
+   warum:"Zwei Blechkanten werden umgelegt und hintereinandergehakt. Kein "
+     + "Verbindungselement, kein Werkstoffauftrag – nur Form."},
+
+  {art:"schweissen", name:"Schweißen", gruppe:"stoff", stufe:1,
+   traegt:"aufgeschmolzener Werkstoff",
+   warum:"Der Grundwerkstoff selbst wird flüssig und erstarrt gemeinsam. Nach dem "
+     + "Erkalten ist aus zwei Teilen eines geworden."},
+  {art:"loeten", name:"Löten", gruppe:"stoff", stufe:1,
+   traegt:"Lot im Spalt",
+   warum:"Das Lot schmilzt, der Grundwerkstoff nicht. Es füllt den Spalt durch "
+     + "Kapillarwirkung und haftet an beiden Flächen."},
+  {art:"kleben", name:"Kleben", gruppe:"stoff", stufe:1,
+   traegt:"Klebschicht",
+   warum:"Die Schicht haftet an beiden Oberflächen (Adhäsion) und hält in sich "
+     + "zusammen (Kohäsion). Wärme braucht es dafür nicht."},
+
+  {art:"nieten", name:"Nieten", gruppe:"sonder", stufe:3,
+   traegt:"Schaft in der Bohrung und Klemmung durch die Köpfe",
+   warum:"Der Schaft wird gestaucht: Er füllt die Bohrung formschlüssig und zieht "
+     + "die Bleche zugleich kraftschlüssig zusammen. Beides wirkt."},
+  {art:"clinchen", name:"Clinchen", gruppe:"sonder", stufe:3,
+   traegt:"ineinander durchgesetzte Bleche",
+   warum:"Die Bleche werden ohne Zusatzteil ineinander gedrückt. Es entsteht eine "
+     + "Form, die hält, und eine Klemmung, die presst – wie beim Nieten, nur ohne "
+     + "Niet."},
+  {art:"schraubkleben", name:"Geklebte Schraube", gruppe:"sonder", stufe:3,
+   traegt:"Vorspannkraft – der Klebstoff sichert nur",
+   warum:"Gehalten wird weiter über die Reibung in der Trennfuge. Der Klebstoff im "
+     + "Gewinde verhindert nur das Losdrehen. Die Sicherung erhöht nicht die "
+     + "Tragfähigkeit, sie sichert die Vorspannkraft."}
+];
+
+var GRUPPEN = [
+  {id:"kraft", text:"Kraftschluss"},
+  {id:"form", text:"Formschluss"},
+  {id:"stoff", text:"Stoffschluss"},
+  {id:"sonder", text:"Form und Kraft zugleich"}
+];
+
+var STUFEN = {
+  einfach: {max:1, text:"Nur Verfahren, bei denen das Prinzip eindeutig ist. "
+    + "Drei Antworten stehen zur Wahl."},
+  mittel: {max:2, text:"Dazu die weniger häufigen Verbindungen – Klemmverbindung, "
+    + "Spannsatz, Bolzen. Drei Antworten stehen zur Wahl."},
+  schwer: {max:3, text:"Dazu die Kombinationen: Nieten, Clinchen und die geklebte "
+    + "Schraube. Jetzt gibt es eine vierte Antwort."}
+};
+
+function el(id){ return document.getElementById(id); }
+
+var runde = [], nr = 0, treffer = 0, offen = true, start = 0, uhr = null;
+
+function vorrat(){
+  var max = STUFEN[el("stufe").value].max;
+  return VERFAHREN.filter(function(v){ return v.stufe <= max; });
+}
+
+function mischen(liste){
+  var a = liste.slice();
+  for(var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+/* Bei "schwer" gibt es die Sonderformen - dann muss die vierte Antwort mit
+   zur Wahl stehen, sonst waere sie durch Ausschluss zu erraten. */
+function antworten(){
+  return el("stufe").value === "schwer" ? GRUPPEN : GRUPPEN.slice(0, 3);
+}
+
+function umfangFuellen(){
+  var feld = el("umfang"), da = vorrat().length, vorher = Number(feld.value) || 0;
+  feld.textContent = "";
+  for(var n = 5; n <= da; n++){
+    var o = document.createElement("option");
+    o.value = String(n);
+    o.textContent = n + (n === da ? " (alle)" : "");
+    feld.appendChild(o);
+  }
+  feld.value = String(Math.min(Math.max(vorher || 10, 5), da));
+}
+
+function zeitText(ms){
+  var s = Math.floor(ms / 1000);
+  return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2);
+}
+
+function uhrLaufen(){
+  if(uhr) clearInterval(uhr);
+  start = Date.now();
+  uhr = setInterval(function(){
+    el("zeit").textContent = zeitText(Date.now() - start);
+  }, 500);
+}
+
+function neuerDurchgang(){
+  umfangFuellen();
+  el("stufentext").textContent = STUFEN[el("stufe").value].text;
+  runde = mischen(vorrat()).slice(0, Number(el("umfang").value));
+  nr = 0;
+  treffer = 0;
+  el("ende").hidden = true;
+  el("rueckblick").textContent = "";
+  uhrLaufen();
+  zeigen();
+}
+
+function zeigen(){
+  var v = runde[nr];
+  offen = true;
+
+  el("stand").textContent = "Verbindung " + (nr + 1) + " von " + runde.length;
+  el("balken").style.width = (100 * nr / runde.length) + "%";
+  el("frage").textContent = v.name + " – was überträgt hier die Kraft?";
+
+  fuegebild(bild("bildFrage", 220, 140, v.name), v.art);
+
+  var w = el("wahl");
+  w.textContent = "";
+  antworten().forEach(function(g){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.textContent = g.text;
+    b.addEventListener("click", function(){ antwort(g.id, b); });
+    w.appendChild(b);
+  });
+
+  el("rueck").hidden = true;
+  el("btnWeiter").hidden = true;
+}
+
+function antwort(gewaehlt, knopf){
+  if(!offen) return;
+  offen = false;
+
+  var v = runde[nr];
+  var ok = gewaehlt === v.gruppe;
+  if(ok) treffer++;
+  v.gewaehlt = gewaehlt;
+  v.richtigBeantwortet = ok;
+
+  var knoepfe = el("wahl").querySelectorAll("button");
+  for(var i = 0; i < knoepfe.length; i++){
+    knoepfe[i].disabled = true;
+    var g = antworten()[i];
+    if(g.id === v.gruppe) knoepfe[i].className = "war ok";
+  }
+  if(!ok) knopf.className = "war nein";
+
+  var r = el("rueck");
+  r.hidden = false;
+  r.className = "rueckmeldung " + (ok ? "ja" : "nein");
+  r.innerHTML = "<strong>" + GRUPPEN.filter(function(g){ return g.id === v.gruppe; })[0].text
+    + " – " + v.traegt + ".</strong> " + v.warum;
+
+  el("btnWeiter").hidden = false;
+  el("btnWeiter").focus();
+}
+
+function weiter(){
+  nr++;
+  if(nr < runde.length){ zeigen(); return; }
+
+  if(uhr) clearInterval(uhr);
+  el("balken").style.width = "100%";
+  el("stand").textContent = "fertig";
+  el("ende").hidden = false;
+
+  el("bilanz").textContent = treffer + " von " + runde.length + " richtig, in "
+    + zeitText(Date.now() - start) + " min.";
+
+  var anteil = treffer / runde.length;
+  el("urteil").textContent = anteil === 1
+    ? "Vollständig. Probiert die nächsthöhere Stufe."
+    : (anteil >= 0.8
+       ? "Sitzt weitgehend. Seht euch unten an, was danebenging – meist ist es "
+         + "eine einzelne Gruppe."
+       : "Geht die Tabelle unter „Die Verfahren auf einen Blick“ einmal durch und "
+         + "startet dann neu.");
+
+  var ul = document.createElement("ul");
+  ul.className = "rueckblick";
+  runde.forEach(function(v){
+    var li = document.createElement("li");
+    var t = GRUPPEN.filter(function(g){ return g.id === v.gruppe; })[0].text;
+    li.innerHTML = '<span class="marke ' + (v.richtigBeantwortet ? "ok" : "nein")
+      + '">' + (v.richtigBeantwortet ? "richtig" : "falsch") + "</span><span>"
+      + v.name + " – " + t + "</span>";
+    ul.appendChild(li);
+  });
+  el("rueckblick").textContent = "";
+  el("rueckblick").appendChild(ul);
+  el("ende").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+function tabelle(){
+  var ziel = el("tabelle");
+  ziel.textContent = "";
+  VERFAHREN.forEach(function(v){
+    var tr = document.createElement("tr");
+    tr.innerHTML = "<td>" + v.name + "</td><td>"
+      + GRUPPEN.filter(function(g){ return g.id === v.gruppe; })[0].text
+      + "</td><td>" + v.traegt + "</td>";
+    ziel.appendChild(tr);
+  });
+}
+
+el("btnWeiter").addEventListener("click", weiter);
+el("btnNeu").addEventListener("click", neuerDurchgang);
+el("stufe").addEventListener("change", neuerDurchgang);
+el("umfang").addEventListener("change", neuerDurchgang);
+
+tabelle();
+neuerDurchgang();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

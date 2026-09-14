@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eigenschaften zuordnen</title>
+<meta name="description" content="Vier Aussagen zu einem Verfahren – eine stimmt nicht. Mit wählbarem Schwerpunkt, Umfang und Begründung aus dem Tabellenbuch.">
+<meta name="dauer" content="15 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/zeichnen.js"></script>
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .frage{font-size:19px; line-height:1.35; font-weight:700; margin:0 0 3px;
+    min-height:1.35em}
+  .fragezeile{font-size:13.5px; color:var(--muted); margin:0 0 14px}
+  .wahl{display:grid; gap:9px}
+  .wahl button{
+    font:500 15px/1.4 inherit; cursor:pointer; padding:12px 14px; text-align:left;
+    border-radius:10px; border:1px solid var(--border-stark);
+    background:var(--bg); color:var(--fg);
+  }
+  .wahl button:hover:not(:disabled){border-color:var(--accent)}
+  .wahl button:disabled{cursor:default; opacity:.6}
+  .wahl button.war{opacity:1}
+  .wahl button.war.ok{border-color:var(--ok); background:rgba(22,163,74,.14)}
+  .wahl button.war.nein{border-color:var(--bad); background:rgba(220,38,38,.12)}
+
+  .uhr{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:13px; color:var(--muted); margin:0 0 10px;
+    font-variant-numeric:tabular-nums}
+  .fortschritt{height:8px; border-radius:999px; background:var(--border);
+    overflow:hidden; margin:0 0 16px}
+  .fortschritt i{display:block; height:100%; background:var(--accent);
+    transition:width .2s ease}
+  .bild{margin:2px 0 12px}
+  .bild svg{width:100%; height:auto; display:block; max-width:340px;
+    margin-inline:auto}
+  .bilanz{font-size:19px; font-weight:700; margin:0 0 8px}
+  .rueckblick{list-style:none; margin:12px 0 0; padding:0}
+  .rueckblick li{display:flex; gap:10px; align-items:baseline; padding:5px 0;
+    border-top:1px solid var(--border); font-size:14px}
+  .rueckblick .marke{font-weight:700; flex:0 0 auto}
+  .rueckblick .marke.ok{color:var(--ok)}
+  .rueckblick .marke.nein{color:var(--bad)}
+  .einstellung{display:flex; flex-wrap:wrap; gap:14px; align-items:flex-end;
+    margin:0 0 4px}
+  .einstellung > div{flex:1 1 190px}
+  .einstellung label{display:block; font-size:13px; font-weight:700; margin:0 0 5px}
+  .einstellung select{width:100%; font:inherit; font-size:14px; padding:8px 9px;
+    border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark)}
+  .einstellung select:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+  .stufentext{font-size:13px; color:var(--muted); margin:8px 0 0}
+  .merkmale{margin:6px 0 0; padding:0 0 0 20px}
+  .merkmale li{margin:0 0 5px}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Fügeverfahren im Überblick</p>
+    <h1>Eigenschaften zuordnen</h1>
+    <p class="lead">Vier Aussagen zu einem Verfahren – drei stimmen, eine nicht.
+      Findet die falsche.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>So läuft es:</strong> Ihr seht ein Verfahren und vier Aussagen dazu.
+      <strong>Eine davon ist falsch</strong> – die klickt ihr an. Die anderen drei
+      stimmen, auch wenn sie ungewohnt klingen.</p>
+      <p>Die Begründung kommt sofort und sagt, was stattdessen richtig ist. Viele
+      Aussagen stehen so oder ähnlich im Tabellenbuch – Abschnitt 3 zeigt, wo.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Durchgang</h2>
+
+    <div class="box">
+      <div class="einstellung">
+        <div>
+          <label for="schwerpunkt">Schwerpunkt</label>
+          <select id="schwerpunkt">
+            <option value="alle" selected>alle Verfahren</option>
+            <option value="kraft">nur kraftschlüssige</option>
+            <option value="form">nur formschlüssige</option>
+            <option value="stoff">nur stoffschlüssige</option>
+            <option value="welle">nur Welle-Nabe-Verbindungen</option>
+            <option value="blech">nur Blechverbindungen</option>
+          </select>
+        </div>
+        <div>
+          <label for="umfang">Wie viele Verfahren?</label>
+          <select id="umfang"></select>
+        </div>
+      </div>
+      <p class="stufentext" id="stufentext"></p>
+    </div>
+
+    <div class="box">
+      <div class="uhr">
+        <span id="stand">Verfahren 1 von 8</span>
+        <span id="zeit">0:00</span>
+      </div>
+      <div class="fortschritt"><i id="balken" style="width:0%"></i></div>
+
+      <figure class="bild" id="bildFrage"></figure>
+      <p class="frage" id="frage">&ndash;</p>
+      <p class="fragezeile">Welche der vier Aussagen stimmt <strong>nicht</strong>?</p>
+
+      <div class="wahl" id="wahl"></div>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+
+      <p>
+        <button type="button" class="knopf" id="btnWeiter" hidden>Weiter</button>
+        <button type="button" class="knopf leise" id="btnNeu">Von vorn</button>
+      </p>
+    </div>
+
+    <div id="ende" hidden>
+      <h3>Ergebnis</h3>
+      <div class="box">
+        <p class="bilanz" id="bilanz">&ndash;</p>
+        <p id="urteil"></p>
+        <div id="rueckblick"></div>
+      </div>
+    </div>
+
+    <h2><span class="nr">2</span>Nachschlagen</h2>
+    <p>Alle Aussagen, die stimmen – nach Verfahren geordnet. Zum Vorbereiten oder zum
+    Nachlesen, wenn eine Frage überrascht hat.</p>
+
+    <div id="nachschlagen"></div>
+
+    <h2><span class="nr">3</span>Woher die Aussagen kommen</h2>
+
+    <details>
+      <summary>1. Was steht im Tabellenbuch – und was nicht?</summary>
+      <p>Einiges steht dort wörtlich: die Eigenschaften der Welle-Nabe-Verbindungen
+      (Selbstzentrierung, Kerbwirkung, axial verschiebbar), die Grundregel für
+      Klebungen („möglichst auf Druck oder Scherung; Zug-, Schäl- oder
+      Biegebeanspruchungen sind zu vermeiden"), die Lötspaltbreiten und die
+      Gestaltungsregeln fürs Löten, die Nahtangaben auf der Zeichnung.</p>
+      <p>Anderes steht dort nicht und kommt aus der Werkstatt: dass ein Splint ein
+      Einwegteil ist, dass ein Clinchpunkt auf der Rückseite zu sehen ist, dass ein
+      Blindniet von einer Seite aus gesetzt wird. Beides muss man haben – das
+      Nachschlagbare und das Erfahrene.</p>
+    </details>
+
+    <details>
+      <summary>2. Warum klingen die falschen Aussagen so plausibel?</summary>
+      <p>Weil sie es sind. „Je größer die Klebefläche, desto mehr hält sie" ist
+      ungefähr richtig – nur wirkt eine größere Breite stärker als eine längere
+      Überlappung, und beim Schälen hilft beides nicht. „Je tiefer der Lötspalt, desto
+      belastbarer" klingt logisch – nur füllt sich der Spalt ab einer Tiefe von etwa
+      dem Fünffachen der Blechdicke nicht mehr zuverlässig mit Lot.</p>
+      <p>Genau solche Halbwahrheiten führen in der Praxis zu Schäden. Deshalb stehen
+      sie hier.</p>
+    </details>
+
+    <details>
+      <summary>3. Muss man alle sechzehn Verfahren gleich gut kennen?</summary>
+      <p>Nein. Wer an Blech arbeitet, braucht Falz, Clinchen, Nieten und Kleben im
+      Schlaf; wer an Antrieben arbeitet, Passfeder, Pressverband und Spannsatz. Über
+      die Einstellung <em>Schwerpunkt</em> lässt sich der Durchgang darauf zuschneiden.
+      Den Überblick über alle sechzehn sollte man trotzdem einmal gehabt haben – sonst
+      fehlt später die Alternative, wenn das gewohnte Verfahren nicht passt.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Jedes Verfahren kann etwas gut und etwas nicht. Wer
+      nur die Stärken kennt, wählt irgendwann falsch.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-ueberblick.html">Werkzeug „Fügeverfahren im Überblick“ öffnen</a>
+    </p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Je Verfahren ein Vorrat: "wahr" sind Aussagen, die zutreffen, "falsch"
+   solche, die plausibel klingen und es nicht tun - mit der Richtigstellung.
+   Jede Frage nimmt drei wahre und eine falsche daraus, deshalb ist ein
+   zweiter Durchgang nicht derselbe.
+   Mit [TB] markierte Aussagen stehen so im Tabellenbuch. */
+var VERFAHREN = [
+  {
+    art:"schraube", name:"Schraubverbindung", gruppe:"kraft", feld:["welle"],
+    wahr:[
+      "Sie lässt sich lösen und wieder anziehen, ohne dass ein Teil zerstört wird.",
+      "Übertragen wird über die Reibung in der Trennfuge, nicht über den Schaft.",
+      "Wie viel sie trägt, hängt von der Vorspannkraft ab – also vom Anziehen.",
+      "Zum Anziehen braucht es Klemmlänge; in dünnem Blech entsteht kaum Vorspannkraft.",
+      "Gegen selbsttätiges Losdrehen gibt es Sicherungen – vom Klebstoff im Gewinde bis zur Sperrzahnschraube."
+    ],
+    falsch:[
+      {satz:"Die Schraube wird im Betrieb auf Abscheren belastet.",
+       warum:"Bei einer richtig vorgespannten Verbindung überträgt die Reibung "
+         + "zwischen den Bauteilen. Die Schraube hält nur die Klemmung aufrecht – "
+         + "auf Abscheren kommt sie erst, wenn die Verbindung schon rutscht."},
+      {satz:"Die Verbindung ist von sich aus dicht.",
+       warum:"Dicht wird sie erst durch eine Dichtung oder eine Dichtfläche. Die "
+         + "Schrauben erzeugen nur die Kraft, die die Dichtung zusammendrückt."},
+      {satz:"Sie verbindet nur Bauteile aus demselben Werkstoff.",
+       warum:"Gerade nicht – Schrauben verbinden Stahl mit Aluminium, Metall mit "
+         + "Kunststoff. Das ist einer ihrer großen Vorteile gegenüber dem Schweißen."}
+    ]
+  },
+  {
+    art:"pressverband", name:"Pressverband", gruppe:"kraft", feld:["welle"],
+    wahr:[
+      "Das Übermaß zwischen Welle und Nabe erzeugt den Halt.",
+      "Er kommt ohne Nut aus und schwächt die Welle deshalb nicht durch eine Kerbe.",
+      "Er überträgt große einseitige und wechselnde Drehmomente und nimmt hohe Axialkräfte auf. [TB]",
+      "Er läuft mit geringer Unwucht und ist einfach zu montieren. [TB]",
+      "Gefügt wird durch Einpressen oder durch Erwärmen der Nabe und Kühlen der Welle."
+    ],
+    falsch:[
+      {satz:"Er ist für Verbindungen gedacht, die häufig gelöst werden.",
+       warum:"Das Tabellenbuch führt den Querpressverband ausdrücklich als Verbindung "
+         + "„für nicht zu lösende Verbindungen“. Auseinander geht er nur mit "
+         + "Presse oder Wärme – und die Passung leidet dabei."},
+      {satz:"Das Tabellenbuch führt ihn unter den formschlüssigen Welle-Nabe-Verbindungen.",
+       warum:"Er steht unter den kraftschlüssigen. Es gibt keine ineinandergreifende "
+         + "Form – es hält allein die Pressung an der Fügefläche."},
+      {satz:"Rutscht er durch, zieht man ihn einfach nach.",
+       warum:"Nachstellen geht beim Kegelspannring und bei der Klemmverbindung. Beim "
+         + "Querpressverband liegt das Übermaß fest; ist er einmal durchgerutscht, "
+         + "sind die Sitzflächen beschädigt."}
+    ]
+  },
+  {
+    art:"klemmverbindung", name:"Klemmverbindung", gruppe:"kraft", feld:["welle"],
+    wahr:[
+      "Eine geschlitzte Nabe wird von einer Schraube zugezogen.",
+      "Die Nabe lässt sich vor dem Festziehen in Drehrichtung und in der Länge einstellen.",
+      "Sie ist wieder lösbar, ohne dass etwas zerstört wird.",
+      "Übertragen wird über Reibung – die Höhe der Anzugskraft entscheidet."
+    ],
+    falsch:[
+      {satz:"Sie braucht eine Nut in der Welle.",
+       warum:"Gerade nicht. Die glatte Welle bleibt glatt – das ist ihr Vorteil "
+         + "gegenüber der Passfeder, denn es entsteht keine Kerbwirkung."},
+      {satz:"Sie überträgt dasselbe Drehmoment wie eine Zahnwelle gleicher Größe.",
+       warum:"Deutlich weniger. Reibung trägt weniger als ineinandergreifende Zähne, "
+         + "und die Klemmkraft ist durch die eine Schraube begrenzt."}
+    ]
+  },
+  {
+    art:"spannsatz", name:"Kegelspannsatz", gruppe:"kraft", feld:["welle"],
+    wahr:[
+      "Kegelringe werden axial verspannt und drücken radial nach innen und außen.",
+      "Die Verbindung ist spielfrei und deshalb auch für wechselnde Last geeignet.",
+      "Sie ist nachstellbar und lässt sich wieder lösen. [TB]",
+      "Die Nabe lässt sich in Drehrichtung frei einstellen. [TB]"
+    ],
+    falsch:[
+      {satz:"Die Welle bekommt dafür eine Passfedernut.",
+       warum:"Nein – der Spannsatz sitzt auf der glatten Welle. Genau deshalb wählt "
+         + "man ihn: kein Kerb, kein Spiel."},
+      {satz:"Er überträgt formschlüssig über die Kegelflanken.",
+       warum:"Die Kegel erzeugen nur die radiale Pressung. Übertragen wird über "
+         + "Reibung – es ist ein Kraftschluss, nur ein einstellbarer."}
+    ]
+  },
+
+  {
+    art:"passfeder", name:"Passfeder", gruppe:"form", feld:["welle"],
+    wahr:[
+      "Die Kraft geht über die Seitenflanken der Nuten; oben hat die Feder Luft.",
+      "Die Nabe ist axial verschiebbar und zentriert sich selbst. [TB]",
+      "Sie überträgt vorwiegend einseitige Drehmomente. [TB]",
+      "Die Nut erzeugt eine hohe Kerbwirkung in der Welle. [TB]",
+      "Nachgerechnet wird auf Flächenpressung an der Nabennut."
+    ],
+    falsch:[
+      {satz:"Sie ist spielfrei und deshalb für stoßartige Wechsellast gut geeignet.",
+       warum:"Jede Passfederverbindung hat etwas Spiel. Bei Stößen schlägt die Feder "
+         + "gegen die Flanken, das Spiel wächst, die Schläge werden härter. Für "
+         + "wechselnde Last nimmt man einen spielfreien Kraftschluss."},
+      {satz:"Das Tabellenbuch nennt sie kerbwirkungsfrei.",
+       warum:"Kerbwirkungsfrei ist laut Tabellenbuch das Polygonprofil. Bei der "
+         + "Passfeder steht dort ausdrücklich „hohe Kerbwirkung“."},
+      {satz:"Übertragen wird über die Reibung zwischen Feder und Nut.",
+       warum:"Die Feder liegt formschlüssig an den Flanken an. Reibung spielt keine "
+         + "Rolle – deshalb hält die Verbindung auch, wenn nichts vorgespannt ist."}
+    ]
+  },
+  {
+    art:"zahnwelle", name:"Zahnwellenverbindung", gruppe:"form", feld:["welle"],
+    wahr:[
+      "Viele Zähne teilen sich die Last; sie überträgt große wechselnde Drehmomente. [TB]",
+      "Die Verbindung zentriert sich selbst. [TB]",
+      "Mit Evolventenprofil ist die Kerbwirkung geringer als mit Kerbzahnprofil. [TB]",
+      "Sie sitzt zum Beispiel an Achsschenkeln und Drehstabfedern im Fahrzeug. [TB]"
+    ],
+    falsch:[
+      {satz:"Sie ist einfacher und billiger herzustellen als eine Passfedernut.",
+       warum:"Umgekehrt. Die Verzahnung an Welle und Nabe ist aufwendig – man nimmt "
+         + "sie, weil sie mehr überträgt, nicht weil sie günstiger wäre."},
+      {satz:"Sie hält durch Reibung an den Zahnflanken.",
+       warum:"Die Zähne greifen ineinander – das ist Formschluss. Reibung braucht es "
+         + "dafür nicht."}
+    ]
+  },
+  {
+    art:"stift", name:"Stiftverbindung", gruppe:"form", feld:["welle"],
+    wahr:[
+      "Der Stift wird auf Abscheren belastet.",
+      "Er legt zugleich die Lage der beiden Teile zueinander fest.",
+      "Die Bohrung wird im zusammengebauten Zustand gemeinsam gebohrt und gerieben.",
+      "Ein Kegelstift lässt sich austreiben, ein Spannstift federt in der Bohrung."
+    ],
+    falsch:[
+      {satz:"Die Bohrung schwächt die Bauteile nicht nennenswert.",
+       warum:"Sie schwächt den Querschnitt und wirkt als Kerbe. Bei dünnen Wellen ist "
+         + "das der Grund, warum man statt eines Querstifts eine Passfeder nimmt."},
+      {satz:"Ein einmal ausgetriebener Kegelstift wird ohne Weiteres wieder gesetzt.",
+       warum:"Die Passung ist nach dem Austreiben nicht mehr dieselbe. Üblich ist, "
+         + "den Stift zu erneuern – notfalls eine Nummer größer nachzureiben."}
+    ]
+  },
+  {
+    art:"schnapp", name:"Schnappverbindung", gruppe:"form", feld:["blech"],
+    wahr:[
+      "Der Haken federt beim Fügen zurück und legt sich hinter eine Kante.",
+      "Gefügt wird ohne Werkzeug und ohne zusätzliches Verbindungselement.",
+      "Bei großen Stückzahlen ist sie günstig, weil sie direkt angeformt wird.",
+      "Ob sie lösbar bleibt, entscheidet die Form des Hakens."
+    ],
+    falsch:[
+      {satz:"Was hält, ist die Federkraft des Hakens.",
+       warum:"Die Federkraft bringt den Haken nur an seinen Platz. Halten tut die "
+         + "Kante, hinter der er sitzt – nimmt man sie weg, hilft alles Federn nichts."},
+      {satz:"Sie überträgt dauerhaft große wechselnde Kräfte.",
+       warum:"Der Kunststoff kriecht unter Dauerlast, der Haken verliert seine "
+         + "Vorspannung. Schnappverbindungen sichern Lage, sie tragen nicht."}
+    ]
+  },
+  {
+    art:"bolzen", name:"Bolzen mit Splint", gruppe:"form", feld:["welle"],
+    wahr:[
+      "Der Bolzen überträgt quer zur Achse und wird auf Abscheren belastet.",
+      "Der Splint hält den Bolzen nur an seinem Platz.",
+      "Die Verbindung erlaubt eine Drehbewegung zwischen den Teilen.",
+      "Sie lässt sich mit einfachem Werkzeug lösen."
+    ],
+    falsch:[
+      {satz:"Der Splint trägt einen Teil der Betriebslast mit.",
+       warum:"Er sichert nur gegen Herausfallen. Wer ihn einrechnet, rechnet mit "
+         + "einem Draht von zwei Millimetern gegen eine Last, die für den Bolzen "
+         + "ausgelegt ist."},
+      {satz:"Ein aufgebogener Splint wird nach der Demontage wieder eingesetzt.",
+       warum:"Der Splint ist ein Einwegteil. Das Auf- und Zurückbiegen versprödet den "
+         + "Draht – beim nächsten Mal bricht er."}
+    ]
+  },
+  {
+    art:"falz", name:"Falzverbindung", gruppe:"form", feld:["blech"],
+    wahr:[
+      "Zwei Blechkanten werden umgelegt und ineinander gehakt.",
+      "Es braucht kein Verbindungselement und keinen Zusatzwerkstoff.",
+      "Sie eignet sich für dünne Bleche, die sich kalt umformen lassen.",
+      "Mit Dichtmasse oder Lot im Falz wird sie dicht.",
+      "Auf der Zeichnung gibt es dafür ein eigenes Symbol, wie fürs Kleben und Clinchen. [TB]"
+    ],
+    falsch:[
+      {satz:"Sie hält, weil die umgelegten Bleche aneinander reiben.",
+       warum:"Die Ränder greifen ineinander – das ist Form, nicht Reibung. Deshalb "
+         + "hält der Falz auch dann, wenn er nicht fest zusammengedrückt ist."},
+      {satz:"Für dicke Stahlbauteile ist sie das übliche Verfahren.",
+       warum:"Dickes Blech lässt sich nicht mehr kalt umlegen. Der Falz gehört zu "
+         + "dünnem Blech – Dosen, Lüftungsrohre, Karosserieteile."}
+    ]
+  },
+
+  {
+    art:"schweissen", name:"Schweißen", gruppe:"stoff", feld:["blech"],
+    wahr:[
+      "Der Grundwerkstoff wird aufgeschmolzen; nach dem Erkalten ist aus zwei Teilen eines.",
+      "Neben dem Grundwerkstoff kann ein Zusatzwerkstoff zugeführt werden.",
+      "Rings um die Naht entsteht eine Wärmeeinflusszone mit verändertem Gefüge.",
+      "Auf der Zeichnung stehen Nahtsymbol und Maße an einer Bezugslinie. [TB]",
+      "Die Nahtdicke steht vor dem Symbol, zum Beispiel a3 für eine Kehlnaht. [TB]"
+    ],
+    falsch:[
+      {satz:"Verzinktes Blech wird ohne Vorbereitung geschweißt.",
+       warum:"Zink verdampft weit unter der Schmelztemperatur von Stahl. Der Dampf "
+         + "treibt Poren in die Naht, und ringsum ist der Korrosionsschutz weg. Das "
+         + "Zink muss vorher runter und hinterher wieder drauf."},
+      {satz:"Weil die Wärme örtlich bleibt, verzieht sich das Bauteil nicht.",
+       warum:"Der Verzug ist das Hauptproblem beim Schweißen. Die Naht schrumpft beim "
+         + "Erkalten und zieht das Bauteil mit – dagegen hilft Heften, Vorrichtung "
+         + "oder eine überlegte Reihenfolge."},
+      {satz:"Die Naht lässt sich zerstörungsfrei wieder trennen.",
+       warum:"Getrennt wird nur mit Trennscheibe oder Brenner – und dann ist Werkstoff "
+         + "weg. Eine Schweißverbindung ist unlösbar."}
+    ]
+  },
+  {
+    art:"loeten", name:"Löten", gruppe:"stoff", feld:["blech"],
+    wahr:[
+      "Das Lot schmilzt, der Grundwerkstoff nicht.",
+      "Das Lot wird durch die Kapillarwirkung in den Spalt gezogen. [TB]",
+      "Weichlöten arbeitet unter 450 °C, Hartlöten darüber. [TB]",
+      "Ein Flussmittel hält die Flächen während des Lötens metallisch blank. [TB]",
+      "Die Lötnaht soll auf Abscheren beansprucht werden, nicht auf Zug oder Schälen. [TB]"
+    ],
+    falsch:[
+      {satz:"Je tiefer der Lötspalt, desto mehr trägt die Verbindung.",
+       warum:"Das Tabellenbuch sagt das Gegenteil: Ab einer Löttiefe von etwa dem "
+         + "Fünffachen der Blechdicke füllt sich der Spalt nicht mehr zuverlässig "
+         + "mit Lot. Mehr Tiefe bringt dann nichts mehr."},
+      {satz:"Der Lötspalt soll möglichst breit sein, damit genug Lot hineinpasst.",
+       warum:"Umgekehrt – er muss eng sein, sonst zieht die Kapillarwirkung das Lot "
+         + "nicht hinein. Das Tabellenbuch nennt für Stahl je nach Lot 0,05 bis "
+         + "0,35 mm."},
+      {satz:"Weil ein Metall schmilzt, lassen sich nur gleiche Werkstoffe löten.",
+       warum:"Gerade das Löten verbindet Ungleiches – Hartmetallschneiden auf "
+         + "Stahlkörper, Kupferrohr in Messingfitting. Der Grundwerkstoff bleibt ja "
+         + "fest."}
+    ]
+  },
+  {
+    art:"kleben", name:"Kleben", gruppe:"stoff", feld:["blech"],
+    wahr:[
+      "Die Schicht haftet an der Oberfläche (Adhäsion) und hält in sich zusammen (Kohäsion).",
+      "Grundregel: möglichst auf Druck oder Scherung beanspruchen. [TB]",
+      "Zug-, Schäl- und Biegebeanspruchung sind zu vermeiden. [TB]",
+      "Die Fügeflächen müssen vorbehandelt werden – entfettet und aufgeraut.",
+      "Die Zugscherfestigkeit fällt mit steigender Temperatur. [TB]",
+      "Im Überlappstoß wird die Klebefläche nur auf Abscherung beansprucht. [TB]"
+    ],
+    falsch:[
+      {satz:"Weil nichts aufgeschmolzen wird, spielt die Betriebstemperatur keine Rolle.",
+       warum:"Sie ist sogar die Grenze: Das Tabellenbuch nennt je nach Klebstoff 40 "
+         + "bis 170 °C maximale Betriebstemperatur, und die Festigkeit fällt schon "
+         + "vorher mit der Temperatur."},
+      {satz:"Am meisten bringt es, die Überlappung zu verlängern.",
+       warum:"Das Tabellenbuch sagt: Die Bruchlast steigt mit der Klebefläche, dabei "
+         + "wirkt eine größere Breite stärker als eine größere Überlappung. Breit "
+         + "schlägt lang."},
+      {satz:"Verschiedene Werkstoffe lassen sich nicht miteinander kleben.",
+       warum:"Das ist die größte Stärke des Klebens: Aluminium an Stahl, Glas an "
+         + "Metall, Kunststoff an Keramik – ohne Wärme und ohne Kontaktkorrosion."}
+    ]
+  },
+
+  {
+    art:"nieten", name:"Nieten", gruppe:"sonder", feld:["blech"],
+    wahr:[
+      "Der Schaft wird gestaucht: Er füllt die Bohrung und zieht die Bleche zusammen.",
+      "Den Setzkopf bringt der Niet mit, der Schließkopf entsteht beim Setzen.",
+      "Es wird keine Wärme eingebracht – das Gefüge bleibt, wie es ist.",
+      "Auch Werkstoffe, die sich nicht schweißen lassen, kann man nieten.",
+      "Ein Blindniet lässt sich von einer Seite aus setzen."
+    ],
+    falsch:[
+      {satz:"Die Verbindung lässt sich zerstörungsfrei lösen.",
+       warum:"Zum Lösen wird der Kopf abgebohrt oder abgemeißelt – der Niet ist "
+         + "hinüber. Nieten zählt zu den unlösbaren Verbindungen."},
+      {satz:"Der Niet hält allein durch den Formschluss im Loch.",
+       warum:"Beides wirkt: Der gestauchte Schaft füllt die Bohrung (Form) und die "
+         + "beiden Köpfe klemmen die Bleche zusammen (Kraft). Deshalb steht das "
+         + "Nieten in keiner der beiden Spalten allein."}
+    ]
+  },
+  {
+    art:"clinchen", name:"Clinchen", gruppe:"sonder", feld:["blech"],
+    wahr:[
+      "Die Bleche werden ohne Zusatzteil ineinander gedrückt.",
+      "Gefügt wird kalt – Beschichtungen bleiben weitgehend erhalten.",
+      "Der Punkt ist auf der Rückseite zu sehen und steht dort vor.",
+      "Auch unterschiedliche Werkstoffe lassen sich verbinden, etwa Aluminium mit Stahl.",
+      "Auf der Zeichnung gibt es dafür ein eigenes Symbol. [TB]"
+    ],
+    falsch:[
+      {satz:"Ein Clinchpunkt trägt so viel wie ein Schweißpunkt gleicher Größe.",
+       warum:"Deutlich weniger. Man setzt dafür mehr Punkte – dafür ohne Wärme, ohne "
+         + "Zusatzwerkstoff und ohne Schaden an der Verzinkung."},
+      {satz:"Es eignet sich auch für dicke Bauteile, die sich nicht umformen lassen.",
+       warum:"Ohne Umformen geht es gar nicht – das Verfahren heißt nicht umsonst "
+         + "Durchsetzfügen. Es gehört zu dünnem, gut umformbarem Blech."}
+    ]
+  },
+  {
+    art:"schraubkleben", name:"Geklebte Schraube", gruppe:"sonder", feld:["welle"],
+    wahr:[
+      "Gehalten wird weiter über die Reibung in der Trennfuge.",
+      "Der Klebstoff im Gewinde verhindert das selbsttätige Losdrehen.",
+      "Er härtet unter Luftabschluss aus – anaerob. [TB]",
+      "Zum Lösen muss man je nach Festigkeit erwärmen."
+    ],
+    falsch:[
+      {satz:"Die Klebung erhöht die Tragfähigkeit der Schraubverbindung.",
+       warum:"Sie sichert die Vorspannkraft, sie ersetzt sie nicht. Eine zu schwach "
+         + "angezogene Schraube wird durch Klebstoff nicht tragfähiger – nur bleibt "
+         + "sie schwach angezogen an ihrem Platz."},
+      {satz:"Die Schraube muss nur angelegt werden, den Rest macht der Klebstoff.",
+       warum:"Ohne Vorspannkraft keine Reibung in der Trennfuge, ohne Reibung keine "
+         + "Verbindung. Angezogen wird wie immer."}
+    ]
+  }
+];
+
+var SCHWERPUNKTE = {
+  alle:  {text:"Alle sechzehn Verfahren aus dem Überblick."},
+  kraft: {text:"Die vier kraftschlüssigen: Schraube, Pressverband, Klemmverbindung, "
+    + "Kegelspannsatz."},
+  form:  {text:"Die sechs formschlüssigen: Passfeder, Zahnwelle, Stift, "
+    + "Schnappverbindung, Bolzen, Falz."},
+  stoff: {text:"Die drei stoffschlüssigen: Schweißen, Löten, Kleben."},
+  welle: {text:"Verbindungen an der Welle – dazu kommen Schraube und geklebte "
+    + "Schraube."},
+  blech: {text:"Verbindungen am Blech – Falz, Schnapp, Schweißen, Löten, Kleben, "
+    + "Nieten, Clinchen."}
+};
+
+function el(id){ return document.getElementById(id); }
+
+var runde = [], nr = 0, treffer = 0, offen = true, start = 0, uhr = null;
+
+function vorrat(){
+  var s = el("schwerpunkt").value;
+  if(s === "alle") return VERFAHREN;
+  if(s === "welle" || s === "blech"){
+    return VERFAHREN.filter(function(v){ return v.feld.indexOf(s) >= 0; });
+  }
+  return VERFAHREN.filter(function(v){ return v.gruppe === s; });
+}
+
+function mischen(liste){
+  var a = liste.slice();
+  for(var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+function umfangFuellen(){
+  var feld = el("umfang"), vorher = Number(feld.value) || 0;
+  var hoechst = vorrat().length;
+  feld.textContent = "";
+  for(var n = Math.min(4, hoechst); n <= hoechst; n++){
+    var o = document.createElement("option");
+    o.value = String(n);
+    o.textContent = n + (n === hoechst ? " (alle)" : "");
+    feld.appendChild(o);
+  }
+  feld.value = String(Math.min(vorher || 8, hoechst));
+  if(!feld.value) feld.value = String(hoechst);
+}
+
+function zeitText(ms){
+  var s = Math.floor(ms / 1000);
+  return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2);
+}
+
+function uhrLaufen(){
+  if(uhr) clearInterval(uhr);
+  start = Date.now();
+  uhr = setInterval(function(){
+    el("zeit").textContent = zeitText(Date.now() - start);
+  }, 500);
+}
+
+/* Drei wahre und eine falsche Aussage - die Zusammenstellung wechselt bei
+   jedem Durchgang, damit sich nicht die Reihenfolge einpraegt. */
+function fragebauen(v){
+  var wahr = mischen(v.wahr).slice(0, 3);
+  var falsch = mischen(v.falsch)[0];
+  var saetze = mischen(wahr.map(function(t){ return {text:t, ok:true}; })
+    .concat([{text:falsch.satz, ok:false, warum:falsch.warum}]));
+  return {verfahren:v, saetze:saetze};
+}
+
+function neuerDurchgang(){
+  umfangFuellen();
+  el("stufentext").textContent = SCHWERPUNKTE[el("schwerpunkt").value].text;
+  runde = mischen(vorrat()).slice(0, Number(el("umfang").value)).map(fragebauen);
+  nr = 0;
+  treffer = 0;
+  el("ende").hidden = true;
+  el("rueckblick").textContent = "";
+  uhrLaufen();
+  zeigen();
+}
+
+function zeigen(){
+  var e = runde[nr], v = e.verfahren;
+  offen = true;
+
+  el("stand").textContent = "Verfahren " + (nr + 1) + " von " + runde.length;
+  el("balken").style.width = (100 * nr / runde.length) + "%";
+
+  var bild = el("bildFrage");
+  bild.textContent = "";
+  var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 220 130");
+  svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", v.name);
+  bild.appendChild(svg);
+  fuegebild(svg, v.art);
+
+  el("frage").textContent = v.name;
+
+  var w = el("wahl");
+  w.textContent = "";
+  e.saetze.forEach(function(s){
+    var kn = document.createElement("button");
+    kn.type = "button";
+    kn.textContent = s.text.replace(" [TB]", "");
+    kn.addEventListener("click", function(){ antwort(s, kn); });
+    w.appendChild(kn);
+  });
+
+  el("rueck").hidden = true;
+  el("btnWeiter").hidden = true;
+}
+
+function antwort(gewaehlt, knopf){
+  if(!offen) return;
+  offen = false;
+
+  var e = runde[nr];
+  var ok = !gewaehlt.ok;
+  if(ok) treffer++;
+  e.ok = ok;
+
+  var knoepfe = el("wahl").querySelectorAll("button");
+  for(var i = 0; i < knoepfe.length; i++){
+    knoepfe[i].disabled = true;
+    if(!e.saetze[i].ok) knoepfe[i].className = "war ok";
+  }
+  if(!ok) knopf.className = "war nein";
+
+  var falsch = e.saetze.filter(function(s){ return !s.ok; })[0];
+  var r = el("rueck");
+  r.hidden = false;
+  r.className = "rueckmeldung " + (ok ? "ja" : "nein");
+  r.innerHTML = (ok ? "" : "<p>Die Aussage, die ihr gewählt habt, stimmt – "
+      + "sie ist nur ungewohnt.</p>")
+    + "<p><strong>Falsch war: „" + falsch.text + "“</strong></p><p>"
+    + falsch.warum + "</p>";
+
+  el("btnWeiter").hidden = false;
+  el("btnWeiter").focus();
+}
+
+function weiter(){
+  nr++;
+  if(nr < runde.length){ zeigen(); return; }
+
+  if(uhr) clearInterval(uhr);
+  el("balken").style.width = "100%";
+  el("stand").textContent = "fertig";
+  el("ende").hidden = false;
+
+  el("bilanz").textContent = treffer + " von " + runde.length + " richtig, in "
+    + zeitText(Date.now() - start) + " min.";
+
+  var anteil = treffer / runde.length;
+  el("urteil").textContent = anteil === 1
+    ? "Vollständig. Wechselt den Schwerpunkt – die Aussagen sind je Verfahren "
+      + "verschieden zusammengestellt."
+    : (anteil >= 0.75
+       ? "Solide. Seht euch die Verfahren unten noch einmal an, bei denen es "
+         + "danebenging."
+       : "Geht Abschnitt 2 durch, bevor ihr neu startet. Die falschen Aussagen "
+         + "klingen mit Absicht plausibel.");
+
+  var ul = document.createElement("ul");
+  ul.className = "rueckblick";
+  runde.forEach(function(e){
+    var falsch = e.saetze.filter(function(s){ return !s.ok; })[0];
+    var li = document.createElement("li");
+    li.innerHTML = '<span class="marke ' + (e.ok ? "ok" : "nein") + '">'
+      + (e.ok ? "richtig" : "falsch") + "</span><span><strong>"
+      + e.verfahren.name + "</strong> – falsch war: " + falsch.text + "</span>";
+    ul.appendChild(li);
+  });
+  el("rueckblick").textContent = "";
+  el("rueckblick").appendChild(ul);
+  el("ende").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+var GRUPPENNAME = {kraft:"Kraftschluss", form:"Formschluss", stoff:"Stoffschluss",
+  sonder:"Form und Kraft zugleich"};
+
+function nachschlagen(){
+  var ziel = el("nachschlagen");
+  ziel.textContent = "";
+  VERFAHREN.forEach(function(v){
+    var d = document.createElement("details");
+    var s = document.createElement("summary");
+    s.textContent = v.name + " – " + GRUPPENNAME[v.gruppe];
+    d.appendChild(s);
+    var ul = document.createElement("ul");
+    ul.className = "merkmale";
+    v.wahr.forEach(function(t){
+      var li = document.createElement("li");
+      var tb = t.indexOf(" [TB]") >= 0;
+      li.textContent = t.replace(" [TB]", "");
+      if(tb){
+        var q = document.createElement("em");
+        q.textContent = " (Tabellenbuch)";
+        li.appendChild(q);
+      }
+      ul.appendChild(li);
+    });
+    d.appendChild(ul);
+    ziel.appendChild(d);
+  });
+}
+
+el("btnWeiter").addEventListener("click", weiter);
+el("btnNeu").addEventListener("click", neuerDurchgang);
+el("schwerpunkt").addEventListener("change", neuerDurchgang);
+el("umfang").addEventListener("change", neuerDurchgang);
+
+nachschlagen();
+neuerDurchgang();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

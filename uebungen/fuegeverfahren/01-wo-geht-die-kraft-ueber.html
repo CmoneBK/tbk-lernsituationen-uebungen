@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wo geht die Kraft über?</title>
+<meta name="description" content="Vier Verbindungen genau ansehen: Welche Fläche überträgt die Last – und was passiert, wenn sie überlastet wird?">
+<meta name="dauer" content="20 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/zeichnen.js"></script>
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .faelle{display:grid; gap:18px; grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+  .fall{border:1px solid var(--border); border-radius:12px; padding:14px 16px; background:var(--card)}
+  .fall h3{margin:0 0 2px; font-size:1rem}
+  .fall .wer{font-size:13px; color:var(--muted); margin:0 0 10px}
+  .fall svg{width:100%; height:auto; display:block}
+  .fall figure{margin:0 0 10px}
+  .fall label{display:block; font-size:13.5px; font-weight:600; margin:0 0 5px}
+  .fall select{width:100%; font:inherit; font-size:14px; padding:8px 9px;
+    border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark)}
+  .fall select:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+  table.prinzipien td:first-child{font-weight:600; white-space:nowrap}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Fügeverfahren im Überblick</p>
+    <h1>Wo geht die Kraft über?</h1>
+    <p class="lead">Jede Verbindung hat eine Stelle, an der die Last von einem Teil auf das
+      andere übergeht. Findet sie – dann habt ihr auch das Wirkprinzip.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Ausgangslage:</strong> Vier Verbindungen, vier Zeichnungen. Für jede
+      gibt es genau eine Fläche (oder Schicht), über die die Kraft läuft. Ist sie
+      gefunden, steht auch das Prinzip fest: <em>Kraftschluss</em> (Reibung),
+      <em>Formschluss</em> (ineinandergreifende Formen) oder <em>Stoffschluss</em>
+      (eine verbindende Schicht).</p>
+      <p>Tragt für jede Verbindung ein, welche Fläche die Kraft überträgt. Die Lösung
+      steht darunter – lest sie erst, wenn ihr euch festgelegt habt.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Vier Verbindungen ansehen</h2>
+
+    <div class="faelle" id="faelle"></div>
+
+    <p class="bilanzzeile" id="bilanz">Noch nichts gewählt.</p>
+
+    <details>
+      <summary>Lösung: welche Fläche überträgt – und warum</summary>
+      <div id="loesungen"></div>
+    </details>
+
+    <h2><span class="nr">2</span>Was passiert bei Überlast?</h2>
+    <p>Die Wirkfläche verrät nicht nur das Prinzip, sondern auch, wie die Verbindung
+    versagt. Das ist der eigentliche Grund, warum man sie sucht.</p>
+
+    <details>
+      <summary>a) Die Schraubverbindung wird zu stark quer belastet. Was passiert zuerst?</summary>
+      <p>Sie <strong>rutscht</strong>. Solange die Reibung in der Trennfuge reicht,
+      bewegt sich nichts; wird die Querkraft größer, gleiten die Bauteile gegeneinander,
+      bis die Schraube an der Lochwand anliegt. Erst dann wird die Schraube auf Abscheren
+      belastet – und dafür ist sie nicht ausgelegt. Eine kraftschlüssige Verbindung
+      versagt also nicht mit einem Bruch, sondern mit einer Bewegung.</p>
+    </details>
+
+    <details>
+      <summary>b) Die Passfeder wird überlastet. Woran erkennt man das?</summary>
+      <p>An den <strong>Nutflanken</strong>. Die Feder drückt auf die Seitenflächen der
+      Nut; wird die Pressung dort zu groß, quetschen sich Nut und Feder. Man findet
+      hinterher eine ausgeschlagene Nut, keinen sauberen Bruch. Deshalb wird bei
+      Passfederverbindungen die Flächenpressung nachgerechnet und nicht die Scherkraft.</p>
+    </details>
+
+    <details>
+      <summary>c) Die Klebung löst sich. Warum fast nie in der Mitte der Fläche?</summary>
+      <p>Weil die Spannung an den <strong>Rändern</strong> am größten ist. In der Mitte
+      der Überlappung passiert wenig; außen, wo die Kraft ein- und austritt, wird die
+      Schicht auf Schälen beansprucht. Deshalb bringt eine doppelt so lange Überlappung
+      auch nicht die doppelte Festigkeit – eine breitere Klebung dagegen schon.</p>
+    </details>
+
+    <details>
+      <summary>d) Der Niet sitzt in einer zu großen Bohrung. Was geht verloren?</summary>
+      <p>Der <strong>Formschluss</strong> zum Teil und damit die genaue Lage. Der Niet
+      wirkt doppelt: Sein gestauchter Schaft füllt die Bohrung aus (Form) und zieht die
+      Bleche zugleich zusammen (Kraft). Ist die Bohrung zu groß, bleibt nur noch die
+      Klemmung – und die Bleche können sich verschieben, bevor der Schaft trägt.</p>
+    </details>
+
+    <h2><span class="nr">3</span>Die drei Prinzipien nebeneinander</h2>
+
+    <div class="tabellenrahmen">
+      <table class="prinzipien">
+        <thead>
+          <tr><th>Prinzip</th><th>Was überträgt</th><th>Grenze</th><th>Lösbar?</th>
+            <th>Beispiele</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Kraftschluss</td><td>Reibung zwischen den Flächen</td>
+            <td>Haftreibung – darüber rutscht es</td><td>ja, zerstörungsfrei</td>
+            <td>Schraube, Pressverband, Klemmverbindung, Spannsatz</td></tr>
+          <tr><td>Formschluss</td><td>ineinandergreifende Formen</td>
+            <td>Flächenpressung und Abscheren</td><td>ja, meist zerstörungsfrei</td>
+            <td>Passfeder, Zahnwelle, Stift, Schnappnase, Bolzen, Falz</td></tr>
+          <tr><td>Stoffschluss</td><td>Schmelze, Lot oder Klebstoff</td>
+            <td>Festigkeit der Verbindungsschicht</td><td>nein, nur zerstörend</td>
+            <td>Schweißen, Löten, Kleben</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2><span class="nr">4</span>Übertragen</h2>
+
+    <details>
+      <summary>1. Warum wird eine Schraubverbindung, die Querkraft übertragen soll,
+        nicht einfach auf Abscheren ausgelegt?</summary>
+      <p>Weil sie dann erst rutschen müsste, bevor sie trägt. Bis die Schraube an der
+      Lochwand anliegt, hat sich die Verbindung schon bewegt – bei wechselnder Last
+      wandert sie hin und her und schlägt das Loch aus. Eine Schraubverbindung soll
+      halten, <em>bevor</em> sie sich bewegt, also über Reibung. Nur wo Formschluss
+      ausdrücklich gewollt ist, nimmt man Passschrauben oder setzt einen Stift daneben.</p>
+    </details>
+
+    <details>
+      <summary>2. Nieten und Clinchen gelten als Sonderformen. Welchem Prinzip gehören
+        sie?</summary>
+      <p>Beiden zugleich, und das ist kein Ausweichen: Beim Nieten wird der Schaft
+      gestaucht und füllt die Bohrung <em>formschlüssig</em>, gleichzeitig zieht der
+      geschlagene Kopf die Bleche <em>kraftschlüssig</em> zusammen. Beim Clinchen werden
+      die Bleche ineinander durchgesetzt – auch hier greift Form ineinander und presst
+      zugleich. Die Einteilung in drei Prinzipien ist ein Ordnungsschema, kein Gesetz.</p>
+    </details>
+
+    <details>
+      <summary>3. Eine geklebte Schraube (Schraubensicherung) – welches Prinzip hält?</summary>
+      <p>Weiter der Kraftschluss: Die Vorspannkraft der Schraube presst die Bauteile
+      zusammen, daran ändert der Klebstoff nichts. Der Stoffschluss im Gewinde verhindert
+      nur, dass die Schraube sich <em>losdreht</em>. Eine Schraubensicherung erhöht nicht
+      die Tragfähigkeit – sie sichert die Vorspannkraft, die die Tragfähigkeit erzeugt.</p>
+    </details>
+
+    <details>
+      <summary>4. Warum kann man eine Lötverbindung nicht einfach länger machen, um mehr
+        Kraft zu übertragen?</summary>
+      <p>Weil sich der Spalt ab einer Tiefe von etwa dem Fünffachen der Blechdicke nicht
+      mehr sicher mit Lot füllt – die Kapillarwirkung reicht nicht weiter. Das Tabellenbuch
+      nennt dafür die Regel <em>l<sub>ü</sub> &gt; 5 · s</em>. Wer mehr Kraft braucht,
+      gestaltet die Verbindung anders, zum Beispiel mit einem Falz, der die Lötnaht
+      entlastet.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Sucht die Fläche, über die die Kraft geht. Sie sagt euch
+      das Prinzip, die Belastungsart und die Art des Versagens – alles drei auf einmal.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-ueberblick.html">Werkzeug „Fügeverfahren im Überblick“ öffnen</a>
+    </p>
+    <p class="fussnote">Die Zeichnungen sind schematisch und für den Unterricht
+      vereinfacht.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Vier Verbindungen, je eine Frage nach der Wirkfläche. Die falschen Antworten
+   sind nicht beliebig: Jede benennt eine Fläche, die es an dieser Verbindung
+   wirklich gibt - sie überträgt nur nicht die Last. */
+var FAELLE = [
+  {
+    art: "schraube", name: "Schraubverbindung", wer: "Zwei Platten, verschraubt",
+    frage: "Welche Fläche überträgt die Querkraft?",
+    antworten: [
+      "die Trennfuge zwischen den Platten",
+      "der Schaft der Schraube in der Bohrung",
+      "die Auflagefläche unter dem Schraubenkopf",
+      "das Gewinde zwischen Schraube und Mutter"
+    ],
+    richtig: 0, prinzip: "Kraftschluss",
+    warum: "Die angezogene Schraube presst die Platten aufeinander. Die Querkraft "
+      + "läuft über die <strong>Reibung in der Trennfuge</strong> – nicht über den "
+      + "Schaft. Der liegt im Normalfall gar nicht an der Lochwand an; das "
+      + "Durchgangsloch ist absichtlich größer. Kopfauflage und Gewinde übertragen "
+      + "die Vorspannkraft, nicht die Querkraft."
+  },
+  {
+    art: "passfeder", name: "Passfederverbindung", wer: "Nabe auf Welle",
+    frage: "Welche Fläche überträgt das Drehmoment?",
+    antworten: [
+      "der Rücken der Passfeder",
+      "die Seitenflanken der Nuten in Welle und Nabe",
+      "die zylindrische Sitzfläche zwischen Welle und Nabe",
+      "die Stirnflächen der Passfeder"
+    ],
+    richtig: 1, prinzip: "Formschluss",
+    warum: "Das Drehmoment läuft über die <strong>Seitenflanken</strong>: Die Feder "
+      + "drückt seitlich gegen Wellennut und Nabennut. Oben hat die Feder bewusst "
+      + "Luft – der Rücken trägt nicht. Der zylindrische Sitz ist meist eine "
+      + "Übergangspassung und hilft beim Zentrieren, überträgt aber kein Moment."
+  },
+  {
+    art: "kleben", name: "Klebeverbindung", wer: "Zwei Bleche, überlappt geklebt",
+    frage: "Welche Fläche überträgt die Zugkraft?",
+    antworten: [
+      "die Stirnkanten der beiden Bleche",
+      "die Klebschicht über die ganze Überlappung",
+      "die Oberfläche des oberen Blechs",
+      "die Bohrungen in der Überlappung"
+    ],
+    richtig: 1, prinzip: "Stoffschluss",
+    warum: "Die <strong>Klebschicht</strong> überträgt – aber nicht gleichmäßig. "
+      + "Die Spannung ist an den Rändern der Überlappung am größten und in der Mitte "
+      + "am kleinsten. Deshalb wird eine Klebung breiter statt länger gemacht, wenn "
+      + "sie mehr tragen soll."
+  },
+  {
+    art: "nieten", name: "Nietverbindung", wer: "Zwei Bleche, vernietet",
+    frage: "Welche Fläche überträgt die Kraft zwischen den Blechen?",
+    antworten: [
+      "nur die Reibung zwischen den Blechen",
+      "nur der Nietschaft in der Bohrung",
+      "beides: der Schaft füllt die Bohrung und der Kopf zieht die Bleche zusammen",
+      "die Köpfe des Niets auf der Blechoberfläche"
+    ],
+    richtig: 2, prinzip: "Sonderform – form- und kraftschlüssig",
+    warum: "Beim Nieten wird der Schaft gestaucht. Er füllt die Bohrung "
+      + "<strong>formschlüssig</strong> aus, und der entstehende Schließkopf zieht die "
+      + "Bleche zugleich <strong>kraftschlüssig</strong> zusammen. Deshalb steht das "
+      + "Nieten im Werkzeug unter den Sonderformen: Es gehört in zwei Spalten."
+  }
+];
+
+function el(id){ return document.getElementById(id); }
+
+function aufbauen(){
+  var ziel = el("faelle");
+  var loesungen = el("loesungen");
+
+  FAELLE.forEach(function(f, i){
+    var k = document.createElement("div");
+    k.className = "fall";
+    k.innerHTML =
+      "<h3>" + f.name + "</h3>" +
+      '<p class="wer">' + f.wer + "</p>" +
+      '<figure id="bild' + i + '"></figure>' +
+      '<label for="w' + i + '">' + f.frage + "</label>";
+
+    var s = document.createElement("select");
+    s.id = "w" + i;
+    s.setAttribute("data-druck", "ankreuzen");
+    var leer = document.createElement("option");
+    leer.value = "";
+    leer.textContent = "— bitte wählen —";
+    s.appendChild(leer);
+    f.antworten.forEach(function(a, j){
+      var o = document.createElement("option");
+      o.value = String(j);
+      o.textContent = a;
+      s.appendChild(o);
+    });
+    s.addEventListener("change", bilanz);
+    k.appendChild(s);
+
+    var r = document.createElement("div");
+    r.className = "rueckmeldung";
+    r.id = "r" + i;
+    r.hidden = true;
+    k.appendChild(r);
+
+    ziel.appendChild(k);
+
+    var svg = bild("bild" + i, 220, 140, f.name);
+    fuegebild(svg, f.art);
+
+    var abs = document.createElement("div");
+    abs.innerHTML = "<p><strong>" + f.name + " – " + f.prinzip + ".</strong> "
+      + f.warum + "</p>";
+    loesungen.appendChild(abs);
+  });
+}
+
+/* Rueckmeldung erst, wenn gewaehlt wurde - und ohne die richtige Antwort zu
+   verraten, solange sie falsch ist. Sonst waere die Loesung unten ueberfluessig. */
+function bilanz(){
+  var da = 0, treffer = 0;
+  FAELLE.forEach(function(f, i){
+    var s = el("w" + i), r = el("r" + i);
+    if(!s.value){ r.hidden = true; return; }
+    da++;
+    var ok = Number(s.value) === f.richtig;
+    if(ok) treffer++;
+    r.hidden = false;
+    r.className = "rueckmeldung " + (ok ? "ja" : "fast");
+    r.innerHTML = ok
+      ? "<strong>Stimmt – " + f.prinzip + ".</strong> Die Begründung steht unten."
+      : "<strong>Diese Fläche gibt es hier, aber sie trägt nicht.</strong> "
+        + "Frag dich: Was würde sich bewegen, wenn die Last zu groß wird?";
+  });
+
+  el("bilanz").textContent = da === 0
+    ? "Noch nichts gewählt."
+    : (da < FAELLE.length
+       ? da + " von " + FAELLE.length + " beantwortet."
+       : treffer + " von " + FAELLE.length + " richtig.");
+}
+
+aufbauen();
+bilanz();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

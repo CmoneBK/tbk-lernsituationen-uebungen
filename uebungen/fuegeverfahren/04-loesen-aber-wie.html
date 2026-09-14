@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lösen – aber wie?</title>
+<meta name="description" content="Eine Baugruppe soll instandgesetzt werden. Welche Verbindung geht zerstörungsfrei auf, welche nicht – und was braucht man dafür?">
+<meta name="dauer" content="20 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  table.demontage td:first-child{font-weight:600; white-space:nowrap}
+  table.demontage select{width:100%; font:inherit; font-size:13.5px; padding:6px 8px;
+    border-radius:7px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark)}
+  table.demontage select:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+  td.urteil{font-size:13px; font-weight:600; white-space:nowrap}
+  td.urteil.ja{color:var(--ok)}
+  td.urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Fügeverfahren im Überblick</p>
+    <h1>Lösen – aber wie?</h1>
+    <p class="lead">Beim Instandsetzen zeigt sich, was beim Fügen entschieden wurde.
+      Welche Verbindung geht wieder auf – und was kostet es?</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Ausgangslage:</strong> In einer Pumpenbaugruppe ist das Laufrad
+      beschädigt. Um es zu wechseln, müssen acht Verbindungen gelöst werden. Ihr
+      bereitet die Demontage vor und legt fest, was ihr dafür braucht.</p>
+      <p>Drei Antworten sind möglich:</p>
+      <ul>
+        <li><strong>zerstörungsfrei</strong> – mit dem passenden Werkzeug, beide Teile
+          bleiben brauchbar</li>
+        <li><strong>mit Aufwand</strong> – geht auf, braucht aber Vorrichtung, Wärme
+          oder Kraft; ein Teil kann dabei Schaden nehmen</li>
+        <li><strong>nur zerstörend</strong> – die Verbindung muss getrennt werden und
+          ist danach hin</li>
+      </ul>
+    </div>
+
+    <h2><span class="nr">1</span>Die Demontageliste</h2>
+    <p>Tragt für jede Verbindung ein, wie sie sich lösen lässt.</p>
+
+    <div class="tabellenrahmen">
+      <table class="demontage">
+        <thead>
+          <tr><th>Verbindung</th><th>Wo in der Baugruppe</th><th>Wie lösbar?</th>
+            <th>Stimmt?</th></tr>
+        </thead>
+        <tbody id="liste"></tbody>
+      </table>
+    </div>
+
+    <p class="bilanzzeile" id="bilanz">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: womit man rangeht und worauf zu achten ist</summary>
+      <div id="loesungen"></div>
+    </details>
+
+    <h2><span class="nr">2</span>Was das fürs Konstruieren heißt</h2>
+    <p>Wer eine Baugruppe entwirft, entscheidet damit auch über jede spätere Reparatur.
+    Das ist kein Nebeneffekt – es steht in jedem Instandhaltungsplan.</p>
+
+    <div class="tabellenrahmen">
+      <table>
+        <thead>
+          <tr><th>Frage beim Entwurf</th><th>Folge für die Instandhaltung</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Was wird im Betrieb voraussichtlich getauscht?</td>
+            <td>Diese Teile bekommen lösbare Verbindungen – auch wenn eine unlösbare
+              billiger wäre.</td></tr>
+          <tr><td>Kommt man mit dem Werkzeug hin?</td>
+            <td>Eine Schraube, an die kein Schlüssel passt, ist praktisch unlösbar.</td></tr>
+          <tr><td>Was passiert beim Lösen mit dem Nachbarteil?</td>
+            <td>Ausbohren, Erwärmen und Trennen belasten immer auch das Gegenstück.</td></tr>
+          <tr><td>Gibt es das Verbindungselement noch?</td>
+            <td>Normteile sind nachbeschaffbar, Sonderteile oft nicht.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2><span class="nr">3</span>Übertragen</h2>
+
+    <details>
+      <summary>1. Warum sitzt an einem Pressverband oft eine Gewindebohrung in der
+        Stirnfläche?</summary>
+      <p>Damit man eine Abziehvorrichtung ansetzen kann. Ein Pressverband hält über
+      Übermaß und Reibung; zum Lösen muss dieselbe Kraft wieder aufgebracht werden, und
+      zwar axial. Die Gewindebohrung ist eine <em>Demontagehilfe</em>, die beim Entwurf
+      mitgedacht wurde. Fehlt sie, bleibt oft nur Erwärmen der Nabe – oder Zerstören.</p>
+    </details>
+
+    <details>
+      <summary>2. Eine Schraube ist festgerostet. Ist die Verbindung noch lösbar?</summary>
+      <p>Im Prinzip ja, praktisch oft nein. Zwischen Gewindeflanken hat sich Rost
+      gebildet und wirkt wie ein Stoffschluss – aus der lösbaren Verbindung ist eine
+      unlösbare geworden. Man arbeitet mit Kriechöl, Wärme oder Schlagschrauber und
+      riskiert dabei, den Kopf abzudrehen. Deshalb gehören Korrosionsschutz und
+      Schmierung beim Montieren zur Verbindung dazu.</p>
+    </details>
+
+    <details>
+      <summary>3. Eine geklebte Schraube (Schraubensicherung) – lösbar oder nicht?</summary>
+      <p>Lösbar, aber mit Aufwand. Mittelfeste Schraubensicherungen lassen sich mit
+      normalem Werkzeug überwinden, hochfeste erst nach Erwärmen auf etwa 250 °C. Die
+      Sicherung wirkt stoffschlüssig <em>im Gewinde</em> – sie ändert nichts daran, dass
+      die Verbindung selbst kraftschlüssig hält. Nach dem Lösen ist der Klebstoffrest zu
+      entfernen und neu zu sichern.</p>
+    </details>
+
+    <details>
+      <summary>4. Was ist der Unterschied zwischen „lösbar" und „demontierbar"?</summary>
+      <p>„Lösbar" ist eine Eigenschaft der Verbindung, „demontierbar" eine Eigenschaft
+      der Baugruppe. Acht lösbare Schrauben nützen nichts, wenn man an die hinteren
+      beiden nicht herankommt oder das Gehäuse vorher vollständig zerlegen müsste. Die
+      Demontierbarkeit entsteht aus Verbindung <em>und</em> Anordnung – und sie wird
+      beim Entwurf entschieden, nicht in der Werkstatt.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Ob eine Verbindung wieder aufgeht, entscheidet sich
+      beim Fügen – nicht beim Lösen.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-ueberblick.html">Werkzeug „Fügeverfahren im Überblick“ öffnen</a>
+    </p>
+    <p class="fussnote">Die genannten Werkzeuge und Vorgehensweisen sind
+      Orientierungswerte für den Unterricht; im Betrieb gilt die Wartungsvorschrift des
+      Herstellers.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+var STUFEN = [
+  {id:"frei", text:"zerstörungsfrei"},
+  {id:"aufwand", text:"mit Aufwand"},
+  {id:"zerstoerend", text:"nur zerstörend"}
+];
+
+/* Acht Verbindungen einer Pumpenbaugruppe. "womit" ist der eigentliche
+   Lerninhalt: Nicht ob es geht, sondern was man dafuer braucht. */
+var VERBINDUNGEN = [
+  {
+    name: "Sechskantschrauben",
+    wo: "Lagerdeckel am Gehäuse, 6 Stück",
+    stufe: "frei",
+    womit: "Ringschlüssel oder Steckschlüssel. Beim Anziehen wieder über Kreuz und "
+      + "mit dem vorgeschriebenen Drehmoment. Schrauben, die gedehnt wurden oder "
+      + "deren Sicherung verbraucht ist, werden ersetzt."
+  },
+  {
+    name: "Passfeder",
+    wo: "Laufrad auf der Welle",
+    stufe: "frei",
+    womit: "Nach dem Abziehen des Laufrads lässt sie sich aus der Nut heben. Sie ist "
+      + "ein Normteil und wird bei Verschleiß ersetzt – ausgeschlagene Nutflanken "
+      + "dagegen sind ein Fall für die Welle."
+  },
+  {
+    name: "Pressverband",
+    wo: "Wälzlager auf dem Wellenzapfen",
+    stufe: "aufwand",
+    womit: "Abziehvorrichtung, bei festem Sitz zusätzlich Erwärmen des Innenrings "
+      + "(Induktionsgerät). Niemals über die Wälzkörper abziehen – dabei wird die "
+      + "Laufbahn beschädigt. Das Lager gilt nach dem Abziehen als Verschleißteil."
+  },
+  {
+    name: "Bolzen mit Splint",
+    wo: "Gestänge am Stellhebel",
+    stufe: "frei",
+    womit: "Splint aufbiegen, herausziehen, Bolzen ausschieben. Der Splint wird immer "
+      + "erneuert – er ist einmal verformt worden und sichert danach nicht mehr "
+      + "zuverlässig."
+  },
+  {
+    name: "Schweißnaht",
+    wo: "Stützkonsole am Gehäusefuß",
+    stufe: "zerstoerend",
+    womit: "Trennschleifer oder Brennschneiden, danach Nahtstelle verschleifen. Die "
+      + "Konsole ist hinterher kürzer; wer sie wiederverwenden will, plant das Maß "
+      + "vorher ein. Stoffschluss ist nur zerstörend zu trennen."
+  },
+  {
+    name: "Blindniete",
+    wo: "Typenschild am Gehäuse, 2 Stück",
+    stufe: "zerstoerend",
+    womit: "Nietkopf ausbohren (Bohrer etwas kleiner als der Nietschaft), Rest "
+      + "austreiben. Der Niet ist danach hin – das ist eingeplant, Niete sind "
+      + "Verbrauchsmaterial."
+  },
+  {
+    name: "Klebeverbindung",
+    wo: "Dichtring in der Nut des Lagerdeckels",
+    stufe: "aufwand",
+    womit: "Erwärmen löst viele Klebstoffe; sonst mechanisch abheben und die Nut "
+      + "sauber von Klebstoffresten befreien. Der Dichtring wird grundsätzlich "
+      + "erneuert."
+  },
+  {
+    name: "Geklebte Schraube",
+    wo: "Sicherungsschraube am Laufrad",
+    stufe: "aufwand",
+    womit: "Bei hochfester Schraubensicherung auf etwa 250 °C erwärmen, dann lösen. "
+      + "Ohne Wärme dreht man eher den Kopf ab. Gewinde reinigen und neu sichern."
+  }
+];
+
+function el(id){ return document.getElementById(id); }
+
+function aufbauen(){
+  var ziel = el("liste"), loes = el("loesungen");
+
+  VERBINDUNGEN.forEach(function(v, i){
+    var tr = document.createElement("tr");
+    tr.innerHTML = "<td>" + v.name + "</td><td>" + v.wo + "</td>";
+
+    var td = document.createElement("td");
+    var s = document.createElement("select");
+    s.id = "s" + i;
+    s.setAttribute("data-druck", "ankreuzen");
+    var o0 = document.createElement("option");
+    o0.value = "";
+    o0.textContent = "— wählen —";
+    s.appendChild(o0);
+    STUFEN.forEach(function(st){
+      var o = document.createElement("option");
+      o.value = st.id;
+      o.textContent = st.text;
+      s.appendChild(o);
+    });
+    s.addEventListener("change", pruefen);
+    td.appendChild(s);
+    tr.appendChild(td);
+
+    var tu = document.createElement("td");
+    tu.className = "urteil";
+    tu.id = "u" + i;
+    tu.textContent = "—";
+    tr.appendChild(tu);
+
+    ziel.appendChild(tr);
+
+    var abs = document.createElement("div");
+    abs.innerHTML = "<p><strong>" + v.name + " – "
+      + STUFEN.filter(function(x){ return x.id === v.stufe; })[0].text + ".</strong> "
+      + v.womit + "</p>";
+    loes.appendChild(abs);
+  });
+}
+
+function pruefen(){
+  var da = 0, treffer = 0;
+  VERBINDUNGEN.forEach(function(v, i){
+    var s = el("s" + i), u = el("u" + i);
+    if(!s.value){ u.className = "urteil"; u.textContent = "—"; return; }
+    da++;
+    var ok = s.value === v.stufe;
+    if(ok) treffer++;
+    u.className = "urteil " + (ok ? "ja" : "nein");
+    u.textContent = ok ? "stimmt" : "noch nicht";
+  });
+
+  el("bilanz").textContent = da === 0
+    ? "Noch nichts eingetragen."
+    : (da < VERBINDUNGEN.length
+       ? da + " von " + VERBINDUNGEN.length + " eingetragen."
+       : treffer + " von " + VERBINDUNGEN.length + " richtig.");
+}
+
+aufbauen();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>
