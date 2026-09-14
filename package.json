@@ -5,6 +5,11 @@
   "description": "Lernsituationen, Uebungen und Trainings fuer t-bk.de",
   "scripts": {
     "build": "node build/build.mjs",
-    "check": "node build/build.mjs --check"
+    "check": "node build/build.mjs --check",
+    "pruefen": "node pruefungen/alle.js"
+  },
+  "devDependencies": {
+    "jsdom": "^22.1.0",
+    "qrcode": "^1.5.4"
   }
 }

@@ -43,6 +43,8 @@ assets/zahlenfeld.js     Mausrad in Zahlenfeldern, ohne die Seite zu verschieben
 assets/back-nav.js       Rücklink als schwebender Knopf – einzige Quelle
 assets/werkzeug-link.js  löst Links auf die Werkzeuge je nach Umgebung auf
 vorlagen/CHECKLISTE.md   was eine neue Seite beachten muss
+vorlagen/ZEICHNUNGSREGELN.md  wie technische Zeichnungen auszusehen haben
+pruefungen/              alle Pruefungen - npm run pruefen (siehe README dort)
 daten/kategorien.csv     Reihenfolge der Bereiche und Unterkategorien
 daten/material.json      erzeugt: Bestand als Liste (für weitere Auswertungen)
 build/build.mjs          Generator
