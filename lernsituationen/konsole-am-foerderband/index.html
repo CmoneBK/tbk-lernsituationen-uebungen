@@ -824,22 +824,52 @@ function bildLage(){
   kasten(svg, px, pOben, pb, pUnten - pOben, {fuell:mK, ohneRand:true});
   kasten(svg, armX, armOben, armEnde - armX, armUnten - armOben,
     {fuell:mK, ohneRand:true});
-  svgEl("polygon", {points:[px + 8, pUnten - 8, px + 30, pUnten - 8,
-    armEnde - 30, armUnten, armEnde - 52, armUnten].join(" "),
-    fill:mK, stroke:"currentColor", "stroke-width":BREIT}, svg);
+  /* Die Strebe setzt an der Kante der Grundplatte an, nicht in ihr drin.
+     Ihre Anschlusskante wird nicht gezeichnet - Platte, Arm und Strebe sind
+     ein Bauteil, und innerhalb eines Teils gibt es keine Kante. */
+  /* Reihum, sonst kreuzt sich das Vieleck selbst: oben an der Platte, oben
+     am Arm, unten am Arm, unten an der Platte. Gezeichnet werden nur die
+     beiden langen Kanten - die Anschlussstellen liegen innerhalb desselben
+     Bauteils. */
+  var sO = [px + pb, pUnten - 34], sU = [px + pb, pUnten - 6];
+  var aO = [armEnde - 52, armUnten], aU = [armEnde - 30, armUnten];
+  svgEl("polygon", {points:[sO, aO, aU, sU].join(" "), fill:mK,
+    stroke:"none"}, svg);
+  linie(svg, sO[0], sO[1], aO[0], aO[1], BREIT);
+  linie(svg, sU[0], sU[1], aU[0], aU[1], BREIT);
   kasten(svg, px, pOben, pb, pUnten - pOben, {strich:BREIT});
   kasten(svg, armX, armOben, armEnde - armX, armUnten - armOben, {strich:BREIT});
   txt(svg, armX + 70, armOben - 10, "Konsole", {groesse:12, deckung:.85});
 
   /* Zwei Schraubenreihen: Kopf auf der Konsolenseite, Mutter und Scheibe
-     hinter dem Flansch. Geschnitten wird keine von beiden. */
+     hinter dem Flansch. Geschnitten wird keine von beiden.
+     Die Schraube steht hinter der Mutter ueber - sonst waere sie zu kurz
+     gewaehlt. Zwei bis drei Gewindegaenge sind ueblich. */
+  var sEnde = sx - 42, sGew = sx + 16;
   [reihe1, reihe2].forEach(function(y){
-    kasten(svg, sx - 34, y - 15, 22, 30, {fuell:"var(--card)", strich:BREIT});
-    kasten(svg, sx - 12, y - 20, 8, 40, {fuell:"var(--card)", strich:BREIT});
-    kasten(svg, sx - 30, y - 7, (px + pb + 18) - (sx - 30), 14,
-      {fuell:"var(--card)", strich:BREIT});
-    kasten(svg, px + pb, y - 17, 18, 34, {fuell:"var(--card)", strich:BREIT});
-    achse(svg, sx - 44, px + pb + 30, y);
+    /* Schaft zuerst, dann Scheibe, dann Kopf und Mutter - was vorne liegt,
+       kommt zuletzt. Der Schaft hat nur zwei Kanten. */
+    /* Schaft mit Gewinde: Die Schraube greift von rechts durch Konsole und
+       Stuetze, das Gewinde liegt im Bereich der Mutter. */
+    kasten(svg, sEnde, y - 7, (px + pb + 18) - sEnde, 14,
+      {fuell:"var(--card)", ohneRand:true});
+    [-1, 1].forEach(function(v){
+      linie(svg, sEnde + 3, y + v * 7, px + pb + 18, y + v * 7, BREIT);
+      /* Kerndurchmesser schmal, endet an der Fase. */
+      linie(svg, sEnde + 3, y + v * 5, sGew, y + v * 5, SCHMAL);
+      /* Fase am Schraubenende. */
+      linie(svg, sEnde, y + v * 4, sEnde + 3, y + v * 7, BREIT);
+    });
+    linie(svg, sEnde, y - 4, sEnde, y + 4, BREIT);
+    /* Gewindeende: breite Vollinie quer zur Achse. */
+    linie(svg, sGew, y - 7, sGew, y + 7, BREIT);
+    /* Scheibe und Mutter liegen an der Stuetze an - nicht daneben. */
+    kasten(svg, sx - 8, y - 20, 8, 40, {fuell:"var(--card)", strich:BREIT});
+    sechskantAnsicht(svg, {waagerecht:true, achse:y, von:sx - 30, bis:sx - 8,
+      sw:30, s:1, faseAn:"von"});
+    sechskantAnsicht(svg, {waagerecht:true, achse:y, von:px + pb,
+      bis:px + pb + 18, sw:34, s:1, faseAn:"bis"});
+    achse(svg, sx - 56, px + pb + 30, y);
   });
   txt(svg, sx - 30, reihe1 + 34, "Mutter", {groesse:11, deckung:.8, anker:"start"});
   txt(svg, px + pb + 8, reihe2 - 26, "Kopf", {groesse:11, deckung:.8, anker:"start"});
@@ -849,6 +879,11 @@ function bildLage(){
     stroke:"currentColor", "stroke-width":BREIT}, svg);
   svgEl("circle", {cx:lastX, cy:armOben - 24, r:5, fill:"none",
     stroke:"currentColor", "stroke-width":SCHMAL}, svg);
+  /* Jeder Kreis bekommt sein Mittelkreuz - es steht über den Umriss hinaus. */
+  linie(svg, lastX - 32, armOben - 24, lastX + 32, armOben - 24, SCHMAL,
+        {strich:"12 2 2 2"});
+  linie(svg, lastX, armOben - 56, lastX, armOben + 8, SCHMAL,
+        {strich:"12 2 2 2"});
 
   var gL = svgEl("g", {style:"color:var(--accent)"}, svg);
   linie(gL, lastX, 18, lastX, 58, BREIT);
@@ -856,12 +891,14 @@ function bildLage(){
   linie(gL, lastX, 58, lastX + 6, 46, BREIT);
   txt(gL, lastX, 12, "F = 2,4 kN", {fett:true, groesse:13});
 
-  /* Maße: Hebelarm und Reihenabstand. */
-  mass(svg, fuge, lastX, 266, "a = 250", 246);
-  massV(svg, reihe1, reihe2, 560, "h = 120", 500, false);
-  [reihe1, reihe2].forEach(function(y){
-    linie(svg, px + pb + 30, y, 556, y, SCHMAL, {deckung:.4});
-  });
+  /* Maße: Hebelarm und Reihenabstand. Der Reihenabstand steht links neben
+     den Schraubenenden - rechts müssten die Maßhilfslinien quer durch Arm
+     und Rolle laufen. Die Maßzahl liegt parallel zur Maßlinie, daneben ist
+     kein Platz. */
+  /* Die Maßhilfslinien setzen an der Kontur an: links an der Trennfuge, rechts
+     an der Unterkante des Arms unter der Rolle. */
+  mass(svg, fuge, lastX, 266, "a = 250", [246, armUnten]);
+  massV(svg, reihe1, reihe2, 26, "h = 120", sEnde, "gedreht");
 
   linie(svg, fuge, pOben - 14, fuge + 8, pOben - 22, SCHMAL, {deckung:.7});
   txt(svg, fuge + 12, pOben - 20, "Trennfuge", {groesse:12, deckung:.85, anker:"start"});
@@ -885,8 +922,11 @@ function bildKraefte(){
   [[110, 80], [200, 80], [110, 164], [200, 164]].forEach(function(p){
     svgEl("circle", {cx:p[0], cy:p[1], r:13, fill:"none",
       stroke:"currentColor", "stroke-width":BREIT}, gL);
-    linie(gL, p[0] - 20, p[1], p[0] + 20, p[1], SCHMAL, {strich:"9 3 2 3", deckung:.55});
-    linie(gL, p[0], p[1] - 20, p[0], p[1] + 20, SCHMAL, {strich:"9 3 2 3", deckung:.55});
+    /* Das Mittellinienkreuz steht ueber - aber nicht ueber den Rand des
+       Bildes hinaus. */
+    var ue = Math.min(20, p[0] - 3);
+    linie(gL, p[0] - ue, p[1], p[0] + 20, p[1], SCHMAL, {strich:"12 2 2 2"});
+    linie(gL, p[0], p[1] - 20, p[0], p[1] + 20, SCHMAL, {strich:"12 2 2 2"});
   });
   mass(gL, 110, 200, 236, "b = 80", 184);
   massV(gL, 80, 164, 306, "h = 120", 220, false);

@@ -150,11 +150,16 @@
         <div><span class="l">Dichtfläche</span><span class="v">&oslash; 200 / &oslash; 230</span></div>
         <div><span class="l">Mindestpressung der Dichtung</span><span class="v">p<sub>min</sub> = 4 N/mm&sup2;</span></div>
         <div><span class="l">Deckel</span><span class="v">S235, 10 mm</span></div>
-        <div><span class="l">Gehäuseflansch</span><span class="v">GJL-250, 25 mm</span></div>
+        <div><span class="l">Gehäuseflansch</span><span class="v">GJL-250, 30 mm</span></div>
         <div><span class="l">Schrauben am Umfang</span><span class="v">n = 8</span></div>
         <div><span class="l">Lochkreis</span><span class="v">&oslash; 250 mm</span></div>
         <div><span class="l">Angezogen mit</span><span class="v">Drehmomentschlüssel</span></div>
       </div>
+      <p>Die Dichtung liegt als Flachdichtung auf der ganzen Flanschfl&auml;che
+        und hat L&ouml;cher f&uuml;r die Schrauben. Gerechnet wird aber nur mit dem
+        <em>wirksamen</em> Dichtring &ndash; dem schmalen Band innen, das
+        tats&auml;chlich abdichtet. Deshalb steht als Dichtfl&auml;che
+        &oslash; 200 / &oslash; 230 und nicht die ganze Fl&auml;che.</p>
       <p style="margin-top:14px">Die Mindestpressung der Dichtung kommt vom
         Hersteller der Flachdichtung &ndash; das Tabellenbuch gibt dafür die Formel
         (F<sub>K</sub> = p<sub>min</sub> &middot; A<sub>Dicht</sub>), nicht den Wert.
@@ -1050,75 +1055,113 @@ function aufloesungBauen(){
    es geht um die Lage der Stellen zueinander, nicht um Maße. */
 function bildDeckel(){
   var svg = bild("bildDeckel", 620, 340,
-    "Draufsicht auf den Gehäusedeckel mit den fünf nummerierten Fügestellen: "
-    + "Schraubenkreis, zwei Stifte, Tragöse, Typenschild, Rohrstutzen.",
-    "Der neue Deckel in der Draufsicht. Die Ziffern gelten auf der ganzen Seite.");
+    "Draufsicht auf den Gehäusedeckel: Lochkreis mit acht Schraubenlöchern, "
+    + "zwei Stiftbohrungen, die aufgeschweißte Tragöse, das aufgeklebte "
+    + "Typenschild und der Rohrstutzen für die Entlüftung.",
+    "Der neue Deckel in der Draufsicht, Maßstab 1:1 der Zeichenfläche. "
+    + "Die Ziffern gelten auf der ganzen Seite.");
   var g = gruppe(svg);
-  var cx = 250, cy = 170, rA = 140, rL = 118, rD = 100;
+  /* Ein Pixel je Millimeter - so stimmen alle Kreise mit den Maßen oben
+     überein: Deckel ⌀ 280, Lochkreis ⌀ 250, Dichtfläche ⌀ 230 / ⌀ 200. */
+  var cx = 250, cy = 170;
+  var rA = 140, rL = 125, rDa = 115, rDi = 100;
 
-  /* Deckelrand, Lochkreis, Dichtfläche */
   svgEl("circle", {cx:cx, cy:cy, r:rA, fill:"var(--card)",
     stroke:"currentColor", "stroke-width":BREIT}, g);
-  svgEl("circle", {cx:cx, cy:cy, r:rL, fill:"none", stroke:"currentColor",
-    "stroke-width":SCHMAL, "stroke-dasharray":"10 3 2 3", opacity:.55}, g);
-  svgEl("circle", {cx:cx, cy:cy, r:rD, fill:"none", stroke:"currentColor",
-    "stroke-width":SCHMAL, opacity:.6}, g);
-  txt(g, cx, cy - rD + 16, "Dichtfläche", {groesse:10.5, deckung:.65});
 
-  /* Acht Schrauben auf dem Lochkreis */
-  for(var i = 0; i < 8; i++){
-    var w = Math.PI / 4 * i - Math.PI / 2;
-    var x = cx + rL * Math.cos(w), y = cy + rL * Math.sin(w);
-    svgEl("circle", {cx:x, cy:y, r:7, fill:"var(--bg)", stroke:"currentColor",
-      "stroke-width":BREIT}, g);
-    linie(g, x - 4.6, y, x + 4.6, y, SCHMAL, {deckung:.7});
-    linie(g, x, y - 4.6, x, y + 4.6, SCHMAL, {deckung:.7});
+  /* Der Lochkreis ist eine Mittellinie: schmale Strichpunktlinie. */
+  svgEl("circle", {cx:cx, cy:cy, r:rL, fill:"none", stroke:"currentColor",
+    "stroke-width":SCHMAL, "stroke-dasharray":"12 2 2 2"}, g);
+
+  /* Die Dichtfläche liegt auf der Unterseite - von oben ist sie verdeckt
+     und wird deshalb als schmale Strichlinie gezeichnet. */
+  [rDa, rDi].forEach(function(r){
+    svgEl("circle", {cx:cx, cy:cy, r:r, fill:"none", stroke:"currentColor",
+      "stroke-width":SCHMAL, "stroke-dasharray":"6 3"}, g);
+  });
+
+  /* Ein Loch in der Draufsicht: Kreis und Mittellinienkreuz, das über den
+     Kreis hinaussteht. */
+  function loch(x, y, r){
+    svgEl("circle", {cx:x, cy:y, r:r, fill:"var(--card)",
+      stroke:"currentColor", "stroke-width":BREIT}, g);
+    var ue = r + 5;
+    linie(g, x - ue, y, x + ue, y, SCHMAL, {strich:"12 2 2 2"});
+    linie(g, x, y - ue, x, y + ue, SCHMAL, {strich:"12 2 2 2"});
   }
 
-  /* Zwei Stifte, weit auseinander */
-  [[-1, 0], [1, 0]].forEach(function(r){
-    var x = cx + r[0] * 128, y = cy + 46;
-    svgEl("circle", {cx:x, cy:y, r:5.5, fill:"currentColor"}, g);
+  /* Acht Schraubenlöcher ⌀ 9 auf dem Lochkreis. */
+  var SCHRAUBWINKEL = [];
+  for(var i = 0; i < 8; i++){
+    var w = Math.PI / 4 * i - Math.PI / 2;
+    SCHRAUBWINKEL.push(w);
+    loch(cx + rL * Math.cos(w), cy + rL * Math.sin(w), 4.5);
+  }
+
+  /* Zwei Stiftbohrungen ⌀ 6, ebenfalls auf dem Lochkreis, jeweils zwischen
+     zwei Schrauben. Sie stehen NICHT einander gegenüber: 135 Grad
+     auseinander. Nur so passt der Deckel in genau einer Lage - lägen sie
+     sich gegenüber, ginge er auch um 180 Grad gedreht darauf. */
+  var STIFTWINKEL = [-Math.PI / 2 - Math.PI / 8 * 3, -Math.PI / 2 + Math.PI / 8 * 3];
+  STIFTWINKEL.forEach(function(w){
+    loch(cx + rL * Math.cos(w), cy + rL * Math.sin(w), 3);
   });
 
-  /* Tragöse links oben */
+  /* Tragöse: Flachstahl hochkant aufgeschweißt, von oben als schmales
+     Rechteck mit dem Auge zu sehen. Sie liegt ganz auf dem Deckel. */
+  var oX = cx - 96, oY = cy - 30, oB = 26, oH = 56;
   var og = gruppe(g);
-  kasten(og, cx - 70, cy - 122, 34, 30, {fuell:"var(--bg)"});
-  svgEl("circle", {cx:cx - 53, cy:cy - 107, r:9, fill:"var(--card)",
+  kasten(og, oX, oY, oB, oH, {fuell:"var(--card)"});
+  svgEl("circle", {cx:oX + oB / 2, cy:oY + 16, r:7, fill:"var(--card)",
     stroke:"currentColor", "stroke-width":BREIT}, og);
+  linie(og, oX + oB / 2 - 12, oY + 16, oX + oB / 2 + 12, oY + 16, SCHMAL,
+        {strich:"12 2 2 2"});
+  linie(og, oX + oB / 2, oY + 4, oX + oB / 2, oY + 28, SCHMAL,
+        {strich:"12 2 2 2"});
 
-  /* Typenschild rechts */
-  kasten(g, cx + 18, cy - 34, 78, 40, {fuell:"var(--bg)"});
-  linie(g, cx + 26, cy - 20, cx + 88, cy - 20, SCHMAL, {deckung:.5});
-  linie(g, cx + 26, cy - 8, cx + 88, cy - 8, SCHMAL, {deckung:.5});
-  linie(g, cx + 26, cy + 4, cx + 70, cy + 4, SCHMAL, {deckung:.5});
+  /* Typenschild, aufgeklebt - im freien Feld, ohne den Lochkreis zu kreuzen. */
+  var tX = cx + 14, tY = cy - 46, tB = 70, tH = 34;
+  kasten(g, tX, tY, tB, tH, {fuell:"var(--card)"});
+  [12, 21, 28].forEach(function(dy, n){
+    linie(g, tX + 7, tY + dy, tX + tB - (n === 2 ? 22 : 7), tY + dy, SCHMAL);
+  });
 
-  /* Rohrstutzen: innerhalb der Dichtflaeche, sonst saesse er im Freien -
-     und weit genug von den Schrauben auf dem Lochkreis. */
-  var rg = gruppe(g);
-  var rsX = cx - 58, rsY = cy + 56;
-  svgEl("circle", {cx:rsX, cy:rsY, r:14, fill:"var(--bg)",
-    stroke:"currentColor", "stroke-width":BREIT}, rg);
-  svgEl("circle", {cx:rsX, cy:rsY, r:7, fill:"none",
-    stroke:"currentColor", "stroke-width":SCHMAL}, rg);
+  /* Rohrstutzen, innerhalb der Dichtfläche - er führt in den Ölraum. */
+  var rsX = cx - 52, rsY = cy + 58;
+  svgEl("circle", {cx:rsX, cy:rsY, r:16, fill:"var(--card)",
+    stroke:"currentColor", "stroke-width":BREIT}, g);
+  svgEl("circle", {cx:rsX, cy:rsY, r:8, fill:"none",
+    stroke:"currentColor", "stroke-width":BREIT}, g);
+  linie(g, rsX - 22, rsY, rsX + 22, rsY, SCHMAL, {strich:"12 2 2 2"});
+  linie(g, rsX, rsY - 22, rsX, rsY + 22, SCHMAL, {strich:"12 2 2 2"});
 
-  /* Hinweise mit Ziffern */
+  /* Hauptmittellinien des Deckels. */
+  linie(g, cx - rA - 12, cy, cx + rA + 12, cy, SCHMAL, {strich:"12 2 2 2"});
+  linie(g, cx, cy - rA - 12, cx, cy + rA + 12, SCHMAL, {strich:"12 2 2 2"});
+
+  /* ---- Erklärebene: Ziffern und Benennungen ---- */
+  var eg = svgEl("g", {"class":"erklaer"}, svg);
   var hinweise = [
-    [1, cx + 99, cy - 84, cx + 175, cy - 118, "Schrauben 8 × M8", "start"],
-    [2, cx + 128, cy + 46, cx + 178, cy + 86, "Stifte", "start"],
-    [3, cx - 62, cy - 116, cx - 168, cy - 128, "Tragöse", "end"],
-    [4, cx + 96, cy - 14, cx + 178, cy - 22, "Typenschild", "start"],
-    [5, cx - 68, cy + 66, cx - 152, cy + 132, "Rohrstutzen", "end"]
+    [1, cx + rL * Math.cos(-Math.PI / 4) + 6, cy + rL * Math.sin(-Math.PI / 4) - 6,
+     cx + 168, cy - 126, "Schrauben 8 \u00d7 M8", "start"],
+    [2, cx + rL * Math.cos(STIFTWINKEL[1]), cy + rL * Math.sin(STIFTWINKEL[1]) + 8,
+     cx + 174, cy - 54, "Stifte \u2300 6", "start"],
+    [3, oX, oY + oH - 8, cx - 162, cy + 66, "Trag\u00f6se", "end"],
+    [4, tX + tB, tY + tH, cx + 174, cy + 18, "Typenschild", "start"],
+    [5, rsX - 14, rsY + 10, cx - 140, cy + 136, "Rohrstutzen", "end"]
   ];
   hinweise.forEach(function(h){
-    linie(g, h[1], h[2], h[3], h[4], SCHMAL, {deckung:.6});
+    svgEl("line", {x1:h[1], y1:h[2], x2:h[3], y2:h[4], stroke:"currentColor",
+      "stroke-width":SCHMAL, "stroke-dasharray":"3 2", opacity:0.6}, eg);
     var kx = h[3] + (h[6] === "start" ? 13 : -13);
-    svgEl("circle", {cx:kx, cy:h[4], r:10, fill:"currentColor"}, g);
-    var z = txt(g, kx, h[4] + 4, String(h[0]), {fett:true});
+    svgEl("circle", {cx:kx, cy:h[4], r:10, fill:"currentColor"}, eg);
+    var z = txt(eg, kx, h[4] + 4, String(h[0]), {fett:true});
     z.setAttribute("fill", "var(--card)");
-    txt(g, h[3] + (h[6] === "start" ? 28 : -28), h[4] + 4, h[5],
+    txt(eg, h[3] + (h[6] === "start" ? 28 : -28), h[4] + 4, h[5],
         {anker:h[6], groesse:12});
   });
+  txt(eg, cx, cy - rDi + 16, "Dichtfl\u00e4che (verdeckt)",
+      {groesse:10.5, deckung:.7});
 }
 
 /* Schnitt durch die Verschraubung: Schraube senkrecht, Kopf oben. Die
@@ -1134,48 +1177,98 @@ function bildSchnitt(){
   var achseX = 250;
   var yDeckel = 96, hDeckel = 10 * s;  /* 10 mm */
   var yDicht = yDeckel + hDeckel, hDicht = 2 * s;
-  var yFlansch = yDicht + hDicht, hFlansch = 25 * s;
+  var yFlansch = yDicht + hDicht, hFlansch = 30 * s;
 
   var mD = schraffur(svg, "sch_deckel", 45);
   var mF = schraffur(svg, "sch_flansch", -45);
 
-  /* Deckel, links und rechts der Schraube */
-  [[achseX - 150, 132], [achseX + 18, 150]].forEach(function(r){
-    kasten(g, r[0], yDeckel, r[1], hDeckel, {fuell:mD});
-  });
-  /* Dichtung - schmal, dunkel, als eigenes Teil */
-  kasten(g, achseX - 150, yDicht, 132, hDicht, {fuell:"currentColor", strich:SCHMAL});
-  kasten(g, achseX + 18, yDicht, 150, hDicht, {fuell:"currentColor", strich:SCHMAL});
-  /* Flansch */
-  [[achseX - 150, 132], [achseX + 18, 150]].forEach(function(r){
-    kasten(g, r[0], yFlansch, r[1], hFlansch, {fuell:mF});
-  });
-
-  /* Durchgangsloch und Gewindegrundloch als Kanten */
+  /* Das Loch ist so breit, wie es bemasst ist - nicht so breit, wie es
+     gerade gut aussieht. */
   var rh = 9.0 * s / 2;                /* Durchgangsloch 9,0 */
   var rG = 8 * s / 2;                  /* Gewinde-Außen M8 */
+
+  /* Deckel, links und rechts der Schraube */
+  [[achseX - 150, 150 - rh], [achseX + rh, 168 - rh]].forEach(function(r){
+    kasten(g, r[0], yDeckel, r[1], hDeckel, {fuell:mD});
+  });
+  /* Dichtung: sehr duenn, deshalb geschwaerzt statt schraffiert. Sie liegt
+     mit unter dem Schraubenkopf und hat ein eigenes Loch. */
+  kasten(g, achseX - 150, yDicht, 150 - rh, hDicht,
+         {fuell:"currentColor", strich:SCHMAL});
+  kasten(g, achseX + rh, yDicht, 168 - rh, hDicht,
+         {fuell:"currentColor", strich:SCHMAL});
+  /* Flansch als ein Teil - mit dem Bohrungsprofil darueber. Zwei Rechtecke
+     mit einem Spalt dazwischen waeren kein Grundloch, sondern ein
+     Durchgangsloch. */
   var r3 = (8 - 1.2269 * 1.25) * s / 2;/* Kerndurchmesser */
-  var tGew = 18 * s, tBohr = 22 * s;
+  /* Die Schraube darf nicht aufsetzen: Das Gewinde reicht tiefer als sie,
+     das Kernloch tiefer als das Gewinde. Die Einschraubtiefe ist 18 - das
+     Gewinde ist 22 tief, gebohrt wird 25. */
+  var tEin = 18 * s, tGew = 22 * s, tBohr = 25 * s;
+  var yEnde = yFlansch + tEin;
+  var yGewU = yFlansch + tGew, yBohrU = yFlansch + tBohr;
+  var spitze = r3 / Math.tan(60 * Math.PI / 180);   /* 120 Grad eingeschlossen */
+
+  /* Flaeche ohne Rand - die obere Kante wird einzeln gezogen, denn ueber
+     dem Loch gibt es dort keine: Da ist die Bohrung. */
+  kasten(g, achseX - 150, yFlansch, 318, hFlansch, {fuell:mF, ohneRand:true});
+  linie(g, achseX - 150, yFlansch, achseX - 150, yFlansch + hFlansch, BREIT);
+  linie(g, achseX + 168, yFlansch, achseX + 168, yFlansch + hFlansch, BREIT);
+  linie(g, achseX - 150, yFlansch + hFlansch, achseX + 168, yFlansch + hFlansch,
+        BREIT);
+
+  /* Die Bohrung: bis zum Gewindeende so weit wie der Kerndurchmesser - die
+     Schraffur endet an der breiten Linie, und die ist beim geschnittenen
+     Innengewinde der Kern. Darunter geht das Kernloch weiter, unten die
+     Bohrerspitze mit 120 Grad. */
+  svgEl("path", {d:
+    "M" + (achseX - r3) + "," + yFlansch +
+    " L" + (achseX - r3) + "," + yBohrU +
+    " L" + achseX + "," + (yBohrU + spitze) +
+    " L" + (achseX + r3) + "," + yBohrU +
+    " L" + (achseX + r3) + "," + yFlansch + " Z",
+    fill:"var(--card)", stroke:"none"}, g);
 
   [-1, 1].forEach(function(v){
-    /* Gewindeflanken im Grundloch: außen schmal, Kern breit */
-    linie(g, achseX + v * rG, yFlansch, achseX + v * rG, yFlansch + tGew, SCHMAL);
-    linie(g, achseX + v * r3, yFlansch, achseX + v * r3, yFlansch + tBohr - 5, BREIT);
+    /* Kerndurchmesser breit - er begrenzt die Schraffur. */
+    linie(g, achseX + v * r3, yFlansch, achseX + v * r3, yBohrU, BREIT);
+    /* Aussendurchmesser des Innengewindes schmal, im Werkstoff liegend. */
+    linie(g, achseX + v * rG, yFlansch, achseX + v * rG, yGewU, SCHMAL);
+    linie(g, achseX + v * r3, yBohrU, achseX, yBohrU + spitze, BREIT);
   });
-  /* Bohrerspitze */
-  linie(g, achseX - r3, yFlansch + tBohr - 5, achseX, yFlansch + tBohr, BREIT);
-  linie(g, achseX + r3, yFlansch + tBohr - 5, achseX, yFlansch + tBohr, BREIT);
-  linie(g, achseX - rG, yFlansch + tGew, achseX + rG, yFlansch + tGew, SCHMAL);
+  /* Gewindeende quer zur Achse: breite Vollinie. */
+  linie(g, achseX - rG, yGewU, achseX + rG, yGewU, BREIT);
+
+  /* Die obere Kante des Flansches: von aussen bis zum Gewinde. Das Stueck
+     zwischen Gewinde und Durchgangsloch ist zugleich die Fuge, die man durch
+     das Spiel hindurch sieht. */
+  [-1, 1].forEach(function(v){
+    linie(g, achseX + v * rG, yFlansch, achseX + (v < 0 ? -150 : 168), yFlansch,
+          BREIT);
+    /* Dieselbe Fuge zwischen Deckel und Dichtung. */
+    linie(g, achseX + v * rG, yDicht, achseX + v * rh, yDicht, BREIT);
+  });
 
   /* Die Schraube, um 90 Grad gedreht: Kopf oben */
   var gs = svgEl("g", {transform:"rotate(90 " + achseX + " " + yDeckel + ")"}, g);
+  /* Die Mittellinie laeuft bis unter den Bohrungsgrund, nicht nur bis zum
+     Schraubenende. In der gedrehten Gruppe entspricht die Laenge achseX + t
+     dem Bild-y yDeckel + t. */
   schraube(gs, {x:achseX - 5.3 * s, y:yDeckel, s:s, d:8, sw:13, k:5.3,
-                l:30, b:30, P:1.25});
+                l:30, b:30, P:1.25,
+                achseBis:achseX + 37 * s + spitze + 10});
 
   /* Maße */
   massV(g, yDeckel, yDicht, achseX - 168, "10", achseX - 150, true);
-  massV(g, yFlansch, yFlansch + tGew, achseX - 168, "18", achseX - 150, true);
-  mass(g, achseX - rh, achseX + rh, yDeckel - 34, "⌀ 9", yDeckel);
+  massV(g, yFlansch, yEnde, achseX - 168, "18", achseX - 150, true);
+  /* Das Durchgangsloch bekommt eine Hinweislinie: Eine Maßlinie über der
+     Schraube müsste ihre Maßhilfslinien durch den Kopf ziehen. Die
+     Hinweislinie setzt an der Lochwand an, die im Schnitt zu sehen ist. */
+  var xh = achseX + rh, yh = yDeckel + hDeckel * 0.55;
+  pfeil(g, xh, yh, -0.83, 0.55);
+  linie(g, xh, yh, xh + 62, yh - 42, SCHMAL);
+  linie(g, xh + 62, yh - 42, xh + 104, yh - 42, SCHMAL);
+  txt(g, xh + 64, yh - 48, "⌀ 9", {anker:"start", groesse:12});
 
   txt(g, achseX - 84, yDeckel - 12, "Deckel S235", {groesse:11.5});
   txt(g, achseX + 100, yFlansch + hFlansch - 14, "Flansch GJL-250", {groesse:11.5});
