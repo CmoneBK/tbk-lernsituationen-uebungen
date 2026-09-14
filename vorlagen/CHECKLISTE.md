@@ -19,7 +19,9 @@ zum Abhaken.
 1. `vorlagen/uebung.html` bzw. `vorlagen/lernsituation.html` kopieren.
 2. Titel nach `Bereich: Unterkategorie - Name`.
 3. Alles in `<main>`, gegliedert mit `h2` (Teil) und `<details>` (Aufgabe).
-4. Zeichnungen als **SVG**, nicht als CSS-Grafik.
+4. Zeichnungen als **SVG**, nicht als CSS-Grafik — und nach
+   [ZEICHNUNGSREGELN.md](ZEICHNUNGSREGELN.md), wenn es eine technische
+   Zeichnung sein soll.
 5. Bedienung mit `data-druck="weg"` kennzeichnen.
 6. Zahlen aus dem Tabellenbuch, Beleg in `tabellenbuch/daten.json`.
 7. Nur, was **nicht** überall hingehört, bekommt `data-bg-ohne`.
