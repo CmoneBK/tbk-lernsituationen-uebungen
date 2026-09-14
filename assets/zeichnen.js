@@ -285,8 +285,8 @@ function schraube(eltern, o){
 
   /* Der Kopf zuletzt: Er liegt vor dem Schaft, seine Auflagekante darf von
      dessen deckender Flaeche nicht halb weggenommen werden. */
-  sechskantAnsicht(gKopf, {waagerecht:true, achse:y, von:x, bis:x + kx,
-    sw:sw, s:s, faseAn:"von"});
+  var kopfSk = sechskantAnsicht(gKopf, {waagerecht:true, achse:y, von:x,
+    bis:x + kx, sw:sw, s:s, faseAn:"von"});
 
   /* Die Mittellinie gehoert ueber das laengste zusammengehoerige Merkmal
      hinaus. Steckt die Schraube in einem Grundloch, ist das nicht ihr Ende,
@@ -294,6 +294,10 @@ function schraube(eltern, o){
   achse(eltern, x - 8, Math.max(ende + 10, o.achseBis || 0), y);
 
   return {kopf:gKopf, schaft:gSchaft, gewinde:gGewinde,
+          /* Wie tief die Fase am Kopf reicht: Erst dahinter ist der Umriss
+             das Eckenmass, vorher nur die Schluesselweite. Wer e bemasst,
+             braucht das. */
+          kopfTief:kopfSk.tief,
           kopfEnde:x + kx, gewindeVon:gewindeVon, ende:ende, rd:rd,
           /* Wo der Zylinder aufhoert und die Fase anfaengt - dort wird der
              Durchmesser bemasst, nicht an der Fase. */
@@ -377,7 +381,9 @@ function gewindeProfil(eltern, x, y, P, s, gaenge){
   txt(g, x + breite + 34, (oben + unten) / 2 + 4, "d₂", {anker:"start"});
   txt(g, x + breite + 34, unten + 4, "d₃", {anker:"start"});
 
-  mass(g, x + px * 0.25, x + px * 1.25, oben - 15, "P", oben - 2);
+  /* Die Steigung wird von Spitze zu Spitze gemessen - die
+     Masshilfslinien setzen auf der Spitzenlinie an, nicht daneben. */
+  mass(g, x + px * 0.25, x + px * 1.25, oben - 15, "P", oben);
   return g;
 }
 

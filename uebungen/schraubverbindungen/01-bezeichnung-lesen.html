@@ -352,8 +352,11 @@ function bildBausteine(){
 
   /* Ueber Ecke gesehen ist der Umriss das Eckenmass. Die Schluesselweite
      laege quer zur Zeichenebene - sie hier zu bemassen waere erfunden. */
+  /* Gemessen wird hinter der Fase: Auf der Stirnflaeche ist der Umriss
+     nur die Schluesselweite breit, das Eckenmass ist erst dort erreicht. */
   massV(gForm, y - t.rE, y + t.rE, x - 16,
-        "e = " + eckenmass(g.s).toFixed(1).replace(".", ","), x, true);
+        "e = " + eckenmass(g.s).toFixed(1).replace(".", ","),
+        x + t.kopfTief, true);
   /* Am freien Kopfende liegt die Kontur auf der Stirnflaeche (rS), an der
      Auflageflaeche auf dem Eckenmass (rE). */
   mass(gForm, x, t.kopfEnde, 30, "k = " + String(g.k).replace(".", ","),
@@ -384,12 +387,16 @@ function bildLaenge(){
   txt(svg, x, 22, "Sechskantschraube ISO 4014", {anker:"start", fett:true});
   var a = schraube(svg, {x:x, y:y1, s:s, d:g.d, P:g.P, k:g.k, sw:g.s,
                          l:60, b:2 * g.d + 6});
-  mass(svg, a.kopfEnde, a.ende, y1 + 56, "l = 60", y1 + a.rd);
+  /* Rechts endet die Kontur an der Kuppe, nicht am vollen Durchmesser. */
+  mass(svg, a.kopfEnde, a.ende, y1 + 56, "l = 60",
+    [y1 + a.rd, y1 + a.rd - a.fase]);
   txt(svg, a.ende + 10, y1 + 56, "ab der Kopfauflage",
       {anker:"start", deckung:.75, groesse:10.5});
 
   txt(svg, x, 172, "Senkkopfschraube ISO 10642", {anker:"start", fett:true});
   var b = senkschraube(svg, {x:x, y:y2, s:s, d:g.d, P:g.P, l:60, b:2 * g.d + 6});
+  /* Die Senkkopfschraube endet stumpf - hier gibt es keine Kuppe, an
+     der die Masshilfslinie kuerzer ansetzen muesste. */
   mass(svg, x, b.ende, y2 + 60, "l = 60", y2 + b.rd);
   txt(svg, b.ende + 10, y2 + 60, "Kopf eingerechnet",
       {anker:"start", deckung:.75, groesse:10.5});
@@ -417,12 +424,14 @@ function bildNormen(){
   txt(svg, x, 20, "ISO 4014 – mit Schaft", {anker:"start", fett:true});
   var a = schraube(svg, {x:x, y:y1, s:s, d:g.d, P:g.P, k:g.k, sw:g.s, l:60, b:b});
   mass(svg, a.kopfEnde, a.gewindeVon, y1 + 50, "Schaft l − b", y1 + a.rd);
-  mass(svg, a.gewindeVon, a.ende, y1 - 38, "b = " + b, y1 - a.rd);
+  mass(svg, a.gewindeVon, a.ende, y1 - 38, "b = " + b,
+    [y1 - a.rd, y1 - a.rd + a.fase]);
 
   var y2 = 160;
   txt(svg, x, 124, "ISO 4017 – Vollgewinde", {anker:"start", fett:true});
   var c = schraube(svg, {x:x, y:y2, s:s, d:g.d, P:g.P, k:g.k, sw:g.s, l:60, b:60});
-  mass(svg, c.kopfEnde, c.ende, y2 + 50, "b = l = 60", y2 + c.rd);
+  mass(svg, c.kopfEnde, c.ende, y2 + 50, "b = l = 60",
+    [y2 + c.rd, y2 + c.rd - c.fase]);
 
   return svg;
 }
@@ -439,7 +448,10 @@ function bildMasse(){
 
   /* links: Kopf von vorn, dort liegt die Schlüsselweite */
   var h = hexKopf(svg, 66, 62, g.s, s);
-  massV(svg, 62 - h.h, 62 + h.h, 66 + h.R + 18, "SW " + g.s, 66 + h.R);
+  /* Die Masshilfslinie setzt auf der Schluesselflaeche an. An der Ecke
+     (66 + h.R) ist der Sechskant nur ein Punkt - dort faengt sie im
+     Nichts an. */
+  massV(svg, 62 - h.h, 62 + h.h, 66 + h.R + 18, "SW " + g.s, 66 + h.R / 2);
   txt(svg, 66, 62 + h.R + 22, "Kopf von vorn", {deckung:.75});
 
   /* rechts: Schraube in Ansicht */
@@ -447,7 +459,7 @@ function bildMasse(){
   var t = schraube(svg, {x:x, y:y, s:s, d:g.d, P:g.P, k:g.k, sw:g.s,
                          l:44, b:30});
   mass(svg, x, t.kopfEnde, y - 34, "k = 7,5", y - t.rk);
-  massV(svg, y - t.rd, y + t.rd, t.ende + 20, "d = 12", t.ende);
+  massV(svg, y - t.rd, y + t.rd, t.ende + 20, "d = 12", t.zylEnde);
 
   /* unten: Gewinde stark vergrößert */
   linie(svg, 40, 150, 412, 150, SCHMAL, {deckung:.35});
@@ -534,11 +546,18 @@ function verbindung(svg, o){
 
   /* Maße unten: nötig gegen gewählt. */
   var yM = y + wand + 22;
-  mass(svg, kopfEnde, kopfEnde + lMin * s, yM,
+  /* Die noetige Laenge ist ein Rechenergebnis, kein Merkmal der Schraube:
+     An ihrem rechten Punkt gibt es keine Kante, an der eine Masshilfslinie
+     ansetzen koennte. Das ist auch keine Bemassung, sondern ein Vergleich -
+     er gehoert in die Erklaerebene. */
+  var gNoetig = svgEl("g", {"class":"erklaer"}, svg);
+  mass(gNoetig, kopfEnde, kopfEnde + lMin * s, yM,
        "nötig " + zahl(lMin) + " mm", y + wand);
   /* Beide Punkte liegen auf der Schraube - die Masshilfslinien fangen
-     deshalb an ihrer Kante an, nicht auf halber Strecke. */
-  mass(svg, kopfEnde, t.ende, yM + 30, "gewählt l = " + o.l, y + rd);
+     deshalb an ihrer Kante an. Rechts sitzt die Kuppe, dort ist sie
+     schmaler als der Nenndurchmesser. */
+  mass(svg, kopfEnde, t.ende, yM + 30, "gewählt l = " + o.l,
+       [y + rd, y + rd - t.fase]);
 
   return {lMin:lMin, ende:t.ende, noetigBis:kopfEnde + lMin * s,
           kopfEnde:kopfEnde, gewindeVon:t.gewindeVon, klemm:klemm, y:y, wand:wand};
