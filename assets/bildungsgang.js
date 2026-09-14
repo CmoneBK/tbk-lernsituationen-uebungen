@@ -141,6 +141,22 @@
 
   /* ---------- Auswahlfeld ---------- */
 
+  /* Was hinter der Auswahl steckt - und was nicht. Die Bildungsplaene sagen,
+     welche Lernfelder ein Bildungsgang hat und was dort verlangt wird. Ob ein
+     bestimmter Teil dieses Materials dazu passt, sagen sie nicht; das ist eine
+     Auslegung. Wer damit arbeitet, soll das wissen. */
+  var ERKLAERUNG = [
+    ['Grundlage sind die Bildungspläne des Landes NRW: welche Lernfelder und '
+      + 'Anforderungssituationen ein Bildungsgang hat und was dort verlangt wird.'],
+    ['Welcher Teil dieses Materials dazu passt, steht dort aber nicht. Diese '
+      + 'Zuordnung ist eine Auslegung – sie beruht auf Unterrichtserfahrung und '
+      + 'darauf, wie die Pläne gelesen werden. An manchen Stellen kommen andere '
+      + 'Lehrkräfte mit gutem Grund zu einem anderen Schluss.'],
+    ['Deshalb ist die Wahl eine Voreinstellung und keine Vorschrift: Auf jeder '
+      + 'Seite lässt sich anschließend jeder einzelne Teil wieder hinzunehmen '
+      + 'oder weglassen. Gesperrt ist nichts.']
+  ];
+
   var STIL_ID = 'tbk-bg-stil';
   var CSS = ''
     + '.bg-wahl{display:flex;flex-wrap:wrap;gap:8px;align-items:center}'
@@ -149,7 +165,24 @@
     + 'padding:7px 9px;border-radius:8px;color:inherit;'
     + 'background:var(--card,#fff);border:1px solid var(--border-stark,#cbd5e1)}'
     + '.bg-wahl select:focus-visible{outline:2px solid #2b6cb0;outline-offset:1px}'
-    + '.bg-hinweis{font-size:12.5px;color:var(--muted,#5f5f5a);margin:6px 0 0}';
+    + '.bg-hinweis{font-size:12.5px;color:var(--muted,#5f5f5a);margin:6px 0 0}'
+    + '.bg-info{flex:0 0 auto;width:22px;height:22px;padding:0;cursor:pointer;'
+    + 'border-radius:50%;border:1px solid var(--border-stark,#cbd5e1);'
+    + 'background:none;color:var(--muted,#5f5f5a);'
+    + 'font:700 13px/1 Georgia,"Times New Roman",serif;font-style:italic}'
+    + '.bg-info:hover{border-color:#2b6cb0;color:#2b6cb0}'
+    + '.bg-info:focus-visible{outline:2px solid #2b6cb0;outline-offset:2px}'
+    + '.bg-info[aria-expanded="true"]{background:#2b6cb0;border-color:#2b6cb0;color:#fff}'
+    + '.bg-erklaerung{margin:10px 0 0;padding:11px 13px;border-radius:9px;'
+    /* Im schmalen Anpassen-Fenster waechst der Text sonst so weit, dass fuer
+       die Liste darunter nichts mehr bleibt. */
+    + 'max-height:min(38vh,260px);overflow:auto;'
+    + 'font-size:12.5px;line-height:1.55;color:var(--muted,#5f5f5a);'
+    + 'background:var(--bg,#f7f7f5);border:1px solid var(--border,#e3e3df)}'
+    + '.bg-erklaerung p{margin:0 0 7px}'
+    + '.bg-erklaerung p:last-child{margin:0}'
+    + '.bg-erklaerung[hidden]{display:none}'
+    + '@media print{.bg-wahl,.bg-erklaerung,.bg-hinweis{display:none!important}}';
 
   function stil() {
     if (document.getElementById(STIL_ID)) return;
@@ -163,8 +196,13 @@
      was daraus folgt - hier wird nur gewählt und gemerkt. */
   function waehler(beiWahl, beschriftung) {
     stil();
+    /* Zwei Teile: die Zeile mit der Wahl und darunter die Erklärung, die das
+       Info-Symbol aufklappt. Beides zusammen wird zurückgegeben, damit sie
+       nicht auseinanderlaufen. */
+    var block = document.createElement('div');
     var huelle = document.createElement('div');
     huelle.className = 'bg-wahl';
+    block.appendChild(huelle);
 
     var id = 'bg-feld-' + Math.random().toString(36).slice(2, 7);
     var label = document.createElement('label');
@@ -192,9 +230,39 @@
       beiWahl(feld.value);
     });
 
+    /* Das Symbol sagt, woher die Auswahl kommt - und dass sie eine Auslegung
+       ist. Ein Klick klappt den Text auf; ein reiner title-Tooltip hilft auf
+       dem Tablet nicht weiter. */
+    var erklaerung = document.createElement('div');
+    erklaerung.className = 'bg-erklaerung';
+    erklaerung.id = id + '-erkl';
+    erklaerung.hidden = true;
+    ERKLAERUNG.forEach(function (absatz) {
+      var p = document.createElement('p');
+      p.textContent = absatz[0];
+      erklaerung.appendChild(p);
+    });
+
+    var info = document.createElement('button');
+    info.type = 'button';
+    info.className = 'bg-info';
+    info.textContent = 'i';
+    info.title = 'Wie diese Auswahl zustande kommt';
+    info.setAttribute('aria-label', 'Wie diese Auswahl zustande kommt');
+    info.setAttribute('aria-expanded', 'false');
+    info.setAttribute('aria-controls', erklaerung.id);
+    info.addEventListener('click', function () {
+      var auf = erklaerung.hidden;
+      erklaerung.hidden = !auf;
+      info.setAttribute('aria-expanded', String(auf));
+    });
+
     huelle.appendChild(label);
     huelle.appendChild(feld);
-    return { knoten: huelle, feld: feld };
+    huelle.appendChild(info);
+    block.appendChild(erklaerung);
+
+    return { knoten: block, feld: feld, info: info, erklaerung: erklaerung };
   }
 
   /* Stellt jemand in einem anderen Tab um, zieht dieser mit. */

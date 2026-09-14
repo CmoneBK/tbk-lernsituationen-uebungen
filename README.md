@@ -42,6 +42,7 @@ assets/thema.js          Umschalter hell / dunkel für den ganzen Bereich
 assets/zahlenfeld.js     Mausrad in Zahlenfeldern, ohne die Seite zu verschieben
 assets/back-nav.js       Rücklink als schwebender Knopf – einzige Quelle
 assets/werkzeug-link.js  löst Links auf die Werkzeuge je nach Umgebung auf
+vorlagen/CHECKLISTE.md   was eine neue Seite beachten muss
 daten/kategorien.csv     Reihenfolge der Bereiche und Unterkategorien
 daten/material.json      erzeugt: Bestand als Liste (für weitere Auswertungen)
 build/build.mjs          Generator
@@ -267,7 +268,9 @@ Dann fehlt sie in der Übersicht und auf der Paketseite; wer sie trotzdem
 öffnet, bekommt oben eine Zeile, die das sagt — gesperrt ist nichts.
 
 **Kein Attribut heißt: gehört überall dazu.** Das ist die richtige Vorgabe;
-neue Inhalte erscheinen erst einmal für alle.
+neue Inhalte erscheinen erst einmal für alle. Jede Ausnahme gehört mit ihrer
+Begründung in `bildungsgaenge/README.md` — siehe auch die
+[Checkliste](vorlagen/CHECKLISTE.md).
 
 Die sieben Schlüssel sind `bfs-hs10`, `bfs-for`, `hbfs-c2`, `fos-c3`, `im`,
 `zm` und `tech`. Welcher Inhalt zu welchem Bildungsgang gehört und warum, steht
@@ -335,12 +338,17 @@ die Information, die in gefärbten Balken und Bändern steckt.
 
 ## ➕ Neues Material anlegen
 
+> **[vorlagen/CHECKLISTE.md](vorlagen/CHECKLISTE.md)** fasst alles zusammen, was
+> eine neue Seite beachten muss, damit Zuschnitt, Bildungsgang, Ausgabe und
+> Thema von selbst funktionieren. Die Einzelheiten dazu stehen in den
+> Abschnitten dieser README.
+
 1. Vorlage kopieren: `vorlagen/uebung.html` in ein Paket,
    `vorlagen/lernsituation.html` nach `lernsituationen/<name>/index.html`
    (Dateinamen klein, mit Bindestrichen, ohne Umlaute).
 2. Titel setzen – bei einer Lernsituation nach der Konvention unten, in einem
    Paket nur den Namen der Übung.
-3. Inhalt schreiben.
+3. Inhalt schreiben — mit der [Checkliste](vorlagen/CHECKLISTE.md) daneben.
 4. `node build/build.mjs` ausführen.
 5. Committen und pushen – fertig.
 
