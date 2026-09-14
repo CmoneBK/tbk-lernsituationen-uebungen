@@ -128,8 +128,9 @@
     </div>
 
     <h2><span class="nr">2</span>Nachschlagen</h2>
-    <p>Alle Aussagen, die stimmen – nach Verfahren geordnet. Zum Vorbereiten oder zum
-    Nachlesen, wenn eine Frage überrascht hat.</p>
+    <p>Alle Aussagen, die stimmen – nach Verfahren geordnet, mit einem Bild der
+    Verbindung. Zum Vorbereiten oder zum Nachlesen, wenn eine Frage überrascht
+    hat.</p>
 
     <div id="nachschlagen"></div>
 
@@ -718,8 +719,16 @@ function nachschlagen(){
       }
       ul.appendChild(li);
     });
+    /* Vor die Merkmale das Bild: Beim Nachschlagen sucht man ein Verfahren,
+       und das erkennt man am Schnitt schneller als am Namen. */
+    var fig = document.createElement("figure");
+    fig.className = "bild";
+    fig.id = "nsBild_" + v.art;
+    d.appendChild(fig);
     d.appendChild(ul);
     ziel.appendChild(d);
+    /* bild() sucht sein Ziel im Dokument - erst einhängen, dann zeichnen. */
+    fuegebild(bild(fig.id, 220, 150, v.name), v.art);
   });
 }
 

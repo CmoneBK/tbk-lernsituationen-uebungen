@@ -314,9 +314,14 @@ function musterEng(svg, winkel){
 }
 
 /* Wo der Unterschied zwischen breiter und schmaler Vollinie die Frage selbst
-   ist, wird er überzeichnet: 2,0 gegen 0,85 Pixel sieht man auf einem Handy
-   nicht mehr. In der Zeichnung gilt weiterhin das Verhältnis 2:1. */
-var DICK = 3.2, DUENN = 0.9;
+   ist, wird er überzeichnet: 2,0 gegen 1,0 Pixel sieht man auf einem Handy
+   nicht mehr. Vergrößert werden aber beide im selben Maß – das Verhältnis
+   bleibt genau 2:1, sonst übt man an einem falschen Bild. */
+/* Die beiden Breiten des Regelsatzes, hier unter den Namen, unter denen die
+   Aufgaben von ihnen sprechen. Ueberzeichnen laesst sich nicht durchhalten:
+   sechskantAnsicht(), achse() und mass() kommen aus zeichnen.js und zeichnen
+   mit BREIT und SCHMAL - im selben Bild stuenden sonst mehr als zwei. */
+var DICK = BREIT, DUENN = SCHMAL;
 
 /* --- Durchsteckschraubung im Schnitt: zwei Platten, Schraube, Scheibe, Mutter.
    Alles im selben Maßstab (4,2 Pixel je Millimeter): eine M10 zwischen zwei
@@ -358,28 +363,59 @@ function szeneVerschraubung(svg, g, o){
   platte(p1x, m1, stark, o.fugeZeigen && !o.fugeBreit ? DUENN : stark);
   platte(p2x, m2, null, stark);
 
-  /* Schraube: Schaft, Kopf, Gewinde. Gefüllt, damit die Schraffur der Platten
-     nicht durchscheint - sie liegt ja dahinter. */
-  var fS = o.schraubeSchraffiert ? mT : "var(--card)";
-  kasten(g, p1x, y - rd, ende - p1x, 2 * rd, {fuell:fS});
-  kasten(g, kopfX, y - rk, kopfB, 2 * rk, {fuell:fS});
+  /* Ein nicht geschnittenes Teil ist undurchsichtig. Ist es (falsch)
+     schraffiert, liegt die Schraffur auf einer deckenden Flaeche - sonst
+     scheint die Schraffur der Platten durch die Luecken des Musters. */
+  function deckend(x, yv, w, h){
+    kasten(g, x, yv, w, h, {fuell:"var(--card)", ohneRand:true});
+  }
+
+  /* Schaft und Gewinde. Quer zur Achse hat der Zylinder keine Kante. */
+  deckend(p1x, y - rd, ende - p1x, 2 * rd);
+  if(o.schraubeSchraffiert){
+    kasten(g, p1x, y - rd, ende - p1x, 2 * rd, {fuell:mT, ohneRand:true});
+  }
+  [-1, 1].forEach(function(v){
+    linie(g, p1x, y + v * rd, ende, y + v * rd, BREIT);
+  });
+  linie(g, ende, y - rd, ende, y + rd, BREIT);
   var r3 = rd - 3.4;                   /* Kerndurchmesser, schmale Linie */
   var gewVon = p2x + pb * 0.35;
   [y - r3, y + r3].forEach(function(yy){
     linie(g, gewVon, yy, ende - 1.5, yy, SCHMAL);
   });
+  /* Gewindeende: breite Vollinie quer zur Achse. Ohne sie enden die
+     Kernlinien im Nichts. */
+  linie(g, gewVon, y - rd, gewVon, y + rd, BREIT);
 
-  kasten(g, schX, y - rs, schB, 2 * rs,
-    {fuell:o.scheibeSchraffiert ? mT : "var(--card)"});
-  kasten(g, muX, y - rm, muB, 2 * rm,
-    {fuell:o.mutterSchraffiert ? mT : "var(--card)"});
-  /* Fasen an Kopf und Mutter, damit beide als Sechskant zu lesen sind. */
-  [[kopfX, kopfB, rk], [muX, muB, rm]].forEach(function(k){
-    [-1, 1].forEach(function(v){
-      linie(g, k[0], y + v * k[2] * 0.62, k[0] + k[1], y + v * k[2] * 0.62,
-        SCHMAL, {deckung:.6});
+  /* Ein geschnittenes Teil zeigt seine Schnittflaeche - und nur sie. Die
+     Schraube darin bleibt ungeschnitten und deshalb sichtbar: Die Schraffur
+     liegt ober- und unterhalb des Schafts, nicht darueber. Ungeschnitten
+     dagegen verdeckt das Teil den Schaft ganz. */
+  function geschnitten(von, bis, r){
+    [[y - r, y - rd], [y + rd, y + r]].forEach(function(p){
+      kasten(g, von, p[0], bis - von, p[1] - p[0],
+        {fuell:"var(--card)", ohneRand:true});
+      kasten(g, von, p[0], bis - von, p[1] - p[0], {fuell:mT, strich:BREIT});
     });
-  });
+  }
+
+  /* Ein geschnittener Sechskant hat keine Fasenboegen. */
+  function normteil(von, bis, r, fase, schraffiert){
+    if(schraffiert){ geschnitten(von, bis, r); return; }
+    deckend(von, y - r * 1.16, bis - von, 2 * r * 1.16);
+    sechskantAnsicht(g, {waagerecht:true, achse:y, von:von, bis:bis,
+      sw:2 * r, s:1, faseAn:fase, fuell:"var(--card)"});
+  }
+  normteil(kopfX, kopfX + kopfB, rk, "von", o.schraubeSchraffiert);
+
+  if(o.scheibeSchraffiert){
+    geschnitten(schX, schX + schB, rs);
+  }else{
+    deckend(schX, y - rs, schB, 2 * rs);
+    kasten(g, schX, y - rs, schB, 2 * rs, {fuell:"var(--card)", strich:BREIT});
+  }
+  normteil(muX, muX + muB, rm, "bis", o.mutterSchraffiert);
 
   achse(g, kopfX - 14, ende + 14, y);
 
@@ -390,12 +426,15 @@ function szeneVerschraubung(svg, g, o){
 
   if(o.masse){
     /* Zwei Hinweise statt zweier Maßlinien: Die Maßlinie für das Loch müsste
-       quer durch Scheibe und Mutter laufen. */
-    linie(g, p1x + 16, y - loch, p1x + 16, oben - 12, SCHMAL, {deckung:.7});
-    txt(g, p1x + 16, oben - 16, "Loch ⌀ " + (o.lochGleich ? "10" : "11"),
+       quer durch Scheibe und Mutter laufen. Beides sind Erklärungen, keine
+       Bemaßung - sie stehen deshalb in der Erklärebene und nicht in der
+       Zeichnung. */
+    var eg = svgEl("g", {"class":"erklaer"}, g);
+    linie(eg, p1x + 16, y - loch, p1x + 16, oben - 12, SCHMAL, {deckung:.7});
+    txt(eg, p1x + 16, oben - 16, "Loch ⌀ " + (o.lochGleich ? "10" : "11"),
       {groesse:11, deckung:.9});
-    linie(g, ende - 14, y + rd, ende - 14, unten + 15, SCHMAL, {deckung:.7});
-    txt(g, ende - 14, unten + 27, "Schaft ⌀ 10", {groesse:11, deckung:.9});
+    linie(eg, ende - 14, y + rd, ende - 14, unten + 15, SCHMAL, {deckung:.7});
+    txt(eg, ende - 14, unten + 27, "Schaft ⌀ 10", {groesse:11, deckung:.9});
   }
 
   if(o.schnitt){
@@ -439,7 +478,7 @@ function szeneWelleQuer(svg, g, o){
   linie(g, cx + nb, ny, cx + nb, ny + nt, BREIT);
   linie(g, cx - nb, ny + nt, cx + nb, ny + nt, BREIT);
   achse(g, cx - r - 14, cx + r + 14, cy);
-  linie(g, cx, cy - r - 14, cx, cy + r + 14, SCHMAL, {strich:"10 3 2 3", deckung:.5});
+  linie(g, cx, cy - r - 14, cx, cy + r + 14, SCHMAL, {strich:"12 2 2 2"});
   txt(g, cx, cy + r + 30, "Schnitt B–B (quer zur Welle)", {groesse:11, deckung:.85});
 }
 
@@ -525,9 +564,22 @@ function szeneGrundloch(svg, g, o){
   kasten(g, x1, oben, x2 - x1, unten - oben, {fuell:m, ohneRand:true});
   /* Das Loch ist leer - die Schraffur wird dort wieder zugedeckt. */
   kasten(g, xBohr, y - rD1, x2 - xBohr, 2 * rD1, {fuell:"var(--card)", ohneRand:true});
-  kasten(g, xGew, y - rD, x2 - xGew, 2 * rD, {fuell:"var(--card)", ohneRand:true});
+  /* Der Gewindegang zwischen Kern- und Nenndurchmesser bleibt schraffiert:
+     Die Schraffur laeuft bis zur breiten Linie, beim Innengewinde also bis
+     zum Kerndurchmesser (DIN ISO 6410). */
+  /* Auch die Bohrerspitze ist Loch, kein Werkstoff - dort darf keine
+     Schraffur stehen bleiben. */
+  svgEl("path", {d:"M" + xBohr + "," + (y - rD1) + " L" + (xBohr - 11) + "," + y
+    + " L" + xBohr + "," + (y + rD1) + " Z", fill:"var(--card)",
+    stroke:"none"}, g);
 
-  kasten(g, x1, oben, x2 - x1, unten - oben, {strich:BREIT});
+  /* Die Umrisskanten einzeln: An der rechten Stirnflaeche muendet das Loch -
+     dort darf keine Linie quer ueber die Oeffnung laufen. */
+  linie(g, x1, oben, x2, oben, DICK);
+  linie(g, x1, unten, x2, unten, DICK);
+  linie(g, x1, oben, x1, unten, DICK);
+  linie(g, x2, oben, x2, y - rD, DICK);
+  linie(g, x2, y + rD, x2, unten, DICK);
   [-1, 1].forEach(function(v){
     linie(g, xBohr, y + v * rD1, x2, y + v * rD1, DICK);
     linie(g, xGew, y + v * rD, x2, y + v * rD, DUENN);
@@ -550,9 +602,10 @@ function szeneStift(svg, g, o){
     kasten(g, x1, p[0], x2 - x1, 46, {fuell:p[1], ohneRand:true});
     kasten(g, x1, p[0], x2 - x1, 46, {strich:BREIT});
   });
-  kasten(g, sx, 32, sb, 80,
-    {fuell:o.schraffiert ? mS : "var(--card)", strich:BREIT});
-  linie(g, sx + sb / 2, 24, sx + sb / 2, 120, SCHMAL, {strich:"10 3 2 3", deckung:.5});
+  /* Deckend zuerst: Sonst stehen zwei Schraffuren uebereinander. */
+  kasten(g, sx, 32, sb, 80, {fuell:"var(--card)", strich:BREIT});
+  if(o.schraffiert) kasten(g, sx, 32, sb, 80, {fuell:mS, strich:BREIT});
+  linie(g, sx + sb / 2, 24, sx + sb / 2, 120, SCHMAL, {strich:"12 2 2 2"});
   linie(g, sx + sb / 2, 32, sx + sb / 2, 16, SCHMAL, {deckung:.6});
   txt(g, sx + sb / 2, 12, "Passstift", {groesse:11, deckung:.9});
   txt(g, (x1 + x2) / 2, 134, "Bauteile quer geschnitten, Stift längs",
@@ -575,7 +628,10 @@ function szeneRippe(svg, g, o){
   linie(g, 270, 96, 270, 122, BREIT);
   linie(g, 270, 122, 44, 122, BREIT);
   linie(g, 44, 122, 44, 26, BREIT);
-  linie(g, 78, 96, 160, 96, SCHMAL, {deckung:.55});
+  /* Die Rippe wird laengs nicht geschnitten - man sieht ihre Flaeche. Wo
+     sie an Wand und Fuss stoesst, liegen sichtbare Koerperkanten. */
+  linie(g, 78, 46, 78, 96, BREIT);
+  linie(g, 78, 96, 160, 96, BREIT);
   txt(g, 104, 88, "Rippe", {groesse:11, deckung:.9});
   txt(g, 214, 66, "Bauteil geschnitten", {groesse:11, deckung:.75});
 }
