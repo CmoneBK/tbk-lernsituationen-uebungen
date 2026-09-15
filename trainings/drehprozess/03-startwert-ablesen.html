@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Startwert ablesen</title>
+<meta name="description" content="Vom Werkstoff zur Schnittgeschwindigkeit: Hauptanwendungsgruppe, die richtige Zeile, der fette Wert – und was die Bearbeitungsbedingungen daran verschieben.">
+<meta name="dauer" content="10 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .aufgabe{
+    background:var(--bg); border:1px solid var(--border-stark); border-radius:10px;
+    padding:14px 16px; margin:0 0 16px; font-size:16px; line-height:1.7;
+  }
+  .aufgabe strong{font-size:17px}
+  .zaehler{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:13px; color:var(--muted); margin:0 0 10px}
+  .rechenweg{
+    background:var(--bg); border:1px solid var(--border); border-radius:10px;
+    padding:12px 16px; margin:12px 0 0; font-size:14.5px; line-height:2;
+    font-variant-numeric:tabular-nums;
+  }
+  .rechenweg b{font-weight:700}
+  .rechenweg .schritt{display:block; color:var(--muted); font-size:12.5px; line-height:1.5}
+  .rechenweg .buch{
+    display:block; margin:6px 0 2px; padding:7px 10px; font-size:12.5px;
+    line-height:1.5; border-left:3px solid var(--ok); border-radius:0 8px 8px 0;
+    background:rgba(22,163,74,.10);
+  }
+  .art{
+    display:inline-block; margin:0 0 8px; padding:3px 10px; border-radius:999px;
+    background:var(--bg); border:1px solid var(--border);
+    font-size:12.5px; font-weight:600; color:var(--muted);
+  }
+  /* Die drei Werte einer Tabellenzelle: unten, Startwert, oben. So sieht man
+     beim Nachlesen sofort, warum der mittlere fett gedruckt ist. */
+  .zelle{
+    display:inline-flex; gap:10px; align-items:baseline; padding:5px 12px;
+    border-radius:8px; background:var(--bg); border:1px solid var(--border);
+    font-variant-numeric:tabular-nums;
+  }
+  .zelle span{color:var(--muted)}
+  .zelle b{font-size:17px; color:var(--fg)}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Drehprozess</p>
+    <h1>Startwert ablesen</h1>
+    <p class="lead">Vom Werkstoff zur Schnittgeschwindigkeit &ndash; in drei Griffen.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Worum es geht:</strong> Bevor eine Drehmaschine läuft, muss
+        feststehen, wie schnell geschnitten wird. Die Schnittgeschwindigkeit
+        v<sub>c</sub> steht nicht in der Zeichnung &ndash; sie wird im
+        Tabellenbuch nachgeschlagen, und dafür braucht es drei Angaben: den
+        <strong>Werkstoff</strong>, das <strong>Drehverfahren</strong> und die
+        <strong>Bearbeitungsbedingungen</strong>.</p>
+      <p>Drei Rundenarten wechseln sich ab: den Startwert ablesen, ihn nach den
+        Bedingungen verschieben, und vom Werkstoff auf die richtige Tabellenzeile
+        kommen.</p>
+      <p><strong>Das Tabellenbuch gehört aufgeschlagen daneben.</strong> Das hier
+        übt das Nachschlagen, nicht das Auswendiglernen.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Aufgaben</h2>
+
+    <div class="box">
+      <div class="zaehler">
+        <span id="stand">Aufgabe 1</span>
+        <span id="punkte"></span>
+      </div>
+
+      <p class="art" id="art">&ndash;</p>
+      <p class="aufgabe" id="aufgabe">&ndash;</p>
+
+      <div class="felder" id="felder"></div>
+
+      <p style="margin-top:16px">
+        <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+        <button type="button" class="knopf leise" id="btnWeg">Lösungsweg zeigen</button>
+        <button type="button" class="knopf leise" id="btnWeiter">Nächste Aufgabe</button>
+      </p>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+      <div class="rechenweg" id="weg" hidden></div>
+    </div>
+
+    <h2><span class="nr">2</span>Woher die Zahlen kommen</h2>
+
+    <details>
+      <summary>1. Zuerst die Hauptanwendungsgruppe</summary>
+      <p>Schneidstoffe werden nach dem Werkstück sortiert, den sie schneiden
+        sollen &ndash; nicht danach, woraus sie selbst bestehen. Sechs Gruppen,
+        jede mit einer festen Farbe:</p>
+      <ul>
+        <li><strong>P</strong> (blau) &ndash; Stahl und Stahlguss, außer
+          nichtrostendem Stahl</li>
+        <li><strong>M</strong> (gelb) &ndash; nichtrostender Stahl</li>
+        <li><strong>K</strong> (rot) &ndash; Gusseisen</li>
+        <li><strong>N</strong> (grün) &ndash; Nichteisenmetalle und Kunststoffe</li>
+        <li><strong>S</strong> (braun) &ndash; warmfeste Speziallegierungen und Titan</li>
+        <li><strong>H</strong> (grau) &ndash; harte Werkstoffe, gehärteter Stahl</li>
+      </ul>
+      <p>Ein Vergütungsstahl wie 42CrMo4 ist Stahl, also <strong>P</strong>
+        &ndash; auch wenn er legiert und vergütet ist. Erst ein nichtrostender
+        Stahl wechselt nach M.</p>
+    </details>
+
+    <details>
+      <summary>2. Dann die richtige Zeile: R<sub>m</sub> entscheidet</summary>
+      <p>Innerhalb von P ist die Tabelle noch einmal geteilt &ndash; nach
+        Stahlsorte und nach <strong>mittlerer Zugfestigkeit
+        R<sub>m</sub></strong>. Beides muss stimmen, sonst liest man die falsche
+        Zeile.</p>
+      <p>R<sub>m</sub> steht nicht auf der Zeichnung. Sie wird über die
+        Werkstoffbezeichnung in der Stahltabelle nachgeschlagen &ndash; und dort
+        hängt sie am <strong>Durchmesser</strong>: Derselbe Stahl ist im dicken
+        Stück weicher als im dünnen. Für 42CrMo4 im vergüteten Zustand stehen
+        bei 16 bis 40 mm 1000 bis 1200 N/mm²; gemittelt also rund
+        <strong>1100 N/mm²</strong> &ndash; und damit die Zeile
+        „R<sub>m</sub> &gt; 750".</p>
+      <div class="merksatz">
+        <strong>Häufigster Fehler:</strong> die Zeile nach dem Werkstoffnamen
+        suchen und die Zugfestigkeit überspringen. Bei den Vergütungsstählen
+        liegen zwei Zeilen untereinander, und zwischen ihnen liegen leicht 50 %
+        Schnittgeschwindigkeit.
+      </div>
+    </details>
+
+    <details>
+      <summary>3. Der fette Wert ist der Startwert</summary>
+      <p>In jeder Zelle der Schnittdatentabelle stehen drei Zahlen. Die mittlere
+        ist fett gedruckt &ndash; das ist der <strong>Startwert</strong> bei
+        normalen Bearbeitungsbedingungen. Die beiden anderen sind der untere und
+        der obere Grenzwert.</p>
+      <p class="zelle"><span>70</span> &ndash; <b>110</b> &ndash; <span>160</span></p>
+      <p>Jedes Drehverfahren hat eine eigene Spalte: Querplandrehen, Schruppen,
+        Schlichten stehen auf der einen Seite, Abstechen/Einstechen und
+        Gewindedrehen auf der nächsten. Geschlichtet wird schneller als
+        geschruppt &ndash; weniger Span, weniger Wärme.</p>
+    </details>
+
+    <details>
+      <summary>4. Die Bedingungen verschieben ihn</summary>
+      <p>Der Startwert gilt für den Normalfall. Ob es einer ist, entscheidet eine
+        kleine Tabelle aus zwei Fragen:</p>
+      <p><strong>Wie greift die Schneide ein?</strong> Glatter, gleichmäßiger
+        Schnitt an vorbearbeiteter Oberfläche &ndash; oder wechselnde
+        Schnitttiefe mit Guss- und Schmiedehaut &ndash; oder ungleichmäßiger
+        Schnitt mit Unterbrechungen.</p>
+      <p><strong>Wie stabil ist alles drumherum?</strong> Maschine,
+        Kühlmitteleinsatz, Einspannung und Geometrie des Werkstücks &ndash;
+        zusammen bewertet mit ++, + oder −.</p>
+      <div class="rechenweg">
+        <span class="schritt">Und daraus folgt</span>
+        günstige Bedingungen &nbsp;&rarr;&nbsp; <b>oberer</b> Grenzwert<br>
+        normale Bedingungen &nbsp;&rarr;&nbsp; <b>Startwert</b> (der fette)<br>
+        ungünstige Bedingungen &nbsp;&rarr;&nbsp; <b>unterer</b> Grenzwert
+      </div>
+      <p>Zwei Felder der Tabelle liegen dazwischen („günstig bis normal",
+        „normal bis ungünstig"). Dort wählt man einen Wert zwischen den beiden
+        &ndash; hier wird nur nach den eindeutigen Feldern gefragt.</p>
+    </details>
+
+    <details>
+      <summary>5. Und dann die Drehzahl</summary>
+      <p>Die Maschine kennt keine Schnittgeschwindigkeit, sie kennt eine
+        Drehzahl. Der Weg dahin ist kurz:</p>
+      <div class="rechenweg">
+        n = v<sub>c</sub> / (π · d)
+        <span class="schritt">d in mm, v<sub>c</sub> in mm/min &ndash; also erst
+          m/min mal 1000</span>
+      </div>
+      <p>Die berechnete Drehzahl wird <strong>abgerundet</strong>: Lieber etwas
+        langsamer als über dem Richtwert. Beim Querplandrehen ändert sich der
+        Durchmesser während des Schnitts &ndash; dort wird mit dem mittleren
+        Durchmesser d<sub>m</sub> gerechnet. Das übt das Training
+        <em>Drehzahl rechnen</em>.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Gruppe, Zeile, Spalte &ndash; dann steht der
+      Startwert da. Verschoben wird er nur durch die Bedingungen, nie durch
+      Gefühl.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>In der Übung <em>Vom Werkstoff zur Schnittgeschwindigkeit</em> steht
+      derselbe Weg einmal ausführlich, mit zwei Szenarien zum Vergleichen.</p>
+    <p class="fussnote"><strong>Woher die Zahlen stammen:</strong>
+      Hauptanwendungsgruppen nach DIN ISO 513, Schnittdaten und
+      Bearbeitungsbedingungen aus dem Abschnitt „Spanende Fertigung (Drehen)",
+      Zugfestigkeiten der Vergütungsstähle nach DIN EN ISO 683-1 und 683-2
+      &ndash; alles Tabellenbuch.</p>
+
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+      Maßgebend sind Norm und Tabellenbuch.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Die Zeilen der Schnittdatentabelle, die im Unterricht vorkommen - nicht die
+   ganze Tabelle. Je Zelle [unterer Grenzwert, Startwert, oberer Grenzwert] in
+   m/min, abgelesen im Tabellenbuch, Schnittdaten beim Drehen. */
+var ZEILEN = [
+  {id:"baustahl_klein",  gruppe:"P", sorte:"Baustahl",
+   rm:"Rm ≤ 500",
+   werte:{plan:[210,280,350], schruppen:[150,220,300], schlichten:[280,340,400],
+          abstechen:[140,160,180], gewinde:[140,155,170]}},
+  {id:"baustahl_gross",  gruppe:"P", sorte:"Baustahl",
+   rm:"Rm > 500",
+   werte:{plan:[160,230,300], schruppen:[100,170,240], schlichten:[220,290,350],
+          abstechen:[130,150,170], gewinde:[130,145,160]}},
+  {id:"automat_klein",   gruppe:"P", sorte:"Automatenstahl",
+   rm:"Rm ≤ 570",
+   werte:{plan:[180,250,320], schruppen:[130,200,270], schlichten:[240,300,360],
+          abstechen:[135,155,175], gewinde:[135,150,165]}},
+  {id:"verg_unleg_klein", gruppe:"P", sorte:"Vergütungsstahl, unlegiert",
+   rm:"Rm ≤ 650",
+   werte:{plan:[180,250,320], schruppen:[120,190,240], schlichten:[220,300,380],
+          abstechen:[115,135,155], gewinde:[120,130,140]}},
+  {id:"verg_unleg_gross", gruppe:"P", sorte:"Vergütungsstahl, unlegiert",
+   rm:"Rm > 650",
+   werte:{plan:[110,200,280], schruppen:[110,150,200], schlichten:[190,250,310],
+          abstechen:[110,120,130], gewinde:[105,115,125]}},
+  {id:"verg_leg_klein",  gruppe:"P", sorte:"Vergütungsstahl, legiert",
+   rm:"Rm ≤ 750",
+   werte:{plan:[100,160,220], schruppen:[90,130,180], schlichten:[125,185,245],
+          abstechen:[105,115,125], gewinde:[100,110,120]}},
+  {id:"verg_leg_gross",  gruppe:"P", sorte:"Vergütungsstahl, legiert",
+   rm:"Rm > 750",
+   werte:{plan:[80,130,180], schruppen:[70,110,160], schlichten:[100,150,200],
+          abstechen:[95,105,115], gewinde:[90,100,110]}}
+];
+
+var VERFAHREN = {
+  plan:      {name:"Querplandrehen",              kurz:"Planen"},
+  schruppen: {name:"Längsrunddrehen, Schruppen",  kurz:"Schruppen"},
+  schlichten:{name:"Längsrunddrehen, Schlichten", kurz:"Schlichten"},
+  abstechen: {name:"Abstechdrehen",               kurz:"Abstechen"},
+  gewinde:   {name:"Gewindedrehen",               kurz:"Gewinde"}
+};
+var VERFAHRENSLISTE = ["plan","schruppen","schlichten","abstechen","gewinde"];
+
+/* Nur Felder der Bedingungstabelle, die eindeutig auf einen der drei Werte
+   führen. Die beiden Zwischenfelder stehen im Erklärteil. */
+var LAGEN = [
+  {eingriff:"ein glatter, gleichmäßiger Schnitt an vorbearbeiteter Oberfläche",
+   stabil:"++ (stabile Maschine, gute Kühlung, kurz eingespannt)",
+   urteil:"günstig",   griff:2},
+  {eingriff:"ein glatter, gleichmäßiger Schnitt an vorbearbeiteter Oberfläche",
+   stabil:"+ (übliche Maschine, übliche Einspannung)",
+   urteil:"normal",    griff:1},
+  {eingriff:"eine wechselnde Schnitttiefe mit Schmiedehaut",
+   stabil:"+ (übliche Maschine, übliche Einspannung)",
+   urteil:"normal",    griff:1},
+  {eingriff:"eine wechselnde Schnitttiefe mit Gusshaut",
+   stabil:"− (ältere Maschine, weit ausgespannt, keine Kühlung)",
+   urteil:"ungünstig", griff:0},
+  {eingriff:"ein ungleichmäßiger Schnitt mit Unterbrechungen",
+   stabil:"++ (stabile Maschine, gute Kühlung, kurz eingespannt)",
+   urteil:"normal",    griff:1},
+  {eingriff:"ein ungleichmäßiger Schnitt mit Unterbrechungen",
+   stabil:"+ (übliche Maschine, übliche Einspannung)",
+   urteil:"ungünstig", griff:0}
+];
+
+/* Vergütungsstähle mit ihrer Zugfestigkeit für Walzdurchmesser über 16 bis
+   40 mm, Zustand +QT - der Bereich, in dem die Wellen des Unterrichts liegen.
+   Dazu der Automatenstahl aus dem Arbeitsplan-Beispiel des Tabellenbuchs. */
+var WERKSTOFFE = [
+  {name:"42CrMo4", nr:"1.7225", zustand:"+QT", rm:"1000…1200", mitte:1100,
+   zeile:"verg_leg_gross"},
+  {name:"34Cr4",   nr:"1.7033", zustand:"+QT", rm:"800…950",  mitte:875,
+   zeile:"verg_leg_gross"},
+  {name:"25CrMo4", nr:"1.7218", zustand:"+QT", rm:"800…950",  mitte:875,
+   zeile:"verg_leg_gross"},
+  {name:"C25E",    nr:"1.1158", zustand:"+QT", rm:"500…650",  mitte:575,
+   zeile:"verg_unleg_klein"},
+  {name:"C45E",    nr:"1.1191", zustand:"+QT", rm:"650…800",  mitte:725,
+   zeile:"verg_unleg_gross"},
+  {name:"C60E",    nr:"1.1221", zustand:"+QT", rm:"800…950",  mitte:875,
+   zeile:"verg_unleg_gross"},
+  {name:"11SMnPb30", nr:"1.0718", zustand:"warmgewalzt", rm:"bis 570", mitte:520,
+   zeile:"automat_klein"}
+];
+
+function el(id){ return document.getElementById(id); }
+function waehle(liste){ return liste[Math.floor(Math.random() * liste.length)]; }
+function wert(id){
+  var e = el(id);
+  return e ? parseFloat(String(e.value).replace(",", ".")) : NaN;
+}
+function zeileVon(id){
+  for(var i = 0; i < ZEILEN.length; i++){ if(ZEILEN[i].id === id) return ZEILEN[i]; }
+  return null;
+}
+function zeilenname(z){ return z.sorte + ", " + z.rm; }
+/* Im Fließtext steht R tiefgestellt m, im Auswahlfeld nicht - verglichen wird
+   immer der schlichte Text. */
+function zeilennameHtml(z){
+  return z.sorte + ", " + z.rm.replace("Rm", "R<sub>m</sub>");
+}
+
+/* ---------- Der Durchlauf ---------- */
+
+var aufgabe = null;
+var nr = 0, richtig = 0, versuche = 0;
+var gemeldet = false;
+
+function feld(id, beschriftung, schritt){
+  return '<label class="feld">' + beschriftung
+    + '<input type="number" id="' + id + '" step="' + (schritt || "1")
+    + '" inputmode="decimal" autocomplete="off"></label>';
+}
+
+function auswahl(id, beschriftung, werte){
+  var s = '<label class="feld">' + beschriftung + '<select id="' + id + '">'
+    + '<option value="">bitte wählen</option>';
+  for(var i = 0; i < werte.length; i++){
+    s += '<option value="' + werte[i] + '">' + werte[i] + '</option>';
+  }
+  return s + '</select></label>';
+}
+
+function neueAufgabe(){
+  nr++;
+  var art = waehle(["startwert", "bedingungen", "zeile"]);
+  aufgabe = {art:art};
+
+  if(art === "startwert"){
+    var z = waehle(ZEILEN), v = waehle(VERFAHRENSLISTE);
+    aufgabe.z = z; aufgabe.v = v; aufgabe.soll = z.werte[v][1];
+    el("art").textContent = "Den Startwert ablesen";
+    el("aufgabe").innerHTML = "Ein Werkstück aus der Gruppe <strong>" + z.gruppe
+      + "</strong>, Zeile <strong>" + zeilennameHtml(z) + "</strong>. Verfahren: "
+      + "<strong>" + VERFAHREN[v].name + "</strong>, normale "
+      + "Bearbeitungsbedingungen. Wie groß ist v<sub>c</sub>?";
+    el("felder").innerHTML = feld("aVc", "v<sub>c</sub> in m/min", "1");
+
+  }else if(art === "bedingungen"){
+    var z2 = waehle(ZEILEN), v2 = waehle(VERFAHRENSLISTE), lage = waehle(LAGEN);
+    aufgabe.z = z2; aufgabe.v = v2; aufgabe.lage = lage;
+    aufgabe.soll = z2.werte[v2][lage.griff];
+    el("art").textContent = "Die Bedingungen berücksichtigen";
+    el("aufgabe").innerHTML = "Derselbe Griff ins Buch: Gruppe <strong>"
+      + z2.gruppe + "</strong>, Zeile <strong>" + zeilennameHtml(z2) + "</strong>, "
+      + "Verfahren <strong>" + VERFAHREN[v2].name + "</strong>. Aber: Es ist "
+      + lage.eingriff + ", und die Stabilität von Maschine, Kühlung und "
+      + "Einspannung ist <strong>" + lage.stabil + "</strong>. Wie sind die "
+      + "Bedingungen zu bewerten, und welchen Wert nimmst du?";
+    el("felder").innerHTML =
+      auswahl("aUrteil", "Bearbeitungsbedingungen", ["günstig","normal","ungünstig"])
+      + feld("aVc", "v<sub>c</sub> in m/min", "1");
+
+  }else{
+    var w = waehle(WERKSTOFFE);
+    aufgabe.w = w;
+    el("art").textContent = "Vom Werkstoff zur Zeile";
+    el("aufgabe").innerHTML = "Auf der Zeichnung steht der Werkstoff "
+      + "<strong>" + w.name + "</strong>"
+      + (w.zustand === "+QT" ? " im vergüteten Zustand (+QT)" : "")
+      + ". Das Werkstück hat einen Durchmesser von 30 mm. Welche "
+      + "Hauptanwendungsgruppe gilt, und in welcher Zeile der Schnittdatentabelle "
+      + "stehst du?";
+    var namen = [];
+    for(var i = 0; i < ZEILEN.length; i++) namen.push(zeilenname(ZEILEN[i]));
+    namen.sort();
+    el("felder").innerHTML =
+      auswahl("aGruppe", "Hauptanwendungsgruppe", ["P","M","K","N","S","H"])
+      + auswahl("aZeile", "Zeile der Schnittdatentabelle", namen);
+  }
+
+  el("stand").textContent = "Aufgabe " + nr;
+  gemeldet = false;
+  el("rueck").hidden = true;
+  el("weg").hidden = true;
+  var erstes = el("felder").querySelector("input, select");
+  if(erstes) erstes.focus();
+}
+
+function punkteZeigen(){
+  el("punkte").textContent = versuche ? richtig + " von " + versuche + " richtig" : "";
+}
+
+function buch(text){
+  return "<span class=\"buch\"><b>Nachschlagen:</b> " + text + "</span>";
+}
+
+function zelle(w){
+  return '<span class="zelle"><span>' + w[0] + '</span> &ndash; <b>' + w[1]
+    + '</b> &ndash; <span>' + w[2] + '</span></span>';
+}
+
+function wegBauen(){
+  var a = aufgabe;
+
+  if(a.art === "zeile"){
+    var w = a.w, z = zeileVon(w.zeile);
+    return ""
+      + "<span class=\"schritt\">1. Die Gruppe</span>"
+      + w.name + " ist ein Stahl, also Hauptanwendungsgruppe <b>P</b>."
+      + buch("Die sechs Gruppen stehen in der Schneidstofftabelle nach "
+          + "DIN ISO 513 und noch einmal als Schritt 1 der Fertigungsplanung.")
+      + "<span class=\"schritt\">2. Die Zugfestigkeit</span>"
+      + w.name + " (" + w.nr + "), " + w.zustand + ", Durchmesser über 16 bis "
+      + "40 mm: R<sub>m</sub> = <b>" + w.rm + " N/mm²</b>, gemittelt rund <b>"
+      + w.mitte + " N/mm²</b>."
+      + buch("In der Stahltabelle hängt R<sub>m</sub> am Walzdurchmesser - "
+          + "die Spalte muss zum Werkstück passen.")
+      + "<span class=\"schritt\">3. Die Zeile</span>"
+      + "Damit steht die Zeile fest: <b>" + zeilennameHtml(z) + "</b>.";
+  }
+
+  var v = VERFAHREN[a.v].name, w2 = a.z.werte[a.v];
+  var kopf = ""
+    + "<span class=\"schritt\">1. Gruppe und Zeile</span>"
+    + "Gruppe <b>" + a.z.gruppe + "</b>, Zeile <b>" + zeilennameHtml(a.z) + "</b>."
+    + "<span class=\"schritt\">2. Die Spalte des Verfahrens</span>"
+    + v + " &rarr; in dieser Zelle stehen " + zelle(w2)
+    + buch("Der fett gedruckte Wert in der Mitte ist der Startwert bei "
+        + "normalen Bearbeitungsbedingungen.");
+
+  if(a.art === "startwert"){
+    return kopf
+      + "<span class=\"schritt\">3. Normale Bedingungen</span>"
+      + "Es bleibt beim Startwert: v<sub>c</sub> = <b>" + a.soll + " m/min</b>.";
+  }
+
+  return kopf
+    + "<span class=\"schritt\">3. Die Bedingungen bewerten</span>"
+    + "Schneideneingriff: " + a.lage.eingriff + ".<br>"
+    + "Stabilität: " + a.lage.stabil + ".<br>"
+    + "Zusammen ergibt das <b>" + a.lage.urteil + "e</b> Bedingungen."
+    + buch("Die Bewertung steht als kleine Tabelle in Schritt 2 der "
+        + "Fertigungsplanung - Zeile ist der Schneideneingriff, Spalte die "
+        + "Stabilität.")
+    + "<span class=\"schritt\">4. Der passende Grenzwert</span>"
+    + (a.lage.griff === 2 ? "Günstig &rarr; oberer Grenzwert: "
+      : a.lage.griff === 0 ? "Ungünstig &rarr; unterer Grenzwert: "
+      : "Normal &rarr; der Startwert: ")
+    + "v<sub>c</sub> = <b>" + a.soll + " m/min</b>.";
+}
+
+function nichtsEingetragen(){
+  var r = el("rueck");
+  r.className = "rueckmeldung fast";
+  r.innerHTML = "<strong>Noch nichts eingetragen.</strong> Ausfüllen "
+    + "&ndash; oder den Lösungsweg zeigen lassen.";
+  r.hidden = false;
+}
+
+el("btnPruefen").addEventListener("click", function(){
+  if(!aufgabe) return;
+  var a = aufgabe, r = el("rueck"), ok, text;
+
+  if(a.art === "zeile"){
+    var g = el("aGruppe").value, z = el("aZeile").value;
+    if(!g && !z){ nichtsEingetragen(); return; }
+    var sollText = zeilenname(zeileVon(a.w.zeile));
+    var okG = (g === "P"), okZ = (z === sollText);
+    ok = okG && okZ;
+    text = "Gruppe <strong>P</strong> " + (okG ? "&ndash; getroffen. "
+        : "&ndash; du hattest " + (g || "nichts") + ". ")
+      + "Zeile <strong>" + sollText + "</strong> "
+      + (okZ ? "&ndash; getroffen." : "&ndash; du hattest " + (z || "nichts") + ".");
+
+  }else{
+    var vc = wert("aVc");
+    var urteil = a.art === "bedingungen" ? el("aUrteil").value : null;
+    if(!isFinite(vc) && !urteil){ nichtsEingetragen(); return; }
+    var okVc = isFinite(vc) && Math.abs(vc - a.soll) < 0.5;
+    var okU = a.art !== "bedingungen" || urteil === a.lage.urteil;
+    ok = okVc && okU;
+    text = "";
+    if(a.art === "bedingungen"){
+      text += "Die Bedingungen sind <strong>" + a.lage.urteil + "</strong> "
+        + (okU ? "&ndash; getroffen. " : "&ndash; du hattest "
+            + (urteil || "nichts") + ". ");
+    }
+    text += "v<sub>c</sub> = <strong>" + a.soll + " m/min</strong> "
+      + (okVc ? "&ndash; getroffen." : "&ndash; du hattest "
+          + (isFinite(vc) ? vc : "nichts") + ".");
+  }
+
+  versuche++;
+  if(ok) richtig++;
+  rundeMelden(ok);
+  r.className = "rueckmeldung " + (ok ? "ja" : "nein");
+  r.innerHTML = "<strong>" + (ok ? "Richtig." : "Noch nicht.") + "</strong> " + text;
+  r.hidden = false;
+  if(!ok){
+    el("weg").innerHTML = wegBauen();
+    el("weg").hidden = false;
+  }
+  punkteZeigen();
+});
+
+el("btnWeg").addEventListener("click", function(){
+  if(!aufgabe) return;
+  el("weg").innerHTML = wegBauen();
+  el("weg").hidden = false;
+});
+
+el("btnWeiter").addEventListener("click", neueAufgabe);
+
+/* Wettkampf (assets/wettkampf.js): Wer denselben Code hat, bekommt dieselbe
+   Aufgabenfolge. Der Baustein zaehlt die Runden und stoppt die Zeit; dieses
+   Training sagt ihm nur, wie viele Runden dazugehoeren und wie ein Durchgang
+   von vorn beginnt. */
+window.TBK_WETTKAMPF = {
+  runden: 10,
+  neu: function(){
+    nr = 0; richtig = 0; versuche = 0;
+    punkteZeigen();
+    neueAufgabe();
+  }
+};
+
+/* Eine Aufgabe zaehlt einmal, auch wenn zweimal auf Pruefen gedrueckt wird. */
+function rundeMelden(ok){
+  if(gemeldet) return;
+  gemeldet = true;
+  document.dispatchEvent(new CustomEvent("tbk-runde", {detail:{richtig: !!ok}}));
+}
+
+neueAufgabe();
+punkteZeigen();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/wettkampf.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

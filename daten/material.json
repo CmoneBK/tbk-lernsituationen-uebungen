@@ -104,6 +104,25 @@
   {
     "typ": "trainings",
     "bereich": "Fertigungstechnik",
+    "kategorie": "Zerspanung",
+    "name": "Planung eines Drehprozesses",
+    "url": "trainings/drehprozess/index.html",
+    "werkzeuge": [
+      {
+        "datei": "fertigungstechnik-zerspanung-drehprozess-planen.html",
+        "name": "Werkzeug Drehprozess planen"
+      }
+    ],
+    "inhalt": [
+      {
+        "titel": "Startwert ablesen",
+        "url": "trainings/drehprozess/03-startwert-ablesen.html"
+      }
+    ]
+  },
+  {
+    "typ": "trainings",
+    "bereich": "Fertigungstechnik",
     "kategorie": "Fügeverfahren",
     "name": "Überblick",
     "url": "trainings/fuegeverfahren/index.html",

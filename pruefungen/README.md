@@ -27,6 +27,7 @@ folgenden aufhalten.
 | `test-baukasten.js` | „Übung anpassen“: Knopf da, Tafel öffnet, Zahl der abwählbaren Teile stimmt. |
 | `test-bilder.js` | Übung 1 „Eine Bezeichnung lesen“: zeigen die drei Teile ihre Zeichnungen? |
 | `test-bildungsgang.js` | Wählt man einen Bildungsgang, bleibt nur, was der Bildungsplan hergibt — und ändern lässt es sich trotzdem. |
+| `test-drehprozess.js` | Die Planung eines Drehprozesses: stimmen die hinterlegten Schnittdaten, Bedingungen und Zugfestigkeiten mit dem Tabellenbuch überein — und nimmt jedes Training die Antwort aus dem Buch an? |
 | `test-ermittlung.js` | Bereich „Ermittlung“ im Werkzeug: liefert er die Zeilen des Tabellenbuchs und rechnet er dessen Beispiele nach? |
 | `test-export.js` | Herunterladen als PDF und Word: entstehen die Dateien, tragen sie die Inhalte, halten sie ihr Format ein? |
 | `test-feedback.js` | Die Rückmeldung an den Inhalten: erscheint der Block auf jeder Seite, kommt das Token erst beim Öffnen, schickt das Formular die verabredeten Felder – und bleibt es bei Rolle, Kategorie und Freitext, ohne Speicher und ohne fremden Server? |

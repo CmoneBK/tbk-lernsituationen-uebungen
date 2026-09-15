@@ -1,0 +1,18 @@
+{
+  "titel": "Fertigungstechnik: Zerspanung - Planung eines Drehprozesses",
+  "lead": "Vom Werkstück zum Arbeitsplan: Verfahren wählen, Schnittdaten nachschlagen, Werkzeug bestimmen, Vorschub berechnen – jedes Training übt einen Griff ins Tabellenbuch.",
+  "werkzeuge": [
+    {
+      "datei": "fertigungstechnik-zerspanung-drehprozess-planen.html",
+      "name": "Werkzeug Drehprozess planen"
+    }
+  ],
+  "reihenfolge": [
+    "01-verfahren-erkennen.html",
+    "02-werkstoffgruppe-bestimmen.html",
+    "03-startwert-ablesen.html",
+    "04-drehzahl-rechnen.html",
+    "05-vorschub-und-rautiefe.html",
+    "06-bezeichnung-zusammensetzen.html"
+  ]
+}
