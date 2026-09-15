@@ -32,6 +32,9 @@ const QUELLE = fs.readFileSync(path.join(BASIS, 'assets/wettkampf.js'), 'utf8');
    laufen muss. */
 function sammelstelle(o) {
   o = o || {};
+  /* Der Anfang der Liste aus docs/WETTKAMPF-API.md § 5. Vergeben wird
+     sequenziell nach Beitrittsreihenfolge, nicht gewürfelt: nr 1 ist Adler,
+     nr 2 Ameise, nr 3 Biber. Der Endpunkt macht es genauso. */
   const NAMEN = ['Adler', 'Ameise', 'Biber', 'Bussard', 'Dachs', 'Delfin'];
   const runden = new Map();
   const rufe = [];
@@ -724,6 +727,17 @@ async function melden(w, richtig, mal) {
     p('gleicher Code, gleiche Aufgabenfolge',
       JSON.stringify(a.__folge) === JSON.stringify(b.__folge));
 
+    /* Die Namen kommen der Reihe nach, nicht gewuerfelt - so steht es im
+       Vertrag, und so macht es der Endpunkt. */
+    const dritt = seite({ api });
+    const viert = seite({ api });
+    await beitreten(dritt, 'K7M2Q');
+    await beitreten(viert, 'K7M2Q');
+    p('die Namen folgen der Beitrittsreihenfolge',
+      rangliste(tafelAuf(dritt)).filter((z) => z.ich)[0].wer === 'Biber'
+      && rangliste(tafelAuf(viert)).filter((z) => z.ich)[0].wer === 'Bussard',
+      rangliste(tafelAuf(viert)).map((z) => z.wer).join(' '));
+
     /* Der Fortschritt des einen erscheint beim anderen. */
     await melden(b, 2, 2);
     const ta = tafelAuf(a);
@@ -803,6 +817,21 @@ async function melden(w, richtig, mal) {
     const e = w.document.getElementById('wk-ergebnis');
     p('am Ende steht wieder ein Ergebniscode', !!e && !!e.querySelector('.wk-meins'),
       e && e.textContent.slice(0, 60));
+
+    /* Zu viele Runden in kurzer Zeit: Der Wettkampf laeuft trotzdem, aber
+       es steht dann auch da, warum die Mitstreiter fehlen. */
+    const zuviel = seite({ api: sammelstelle({ fehler: { neu: 'rate limit' } }) });
+    const tz = await aufmachen(zuviel);
+    p('Ratenlimit: der Wettkampf beginnt trotzdem', Array.isArray(zuviel.__folge));
+    p('und die Tafel sagt, warum die Rangliste fehlt',
+      /zu viele Runden/.test(tz.textContent), tz.textContent.slice(0, 160));
+    p('mit dem Ergebniscode als Ausweg', !!knopfMit(tz, 'Punktestand'));
+
+    const eng = seite({ api: sammelstelle({ vorhanden: 'K7M2Q',
+      fehler: { beitreten: 'rate limit' } }) });
+    const te = await beitreten(eng, 'K7M2Q');
+    p('dasselbe beim Beitreten', Array.isArray(eng.__folge)
+      && /zu viele/.test(te.textContent), te.textContent.slice(0, 160));
 
     /* Faellt sie mittendrin aus, laeuft der Durchgang weiter. */
     const api = sammelstelle({ neuerCode: 'K7M2Q', fehler: { stand: 'db error' } });

@@ -1,16 +1,17 @@
-# Wettkampf-API für t-bk.de — Anforderung an das Backend
+# Wettkampf-API für t-bk.de
 
-**Stand:** 15.09.2026 · **Absender:** Content-Repo `tbk-lernsituationen-uebungen`
-· **Adressat:** Website-/Infra-Chat
+**Stand:** 15.09.2026 — **in Betrieb.** · Content-Repo
+`tbk-lernsituationen-uebungen` ↔ Website-Repo `tbk-webseite`
 
-Diese Datei beschreibt einen Endpunkt, den es **noch nicht gibt**. Sie ist die
-Bestellung, nicht die Dokumentation: Verhalten, Felder, Tabellen und Grenzen
-sind so beschrieben, dass sie sich ohne Rückfragen bauen lassen. Wo eine
-Entscheidung offen ist, steht sie ausdrücklich als Frage am Ende.
+Diese Datei ist der Vertrag zwischen Material und Sammelstelle: Verhalten,
+Felder, Tabellen und Grenzen, so beschrieben, dass beide Seiten sich darauf
+verlassen können. Sie wurde als Bestellung geschrieben und ist inzwischen
+die Beschreibung des Gebauten — die Datenbank steht, der Endpunkt entsteht
+im `tbk-webseite`-Repo.
 
-Das Gegenstück im Content-Repo ist `assets/wettkampf.js`. Es läuft heute schon
-ohne Server (siehe [Rückfallebene](#rückfallebene-ohne-server)) und schaltet
-auf die API um, sobald sie antwortet.
+Das Gegenstück im Content-Repo ist `assets/wettkampf.js`. Es läuft auch ohne
+Server (siehe [Rückfallebene](#rückfallebene-ohne-server)) und schaltet auf
+die API um, sobald sie antwortet.
 
 ---
 
@@ -47,7 +48,9 @@ schon und ruft diesen Endpunkt bereits auf (§ 12).
   über Runden hinweg. Ein Gerät ist innerhalb **einer** Runde identifizierbar
   (über ein Geheimnis im Arbeitsspeicher) und danach nicht mehr.
 - **Same-Origin.** Alles unter `t-bk.de`, normale `fetch`-Aufrufe.
-- **IP nur gehasht**, wie bei `feedback.php`, und nur für das Ratenlimit.
+- **IP nur gehasht**, wie bei `feedback.php`, und nur beim Anlegen einer
+  Runde. `wk_teil` speichert bewusst gar keinen IP-Bezug — ein Teilnehmer
+  ist eine Zeile mit einem Tiernamen und Zahlen, sonst nichts.
 - **24 Stunden Aufbewahrung.** Danach löscht der Server Runde und Ergebnisse
   von selbst (§ 7). Es gibt nichts, was später noch jemandem zuzuordnen wäre.
 
@@ -62,7 +65,7 @@ POST action=neu
   → code "K7M2Q", geheim, name
                                     (Code ablesen oder QR scannen)
                                     POST action=beitreten code=K7M2Q
-                                      → nr 4, name "Falke", geheim
+                                      → nr 4, name "Bussard", geheim
   [Code + QR am Beamer]
 
   alle 4 s:                         nach jeder Aufgabe, höchstens alle 3 s:
@@ -135,7 +138,7 @@ Beamer spielt in der Regel mit).
 | `pfad` | ja | wie oben — zur Warnung, wenn jemand den Code auf dem falschen Training eingibt |
 
 ```json
-{ "ok": true, "code": "K7M2Q", "nr": 4, "name": "Falke",
+{ "ok": true, "code": "K7M2Q", "nr": 4, "name": "Bussard",
   "geheim": "2b71…", "teilnehmer": 4,
   "pfad": "/unterrichtsmaterial/trainings/…/04-reicht-die-laenge.html",
   "titel": "Reicht die Länge?", "runden": 10 }
@@ -169,9 +172,9 @@ also nie eine zweite Anfrage unmittelbar hinterher.
 ```json
 { "ok": true, "serverzeit": 1789452359,
   "rang": [
-    { "nr": 2, "name": "Luchs", "runde": 10, "richtig": 9, "gesamt": 10,
+    { "nr": 2, "name": "Ameise", "runde": 10, "richtig": 9, "gesamt": 10,
       "dauer": 168, "fertig": true,  "weg": false },
-    { "nr": 4, "name": "Falke", "runde": 7,  "richtig": 6, "gesamt": 10,
+    { "nr": 4, "name": "Bussard", "runde": 7,  "richtig": 6, "gesamt": 10,
       "dauer": 141, "fertig": false, "weg": false }
   ] }
 ```
@@ -188,8 +191,10 @@ tritt neu bei.
 
 ### 4.4 `GET action=stand&code=K7M2Q` — nur lesen
 
-Für ein Gerät, das nur anzeigt und nicht mitspielt. Gleiche Antwort wie 4.3,
-ohne `geheim`, ohne Schreibzugriff.
+**Gebaut.** Für ein Gerät, das nur anzeigt und nicht mitspielt: gleiche
+Antwort wie 4.3, ohne `geheim`, ohne Schreibzugriff. Das Material nutzt das
+heute nicht — das Gerät am Beamer spielt mit und bekommt die Liste über
+seine eigene Meldung. Es liegt bereit, falls das einmal anders sein soll.
 
 ---
 
@@ -209,7 +214,7 @@ Steinbock Storch  Tanne    Taube    Uhu      Wiesel   Zeisig   Zilpzalp
 ```
 
 Nichts daran ist wertend, nichts lässt sich einer Person zuordnen, und am
-Beamer liest sich „Luchs 9 von 10" ungleich besser als eine Spalte Codes.
+Beamer liest sich „Bussard 9 von 10" ungleich besser als eine Spalte Codes.
 Die Liste gehört auf den Server, damit sie sich ohne Deploy des Materials
 ändern lässt.
 
@@ -217,12 +222,12 @@ Die Liste gehört auf den Server, damit sie sich ohne Deploy des Materials
 
 ## 6. Missbrauch und Grenzen
 
-| Grenze | Vorschlag | Warum |
+| Grenze | Wert | Warum |
 |---|---|---|
 | Runden je IP-Hash | 20 / Stunde | Eine Lehrkraft macht ein paar Runden auf, kein Skript |
-| Beitritte je IP-Hash | 60 / Stunde | Eine Klasse hängt oft an einer IP |
-| `stand` je IP-Hash | siehe Frage 2 | 25 Geräte × 4 s ≈ 22.500/h — **bitte prüfen** |
-| Teilnehmer je Runde | 60 | Darüber `{"ok":false,"error":"voll"}` |
+| Beitritte | **kein IP-Limit** | Eine ganze Klasse hängt an einer IP; ein Limit träfe den Normalfall. Es gibt auch nichts zu zählen — `wk_teil` kennt keine IP |
+| `stand` | **kein Limit** | Die Query ist winzig und indiziert; die Hürde ist `code` + `geheim` |
+| Teilnehmer je Runde | 60 | Darüber `{"ok":false,"error":"voll"}` — das ersetzt das IP-Limit beim Beitreten |
 | Runden gleichzeitig offen | 500 | Notbremse |
 
 Kein Honeypot, kein Zeitfenster-Token wie bei der Rückmeldung: Hier wird
@@ -359,38 +364,39 @@ genügt für die Abnahme:
 
 ---
 
-## 11. Offene Fragen an euch
+## 11. Entschieden
 
-1. **Taktrate und Ratenlimit.** Vorgesehen ist ein Takt von 4 Sekunden je
-   laufendem Gerät. Bei einer Klasse an einer IP sind das rund 22.000
-   Anfragen in der Stunde. Sagt uns, was der Server verträgt — wir stellen
-   den Takt im Material darauf ein (8 s wäre auch noch gut spielbar). Das ist
-   die einzige Zahl hier, die wir von euch brauchen.
-2. **Datenschutzerklärung**: Muss dort etwas ergänzt werden, oder ist
-   „24 Stunden, keine personenbezogenen Daten" von der bestehenden Formulierung
-   gedeckt?
-3. **Ausfallverhalten**: Bei `rate limit` drosselt das Material den Takt
-   selbst (Verdoppelung bis höchstens 30 s) und läuft weiter. Passt das, oder
-   soll es bei zu viel Last hart auf den Ergebniscode zurückfallen?
-4. **`GET action=stand`** (§ 4.4) braucht das Material heute nicht — das Gerät
-   am Beamer spielt mit und bekommt die Liste über seine eigene Meldung. Baut
-   es nur, wenn es euch ohnehin nichts kostet.
-
-Alles Übrige ist entschieden und nachgemessen: Der Endpunkt gehört ins
-`tbk-webseite`-Repo, die Datenbank steht mit eigenem Benutzer, beide Tabellen
-sind angelegt, und das Aufräum-Event läuft stündlich und übersteht einen
-Neustart. Es fehlt nur noch `wettkampf.php` samt eigener Config.
+| Frage | Antwort |
+|---|---|
+| **Taktrate** | 4 Sekunden, bestätigt. Bleibt so. |
+| **Ratenlimit auf `stand`** | Keins. Eine ganze Klasse hängt an einer IP; ein IP-Limit träfe den Normalfall. Die Hürde ist `code` + `geheim`, die Query ist winzig und indiziert. `stand` antwortet also nie mit `rate limit`. |
+| **Ratenlimit auf `beitreten`** | Ebenfalls keins — `wk_teil` speichert bewusst keinen IP-Bezug, es gäbe nichts zu zählen. Es greifen der Deckel von 60 je Runde und die Code-Hürde. |
+| **Datenschutzerklärung** | Erledigt: neuer § 8 „Wettkampf-/Ranglisten-Funktion" (Tiername, Fortschritt, Pfad/Titel, nur gehashte IP, 24 h, Art. 6 Abs. 1 lit. f). Im Content-Repo ist dazu nichts zu tun. |
+| **Ausfallverhalten** | Die Verdoppelung bis 30 s bleibt für den Fall der Fälle. Ein `rate limit` auf `neu` oder `beitreten` sagt das Material jetzt zusätzlich an, statt stillschweigend auf den Ergebniscode zu fallen. Kein harter Rückfall. |
+| **`GET action=stand`** | Gebaut, read-only. Das Material nutzt es nicht — es liegt bereit. |
 
 ---
 
-## 12. Was im Material schon steht
+## 12. Abnahme gegen den laufenden Endpunkt
 
-`assets/wettkampf.js` ruft diese API bereits nach dieser Beschreibung auf und
-fällt auf den Ergebniscode zurück, solange sie nicht antwortet. Es ist also
-nichts nachzuziehen, wenn der Endpunkt steht — er muss nur antworten.
+Am 15.09.2026 gegen `https://t-bk.de/api/wettkampf.php` gefahren, mit
+denselben Feldern, die `assets/wettkampf.js` schickt:
 
-Ändert sich am Entwurf etwas, sind im Material zwei Stellen betroffen:
-`var API` und die Funktionen `aufmachen`, `beitreten` und `melden` ganz oben
-in der Datei. `pruefungen/test-wettkampf.js` fährt die API als Attrappe nach
-**dieser** Datei nach; weicht die gebaute davon ab, sagt uns bitte wie, damit
-die Attrappe mitzieht — sonst prüft sie etwas, das es nicht gibt.
+| Geprüft | Ergebnis |
+|---|---|
+| `neu` mit `runden=10` | Code, `nr` 1, Name `Adler`, `geheim` |
+| `neu` ohne `runden` | geht, `runden` bleibt leer |
+| `beitreten`, vier Geräte | `Adler`, `Ameise`, `Biber`, `Bussard` — sequenziell |
+| Pfad mit Umlaut im Titel | kommt unverändert zurück (`Reicht die Länge?`) |
+| Beitritt von einem anderen Training | antwortet normal und nennt den Pfad der Runde — das Material warnt daraus |
+| `stand` melden, Rangliste | fertige vor laufenden, dann `richtig`, dann `dauer` |
+| `GET action=stand` | dieselbe Liste, ohne `geheim` |
+| Unbekannter Code | `unbekannt`, HTTP 404 |
+| Fremdes `geheim` | `fremd`, HTTP 403 |
+| Zweites `fertig=1` mit besseren Zahlen | wird ignoriert, der erste Abschluss zählt |
+| `weg` nach 90 s ohne Meldung | greift |
+
+`pruefungen/test-wettkampf.js` fährt dieselbe API als Attrappe nach **dieser**
+Datei. Ändert sich am Endpunkt etwas, sagt bitte Bescheid, damit die Attrappe
+mitzieht — sonst prüft sie etwas, das es nicht mehr gibt. Im Material ist die
+Adresse an genau einer Stelle: `var API` in `assets/wettkampf.js`.

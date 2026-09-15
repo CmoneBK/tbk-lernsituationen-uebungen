@@ -787,7 +787,14 @@
       hinweis = '';
       beginnen(d.code);
     },
-    function () {
+    function (e) {
+      /* Beim Melden kommt kein Ratenlimit - beim Aufmachen schon, wenn
+         jemand in einer Stunde zwanzig Runden anfängt. Dann soll dastehen,
+         warum die Mitstreiter fehlen. */
+      hinweis = e === 'rate limit'
+        ? 'Gerade wurden zu viele Runden aufgemacht. Diese läuft über '
+          + 'Ergebniscodes; in einer Weile geht es wieder mit Rangliste.'
+        : '';
       abschalten();
       beginnen(neuerCode());
     });
@@ -820,6 +827,10 @@
           tafelNachfuehren();
           return;
         }
+        hinweis = e === 'rate limit'
+          ? 'Gerade treten zu viele auf einmal bei. Du machst mit, nur ohne '
+            + 'Rangliste - dafür gibt es am Ende deinen Ergebniscode.'
+          : '';
         abschalten();
         beginnen(c);
       });
