@@ -1,6 +1,6 @@
 {
   "titel": "Maschinenelemente: Schrauben - Schraubverbindungen",
-  "lead": "Wiederholung mit Rückmeldung – Begriffe, Rechenweg und die Regeln der Schnittdarstellung.",
+  "lead": "Wiederholung mit Rückmeldung – Begriffe, Rechenwege, die Regeln der Schnittdarstellung und das Nachschlagen im Tabellenbuch.",
   "werkzeuge": [
     {
       "datei": "maschinenelemente-schrauben-schraubverbindungen.html",
@@ -10,6 +10,10 @@
   "reihenfolge": [
     "01-begriffe-und-formelzeichen.html",
     "02-anziehdrehmoment-rechnen.html",
-    "03-schraffur-schnellcheck.html"
+    "03-schraffur-schnellcheck.html",
+    "04-reicht-die-laenge.html",
+    "05-klasse-und-zahl.html",
+    "06-haelt-oder-rutscht.html",
+    "07-im-tabellenbuch-nachschlagen.html"
   ]
 }

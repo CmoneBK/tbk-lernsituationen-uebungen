@@ -218,6 +218,104 @@ async function main() {
     'uebungen/schraubverbindungen/06-festigkeitsklassen-deuten.html'), 'utf8');
   p('Übung 6: A2-70 mit 700 N/mm²', /700 N\/mm²/.test(u6));
 
+  /* ---------- Die vier Nachschlage-Trainings ----------
+     Sie bringen ihre Tabellen selbst mit, weil tabellenbuch/ nicht
+     veroeffentlicht wird. Hier wird jede Zeile gegen das Buch gehalten. */
+  console.log('\nTrainings mit eigener Tabelle');
+
+  const nah = (a, b) => Math.abs(a - b) < 0.005;
+
+  {
+    const w = (await seite('trainings/schraubverbindungen/04-reicht-die-laenge.html')).window;
+    const abw = [];
+    for (const g of Object.keys(w.SCHRAUBEN)) {
+      const z = w.SCHRAUBEN[g];
+      if (!nah(z.P, TB.gewinde[g].P)) abw.push(g + ': P = ' + z.P + ' statt ' + TB.gewinde[g].P);
+      if (!nah(z.m, TB.mutter_4032[g].m)) {
+        abw.push(g + ': m = ' + z.m + ' statt ' + TB.mutter_4032[g].m);
+      }
+      const sch = TB.scheiben.iso7090[g];
+      if (!sch) abw.push(g + ': Scheibe nicht nachgeschlagen');
+      else if (!nah(z.h, sch.h)) abw.push(g + ': h = ' + z.h + ' statt ' + sch.h);
+    }
+    p('Reicht die Länge?: Steigung, Mutterhöhe, Scheibendicke', !abw.length, abw.join(' · '));
+    p('Reicht die Länge?: Normlängenreihe wie ISO 4014',
+      w.NENNLAENGEN.join(',') === TB.sechskantschraube_4014._nennlaengen.join(','),
+      w.NENNLAENGEN.join(','));
+  }
+
+  {
+    const w = (await seite('trainings/schraubverbindungen/05-klasse-und-zahl.html')).window;
+    const abw = [];
+    for (const g of Object.keys(w.QUERSCHNITT)) {
+      if (!nah(w.QUERSCHNITT[g], TB.gewinde[g].S)) {
+        abw.push(g + ': S = ' + w.QUERSCHNITT[g] + ' statt ' + TB.gewinde[g].S);
+      }
+    }
+    p('Klasse und Zahl: Spannungsquerschnitte', !abw.length, abw.join(' · '));
+    /* Die Kennwerte werden aus der Bezeichnung gerechnet - sie muessen die
+       abgedruckten Nennwerte treffen. */
+    const kl = [];
+    for (const k of w.KLASSEN) {
+      const tb = TB.festigkeitsklassen_schrauben[k];
+      if (!tb) continue;
+      const r = w.kennwerte(k);
+      if (r.Rm !== tb.Rm) kl.push(k + ': Rm = ' + r.Rm + ' statt ' + tb.Rm);
+      if (r.Re !== tb.Re) kl.push(k + ': Re = ' + r.Re + ' statt ' + tb.Re);
+    }
+    p('Klasse und Zahl: Rm und Re wie abgedruckt', !kl.length, kl.join(' · '));
+  }
+
+  {
+    const w = (await seite('trainings/schraubverbindungen/06-haelt-oder-rutscht.html')).window;
+    const abw = [];
+    for (const paar of w.PAARUNGEN) {
+      /* "Stahl auf Stahl" heisst im Buch "Stahl/Stahl". */
+      const schl = paar.name.replace(' auf ', '/');
+      const tb = TB.reibungszahlen[schl];
+      if (!tb) { abw.push(paar.name + ': im Buch nicht gefunden'); continue; }
+      if (!nah(paar.trocken, tb.haft[0])) {
+        abw.push(paar.name + ' trocken: ' + paar.trocken + ' statt ' + tb.haft[0]);
+      }
+      if (!nah(paar.geschmiert, tb.haft[1])) {
+        abw.push(paar.name + ' geschmiert: ' + paar.geschmiert + ' statt ' + tb.haft[1]);
+      }
+    }
+    p('Hält oder rutscht?: Haftreibungszahlen', !abw.length, abw.join(' · '));
+    const ef = TB.vereinfachte_berechnung.erfahrungswerte;
+    const vs = [];
+    for (const g of Object.keys(w.VORSPANN)) {
+      if (!ef[g]) { vs.push(g + ': kein Erfahrungswert im Buch'); continue; }
+      if (w.VORSPANN[g] !== ef[g].Fv) {
+        vs.push(g + ': Fv = ' + w.VORSPANN[g] + ' statt ' + ef[g].Fv);
+      }
+    }
+    p('Hält oder rutscht?: Vorspannkräfte aus den Erfahrungswerten', !vs.length, vs.join(' · '));
+  }
+
+  {
+    const w = (await seite(
+      'trainings/schraubverbindungen/07-im-tabellenbuch-nachschlagen.html')).window;
+    const abw = [];
+    for (const g of Object.keys(w.TABELLE)) {
+      const z = w.TABELLE[g], tb = TB.gewinde[g];
+      const kopf = TB.sechskantschraube_4014[g], mut = TB.mutter_4032[g];
+      const dl = (TB.durchgangsloecher[g] || [])[1];
+      const pruefe = [['P', z.P, tb.P], ['d2', z.d2, tb.d2], ['d3', z.d3, tb.d3],
+        ['S', z.S, tb.S], ['bohrer', z.bohrer, tb.bohrer], ['sw', z.sw, tb.sw],
+        ['dl', z.dl, dl], ['k', z.k, kopf && kopf.k], ['e', z.e, kopf && kopf.e],
+        ['m', z.m, mut && mut.m]];
+      for (const [name, ist, soll] of pruefe) {
+        if (soll === undefined || soll === null) {
+          abw.push(g + ': ' + name + ' fehlt im Buch');
+          continue;
+        }
+        if (!nah(ist, soll)) abw.push(g + ': ' + name + ' = ' + ist + ' statt ' + soll);
+      }
+    }
+    p('Im Tabellenbuch nachschlagen: alle zehn Spalten', !abw.length, abw.join(' · '));
+  }
+
   console.log(fehler ? '\n' + fehler + ' Fehler.' : '\nAlles deckt sich mit dem Tabellenbuch.');
   process.exitCode = fehler ? 1 : 0;
 }

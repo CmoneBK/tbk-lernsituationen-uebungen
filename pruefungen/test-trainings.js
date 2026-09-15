@@ -18,6 +18,35 @@ function seite(datei) {
   return { dom, w: dom.window, d: dom.window.document, fehler };
 }
 
+/* Die vier Rechen-Trainings: Traegt man die richtige Antwort ein, muss die
+   Seite das auch sagen. Die Loesung steht im Zustand der Seite (w.aufgabe) -
+   so prueft das hier den Weg von der Eingabe bis zur Rueckmeldung und nicht
+   noch einmal die Rechnung. */
+const ANTWORTEN = {
+  '04-reicht-die-laenge.html': (w, d) => {
+    d.getElementById('aNoetig').value = String(w.aufgabe.loesung.noetig);
+    d.getElementById('aWahl').value = String(w.aufgabe.loesung.wahl);
+  },
+  '05-klasse-und-zahl.html': (w, d) => {
+    const a = w.aufgabe;
+    if (a.art === 'ausKlasse') {
+      d.getElementById('aRm').value = String(a.k.Rm);
+      d.getElementById('aRe').value = String(a.k.Re);
+    } else if (a.art === 'zurKlasse') {
+      d.getElementById('aKlasse').value = a.klasse;
+    } else {
+      d.getElementById('aF').value = String(a.F);
+    }
+  },
+  '06-haelt-oder-rutscht.html': (w, d) => {
+    d.getElementById('aFR').value = String(w.aufgabe.FR);
+    d.getElementById('aUrteil').value = w.aufgabe.haelt ? 'haelt' : 'rutscht';
+  },
+  '07-im-tabellenbuch-nachschlagen.html': (w, d) => {
+    d.getElementById('aWert').value = String(w.aufgabe.soll);
+  },
+};
+
 async function main() {
   let fehlerGesamt = 0;
 
@@ -29,6 +58,23 @@ async function main() {
       if (!d.getElementById('ende').hidden) fehler.push('Ergebnis vorzeitig sichtbar');
     }
     const p = (was, ok) => { if (!ok) fehler.push(was); };
+
+    /* Die richtige Antwort muss auch als richtig durchgehen - und zwar in
+       zehn Runden hintereinander, damit jede Rundenart drankommt. */
+    const antwort = ANTWORTEN[datei];
+    if (antwort) {
+      for (let runde = 0; runde < 10; runde++) {
+        antwort(d.defaultView, d);
+        d.getElementById('btnPruefen').click();
+        const r = d.getElementById('rueck');
+        if (r.hidden || !/\bja\b/.test(r.className)) {
+          fehler.push('richtige Antwort nicht anerkannt (Runde ' + (runde + 1)
+            + ': ' + r.className + ' – ' + r.textContent.trim().slice(0, 70) + ')');
+          break;
+        }
+        d.getElementById('btnWeiter').click();
+      }
+    }
 
     // Die Bausteine müssen hier "Training" sagen.
     const knopf = d.getElementById('bk-knopf');

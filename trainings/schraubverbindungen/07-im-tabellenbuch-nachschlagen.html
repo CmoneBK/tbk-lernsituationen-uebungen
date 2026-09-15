@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Im Tabellenbuch nachschlagen</title>
+<meta name="description" content="Schnellsuche im Tabellenbuch: zu einem Gewinde die gefragte Größe finden – Steigung, Kerndurchmesser, Spannungsquerschnitt, Bohrer, Durchgangsloch, Schlüsselweite.">
+<meta name="dauer" content="10 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .aufgabe{
+    background:var(--bg); border:1px solid var(--border-stark); border-radius:10px;
+    padding:18px 16px; margin:0 0 16px; font-size:19px; line-height:1.6;
+    text-align:center;
+  }
+  .aufgabe .groesse{font-size:30px; font-weight:700; display:block; margin-bottom:2px}
+  .aufgabe .gesucht{font-weight:700}
+  .zaehler{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:13px; color:var(--muted); margin:0 0 10px}
+  .zaehler .uhr{font-variant-numeric:tabular-nums}
+  .rechenweg{
+    background:var(--bg); border:1px solid var(--border); border-radius:10px;
+    padding:12px 16px; margin:12px 0 0; font-size:14.5px; line-height:2;
+    font-variant-numeric:tabular-nums;
+  }
+  .rechenweg b{font-weight:700}
+  .rechenweg .schritt{display:block; color:var(--muted); font-size:12.5px; line-height:1.5}
+  .rechenweg .buch{
+    display:block; margin:6px 0 2px; padding:7px 10px; font-size:12.5px;
+    line-height:1.5; border-left:3px solid var(--ok); border-radius:0 8px 8px 0;
+    background:rgba(22,163,74,.10);
+  }
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Schraubverbindungen</p>
+    <h1>Im Tabellenbuch nachschlagen</h1>
+    <p class="lead">Nicht rechnen &ndash; finden. Und zwar schnell.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Worum es geht:</strong> In der Prüfung und in der Werkstatt
+        zählt nicht, ob man eine Gewindetabelle auswendig kann, sondern ob man
+        die Zeile in zehn Sekunden findet. Genau das wird hier geübt.</p>
+      <p>Gefragt ist jedes Mal <strong>eine Größe zu einem Gewinde</strong>. Das
+        Tabellenbuch liegt dabei offen &ndash; ohne es geht es nicht. Die Uhr
+        läuft mit; sie ist kein Gegner, sondern ein Maßstab dafür, ob man die
+        Tabelle kennt.</p>
+      <p>Die Rückmeldung sagt jedes Mal, <em>in welcher Tabelle</em> die Zahl
+        steht. Nach zehn Runden weiß man das ohne Nachsehen.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Aufgaben</h2>
+
+    <div class="box">
+      <div class="zaehler">
+        <span id="stand">Aufgabe 1</span>
+        <span class="uhr" id="uhr">0:00</span>
+        <span id="punkte"></span>
+      </div>
+
+      <p class="aufgabe" id="aufgabe">&ndash;</p>
+
+      <div class="felder">
+        <label class="feld" id="feldHuelle">Wert
+          <input type="number" id="aWert" step="0.01" inputmode="decimal" autocomplete="off">
+        </label>
+      </div>
+
+      <p style="margin-top:16px">
+        <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+        <button type="button" class="knopf leise" id="btnWeg">Auflösen</button>
+        <button type="button" class="knopf leise" id="btnWeiter">Nächste Aufgabe</button>
+      </p>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+      <div class="rechenweg" id="weg" hidden></div>
+    </div>
+
+    <h2><span class="nr">2</span>Welche Tabelle wofür</h2>
+
+    <details>
+      <summary>1. Die Gewindetabelle &ndash; das meiste steht hier</summary>
+      <p>Eine Zeile je Gewinde, und darin fast alles, was man zum Rechnen
+        braucht: Steigung <em>P</em>, Flankendurchmesser <em>d<sub>2</sub></em>,
+        Kerndurchmesser <em>d<sub>3</sub></em> (außen) und <em>D<sub>1</sub></em>
+        (innen), Gewindetiefen, <strong>Spannungsquerschnitt S</strong> und der
+        <strong>Bohrerdurchmesser fürs Kernloch</strong>.</p>
+      <p>Zwei Kerndurchmesser in einer Zeile stiften oft Verwirrung: Das
+        Außengewinde der Schraube hat den kleineren (d<sub>3</sub>), das
+        Innengewinde im Bauteil den größeren (D<sub>1</sub>). Zum Rechnen mit
+        der Schraube gehört d<sub>3</sub>.</p>
+    </details>
+
+    <details>
+      <summary>2. Durchgangsloch: drei Reihen, nicht eine</summary>
+      <p>Das Loch im Bauteil ist immer <strong>größer als das Gewinde</strong>
+        &ndash; die Schraube soll dort nicht tragen, sondern klemmen. Die
+        Tabelle nennt drei Reihen: <em>fein</em>, <em>mittel</em> und
+        <em>grob</em>.</p>
+      <p>Ohne weitere Angabe nimmt man <strong>mittel</strong>. Für M10 sind das
+        11,0 mm &ndash; ein Millimeter mehr als das Gewinde.</p>
+    </details>
+
+    <details>
+      <summary>3. Maße der Schraube und der Mutter</summary>
+      <p>Schlüsselweite <em>s</em>, Kopfhöhe <em>k</em> und Eckenmaß <em>e</em>
+        stehen in der Maßtabelle der Sechskantschrauben (DIN EN ISO 4014), die
+        Mutterhöhe <em>m</em> in der der Sechskantmuttern (DIN EN ISO 4032).</p>
+      <p>Die Schlüsselweite steht zusätzlich in der Gewindetabelle &ndash; sie ist
+        die einzige Zahl, die man an zwei Stellen findet.</p>
+      <p>Das Eckenmaß <em>e</em> ist die Diagonale über die Ecken. In der
+        Zeichnung ist es der Umriss des über Ecke gezeichneten Kopfes; mit dem
+        Schlüssel greift man dagegen an <em>s</em> an.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Alles zum Gewinde steht in der Gewindetabelle.
+      Alles zum Sechskant steht bei der Schraube oder bei der Mutter. Das Loch
+      im Bauteil hat eine eigene Tabelle mit drei Reihen.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>Der Reiter <em>Ermittlung</em> im Werkzeug geht denselben Weg: Jede Zahl,
+      die im Tabellenbuch steht, wird von dort geholt &ndash; gerechnet wird nur,
+      was nicht darin steht.</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="maschinenelemente-schrauben-schraubverbindungen.html"
+         data-fach="5">Werkzeug Schraubverbindungen öffnen</a>
+    </p>
+    <p class="fussnote"><strong>Woher die Zahlen stammen:</strong> Gewindetabelle
+      (Metrische ISO-Gewinde), Tabelle der Durchgangslöcher, Maßtabellen der
+      Sechskantschrauben DIN EN ISO 4014 und der Sechskantmuttern
+      DIN EN ISO 4032 &ndash; alles Tabellenbuch.</p>
+
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+      Maßgebend sind Norm und Tabellenbuch.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Eine Zeile je Gewinde - genau die Zahlen, die im Tabellenbuch stehen.
+     P, d2, d3, S, bohrer, sw   Gewindetabelle
+     dl                         Durchgangsloch, Reihe mittel
+     k, e                       Sechskantschraube ISO 4014
+     m                          Sechskantmutter ISO 4032 */
+var TABELLE = {
+  M4:  {P:0.70, d2:3.55,  d3:3.14,  S:8.78, bohrer:3.3,  sw:7,  dl:4.5,  k:2.8,  e:7.7,  m:3.2},
+  M5:  {P:0.80, d2:4.48,  d3:4.02,  S:14.2, bohrer:4.2,  sw:8,  dl:5.5,  k:3.5,  e:8.8,  m:4.7},
+  M6:  {P:1.00, d2:5.35,  d3:4.77,  S:20.1, bohrer:5.0,  sw:10, dl:6.6,  k:4.0,  e:11.1, m:5.2},
+  M8:  {P:1.25, d2:7.19,  d3:6.47,  S:36.6, bohrer:6.8,  sw:13, dl:9.0,  k:5.3,  e:14.4, m:6.8},
+  M10: {P:1.50, d2:9.03,  d3:8.16,  S:58.0, bohrer:8.5,  sw:16, dl:11.0, k:6.4,  e:17.8, m:8.4},
+  M12: {P:1.75, d2:10.86, d3:9.85,  S:84.3, bohrer:10.2, sw:18, dl:13.5, k:7.5,  e:20.0, m:10.8},
+  M16: {P:2.00, d2:14.70, d3:13.55, S:157,  bohrer:14.0, sw:24, dl:17.5, k:10.0, e:26.2, m:14.8},
+  M20: {P:2.50, d2:18.38, d3:16.93, S:245,  bohrer:17.5, sw:30, dl:22.0, k:12.5, e:33.0, m:18.0},
+  M24: {P:3.00, d2:22.05, d3:20.32, S:353,  bohrer:21.0, sw:36, dl:26.0, k:15.0, e:39.6, m:21.5}
+};
+var GROESSEN = ["M4","M5","M6","M8","M10","M12","M16","M20","M24"];
+
+/* Was gefragt werden kann - mit der Tabelle, in der es steht. */
+var GROESSENARTEN = [
+  {schl:"P",      frage:"die Steigung P",                     einheit:"mm",
+   wo:"Gewindetabelle, Spalte P", stellen:2},
+  {schl:"d2",     frage:"den Flankendurchmesser d<sub>2</sub>", einheit:"mm",
+   wo:"Gewindetabelle, Spalte d<sub>2</sub>", stellen:2},
+  {schl:"d3",     frage:"den Kerndurchmesser d<sub>3</sub> des Außengewindes", einheit:"mm",
+   wo:"Gewindetabelle, Spalte d<sub>3</sub> – nicht D<sub>1</sub>, das ist das Innengewinde",
+   stellen:2},
+  {schl:"S",      frage:"den Spannungsquerschnitt S",         einheit:"mm²",
+   wo:"Gewindetabelle, Spalte S", stellen:1},
+  {schl:"bohrer", frage:"den Bohrerdurchmesser für das Kernloch", einheit:"mm",
+   wo:"Gewindetabelle, Spalte Kernlochbohrer", stellen:1},
+  {schl:"dl",     frage:"das Durchgangsloch der Reihe <em>mittel</em>", einheit:"mm",
+   wo:"Tabelle der Durchgangslöcher, Spalte mittel", stellen:1},
+  {schl:"sw",     frage:"die Schlüsselweite s",               einheit:"mm",
+   wo:"Maßtabelle der Sechskantschrauben ISO 4014 – und in der Gewindetabelle",
+   stellen:0},
+  {schl:"k",      frage:"die Kopfhöhe k",                     einheit:"mm",
+   wo:"Maßtabelle der Sechskantschrauben ISO 4014", stellen:1},
+  {schl:"e",      frage:"das Eckenmaß e",                     einheit:"mm",
+   wo:"Maßtabelle der Sechskantschrauben ISO 4014", stellen:1},
+  {schl:"m",      frage:"die Mutterhöhe m",                   einheit:"mm",
+   wo:"Maßtabelle der Sechskantmuttern ISO 4032", stellen:1}
+];
+
+function el(id){ return document.getElementById(id); }
+function zahl(x, n){ return x.toFixed(n === undefined ? 1 : n).replace(".", ","); }
+function waehle(liste){ return liste[Math.floor(Math.random() * liste.length)]; }
+
+/* ---------- Die Uhr ---------- */
+
+var beginn = null, uhrLauf = null;
+
+function uhrZeigen(){
+  if(!beginn){ el("uhr").textContent = "0:00"; return; }
+  var s = Math.floor((Date.now() - beginn) / 1000);
+  el("uhr").textContent = Math.floor(s / 60) + ":" + (s % 60 < 10 ? "0" : "") + (s % 60);
+}
+
+function uhrStarten(){
+  if(beginn) return;
+  beginn = Date.now();
+  uhrLauf = setInterval(uhrZeigen, 500);
+}
+
+/* ---------- Der Durchlauf ---------- */
+
+var aufgabe = null;
+var nr = 0, richtig = 0, versuche = 0;
+
+function neueAufgabe(){
+  nr++;
+  var groesse = waehle(GROESSEN);
+  var art = waehle(GROESSENARTEN);
+  var soll = TABELLE[groesse][art.schl];
+  aufgabe = {groesse:groesse, art:art, soll:soll};
+
+  el("aufgabe").innerHTML = '<span class="groesse">' + groesse + '</span>'
+    + 'Gesucht: <span class="gesucht">' + art.frage + '</span> in ' + art.einheit;
+  el("feldHuelle").childNodes[0].nodeValue = "Wert in " + art.einheit + " ";
+  el("stand").textContent = "Aufgabe " + nr;
+  el("aWert").value = "";
+  el("rueck").hidden = true;
+  el("weg").hidden = true;
+  el("aWert").focus();
+}
+
+function punkteZeigen(){
+  el("punkte").textContent = versuche ? richtig + " von " + versuche + " richtig" : "";
+}
+
+function aufloesen(){
+  var a = aufgabe;
+  return ""
+    + "<span class=\"schritt\">" + a.groesse + " &ndash; " + a.art.frage + "</span>"
+    + "<b>" + zahl(a.soll, a.art.stellen) + " " + a.art.einheit + "</b>"
+    + "<span class=\"buch\"><b>Steht in:</b> " + a.art.wo + ", Zeile "
+    + a.groesse + ".</span>";
+}
+
+el("btnPruefen").addEventListener("click", function(){
+  if(!aufgabe) return;
+  var a = aufgabe, r = el("rueck");
+  var ist = parseFloat(String(el("aWert").value).replace(",", "."));
+
+  if(!isFinite(ist)){
+    r.className = "rueckmeldung fast";
+    r.innerHTML = "<strong>Noch nichts eingetragen.</strong> Nachschlagen "
+      + "&ndash; oder auflösen lassen.";
+    r.hidden = false;
+    return;
+  }
+
+  uhrStarten();
+  /* Ein abgelesener Wert ist entweder richtig oder falsch. Die halbe
+     Nachkommastelle Spielraum deckt nur unterschiedlich gerundete Bücher ab. */
+  var ok = Math.abs(ist - a.soll) <= Math.max(0.02, a.soll * 0.005);
+  versuche++;
+  if(ok) richtig++;
+
+  r.className = "rueckmeldung " + (ok ? "ja" : "nein");
+  r.innerHTML = "<strong>" + (ok ? "Richtig." : "Noch nicht.") + "</strong> "
+    + a.groesse + ": <strong>" + zahl(a.soll, a.art.stellen) + " " + a.art.einheit
+    + "</strong>" + (ok ? "." : " &ndash; du hattest " + zahl(ist, a.art.stellen) + ".");
+  r.hidden = false;
+
+  el("weg").innerHTML = aufloesen();
+  el("weg").hidden = false;
+  punkteZeigen();
+});
+
+el("btnWeg").addEventListener("click", function(){
+  if(!aufgabe) return;
+  uhrStarten();
+  el("weg").innerHTML = aufloesen();
+  el("weg").hidden = false;
+});
+
+el("btnWeiter").addEventListener("click", function(){
+  uhrStarten();
+  neueAufgabe();
+});
+
+neueAufgabe();
+punkteZeigen();
+uhrZeigen();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/feedback.js"></script>
+</body>
+</html>

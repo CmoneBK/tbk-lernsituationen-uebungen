@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Klasse und Zahl</title>
+<meta name="description" content="Festigkeitsklassen in beide Richtungen: aus der Klasse die beiden Kennwerte, aus den Kennwerten die Klasse – und was sie für die Schraube bedeuten.">
+<meta name="dauer" content="10 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .aufgabe{
+    background:var(--bg); border:1px solid var(--border-stark); border-radius:10px;
+    padding:14px 16px; margin:0 0 16px; font-size:16px; line-height:1.7;
+  }
+  .aufgabe strong{font-size:17px}
+  .zaehler{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:13px; color:var(--muted); margin:0 0 10px}
+  .rechenweg{
+    background:var(--bg); border:1px solid var(--border); border-radius:10px;
+    padding:12px 16px; margin:12px 0 0; font-size:14.5px; line-height:2;
+    font-variant-numeric:tabular-nums;
+  }
+  .rechenweg b{font-weight:700}
+  .rechenweg .schritt{display:block; color:var(--muted); font-size:12.5px; line-height:1.5}
+  .rechenweg .buch{
+    display:block; margin:6px 0 2px; padding:7px 10px; font-size:12.5px;
+    line-height:1.5; border-left:3px solid var(--ok); border-radius:0 8px 8px 0;
+    background:rgba(22,163,74,.10);
+  }
+  /* Die Rundenart steht über der Aufgabe - drei Arten wechseln sich ab, und
+     man soll wissen, wonach gerade gefragt ist. */
+  .art{
+    display:inline-block; margin:0 0 8px; padding:3px 10px; border-radius:999px;
+    background:var(--bg); border:1px solid var(--border);
+    font-size:12.5px; font-weight:600; color:var(--muted);
+  }
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Schraubverbindungen</p>
+    <h1>Klasse und Zahl</h1>
+    <p class="lead">Zwei Ziffern, zwei Kennwerte &ndash; in beide Richtungen.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Worum es geht:</strong> Auf jedem Schraubenkopf stehen zwei
+        Ziffern mit einem Punkt dazwischen. Aus ihnen lassen sich zwei Werte
+        ablesen: die Zugfestigkeit R<sub>m</sub> und die Streckgrenze
+        R<sub>e</sub>.</p>
+      <p>Drei Rundenarten wechseln sich ab: aus der Klasse die beiden Werte, aus
+        den beiden Werten die Klasse, und was die Klasse für eine bestimmte
+        Schraube bedeutet.</p>
+      <p>Bei den Kräften zählt alles, was <strong>bis 3 % daneben</strong> liegt;
+        Festigkeiten und Klassen müssen stimmen.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Aufgaben</h2>
+
+    <div class="box">
+      <div class="zaehler">
+        <span id="stand">Aufgabe 1</span>
+        <span id="punkte"></span>
+      </div>
+
+      <p class="art" id="art">&ndash;</p>
+      <p class="aufgabe" id="aufgabe">&ndash;</p>
+
+      <div class="felder" id="felder"></div>
+
+      <p style="margin-top:16px">
+        <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+        <button type="button" class="knopf leise" id="btnWeg">Rechenweg zeigen</button>
+        <button type="button" class="knopf leise" id="btnWeiter">Nächste Aufgabe</button>
+      </p>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+      <div class="rechenweg" id="weg" hidden></div>
+    </div>
+
+    <h2><span class="nr">2</span>Woher die Zahlen kommen</h2>
+
+    <details>
+      <summary>1. Die erste Ziffer: Zugfestigkeit</summary>
+      <p>Die erste Zahl mal hundert ergibt die <strong>Zugfestigkeit
+        R<sub>m</sub> in N/mm²</strong>. Bei 8.8 also 800 N/mm², bei 12.9 sind es
+        1200 N/mm².</p>
+      <p>R<sub>m</sub> ist die Spannung, bei der die Schraube reißt. Sie ist die
+        obere Grenze &ndash; erreicht wird sie im Betrieb nie, weil die Schraube
+        vorher bleibend länger wird.</p>
+    </details>
+
+    <details>
+      <summary>2. Die zweite Ziffer: Streckgrenze</summary>
+      <p>Die zweite Zahl sagt, welcher <strong>Anteil von R<sub>m</sub></strong>
+        die Streckgrenze ist &ndash; in Zehnteln. Bei 8.8 sind das 8/10, also
+        0,8 · 800 = <strong>640 N/mm²</strong>.</p>
+      <div class="rechenweg">
+        R<sub>m</sub> = erste Ziffer · 100<br>
+        R<sub>e</sub> = R<sub>m</sub> · zweite Ziffer / 10
+      </div>
+      <p>Ab R<sub>e</sub> bleibt die Schraube länger, auch wenn man loslässt. Das
+        ist die Grenze, mit der gerechnet wird &ndash; nicht R<sub>m</sub>.</p>
+    </details>
+
+    <details>
+      <summary>3. Was heißt das für eine bestimmte Schraube?</summary>
+      <p>Die Klasse nennt eine <em>Spannung</em>, keine Kraft. Erst mit dem
+        <strong>Spannungsquerschnitt S</strong> aus der Gewindetabelle wird
+        daraus eine Kraft:</p>
+      <div class="rechenweg">
+        F = S · R<sub>e</sub>
+      </div>
+      <p>Für M10 (S = 58,0 mm²) der Klasse 8.8: 58,0 · 640 = 37 120 N, also rund
+        <strong>37 kN</strong>. So viel hält die Schraube aus, bevor sie bleibend
+        länger wird. Angezogen wird sie auf etwa 90 % davon &ndash; und das ist
+        schon fast alles, was sie kann.</p>
+    </details>
+
+    <details>
+      <summary>4. Nennwert oder Mindestwert?</summary>
+      <p>Die Werte aus der Bezeichnung sind <strong>Nennwerte</strong>. Bei 4.6,
+        5.6 und 8.8 sind sie zugleich die Mindestwerte der Norm.</p>
+      <p>Bei <strong>10.9 und 12.9</strong> fordert ISO 898-1 etwas mehr als die
+        Bezeichnung verspricht: 940 statt 900 N/mm² und 1100 statt 1080 N/mm².
+        Mit diesen höheren Zahlen sind die Tabellen der Anziehdrehmomente
+        gerechnet. Im selben Buch stehen also beide Werte &ndash; für zwei
+        verschiedene Fragen. Hier wird nach der Bezeichnung gefragt, also nach
+        den Nennwerten.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Erste Ziffer mal hundert ist R<sub>m</sub>,
+      zweite Ziffer sind Zehntel davon. Eine Kraft wird daraus erst mit dem
+      Spannungsquerschnitt.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>In der Übung <em>Was die zwei Zahlen verraten</em> steht dieselbe Regel
+      einmal ausführlich, mit der ganzen Klassentabelle daneben.</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="maschinenelemente-schrauben-schraubverbindungen.html"
+         data-fach="6">Werkzeug Schraubverbindungen öffnen</a>
+    </p>
+    <p class="fussnote"><strong>Woher die Zahlen stammen:</strong> Festigkeitsklassen
+      nach DIN EN ISO 898-1, Spannungsquerschnitt S aus der Gewindetabelle
+      &ndash; beides Tabellenbuch.</p>
+
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+      Maßgebend sind Norm und Tabellenbuch.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Nennwerte, wie sie aus der Bezeichnung folgen und wie sie im Tabellenbuch
+   abgedruckt sind. Rm = erste Ziffer · 100, Re = Rm · zweite Ziffer / 10. */
+var KLASSEN = ["4.6","5.6","5.8","6.8","8.8","9.8","10.9","12.9"];
+
+/* Spannungsquerschnitt S aus der Gewindetabelle. */
+var QUERSCHNITT = {
+  M4:8.78, M5:14.2, M6:20.1, M8:36.6, M10:58.0,
+  M12:84.3, M16:157, M20:245, M24:353
+};
+var GROESSEN = ["M6","M8","M10","M12","M16","M20"];
+var TOLERANZ = 0.03;
+
+function kennwerte(klasse){
+  var t = klasse.split(".");
+  var Rm = parseFloat(t[0]) * 100;
+  return {Rm:Rm, Re:Rm * parseFloat(t[1]) / 10};
+}
+
+function el(id){ return document.getElementById(id); }
+function zahl(x, n){ return x.toFixed(n === undefined ? 1 : n).replace(".", ","); }
+function waehle(liste){ return liste[Math.floor(Math.random() * liste.length)]; }
+function wert(id){
+  var e = el(id);
+  return e ? parseFloat(String(e.value).replace(",", ".")) : NaN;
+}
+
+/* ---------- Der Durchlauf ---------- */
+
+var aufgabe = null;
+var nr = 0, richtig = 0, versuche = 0;
+
+function feld(id, beschriftung, schritt){
+  return '<label class="feld">' + beschriftung
+    + '<input type="number" id="' + id + '" step="' + (schritt || "1")
+    + '" inputmode="decimal" autocomplete="off"></label>';
+}
+
+function neueAufgabe(){
+  nr++;
+  var art = waehle(["ausKlasse", "zurKlasse", "kraft"]);
+  var klasse = waehle(KLASSEN);
+  var k = kennwerte(klasse);
+  aufgabe = {art:art, klasse:klasse, k:k};
+
+  if(art === "ausKlasse"){
+    el("art").textContent = "Aus der Klasse";
+    el("aufgabe").innerHTML = "Auf dem Kopf einer Schraube steht <strong>"
+      + klasse + "</strong>. Wie groß sind Zugfestigkeit und Streckgrenze?";
+    el("felder").innerHTML =
+      feld("aRm", "R<sub>m</sub> in N/mm²", "1")
+      + feld("aRe", "R<sub>e</sub> in N/mm²", "1");
+  }else if(art === "zurKlasse"){
+    el("art").textContent = "Zur Klasse";
+    el("aufgabe").innerHTML = "Eine Schraube hat die Zugfestigkeit <strong>"
+      + zahl(k.Rm, 0) + " N/mm²</strong> und die Streckgrenze <strong>"
+      + zahl(k.Re, 0) + " N/mm²</strong>. Welche Festigkeitsklasse ist das?";
+    el("felder").innerHTML =
+      '<label class="feld">Festigkeitsklasse'
+      + '<input type="text" id="aKlasse" inputmode="decimal" autocomplete="off"'
+      + ' placeholder="z. B. 8.8"></label>';
+  }else{
+    aufgabe.groesse = waehle(GROESSEN);
+    aufgabe.S = QUERSCHNITT[aufgabe.groesse];
+    aufgabe.F = aufgabe.S * k.Re / 1000;          /* kN */
+    el("art").textContent = "Was die Klasse für diese Schraube heißt";
+    el("aufgabe").innerHTML = "Eine Schraube <strong>" + aufgabe.groesse
+      + "</strong> der Klasse <strong>" + klasse + "</strong>. Bei welcher Kraft "
+      + "wird sie bleibend länger, erreicht also ihre Streckgrenze?";
+    el("felder").innerHTML = feld("aF", "F in kN", "0.1");
+  }
+
+  el("stand").textContent = "Aufgabe " + nr;
+  el("rueck").hidden = true;
+  el("weg").hidden = true;
+  var erstes = el("felder").querySelector("input");
+  if(erstes) erstes.focus();
+}
+
+function punkteZeigen(){
+  el("punkte").textContent = versuche ? richtig + " von " + versuche + " richtig" : "";
+}
+
+function wegBauen(){
+  var a = aufgabe, k = a.k;
+  var t = a.klasse.split(".");
+  function buch(text){ return "<span class=\"buch\"><b>Nachschlagen:</b> " + text + "</span>"; }
+  var kopf = ""
+    + "<span class=\"schritt\">Die beiden Ziffern</span>"
+    + "R<sub>m</sub> = " + t[0] + " · 100 = <b>" + zahl(k.Rm, 0) + " N/mm²</b><br>"
+    + "R<sub>e</sub> = " + zahl(k.Rm, 0) + " · " + t[1] + "/10 = <b>"
+      + zahl(k.Re, 0) + " N/mm²</b>"
+    + buch("Beide Werte stehen auch in der Tabelle der Festigkeitsklassen "
+        + "(ISO 898-1) - dort in der Zeile " + a.klasse + ".");
+  if(a.art !== "kraft") return kopf;
+  return kopf
+    + "<span class=\"schritt\">Aus der Spannung wird eine Kraft</span>"
+    + "S (" + a.groesse + ") = <b>" + zahl(a.S, 1) + " mm²</b><br>"
+    + "F = S · R<sub>e</sub> = " + zahl(a.S, 1) + " · " + zahl(k.Re, 0)
+      + " = " + zahl(a.S * k.Re, 0) + " N = <b>" + zahl(a.F, 1) + " kN</b>"
+    + buch("Der Spannungsquerschnitt S steht in der Gewindetabelle - für "
+        + a.groesse + " sind es " + zahl(a.S, 1) + " mm².");
+}
+
+/* Die Klasse darf mit Punkt oder Komma eingegeben werden. */
+function klasseGleich(eingabe, soll){
+  return String(eingabe || "").trim().replace(",", ".") === soll;
+}
+
+el("btnPruefen").addEventListener("click", function(){
+  if(!aufgabe) return;
+  var a = aufgabe, k = a.k, r = el("rueck"), ok, text;
+
+  if(a.art === "ausKlasse"){
+    var rm = wert("aRm"), re = wert("aRe");
+    if(!isFinite(rm) && !isFinite(re)){ nichtsEingetragen(); return; }
+    var okRm = isFinite(rm) && Math.abs(rm - k.Rm) < 0.5;
+    var okRe = isFinite(re) && Math.abs(re - k.Re) < 0.5;
+    ok = okRm && okRe;
+    text = "R<sub>m</sub> = <strong>" + zahl(k.Rm, 0) + " N/mm²</strong> "
+      + (okRm ? "&ndash; getroffen. " : "&ndash; du hattest "
+          + (isFinite(rm) ? zahl(rm, 0) : "nichts") + ". ")
+      + "R<sub>e</sub> = <strong>" + zahl(k.Re, 0) + " N/mm²</strong> "
+      + (okRe ? "&ndash; getroffen." : "&ndash; du hattest "
+          + (isFinite(re) ? zahl(re, 0) : "nichts") + ".");
+  }else if(a.art === "zurKlasse"){
+    var eing = el("aKlasse").value;
+    if(!String(eing).trim()){ nichtsEingetragen(); return; }
+    ok = klasseGleich(eing, a.klasse);
+    text = "Die Klasse ist <strong>" + a.klasse + "</strong>"
+      + (ok ? " &ndash; getroffen." : " &ndash; du hattest " + eing + ".");
+  }else{
+    var f = wert("aF");
+    if(!isFinite(f)){ nichtsEingetragen(); return; }
+    ok = Math.abs(f - a.F) <= a.F * TOLERANZ;
+    text = "F = <strong>" + zahl(a.F, 1) + " kN</strong> "
+      + (ok ? "&ndash; getroffen." : "&ndash; du hattest " + zahl(f, 1) + ".");
+  }
+
+  versuche++;
+  if(ok) richtig++;
+  r.className = "rueckmeldung " + (ok ? "ja" : "nein");
+  r.innerHTML = "<strong>" + (ok ? "Richtig." : "Noch nicht.") + "</strong> " + text;
+  r.hidden = false;
+  if(!ok){
+    el("weg").innerHTML = wegBauen();
+    el("weg").hidden = false;
+  }
+  punkteZeigen();
+});
+
+function nichtsEingetragen(){
+  var r = el("rueck");
+  r.className = "rueckmeldung fast";
+  r.innerHTML = "<strong>Noch nichts eingetragen.</strong> Ausfüllen "
+    + "&ndash; oder den Rechenweg zeigen lassen.";
+  r.hidden = false;
+}
+
+el("btnWeg").addEventListener("click", function(){
+  if(!aufgabe) return;
+  el("weg").innerHTML = wegBauen();
+  el("weg").hidden = false;
+});
+
+el("btnWeiter").addEventListener("click", neueAufgabe);
+
+neueAufgabe();
+punkteZeigen();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/feedback.js"></script>
+</body>
+</html>

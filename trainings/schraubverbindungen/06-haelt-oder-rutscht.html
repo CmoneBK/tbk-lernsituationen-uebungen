@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hält oder rutscht?</title>
+<meta name="bg-ohne" content="bfs-hs10 bfs-for">
+<meta name="description" content="Zufallsaufgaben zur Querkraft: Reibkraft aus Reibungszahl, Vorspannkraft, Schraubenzahl und Trennfugen – und die Entscheidung, ob die Verbindung hält.">
+<meta name="dauer" content="15 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .aufgabe{
+    background:var(--bg); border:1px solid var(--border-stark); border-radius:10px;
+    padding:14px 16px; margin:0 0 16px; font-size:16px; line-height:1.7;
+  }
+  .aufgabe strong{font-size:17px}
+  .zaehler{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:13px; color:var(--muted); margin:0 0 10px}
+  .rechenweg{
+    background:var(--bg); border:1px solid var(--border); border-radius:10px;
+    padding:12px 16px; margin:12px 0 0; font-size:14.5px; line-height:2;
+    font-variant-numeric:tabular-nums;
+  }
+  .rechenweg b{font-weight:700}
+  .rechenweg .schritt{display:block; color:var(--muted); font-size:12.5px; line-height:1.5}
+  .rechenweg .buch{
+    display:block; margin:6px 0 2px; padding:7px 10px; font-size:12.5px;
+    line-height:1.5; border-left:3px solid var(--ok); border-radius:0 8px 8px 0;
+    background:rgba(22,163,74,.10);
+  }
+  /* Die Angaben der Aufgabe als Liste - sie sind zu viele für einen Satz. */
+  .gegeben{list-style:none; margin:10px 0 0; padding:0; display:grid; gap:4px}
+  .gegeben li{display:flex; gap:10px; font-size:15px; line-height:1.6}
+  .gegeben .was{flex:0 0 auto; min-width:16em; color:var(--muted)}
+  .gegeben .zahl{font-weight:700; font-variant-numeric:tabular-nums}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Schraubverbindungen</p>
+    <h1>Hält oder rutscht?</h1>
+    <p class="lead">Nicht die Schraube trägt die Querkraft &ndash; die Reibung tut es.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Worum es geht:</strong> Zwei Bauteile werden verschraubt und
+        seitlich belastet. Die Schraube wird dabei <em>nicht</em> quer belastet;
+        gehalten wird über die Reibung in der Trennfuge.</p>
+      <p>Gesucht sind zwei Dinge: die <strong>Reibkraft F<sub>R</sub></strong>
+        und die Antwort, ob die Verbindung damit <strong>hält</strong>.</p>
+      <div class="rechenweg">
+        F<sub>R</sub> = &mu; · F<sub>V</sub> · n · n<sub>F</sub>
+        <span class="schritt">Reibungszahl · Vorspannkraft je Schraube ·
+          Anzahl Schrauben · Anzahl Trennfugen</span>
+      </div>
+      <p>Anerkannt wird alles, was <strong>bis 3 % daneben</strong> liegt.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Aufgaben</h2>
+
+    <div class="box">
+      <div class="zaehler">
+        <span id="stand">Aufgabe 1</span>
+        <span id="punkte"></span>
+      </div>
+
+      <div class="aufgabe">
+        <span id="aufgabe">&ndash;</span>
+        <ul class="gegeben" id="gegeben"></ul>
+      </div>
+
+      <div class="felder">
+        <label class="feld">F<sub>R</sub> in kN
+          <input type="number" id="aFR" step="0.1" inputmode="decimal" autocomplete="off">
+        </label>
+        <label class="feld">Urteil
+          <select id="aUrteil">
+            <option value="">&ndash; bitte wählen &ndash;</option>
+            <option value="haelt">hält</option>
+            <option value="rutscht">rutscht</option>
+          </select>
+        </label>
+      </div>
+
+      <p style="margin-top:16px">
+        <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+        <button type="button" class="knopf leise" id="btnWeg">Rechenweg zeigen</button>
+        <button type="button" class="knopf leise" id="btnWeiter">Nächste Aufgabe</button>
+      </p>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+      <div class="rechenweg" id="weg" hidden></div>
+    </div>
+
+    <h2><span class="nr">2</span>Die vier Stellschrauben</h2>
+
+    <details>
+      <summary>1. Die Reibungszahl &ndash; und warum Öl in der Fuge der schlechteste Fall ist</summary>
+      <p>Das Tabellenbuch nennt je Werkstoffpaarung zwei Haftreibungszahlen: eine
+        für trocken und eine für geschmiert. Zwischen beiden liegt oft der
+        <strong>Faktor zwei bis fünf</strong> &ndash; bei Stahl auf Holz sogar
+        mehr.</p>
+      <p>Geschmiert gehören <em>Gewinde und Kopfauflage</em>, damit beim Anziehen
+        möglichst viel Drehmoment in Vorspannkraft geht. In die
+        <em>Trennfuge</em> gehört kein Öl: Dort halbiert es die Reibung und
+        damit das, was die Verbindung trägt.</p>
+    </details>
+
+    <details>
+      <summary>2. Die Vorspannkraft &ndash; woher der Wert kommt</summary>
+      <p>Aus der Tabelle der Erfahrungswerte im Abschnitt <em>Vereinfachte
+        Berechnung von Schrauben</em>. Sie gilt für Schrauben, die
+        <strong>ohne Drehmomentkontrolle</strong> montiert werden &ndash; von
+        Hand, mit üblichem Schlüssel.</p>
+      <p>Wer mit dem Drehmomentschlüssel arbeitet, nimmt stattdessen die Tabelle
+        der Anziehdrehmomente. Die Werte dort liegen höher, weil man weiß, was
+        man tut.</p>
+    </details>
+
+    <details>
+      <summary>3. Schrauben und Trennfugen &ndash; zwei verschiedene Zahlen</summary>
+      <p><strong>n</strong> ist die Anzahl der Schrauben: Jede bringt ihre eigene
+        Vorspannkraft mit.</p>
+      <p><strong>n<sub>F</sub></strong> ist die Anzahl der reibenden Flächen. Wird
+        ein Blech zwischen zwei Laschen geklemmt, reibt es an beiden &ndash; das
+        verdoppelt die Reibkraft, ohne dass eine Schraube dazukommt. Das ist der
+        billigste Weg, eine Verbindung zu retten, die knapp nicht hält.</p>
+    </details>
+
+    <details>
+      <summary>4. Was tun, wenn es nicht reicht?</summary>
+      <p>Vier Wege, in dieser Reihenfolge zu prüfen:</p>
+      <ul>
+        <li>Zweite Trennfuge nutzen &ndash; kostet nichts.</li>
+        <li>Trennfuge trocken und rau halten, notfalls strahlen.</li>
+        <li>Mehr oder größere Schrauben &ndash; mehr Vorspannkraft.</li>
+        <li>Formschluss dazunehmen: Passstift oder Passschraube. Dann hält nicht
+          mehr die Reibung, und die Reibungszahl ist gleichgültig.</li>
+      </ul>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> F<sub>R</sub> = &mu; · F<sub>V</sub> · n ·
+      n<sub>F</sub>. Die Schraube klemmt, die Reibung hält &ndash; quer belastet
+      wird sie nicht.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>Im Reiter <em>Grundlagen</em> des Werkzeugs lassen sich dieselben Größen
+      an Reglern einstellen und der Kräftevergleich mitverfolgen. Die Übung
+      <em>Hält die Konsole?</em> rechnet einen vollständigen Fall durch.</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="maschinenelemente-schrauben-schraubverbindungen.html"
+         data-fach="0">Werkzeug Schraubverbindungen öffnen</a>
+    </p>
+    <p class="fussnote"><strong>Woher die Zahlen stammen:</strong> Haftreibungszahlen
+      aus der Tabelle im Abschnitt Reibung (je Paarung trocken und geschmiert),
+      Vorspannkräfte aus der Tabelle der Erfahrungswerte im Abschnitt
+      <em>Vereinfachte Berechnung von Schrauben</em> &ndash; beides
+      Tabellenbuch.</p>
+
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+      Reibungszahlen streuen stark; verlässliche Werte liefern nur Versuche.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Haftreibungszahlen aus dem Tabellenbuch, Abschnitt Reibung: je Paarung ein
+   Wert fuer trocken und einer fuer geschmiert. */
+var PAARUNGEN = [
+  {name:"Stahl auf Stahl",           trocken:0.25, geschmiert:0.10},
+  {name:"Stahl auf Gusseisen",       trocken:0.20, geschmiert:0.10},
+  {name:"Stahl auf Cu-Sn-Legierung", trocken:0.20, geschmiert:0.10},
+  {name:"Stahl auf Pb-Sn-Legierung", trocken:0.15, geschmiert:0.10},
+  {name:"Stahl auf Polyamid",        trocken:0.30, geschmiert:0.15},
+  {name:"Stahl auf Holz",            trocken:0.55, geschmiert:0.10},
+  {name:"Holz auf Holz",             trocken:0.50, geschmiert:0.20}
+];
+
+/* Erfahrungswerte der Vorspannkraft in N - fuer Schrauben ohne Kontrolle des
+   Anziehdrehmoments. */
+var VORSPANN = {M4:3000, M6:7000, M8:10000, M10:16000, M12:23000, M16:28000, M20:44000};
+var GROESSEN = ["M6","M8","M10","M12","M16","M20"];
+var TOLERANZ = 0.03;
+
+function el(id){ return document.getElementById(id); }
+function zahl(x, n){ return x.toFixed(n === undefined ? 1 : n).replace(".", ","); }
+function waehle(liste){ return liste[Math.floor(Math.random() * liste.length)]; }
+
+/* ---------- Der Durchlauf ---------- */
+
+var aufgabe = null;
+var nr = 0, richtig = 0, versuche = 0;
+
+function zeile(was, zahlText){
+  return '<li><span class="was">' + was + '</span><span class="zahl">'
+    + zahlText + '</span></li>';
+}
+
+function neueAufgabe(){
+  nr++;
+  var paarung = waehle(PAARUNGEN);
+  var geschmiert = Math.random() < 0.4;
+  var my = geschmiert ? paarung.geschmiert : paarung.trocken;
+  var groesse = waehle(GROESSEN);
+  var FV = VORSPANN[groesse];
+  var n = waehle([1,2,2,3,4]);
+  var nF = waehle([1,1,1,2]);
+  var FR = my * FV * n * nF / 1000;                 /* kN */
+  /* Die Querkraft liegt mal darunter, mal darüber - und selten so dicht
+     daneben, dass es auf die dritte Stelle ankäme. */
+  var faktor = waehle([0.35, 0.55, 0.75, 0.9, 1.15, 1.4, 1.8]);
+  var FQ = Math.round(FR * faktor * 10) / 10;
+  if(FQ <= 0) FQ = 0.1;
+
+  aufgabe = {paarung:paarung, geschmiert:geschmiert, my:my, groesse:groesse,
+             FV:FV, n:n, nF:nF, FR:FR, FQ:FQ, haelt:FQ <= FR};
+
+  el("aufgabe").innerHTML = "Zwei Bauteile sind verschraubt und werden "
+    + "seitlich belastet.";
+  el("gegeben").innerHTML =
+    zeile("Werkstoffpaarung in der Trennfuge", paarung.name)
+    + zeile("Zustand der Trennfuge", geschmiert ? "geschmiert" : "trocken")
+    + zeile("Schraube", groesse + " (ohne Drehmomentkontrolle)")
+    + zeile("Anzahl Schrauben n", String(n))
+    + zeile("Anzahl Trennfugen n<sub>F</sub>", String(nF))
+    + zeile("Querkraft F<sub>Q</sub>", zahl(FQ, 1) + " kN");
+
+  el("stand").textContent = "Aufgabe " + nr;
+  el("aFR").value = "";
+  el("aUrteil").value = "";
+  el("rueck").hidden = true;
+  el("weg").hidden = true;
+  el("aFR").focus();
+}
+
+function punkteZeigen(){
+  el("punkte").textContent = versuche ? richtig + " von " + versuche + " richtig" : "";
+}
+
+function wegBauen(){
+  var a = aufgabe;
+  function buch(text){ return "<span class=\"buch\"><b>Nachschlagen:</b> " + text + "</span>"; }
+  return ""
+    + "<span class=\"schritt\">1. Die beiden Tabellenwerte</span>"
+    + "&mu; (" + a.paarung.name + ", " + (a.geschmiert ? "geschmiert" : "trocken")
+      + ") = <b>" + zahl(a.my, 2) + "</b><br>"
+    + "F<sub>V</sub> (" + a.groesse + ") = <b>" + zahl(a.FV / 1000, 1) + " kN</b>"
+    + buch("&mu; steht in der Tabelle der Reibungszahlen im Abschnitt Reibung "
+        + "(trocken " + zahl(a.paarung.trocken, 2) + ", geschmiert "
+        + zahl(a.paarung.geschmiert, 2) + "). F<sub>V</sub> steht in der Tabelle "
+        + "der Erfahrungswerte - für " + a.groesse + " sind es "
+        + zahl(a.FV / 1000, 0) + " kN.")
+    + "<span class=\"schritt\">2. Reibkraft</span>"
+    + "F<sub>R</sub> = &mu; · F<sub>V</sub> · n · n<sub>F</sub> = "
+      + zahl(a.my, 2) + " · " + zahl(a.FV / 1000, 1) + " kN · " + a.n + " · " + a.nF
+      + " = <b>" + zahl(a.FR, 1) + " kN</b>"
+    + "<span class=\"schritt\">3. Vergleich</span>"
+    + "F<sub>Q</sub> = " + zahl(a.FQ, 1) + " kN "
+      + (a.haelt ? "&le;" : "&gt;") + " F<sub>R</sub> = " + zahl(a.FR, 1) + " kN "
+      + "&rarr; <b>" + (a.haelt ? "hält" : "rutscht") + "</b>";
+}
+
+el("btnPruefen").addEventListener("click", function(){
+  if(!aufgabe) return;
+  var a = aufgabe, r = el("rueck");
+  var fr = parseFloat(String(el("aFR").value).replace(",", "."));
+  var urteil = el("aUrteil").value;
+
+  if(!isFinite(fr) && !urteil){
+    r.className = "rueckmeldung fast";
+    r.innerHTML = "<strong>Noch nichts eingetragen.</strong> Reibkraft und Urteil "
+      + "&ndash; oder den Rechenweg zeigen lassen.";
+    r.hidden = false;
+    return;
+  }
+
+  var okFR = isFinite(fr) && Math.abs(fr - a.FR) <= a.FR * TOLERANZ;
+  var okUrteil = urteil === (a.haelt ? "haelt" : "rutscht");
+  versuche++;
+  if(okFR && okUrteil) richtig++;
+
+  r.className = "rueckmeldung " + (okFR && okUrteil ? "ja" : (okFR || okUrteil ? "fast" : "nein"));
+  r.innerHTML = "<strong>"
+    + (okFR && okUrteil ? "Beides richtig."
+       : okFR || okUrteil ? "Halb richtig." : "Noch nicht.")
+    + "</strong> "
+    + "F<sub>R</sub> = <strong>" + zahl(a.FR, 1) + " kN</strong> "
+    + (okFR ? "&ndash; getroffen. " : "&ndash; du hattest "
+        + (isFinite(fr) ? zahl(fr, 1) : "nichts") + ". ")
+    + "Die Verbindung <strong>" + (a.haelt ? "hält" : "rutscht") + "</strong>"
+    + (okUrteil ? " &ndash; richtig erkannt." : ".");
+  r.hidden = false;
+
+  if(!(okFR && okUrteil)){
+    el("weg").innerHTML = wegBauen();
+    el("weg").hidden = false;
+  }
+  punkteZeigen();
+});
+
+el("btnWeg").addEventListener("click", function(){
+  if(!aufgabe) return;
+  el("weg").innerHTML = wegBauen();
+  el("weg").hidden = false;
+});
+
+el("btnWeiter").addEventListener("click", neueAufgabe);
+
+neueAufgabe();
+punkteZeigen();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/feedback.js"></script>
+</body>
+</html>

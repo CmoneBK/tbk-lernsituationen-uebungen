@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reicht die Länge?</title>
+<meta name="description" content="Zufallsaufgaben zur Schraubenlänge: Klemmlänge, Scheibe, Mutter und Überstand zusammenzählen – und die nächste Normlänge wählen.">
+<meta name="dauer" content="15 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .aufgabe{
+    background:var(--bg); border:1px solid var(--border-stark); border-radius:10px;
+    padding:14px 16px; margin:0 0 16px; font-size:16px; line-height:1.7;
+  }
+  .aufgabe strong{font-size:17px}
+  .zaehler{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:13px; color:var(--muted); margin:0 0 10px}
+  .rechenweg{
+    background:var(--bg); border:1px solid var(--border); border-radius:10px;
+    padding:12px 16px; margin:12px 0 0; font-size:14.5px; line-height:2;
+    font-variant-numeric:tabular-nums;
+  }
+  .rechenweg b{font-weight:700}
+  .rechenweg .schritt{display:block; color:var(--muted); font-size:12.5px; line-height:1.5}
+  .rechenweg .buch{
+    display:block; margin:6px 0 2px; padding:7px 10px; font-size:12.5px;
+    line-height:1.5; border-left:3px solid var(--ok); border-radius:0 8px 8px 0;
+    background:rgba(22,163,74,.10);
+  }
+  /* Die Normlängenreihe zum Nachsehen - die Wahl ist der zweite Teil der
+     Aufgabe, und ohne die Reihe vor Augen bleibt sie Raten. */
+  .reihe{display:flex; flex-wrap:wrap; gap:6px; margin:10px 0 0}
+  .reihe span{
+    padding:3px 9px; border:1px solid var(--border); border-radius:999px;
+    font-size:13px; font-variant-numeric:tabular-nums; color:var(--muted);
+  }
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Schraubverbindungen</p>
+    <h1>Reicht die Länge?</h1>
+    <p class="lead">Fünf Summanden, eine Reihe zum Aufrunden. Immer neue Zahlen.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Worum es geht:</strong> Zwei Platten werden mit einer
+        Sechskantschraube und einer Mutter verspannt. Gesucht sind zwei Zahlen:
+        die <strong>nötige Länge</strong> und die <strong>Normlänge</strong>, die
+        man dafür kauft.</p>
+      <p>Die Länge <em>l</em> einer Sechskantschraube wird <strong>ohne Kopf</strong>
+        gemessen. Sie muss reichen für: Klemmlänge, Scheibe, Mutter und ein Stück
+        Überstand. Gekauft wird danach die nächste Länge aus der Normreihe &ndash;
+        dazwischen gibt es nichts.</p>
+      <p>Tabellenbuch und Taschenrechner gehören dazu. Bei der nötigen Länge
+        zählt alles, was <strong>bis 0,6 mm daneben</strong> liegt; die Normlänge
+        muss stimmen.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Aufgaben</h2>
+
+    <div class="box">
+      <div class="zaehler">
+        <span id="stand">Aufgabe 1</span>
+        <span id="punkte"></span>
+      </div>
+
+      <p class="aufgabe" id="aufgabe">&ndash;</p>
+
+      <div class="felder">
+        <label class="feld">nötige Länge in mm
+          <input type="number" id="aNoetig" step="0.1" inputmode="decimal" autocomplete="off">
+        </label>
+        <label class="feld">gewählte Normlänge in mm
+          <input type="number" id="aWahl" step="1" inputmode="numeric" autocomplete="off">
+        </label>
+      </div>
+
+      <div class="reihe" id="reihe" aria-label="Normlängen nach ISO 4014"></div>
+
+      <p style="margin-top:16px">
+        <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+        <button type="button" class="knopf leise" id="btnWeg">Rechenweg zeigen</button>
+        <button type="button" class="knopf leise" id="btnWeiter">Nächste Aufgabe</button>
+      </p>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+      <div class="rechenweg" id="weg" hidden></div>
+    </div>
+
+    <h2><span class="nr">2</span>Die fünf Summanden</h2>
+
+    <details>
+      <summary>1. Warum wird die Länge ohne Kopf gemessen?</summary>
+      <p>Weil der Kopf nicht im Bauteil steckt, sondern darauf liegt. Alles, was
+        die Schraube überbrücken muss, liegt <em>unter</em> der Auflagefläche
+        &ndash; also fängt die Länge dort an.</p>
+      <p>Bei der <strong>Senkschraube</strong> ist es umgekehrt: Ihr Kopf sitzt
+        versenkt im Bauteil, gehört also zur überbrückten Strecke. Deshalb wird
+        <em>l</em> dort einschließlich Kopf gemessen. Dieselbe Bezeichnung, eine
+        andere Länge &ndash; das ist die häufigste Verwechslung.</p>
+    </details>
+
+    <details>
+      <summary>2. Woher kommen Mutterhöhe und Scheibendicke?</summary>
+      <p>Aus dem Tabellenbuch. Die Mutterhöhe <em>m</em> steht in der Maßtabelle
+        der Sechskantmuttern (DIN EN ISO 4032), die Dicke <em>h</em> in der
+        Tabelle der flachen Scheiben (DIN EN ISO 7090).</p>
+      <p>Beides hängt nur vom Gewinde ab, nicht von der Länge &ndash; einmal
+        nachgeschlagen, gilt es für alle Aufgaben mit dieser Größe.</p>
+    </details>
+
+    <details>
+      <summary>3. Warum zwei Gewindegänge Überstand?</summary>
+      <p>Damit die Mutter <strong>voll trägt</strong>. Die letzten Gänge einer
+        Schraube sind der Auslauf; steht die Mutter dort, tragen nicht alle
+        Gewindegänge. Zwei Gänge Überstand sind die übliche Faustregel &ndash;
+        und zwei Gänge sind <strong>2 · P</strong>.</p>
+      <p>Bei M12 mit P = 1,75 mm sind das 3,5 mm. Nicht viel, aber es entscheidet
+        oft über die nächste Normlänge.</p>
+    </details>
+
+    <details>
+      <summary>4. Warum wird immer aufgerundet?</summary>
+      <p>Weil es die Zwischenlängen nicht gibt. Die Normreihe springt
+        &ndash; 40, 45, 50, 55, 60, 65, 70, dann in Zehnerschritten weiter. Wer
+        61,8 mm braucht, bekommt <strong>65</strong>, nicht 60.</p>
+      <p>Zu lang ist dabei kein Fehler, solange der Überstand nicht anstößt. Zu
+        kurz dagegen schon: Dann trägt die Mutter nicht voll, und die
+        Verbindung hält nicht das, was sie halten soll.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Klemmlänge + Scheibe + Mutter + zwei Gänge,
+      dann aufrunden. Die Länge zählt ohne Kopf &ndash; außer beim Senkkopf.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>In der Übung <em>Eine Bezeichnung lesen</em> steht dieselbe Rechnung
+      einmal ausführlich, mit Zeichnung und einstellbaren Plattendicken.</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="maschinenelemente-schrauben-schraubverbindungen.html"
+         data-fach="1">Werkzeug Schraubverbindungen öffnen</a>
+    </p>
+    <p class="fussnote"><strong>Woher die Zahlen stammen:</strong> Steigung P aus der
+      Gewindetabelle, Mutterhöhe m aus der Maßtabelle der Sechskantmuttern
+      DIN EN ISO 4032, Scheibendicke h aus der Tabelle der flachen Scheiben
+      DIN EN ISO 7090, die Normlängenreihe aus der Maßtabelle der
+      Sechskantschrauben DIN EN ISO 4014 &ndash; alles Tabellenbuch.</p>
+
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+      Maßgebend sind Norm und Tabellenbuch.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Alle Zahlen aus dem Tabellenbuch:
+     P  Steigung, Gewindetabelle
+     m  Mutterhöhe, DIN EN ISO 4032
+     h  Scheibendicke, DIN EN ISO 7090 */
+var SCHRAUBEN = {
+  M6:  {P:1.00, m:5.2,  h:1.6},
+  M8:  {P:1.25, m:6.8,  h:1.6},
+  M10: {P:1.50, m:8.4,  h:2.0},
+  M12: {P:1.75, m:10.8, h:2.5},
+  M16: {P:2.00, m:14.8, h:3.0},
+  M20: {P:2.50, m:18.0, h:3.0}
+};
+var GROESSEN = ["M6","M8","M10","M12","M16","M20"];
+/* Normlängenreihe der Sechskantschrauben ISO 4014. */
+var NENNLAENGEN = [12,16,20,25,30,35,40,45,50,55,60,65,70,80,90,100,
+                   110,120,130,140,150,160,180,200];
+var TOLERANZ = 0.6;       /* Millimeter */
+
+function el(id){ return document.getElementById(id); }
+function zahl(x, n){ return x.toFixed(n === undefined ? 1 : n).replace(".", ","); }
+function waehle(liste){ return liste[Math.floor(Math.random() * liste.length)]; }
+
+/* Plattendicken in ganzen oder halben Millimetern - so, wie sie aus einer
+   Stückliste kommen. */
+function dicke(){
+  return waehle([5,6,8,10,12,14,15,16,18,20,22,25,28,30,35,40]);
+}
+
+function rechne(groesse, t1, t2, mitScheibe){
+  var g = SCHRAUBEN[groesse];
+  var scheibe = mitScheibe ? g.h : 0;
+  var ueberstand = 2 * g.P;
+  var noetig = t1 + t2 + scheibe + g.m + ueberstand;
+  var wahl = null;
+  for(var i = 0; i < NENNLAENGEN.length; i++){
+    if(NENNLAENGEN[i] >= noetig - 0.001){ wahl = NENNLAENGEN[i]; break; }
+  }
+  return {g:g, klemm:t1 + t2, scheibe:scheibe, mutter:g.m,
+          ueberstand:ueberstand, noetig:noetig, wahl:wahl};
+}
+
+/* ---------- Der Durchlauf ---------- */
+
+var aufgabe = null;
+var nr = 0, richtig = 0, versuche = 0;
+
+function reiheZeigen(){
+  var z = el("reihe");
+  z.innerHTML = "";
+  NENNLAENGEN.forEach(function(l){
+    var s = document.createElement("span");
+    s.textContent = l;
+    z.appendChild(s);
+  });
+}
+
+function neueAufgabe(){
+  nr++;
+  var groesse, t1, t2, mitScheibe, l;
+  /* Aufgaben, die über die längste Normlänge hinausgehen, gibt es nicht. */
+  do {
+    groesse = waehle(GROESSEN);
+    t1 = dicke();
+    t2 = dicke();
+    mitScheibe = Math.random() < 0.7;
+    l = rechne(groesse, t1, t2, mitScheibe);
+  } while(!l.wahl);
+
+  aufgabe = {groesse:groesse, t1:t1, t2:t2, mitScheibe:mitScheibe, loesung:l};
+
+  el("aufgabe").innerHTML =
+    "Zwei Platten von <strong>" + zahl(t1, 0) + " mm</strong> und <strong>"
+    + zahl(t2, 0) + " mm</strong> werden mit einer Sechskantschraube <strong>"
+    + groesse + "</strong> und einer Sechskantmutter verspannt"
+    + (mitScheibe ? ", <strong>mit</strong> Scheibe unter der Mutter"
+                  : ", <strong>ohne</strong> Scheibe")
+    + ". Gefordert sind zwei Gewindegänge Überstand.";
+
+  el("stand").textContent = "Aufgabe " + nr;
+  el("aNoetig").value = "";
+  el("aWahl").value = "";
+  el("rueck").hidden = true;
+  el("weg").hidden = true;
+  el("aNoetig").focus();
+}
+
+function punkteZeigen(){
+  el("punkte").textContent = versuche ? richtig + " von " + versuche + " richtig" : "";
+}
+
+function wegBauen(){
+  var l = aufgabe.loesung, g = l.g;
+  function buch(text){ return "<span class=\"buch\"><b>Nachschlagen:</b> " + text + "</span>"; }
+  return ""
+    + "<span class=\"schritt\">1. Was die Schraube überbrücken muss</span>"
+    + "Klemmlänge t<sub>1</sub> + t<sub>2</sub> = " + zahl(aufgabe.t1, 0) + " + "
+      + zahl(aufgabe.t2, 0) + " = <b>" + zahl(l.klemm, 1) + " mm</b><br>"
+    + (aufgabe.mitScheibe
+        ? "Scheibe unter der Mutter = <b>" + zahl(l.scheibe, 1) + " mm</b><br>"
+        : "Scheibe = <b>0 mm</b> (keine gefordert)<br>")
+    + "Mutterhöhe m = <b>" + zahl(l.mutter, 1) + " mm</b><br>"
+    + "Überstand 2 · P = 2 · " + zahl(g.P, 2) + " = <b>" + zahl(l.ueberstand, 1) + " mm</b>"
+    + buch("m steht in der Maßtabelle der Sechskantmuttern ISO 4032, h in der "
+        + "Tabelle der flachen Scheiben ISO 7090, P in der Gewindetabelle. "
+        + "Für " + aufgabe.groesse + ": m = " + zahl(g.m, 1) + " mm, h = "
+        + zahl(g.h, 1) + " mm, P = " + zahl(g.P, 2) + " mm.")
+    + "<span class=\"schritt\">2. Summe</span>"
+    + "l<sub>nötig</sub> = " + zahl(l.klemm, 1) + " + " + zahl(l.scheibe, 1) + " + "
+      + zahl(l.mutter, 1) + " + " + zahl(l.ueberstand, 1) + " = <b>"
+      + zahl(l.noetig, 1) + " mm</b>"
+    + "<span class=\"schritt\">3. Aufrunden auf die Normreihe</span>"
+    + "Die nächste Länge der Reihe ist <b>" + l.wahl + " mm</b>."
+    + buch("Die Normlängen stehen in der Maßtabelle der Sechskantschrauben "
+        + "ISO 4014. Zwischenlängen gibt es nicht - aufgerundet wird immer.");
+}
+
+el("btnPruefen").addEventListener("click", function(){
+  if(!aufgabe) return;
+  var l = aufgabe.loesung;
+  var noetig = parseFloat(String(el("aNoetig").value).replace(",", "."));
+  var wahl = parseFloat(String(el("aWahl").value).replace(",", "."));
+  var r = el("rueck");
+
+  if(!isFinite(noetig) && !isFinite(wahl)){
+    r.className = "rueckmeldung fast";
+    r.innerHTML = "<strong>Noch nichts eingetragen.</strong> Beide Felder ausfüllen "
+      + "&ndash; oder den Rechenweg zeigen lassen.";
+    r.hidden = false;
+    return;
+  }
+
+  var okNoetig = isFinite(noetig) && Math.abs(noetig - l.noetig) <= TOLERANZ;
+  var okWahl = isFinite(wahl) && wahl === l.wahl;
+  versuche++;
+  if(okNoetig && okWahl) richtig++;
+
+  r.className = "rueckmeldung " + (okNoetig && okWahl ? "ja" : (okNoetig || okWahl ? "fast" : "nein"));
+  r.innerHTML = "<strong>"
+    + (okNoetig && okWahl ? "Beides richtig."
+       : okNoetig || okWahl ? "Halb richtig." : "Noch nicht.")
+    + "</strong> "
+    + "Nötig sind <strong>" + zahl(l.noetig, 1) + " mm</strong> "
+    + (okNoetig ? "&ndash; getroffen. "
+       : "&ndash; du hattest " + (isFinite(noetig) ? zahl(noetig, 1) : "nichts") + ". ")
+    + "Gewählt wird <strong>" + l.wahl + " mm</strong> "
+    + (okWahl ? "&ndash; getroffen."
+       : "&ndash; du hattest " + (isFinite(wahl) ? zahl(wahl, 0) : "nichts") + ".");
+  r.hidden = false;
+
+  if(!(okNoetig && okWahl)){
+    el("weg").innerHTML = wegBauen();
+    el("weg").hidden = false;
+  }
+  punkteZeigen();
+});
+
+el("btnWeg").addEventListener("click", function(){
+  if(!aufgabe) return;
+  el("weg").innerHTML = wegBauen();
+  el("weg").hidden = false;
+});
+
+el("btnWeiter").addEventListener("click", neueAufgabe);
+
+reiheZeigen();
+neueAufgabe();
+punkteZeigen();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/feedback.js"></script>
+</body>
+</html>
