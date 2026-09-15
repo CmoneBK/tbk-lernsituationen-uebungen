@@ -837,6 +837,12 @@ function abschluss(){
   el("ende").scrollIntoView({behavior:"smooth", block:"start"});
 }
 
+/* Wettkampf (assets/wettkampf.js): Dieses Training hat seinen Durchgang
+   schon - feste Rundenzahl, Uhr und Ergebnisbild. Der Baustein sorgt hier
+   nur dafuer, dass alle mit demselben Code dieselben Aussagen in derselben
+   Reihenfolge bekommen. */
+window.TBK_WETTKAMPF = { neu: function(){ starten(); } };
+
 function starten(){
   runde = mischen(AUSSAGEN);
   nr = 0; richtig = 0; daneben = [];
@@ -863,5 +869,6 @@ starten();
 <script src="../../assets/export.js"></script>
 <script src="../../assets/bildungsgang.js"></script>
 <script src="../../assets/feedback.js"></script>
+<script src="../../assets/wettkampf.js"></script>
 </body>
 </html>

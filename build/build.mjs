@@ -64,6 +64,7 @@ const EXPORT = 'assets/export.js';
 const ZAHLENFELD = 'assets/zahlenfeld.js';
 const THEMA = 'assets/thema.js';
 const FEEDBACK = 'assets/feedback.js';
+const WETTKAMPF = 'assets/wettkampf.js';
 
 /* ---------- kleine Helfer ---------- */
 
@@ -124,6 +125,9 @@ async function seiteLesen(datei, { imPaket = false, baukasten = false } = {}) {
   const noetig = [{ pfad: BACK_NAV, attr: imPaket ? ' data-ziel="./"' : '' },
     { pfad: FEEDBACK, attr: '' }];
   if (/data-werkzeug=/.test(text)) noetig.push({ pfad: WZ_LINK, attr: '' });
+  /* Wer den Wettkampf-Vertrag zusagt, braucht auch den Baustein dazu. Die
+     Seite sagt das selbst - so muss der Typ hier nicht durchgereicht werden. */
+  if (/TBK_WETTKAMPF/.test(text)) noetig.push({ pfad: WETTKAMPF, attr: '' });
   // Wo Zahlen eingestellt werden, soll das Mausrad den Wert aendern und nicht
   // nebenbei die Seite wegscrollen.
   if (/<input[^>]+type=["'](?:number|range)["']/i.test(text)) {
@@ -157,7 +161,11 @@ async function seiteLesen(datei, { imPaket = false, baukasten = false } = {}) {
   }
 
   for (const { pfad, attr } of noetig) {
-    if (text.includes(pfad)) continue;
+    /* Gesucht ist die Einbindung, nicht der Dateiname: Ein Kommentar, der auf
+       den Baustein verweist, ist keine. */
+    const eingebunden = new RegExp('<script[^>]+src="[^"]*'
+      + pfad.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&') + '"');
+    if (eingebunden.test(text)) continue;
     const src = '../'.repeat(tiefe) + pfad;
     const zeile = `<script src="${src}"${attr}></script>\n`;
     const schluss = text.match(/([ \t]*)<\/body>/i);

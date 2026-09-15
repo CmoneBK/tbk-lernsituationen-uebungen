@@ -565,6 +565,12 @@ function umfangGrenzen(hoechstens){
   el("umfangMax").textContent = "5 bis " + hoechstens + " Begriffe";
 }
 
+/* Wettkampf (assets/wettkampf.js): Dieses Training hat seinen Durchgang
+   schon - feste Rundenzahl, Uhr und Ergebnisbild. Der Baustein sorgt hier
+   nur dafuer, dass alle mit demselben Code dieselben Begriffe in derselben
+   Reihenfolge bekommen. */
+window.TBK_WETTKAMPF = { neu: function(){ neuerDurchgang(); } };
+
 function neuerDurchgang(){
   var v = vorrat();
   umfangGrenzen(v.length);
@@ -620,5 +626,6 @@ neuerDurchgang();
 <script src="../../assets/zahlenfeld.js"></script>
 <script src="../../assets/bildungsgang.js"></script>
 <script src="../../assets/feedback.js"></script>
+<script src="../../assets/wettkampf.js"></script>
 </body>
 </html>

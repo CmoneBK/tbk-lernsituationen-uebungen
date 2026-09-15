@@ -218,6 +218,7 @@ function uhrStarten(){
 
 var aufgabe = null;
 var nr = 0, richtig = 0, versuche = 0;
+var gemeldet = false;
 
 function neueAufgabe(){
   nr++;
@@ -230,6 +231,7 @@ function neueAufgabe(){
     + 'Gesucht: <span class="gesucht">' + art.frage + '</span> in ' + art.einheit;
   el("feldHuelle").childNodes[0].nodeValue = "Wert in " + art.einheit + " ";
   el("stand").textContent = "Aufgabe " + nr;
+  gemeldet = false;
   el("aWert").value = "";
   el("rueck").hidden = true;
   el("weg").hidden = true;
@@ -268,6 +270,7 @@ el("btnPruefen").addEventListener("click", function(){
   var ok = Math.abs(ist - a.soll) <= Math.max(0.02, a.soll * 0.005);
   versuche++;
   if(ok) richtig++;
+  rundeMelden(ok);
 
   r.className = "rueckmeldung " + (ok ? "ja" : "nein");
   r.innerHTML = "<strong>" + (ok ? "Richtig." : "Noch nicht.") + "</strong> "
@@ -292,6 +295,27 @@ el("btnWeiter").addEventListener("click", function(){
   neueAufgabe();
 });
 
+
+/* Wettkampf (assets/wettkampf.js): Wer denselben Code hat, bekommt dieselbe
+   Aufgabenfolge. Der Baustein zaehlt die Runden und stoppt die Zeit; dieses
+   Training sagt ihm nur, wie viele Runden dazugehoeren und wie ein Durchgang
+   von vorn beginnt. */
+window.TBK_WETTKAMPF = {
+  runden: 10,
+  neu: function(){
+    nr = 0; richtig = 0; versuche = 0;
+    punkteZeigen();
+    neueAufgabe();
+  }
+};
+
+/* Eine Aufgabe zaehlt einmal, auch wenn zweimal auf Pruefen gedrueckt wird. */
+function rundeMelden(ok){
+  if(gemeldet) return;
+  gemeldet = true;
+  document.dispatchEvent(new CustomEvent("tbk-runde", {detail:{richtig: !!ok}}));
+}
+
 neueAufgabe();
 punkteZeigen();
 uhrZeigen();
@@ -306,5 +330,6 @@ uhrZeigen();
 <script src="../../assets/zahlenfeld.js"></script>
 <script src="../../assets/bildungsgang.js"></script>
 <script src="../../assets/feedback.js"></script>
+<script src="../../assets/wettkampf.js"></script>
 </body>
 </html>
