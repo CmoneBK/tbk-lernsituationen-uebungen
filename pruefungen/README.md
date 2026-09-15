@@ -29,6 +29,7 @@ folgenden aufhalten.
 | `test-bildungsgang.js` | Wählt man einen Bildungsgang, bleibt nur, was der Bildungsplan hergibt — und ändern lässt es sich trotzdem. |
 | `test-ermittlung.js` | Bereich „Ermittlung“ im Werkzeug: liefert er die Zeilen des Tabellenbuchs und rechnet er dessen Beispiele nach? |
 | `test-export.js` | Herunterladen als PDF und Word: entstehen die Dateien, tragen sie die Inhalte, halten sie ihr Format ein? |
+| `test-feedback.js` | Die Rückmeldung an den Inhalten: erscheint der Block auf jeder Seite, kommt das Token erst beim Öffnen, schickt das Formular die verabredeten Felder – und bleibt es bei Rolle, Kategorie und Freitext, ohne Speicher und ohne fremden Server? |
 | `test-fuegen.js` | Das Material zum Überblick über die Fügeverfahren. |
 | `test-lektionen.js` | Die vier Lektionen: gemeinsamer Aufbau, Fachbegriffe, Anpassen, Herunterladen. |
 | `test-lernsituation.js` | Die Lernsituation: Zeichnungen, Ergebnisprüfung, und die Bausteine sprechen von „Lernsituation“, nicht von „Übung“. |

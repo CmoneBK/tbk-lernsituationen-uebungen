@@ -63,6 +63,7 @@ const PDF = 'assets/pdf.js';
 const EXPORT = 'assets/export.js';
 const ZAHLENFELD = 'assets/zahlenfeld.js';
 const THEMA = 'assets/thema.js';
+const FEEDBACK = 'assets/feedback.js';
 
 /* ---------- kleine Helfer ---------- */
 
@@ -117,7 +118,11 @@ async function seiteLesen(datei, { imPaket = false, baukasten = false } = {}) {
 
   // Bausteine, die die Seite braucht. Der Ruecklink fuehrt innerhalb eines
   // Pakets zur Paketuebersicht, sonst zur Startseite des Materialbereichs.
-  const noetig = [{ pfad: BACK_NAV, attr: imPaket ? ' data-ziel="./"' : '' }];
+  /* Jede Inhaltsseite nimmt Rueckmeldungen entgegen - Uebungen, Trainings
+     und Lernsituationen gleichermassen. Der Baustein setzt den Block selbst
+     vor den Fussbereich. */
+  const noetig = [{ pfad: BACK_NAV, attr: imPaket ? ' data-ziel="./"' : '' },
+    { pfad: FEEDBACK, attr: '' }];
   if (/data-werkzeug=/.test(text)) noetig.push({ pfad: WZ_LINK, attr: '' });
   // Wo Zahlen eingestellt werden, soll das Mausrad den Wert aendern und nicht
   // nebenbei die Seite wegscrollen.
