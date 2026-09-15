@@ -304,10 +304,14 @@
   /* ---------- Aussehen ---------- */
 
   var CSS = ''
-    + '#wk-knopf{display:inline-flex;align-items:center;gap:8px;'
-      + 'padding:11px 16px;border:0;border-radius:999px;cursor:pointer;'
+    /* Ohne Wettkampf steht nur das Zeichen darin, und der Knopf ist rund.
+       Läuft einer, kommt der Code dazu und er wird zur Pille. */
+    + '#wk-knopf{display:inline-flex;align-items:center;justify-content:center;'
+      + 'gap:8px;min-width:44px;height:44px;padding:0 14px;box-sizing:border-box;'
+      + 'border:0;border-radius:999px;cursor:pointer;'
       + 'font:600 15px/1 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;'
       + 'color:#fff;background:#b45309;box-shadow:0 2px 10px rgba(0,0,0,.22)}'
+    + '#wk-knopf .wk-zeichen{font-size:19px;line-height:1}'
     + '#wk-knopf:hover{filter:brightness(1.08)}'
     + '#wk-knopf:focus-visible{outline:2px solid #1a1a1a;outline-offset:2px}'
     + '#wk-tafel{position:fixed;right:16px;bottom:74px;z-index:2147483647;'
@@ -426,9 +430,20 @@
 
   var knopf = el('button', {
     type: 'button', id: 'wk-knopf', 'aria-expanded': 'false',
-    html: '<span aria-hidden="true">⚔</span> Wettkampf',
   });
   leiste().appendChild(knopf);
+
+  /* Das Zeichen sagt genug; das Wort daneben wäre nur Platz. Wer den Knopf
+     nicht sieht - Vorleseprogramm, Tastatur -, bekommt es trotzdem gesagt,
+     und läuft ein Wettkampf, steht sein Code daneben. */
+  function knopfBeschriften() {
+    var wort = zustand === 'aus' ? '' : code;
+    knopf.innerHTML = '<span class="wk-zeichen" aria-hidden="true">⚔</span>'
+      + (wort ? '<span>' + wort + '</span>' : '');
+    knopf.setAttribute('aria-label', wort ? 'Wettkampf ' + wort : 'Wettkampf');
+    knopf.setAttribute('title', wort ? 'Wettkampf ' + wort : 'Wettkampf');
+  }
+  knopfBeschriften();
 
   var tafel = el('div', { id: 'wk-tafel', role: 'dialog',
     'aria-label': 'Wettkampf', hidden: 'hidden' }, document.body);
@@ -875,7 +890,7 @@
     taktSetzen();
 
     tafelBauen();
-    knopf.innerHTML = '<span aria-hidden="true">⚔</span> ' + code;
+    knopfBeschriften();
   }
 
   function beenden(treffer, gesamt) {
@@ -911,7 +926,7 @@
     if (e) e.remove();
     try { history.replaceState(null, '', location.pathname + location.search); }
     catch (err) { /* egal */ }
-    knopf.innerHTML = '<span aria-hidden="true">⚔</span> Wettkampf';
+    knopfBeschriften();
     tafelBauen();
   }
 

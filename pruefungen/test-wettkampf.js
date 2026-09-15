@@ -171,6 +171,15 @@ console.log('\nKnopf und Tafel');
     !!knopf && knopf.parentNode && knopf.parentNode.id === 'tbk-leiste');
   p('Knopf sagt, dass er etwas aufklappt',
     !!knopf && knopf.getAttribute('aria-expanded') === 'false');
+  /* Im Knopf steht nur das Zeichen - wer ihn nicht sieht, bekommt den Namen
+     trotzdem gesagt. */
+  p('im Knopf steht kein Wort', !!knopf && knopf.textContent.trim() === '⚔',
+    knopf && JSON.stringify(knopf.textContent));
+  p('er hat trotzdem einen Namen',
+    !!knopf && knopf.getAttribute('aria-label') === 'Wettkampf');
+  p('und einen Tooltip', !!knopf && knopf.getAttribute('title') === 'Wettkampf');
+  p('das Zeichen selbst wird nicht vorgelesen',
+    !!knopf && !!knopf.querySelector('[aria-hidden="true"]'));
   p('Tafel ist zuerst zu', !!tafel && tafel.hidden);
 
   const t = tafelAuf(w);
@@ -298,9 +307,10 @@ console.log('\nAufraeumen');
   knopfMit(w.document.getElementById('wk-tafel'), 'Beenden').click();
   p('danach wuerfelt wieder die Seite', w.Math.random === w.__echt);
   p('der Streifen ist weg', !w.document.getElementById('wk-streifen'));
-  p('der Knopf heisst wieder Wettkampf',
-    /Wettkampf/.test(w.document.getElementById('wk-knopf').textContent)
-    && !/K7M2Q/.test(w.document.getElementById('wk-knopf').textContent));
+  p('der Knopf traegt wieder nur sein Zeichen',
+    !/K7M2Q/.test(w.document.getElementById('wk-knopf').textContent)
+    && w.document.getElementById('wk-knopf').getAttribute('aria-label') === 'Wettkampf',
+    w.document.getElementById('wk-knopf').outerHTML);
   p('der Code steht nicht mehr in der Adresse', !/w=/.test(w.location.hash));
 }
 
