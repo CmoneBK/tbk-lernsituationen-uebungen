@@ -77,7 +77,10 @@ function txt(g, x, y, s, opt){
      der Schrift, statt sie zu zerschneiden. In den technischen Zeichnungen
      wird es nicht benutzt - dort weicht der Text aus. */
   if(opt.hof){
-    t.setAttribute("stroke", "var(--grund, #ffffff)");
+    /* Die Farbe der Flaeche, auf der die Zeichnung liegt - nicht Weiss:
+       Im dunklen Modus waere Weiss genau die Schriftfarbe, und der Hof
+       fraesse die Buchstaben auf. */
+    t.setAttribute("stroke", "var(--card, #ffffff)");
     t.setAttribute("stroke-width", 3);
     t.setAttribute("stroke-linejoin", "round");
     t.setAttribute("paint-order", "stroke");
