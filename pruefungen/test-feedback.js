@@ -43,21 +43,27 @@ const TOKEN = { ts: 1789452359, token: '72dbaefd' };
 const mitToken = (extra) => (adresse) => (
   /action=token/.test(adresse) ? TOKEN : (extra || { ok: true }));
 
-console.log('\nWo der Block erscheint');
+console.log('\nKnopf und Fenster');
 {
   const w = seite('https://t-bk.de/unterrichtsmaterial/uebungen/x.html', mitToken());
   const d = w.document;
-  const block = d.getElementById('tbk-feedback');
-  p('Block wird angelegt', !!block);
-  p('steht vor dem Fussbereich',
-    !!block && block.nextElementSibling && block.nextElementSibling.tagName === 'FOOTER');
-  p('steht ausserhalb von main', !!block && !block.closest('main'));
-  p('wird nicht mitgedruckt', !!block && block.getAttribute('data-druck') === 'weg');
+  const knopf = d.getElementById('tbk-feedback-auf');
+  const fenster = d.getElementById('tbk-feedback');
+  p('Knopf wird angelegt', !!knopf);
+  p('Knopf sagt, wozu er da ist',
+    !!knopf && /R\u00fcckmeldung/.test(knopf.getAttribute('aria-label') || ''));
+  p('Knopf kuendigt ein Fenster an',
+    !!knopf && knopf.getAttribute('aria-haspopup') === 'dialog');
+  p('Fenster wird angelegt', !!fenster && fenster.tagName === 'DIALOG');
+  p('Fenster ist zuerst zu', !!fenster && !fenster.hasAttribute('open'));
+  p('Fenster steht ausserhalb von main', !!fenster && !fenster.closest('main'));
+  p('wird nicht mitgedruckt', !!fenster && fenster.getAttribute('data-druck') === 'weg');
 
   /* Lokal geöffnet gibt es keine Sammelstelle - dann lieber kein Knopf als
      einer, der nur zu einer Fehlermeldung führt. */
   const lokal = seite('file:///K:/tmp/x.html', mitToken());
-  p('lokal geoeffnet: kein Block', !lokal.document.getElementById('tbk-feedback'));
+  p('lokal geoeffnet: kein Knopf', !lokal.document.getElementById('tbk-feedback-auf'));
+  p('lokal geoeffnet: kein Fenster', !lokal.document.getElementById('tbk-feedback'));
 }
 
 console.log('\nDas Formular');
@@ -65,7 +71,7 @@ console.log('\nDas Formular');
   const w = seite('https://t-bk.de/unterrichtsmaterial/uebungen/x.html', mitToken());
   const d = w.document;
   const form = d.querySelector('#tbk-feedback form');
-  p('Formular ist zuerst zu', !!form && form.hidden);
+  p('Formular ist da', !!form);
   p('Rolle als Auswahl', d.querySelectorAll('#tbk-feedback input[name="role"]').length === 2);
   const kat = d.querySelector('#tbk-feedback select[name="category"]');
   const werte = kat ? [...kat.options].map((o) => o.value).sort().join(',') : '';
@@ -94,17 +100,17 @@ console.log('\nDas Token kommt erst beim Oeffnen');
 {
   const w = seite('https://t-bk.de/unterrichtsmaterial/uebungen/x.html', mitToken());
   p('beim Laden noch kein Ruf', w.__rufe.length === 0, JSON.stringify(w.__rufe));
-  w.document.querySelector('#tbk-feedback .tbkfb-auf').click();
+  w.document.getElementById('tbk-feedback-auf').click();
   p('nach dem Oeffnen genau einer', w.__rufe.length === 1, JSON.stringify(w.__rufe));
   p('und zwar der Token-Ruf', /action=token/.test(w.__rufe[0].adresse), w.__rufe[0].adresse);
-  p('Formular ist offen', !w.document.querySelector('#tbk-feedback form').hidden);
+  p('Fenster ist offen', w.document.getElementById('tbk-feedback').hasAttribute('open'));
 }
 
 console.log('\nWas abgeschickt wird');
 {
   const w = seite('https://t-bk.de/unterrichtsmaterial/uebungen/x.html', mitToken());
   const d = w.document;
-  d.querySelector('#tbk-feedback .tbkfb-auf').click();
+  d.getElementById('tbk-feedback-auf').click();
   return setTimeout(() => {
     d.querySelector('#tbk-feedback textarea').value = 'Bild 3 stimmt nicht';
     d.querySelector('#tbk-feedback select').value = 'fehler';
