@@ -540,6 +540,10 @@ function abschluss(){
   jeFertig = true;
   if(!el("tafelSchalter").hidden) tafelZeigen(true);
 
+  /* Laeuft ein Wettkampf, gehoert das Ergebnis dort hinein. */
+  document.dispatchEvent(new CustomEvent("tbk-durchgang-ende",
+    {detail:{richtig: richtig, gesamt: runde.length}}));
+
   el("ende").scrollIntoView({behavior:"smooth", block:"start"});
 }
 
@@ -568,8 +572,9 @@ function umfangGrenzen(hoechstens){
 /* Wettkampf (assets/wettkampf.js): Dieses Training hat seinen Durchgang
    schon - feste Rundenzahl, Uhr und Ergebnisbild. Der Baustein sorgt hier
    nur dafuer, dass alle mit demselben Code dieselben Begriffe in derselben
-   Reihenfolge bekommen. */
-window.TBK_WETTKAMPF = { neu: function(){ neuerDurchgang(); } };
+   Reihenfolge bekommen; den Ergebniscode haengt er unten an das eigene
+   Ergebnisbild, und abschluss() sagt ihm, wie der Durchgang ausging. */
+window.TBK_WETTKAMPF = { neu: function(){ neuerDurchgang(); }, ergebnisAn: "ende" };
 
 function neuerDurchgang(){
   var v = vorrat();

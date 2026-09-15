@@ -234,6 +234,219 @@ console.log('\nMitmachen ueber die Adresse');
   p('und dann eben ohne Bild', !ohne.document.querySelector('svg.wk-qr'));
 }
 
+/* Einen Durchgang zu Ende spielen und den Ergebniscode mitnehmen. So kommt
+   die Prüfung an fremde Codes, ohne die Rechnerei nachzubauen. */
+function durchspielen(w, treffer, gesamt) {
+  gesamt = gesamt || 3;
+  for (let i = 0; i < gesamt; i++) {
+    w.document.dispatchEvent(new w.CustomEvent('tbk-runde',
+      { detail: { richtig: i < treffer } }));
+  }
+  const m = w.document.querySelector('#wk-ergebnis .wk-meins');
+  return m && m.textContent;
+}
+
+/* Ein Mitstreiter auf einem eigenen Geraet: Er macht mit, spielt zu Ende
+   und gibt seinen Ergebniscode ab. */
+function ergebnisVon(treffer, gesamt, wettkampf) {
+  const x = seite();
+  mitmachen(x, wettkampf || 'K7M2Q');
+  return durchspielen(x, treffer, gesamt);
+}
+
+/* Die Tafel auf den Punktestand umschalten. */
+function standAuf(w) {
+  const t = w.document.getElementById('wk-tafel');
+  if (t.hidden) tafelAuf(w);
+  const k = [...t.querySelectorAll('button')]
+    .filter((b) => /^Punktestand/.test(b.textContent.trim()))[0];
+  if (k) k.click();
+  return t;
+}
+
+function eintippen(w, code) {
+  const t = w.document.getElementById('wk-tafel');
+  t.querySelector('#wk-eingabe').value = code;
+  knopfMit(t, 'Eintragen').click();
+  return w.document.getElementById('wk-tafel');
+}
+
+/* Die Rangliste als schlichte Textzeilen - so lässt sich die Reihenfolge
+   vergleichen, ohne auf das Aussehen zu bauen. */
+function rangliste(tafel) {
+  return [...tafel.querySelectorAll('.wk-rang li')].map((li) => ({
+    wer: li.querySelector('.wk-wer').textContent,
+    zahl: li.querySelector('.wk-zahl').textContent,
+    ich: !!li.querySelector('.wk-ich'),
+    sieg: li.classList.contains('wk-sieg'),
+  }));
+}
+
+console.log('\nDer Ergebniscode');
+{
+  const w = seite();
+  mitmachen(w, 'K7M2Q');
+  const meins = durchspielen(w, 2, 3);
+  p('am Ende steht ein Ergebniscode', !!meins, String(meins));
+  p('er hat sechs Zeichen', !!meins && meins.length === 6, meins);
+  p('nur unverwechselbare Zeichen',
+    !!meins && /^[23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{6}$/.test(meins), meins);
+  p('er steht im Ergebnisblock zum Ablesen',
+    /Ergebniscode/.test(w.document.getElementById('wk-ergebnis').textContent));
+
+  /* Zwei, die gleich gut und gleich schnell waren, duerfen nicht denselben
+     Code bekommen - sonst fiele einer von beiden aus der Liste. Bei zwanzig
+     Versuchen faellt eine feste Zuordnung auf. */
+  const gleiche = [];
+  for (let i = 0; i < 20; i++) gleiche.push(ergebnisVon(2, 3));
+  p('zwei gleich gute Ergebnisse bekommen verschiedene Codes',
+    new Set(gleiche).size >= 15, new Set(gleiche).size + ' von 20 verschieden');
+  /* Dieselben Treffer stecken trotzdem in allen. */
+  p('und tragen trotzdem alle dasselbe Ergebnis',
+    gleiche.every((c) => c.length === 6));
+}
+
+console.log('\nDer Punktestand');
+{
+  /* Drei Mitstreiter mit demselben Wettkampfcode. */
+  const fremd = [1, 3, 2].map((t) => ergebnisVon(t, 3));
+
+  const w = seite();
+  mitmachen(w, 'K7M2Q');
+  durchspielen(w, 2, 3);
+
+  let t = standAuf(w);
+  p('der Punktestand laesst sich oeffnen',
+    /Punktestand/.test(t.querySelector('h2').textContent));
+  p('das eigene Ergebnis steht schon drin', rangliste(t).length === 1);
+  p('und ist als eigenes gekennzeichnet', rangliste(t)[0].ich);
+  p('es gibt ein Feld fuer fremde Codes', !!t.querySelector('#wk-eingabe'));
+  p('das Feld hat eine Beschriftung', !!t.querySelector('label[for="wk-eingabe"]'));
+
+  fremd.forEach((c) => { t = eintippen(w, c); });
+  const liste = rangliste(t);
+  p('alle vier stehen im Punktestand', liste.length === 4, String(liste.length));
+  p('der Beste steht oben', liste[0].zahl.indexOf('3/3') === 0, liste[0].zahl);
+  p('der Schlechteste unten', liste[3].zahl.indexOf('1/3') === 0, liste[3].zahl);
+  p('der Sieger ist hervorgehoben', liste[0].sieg && !liste[1].sieg);
+  p('der Sieger wird auch genannt',
+    /Sieger/.test(t.querySelector('.wk-sieger').textContent),
+    t.querySelector('.wk-sieger').textContent);
+  p('der Sieger ist der mit den meisten Treffern',
+    t.querySelector('.wk-sieger').textContent.indexOf(liste[0].wer) >= 0);
+  p('eine eigene Zeile bleibt markiert', liste.filter((z) => z.ich).length === 1);
+
+  /* Im Punktestand steht kein Name - nur der Code. */
+  p('in der Liste steht nur der Ergebniscode',
+    liste.every((z) => /^[23456789ABCDEFGHJKLMNPQRSTUVWXYZ]{6}$/.test(z.wer)),
+    liste.map((z) => z.wer).join(' '));
+  p('es gibt kein Namensfeld',
+    !/name|Name|wer bist|Spitzname/.test(
+      [...t.querySelectorAll('label')].map((l) => l.textContent).join(' ')),
+    [...t.querySelectorAll('label')].map((l) => l.textContent).join(' | '));
+  p('der Punktestand sagt, dass er anonym ist',
+    /Kein Name/.test(t.textContent));
+}
+
+console.log('\nWas der Punktestand nicht annimmt');
+{
+  const w = seite();
+  mitmachen(w, 'K7M2Q');
+  const meins = durchspielen(w, 2, 3);
+  let t = standAuf(w);
+
+  t = eintippen(w, meins);
+  p('denselben Code nicht zweimal',
+    /schon im Punktestand/.test(t.textContent), t.textContent.slice(-80));
+  p('und die Liste bleibt, wie sie war', rangliste(t).length === 1);
+
+  t = eintippen(w, 'K7M2');
+  p('zu kurz wird abgelehnt', /sechs Zeichen/.test(t.textContent));
+
+  /* Ein Code aus einem anderen Wettkampf: gleiches Verfahren, anderer
+     Startwert - das Pruefzeichen passt nicht. */
+  t = eintippen(w, ergebnisVon(3, 3, 'P4T8W'));
+  p('ein Code aus einem anderen Wettkampf wird abgelehnt',
+    /anderen Wettkampf|nicht zu Wettkampf/.test(t.textContent),
+    t.textContent.slice(-90));
+  p('und landet nicht in der Liste', rangliste(t).length === 1);
+
+  /* Ein Zahlendreher faellt am Pruefzeichen auf - nicht jeder, aber der
+     allergroesste Teil. Hier zaehlen wir nach. */
+  const gedreht = [];
+  for (let i = 0; i < meins.length - 1; i++) {
+    if (meins[i] === meins[i + 1]) continue;
+    gedreht.push(meins.slice(0, i) + meins[i + 1] + meins[i] + meins.slice(i + 2));
+  }
+  const durch = gedreht.filter((g) => {
+    const x = seite();
+    mitmachen(x, 'K7M2Q');
+    standAuf(x);
+    return rangliste(eintippen(x, g)).length > 1;
+  });
+  p('Zahlendreher fallen fast immer auf', durch.length === 0,
+    durch.join(' ') + ' von ' + gedreht.length);
+}
+
+console.log('\nDer Punktestand gehoert zu seinem Wettkampf');
+{
+  const w = seite();
+  mitmachen(w, 'K7M2Q');
+  durchspielen(w, 2, 3);
+  standAuf(w);
+  p('ein Ergebnis steht drin', rangliste(w.document.getElementById('wk-tafel')).length === 1);
+
+  /* Dieselbe Runde noch einmal: Die Mitstreiter bleiben stehen, das eigene
+     Ergebnis wird ersetzt. */
+  eintippen(w, ergebnisVon(3, 3));
+  knopfMit(w.document.getElementById('wk-tafel'), 'Zurück zum Wettkampf').click();
+  knopfMit(w.document.getElementById('wk-tafel'), 'Noch einmal').click();
+  durchspielen(w, 1, 3);
+  const liste = rangliste(standAuf(w));
+  p('nach "Noch einmal" bleibt der Mitstreiter stehen', liste.length === 2,
+    JSON.stringify(liste));
+  p('das eigene Ergebnis ist das neue',
+    liste.filter((z) => z.ich).length === 1
+    && liste.filter((z) => z.ich)[0].zahl.indexOf('1/3') === 0,
+    JSON.stringify(liste));
+
+  /* Beenden raeumt ihn weg - und der naechste Wettkampf faengt bei null an.
+     Anders kommt man auch gar nicht zu einem anderen Code: Solange einer
+     laeuft, gibt es kein Eingabefeld. */
+  knopfMit(w.document.getElementById('wk-tafel'), 'Zurück zum Wettkampf').click();
+  knopfMit(w.document.getElementById('wk-tafel'), 'Beenden').click();
+  p('nach dem Beenden ist der Punktestand leer',
+    !w.document.querySelector('.wk-rang'));
+  p('und der Ergebnisblock ist weg', !w.document.getElementById('wk-ergebnis'));
+  mitmachen(w, 'P4T8W');
+  p('der naechste Wettkampf faengt leer an',
+    rangliste(standAuf(w)).length === 0);
+}
+
+console.log('\nWenn die Seite ihren Durchgang selbst fuehrt');
+{
+  const w = seite({ ohneRunden: true });
+  mitmachen(w, 'K7M2Q');
+  w.document.dispatchEvent(new w.CustomEvent('tbk-durchgang-ende',
+    { detail: { richtig: 8, gesamt: 12 } }));
+  const erg = w.document.getElementById('wk-ergebnis');
+  p('die Meldung am Ende erzeugt einen Ergebnisblock', !!erg);
+  p('mit dem gemeldeten Stand', !!erg && /8 von 12 richtig/.test(erg.textContent),
+    erg && erg.textContent.slice(0, 60));
+  const meins = erg && erg.querySelector('.wk-meins');
+  p('und einem Ergebniscode', !!meins && meins.textContent.length === 6);
+  const liste = rangliste(standAuf(w));
+  p('das Ergebnis steht im Punktestand', liste.length === 1 && liste[0].ich);
+  p('mit der gemeldeten Rundenzahl', liste[0].zahl.indexOf('8/12') === 0,
+    liste[0].zahl);
+
+  /* Ohne laufenden Wettkampf darf die Meldung nichts ausloesen. */
+  const still = seite({ ohneRunden: true });
+  still.document.dispatchEvent(new still.CustomEvent('tbk-durchgang-ende',
+    { detail: { richtig: 8, gesamt: 12 } }));
+  p('ohne Wettkampf passiert nichts', !still.document.getElementById('wk-ergebnis'));
+}
+
 console.log('\nKeine Anmeldung, keine Uebertragung');
 {
   const code = QUELLE.replace(/\/\*[\s\S]*?\*\//g, '');
@@ -297,6 +510,22 @@ console.log('\nVerdrahtung');
 
   p('der Vertrag nennt immer eine Funktion',
     mitVertrag.every((s) => /neu\s*:\s*(function|[A-Za-z_$])/.test(s.t)));
+
+  /* Wer seinen Durchgang selbst fuehrt, muss sein Ende melden - sonst gaebe
+     es dort nie einen Ergebniscode und niemanden im Punktestand. */
+  const eigene = mitVertrag.filter((s) => !/runden\s*:\s*\d/.test(s.t));
+  const ohneEnde = eigene.filter((s) => !/['"]tbk-durchgang-ende['"]/.test(s.t));
+  p('wer selbst zaehlt, meldet sein Ende', ohneEnde.length === 0,
+    ohneEnde.map((s) => path.relative(BASIS, s.f)).join(', '));
+
+  /* Und er sagt, wo sein eigener Ergebnisblock steht - dorthin gehoert der
+     Code, nicht an den Seitenanfang. */
+  const falscherPlatz = eigene.filter((s) => {
+    const m = /ergebnisAn\s*:\s*["']([\w-]+)["']/.exec(s.t);
+    return !m || !new RegExp('id\\s*=\\s*["\']' + m[1] + '["\']').test(s.t);
+  });
+  p('und nennt einen Block, den es auch gibt', falscherPlatz.length === 0,
+    falscherPlatz.map((s) => path.relative(BASIS, s.f)).join(', '));
 }
 
 console.log(fehler ? '\n' + fehler + ' Befunde' : '\nalles gruen');

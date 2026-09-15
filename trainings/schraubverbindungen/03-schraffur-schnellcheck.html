@@ -834,14 +834,20 @@ function abschluss(){
       + "</ul>"
     : "";
   el("btnWeiter").hidden = true;
+
+  /* Laeuft ein Wettkampf, gehoert das Ergebnis dort hinein. */
+  document.dispatchEvent(new CustomEvent("tbk-durchgang-ende",
+    {detail:{richtig: richtig, gesamt: runde.length}}));
+
   el("ende").scrollIntoView({behavior:"smooth", block:"start"});
 }
 
 /* Wettkampf (assets/wettkampf.js): Dieses Training hat seinen Durchgang
    schon - feste Rundenzahl, Uhr und Ergebnisbild. Der Baustein sorgt hier
    nur dafuer, dass alle mit demselben Code dieselben Aussagen in derselben
-   Reihenfolge bekommen. */
-window.TBK_WETTKAMPF = { neu: function(){ starten(); } };
+   Reihenfolge bekommen; den Ergebniscode haengt er unten an das eigene
+   Ergebnisbild, und abschluss() sagt ihm, wie der Durchgang ausging. */
+window.TBK_WETTKAMPF = { neu: function(){ starten(); }, ergebnisAn: "ende" };
 
 function starten(){
   runde = mischen(AUSSAGEN);

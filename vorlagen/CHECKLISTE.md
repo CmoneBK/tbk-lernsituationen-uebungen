@@ -175,12 +175,50 @@ Drei Regeln, immer in dieser Reihenfolge — `assets/uebung.css` macht es vor:
 Den `href` setzt `assets/werkzeug-link.js` je nach Umgebung (t-bk.de, GitHub
 Pages, lokal). Nie fest verdrahten.
 
-## 9. Trackingfrei — ohne Ausnahme
+## 9. Wettkampf (nur Trainings)
+
+Ein Training kann gegeneinander gespielt werden: Alle mit demselben Code
+bekommen dieselben Aufgaben in derselben Reihenfolge. Dafür genügt eine
+Zusage — `build/build.mjs` bindet `assets/wettkampf.js` daraufhin selbst ein.
+
+```js
+window.TBK_WETTKAMPF = {
+  neu: function(){ neuerDurchgang(); },   /* Pflicht: von vorn beginnen */
+  runden: 10,                             /* nur ohne eigenen Durchgang */
+  ergebnisAn: "ende"                      /* nur mit eigenem Durchgang */
+};
+```
+
+* **`neu`** muss einen vollständigen neuen Durchgang starten. Alles, was die
+  Aufgabenfolge bestimmt, muss dabei aus `Math.random()` kommen — der Baustein
+  ersetzt es durch einen Würfel mit festem Startwert. Wer sich Aufgaben beim
+  Laden einmal merkt und später nur durchreicht, würfelt für alle anderen
+  falsch.
+* **Zählt der Baustein mit** (`runden` gesetzt), meldet jede beantwortete
+  Aufgabe sich:
+  ```js
+  document.dispatchEvent(new CustomEvent("tbk-runde", {detail:{richtig:true}}));
+  ```
+* **Zählt die Seite selbst** (feste Rundenzahl, eigene Uhr, eigenes
+  Ergebnisbild), bleibt `runden` weg. Dann sagt sie am Ende einmal Bescheid
+  und nennt mit `ergebnisAn` die `id` ihres Ergebnisblocks — dorthin hängt der
+  Baustein den Ergebniscode:
+  ```js
+  document.dispatchEvent(new CustomEvent("tbk-durchgang-ende",
+    {detail:{richtig: richtig, gesamt: runde.length}}));
+  ```
+
+Sieger und Punktestand entstehen ohne Anmeldung und ohne Server: Jedes Gerät
+zeigt am Ende einen Ergebniscode aus sechs Zeichen, und wer ihn am
+Anzeigegerät einträgt, steht in der Rangliste. Dort steht kein Name — nur der
+Code. `pruefungen/test-wettkampf.js` prüft das alles nach.
+
+## 10. Trackingfrei — ohne Ausnahme
 
 Keine Schrift, kein Skript, kein Bild von einem fremden Server. Kein CDN, keine
 Einbettung, kein Zählpixel. Alles liegt im Repo, alle Pfade sind relativ.
 
-## 10. Vor dem Committen
+## 11. Vor dem Committen
 
 ```bash
 node build/build.mjs          # Übersicht und Bausteine nachziehen
