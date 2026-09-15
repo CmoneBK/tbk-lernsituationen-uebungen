@@ -26,12 +26,14 @@ machen.** Wer liegt vorn, wer ist bei Runde 7, wer ist fertig. Ohne Konten,
 ohne Namen, ohne dass jemand etwas eintippen muss außer dem Code.
 
 ### Was ihr baut
-Einen Endpunkt mit vier Aktionen (Runde anlegen, beitreten, Stand melden,
-Stand lesen), zwei Tabellen und einen Aufräumlauf.
+`public/api/wettkampf.php` mit drei Aktionen (Runde anlegen, beitreten, Stand
+melden) und eine eigene Config für `ctnutzerone_db3`. Die Tabellen und der
+Aufräumlauf stehen bereits (§ 7).
 
 ### Was ihr nicht baut
 Keine Anmeldung, keine Oberfläche, keine Auswertung über Runden hinweg, keine
-Klassen- oder Kursverwaltung. Die Anzeige baut das Content-Repo.
+Klassen- oder Kursverwaltung. Die Anzeige baut das Content-Repo — sie steht
+schon und ruft diesen Endpunkt bereits auf (§ 12).
 
 ---
 
@@ -79,10 +81,26 @@ Aufgabenfolge. Der Server muss über die Aufgaben nichts wissen.
 
 ## 4. Die Endpunkte
 
-Vorschlag: `https://t-bk.de/api/wettkampf.php`, Aktion über `action`.
-Anfragen als `application/x-www-form-urlencoded` (POST) bzw. Query (GET),
-Antworten als JSON. Fehler immer `{ "ok": false, "error": "…" }` mit
-passendem HTTP-Status.
+`https://t-bk.de/api/wettkampf.php`, Aktion über `action`. Anfragen als
+`application/x-www-form-urlencoded` (POST) bzw. Query (GET), Antworten als
+JSON. Fehler immer `{ "ok": false, "error": "…" }` mit passendem HTTP-Status.
+
+**Wo die Datei hingehört** (vom Website-Chat geklärt, hier nur festgehalten,
+damit es niemand anders versucht):
+
+- Quelle: `tbk-webseite/public/api/wettkampf.php` — **nur dort**. Der Ordner
+  `/api/` wird bei jedem Deploy per `rsync --delete` neu gespiegelt; eine
+  Datei, die direkt auf dem Server unter
+  `/home/users/ctnutzerone/www/t-bk.de/api/` abgelegt wird, ist beim nächsten
+  Deploy verschwunden.
+- Zugangsdaten: eine **eigene** Config, z. B.
+  `/home/users/ctnutzerone/files/wettkampf-config.php`, nach dem Muster von
+  `feedback-config.php` (in `files/`, open_basedir-tauglich, nicht deployt,
+  nicht web-erreichbar). Nicht `feedback-config.php` einbinden: Die zeigt auf
+  `ctnutzerone_db2`, und deren Benutzer hat auf `db3` keine Rechte.
+
+Im Material steht die Adresse an genau einer Stelle — `var API` in
+`assets/wettkampf.js`.
 
 ### 4.1 `POST action=neu` — eine Runde aufmachen
 
@@ -232,12 +250,13 @@ stehen, auch wenn das Gerät längst zugeklappt ist.
 
 ## 7. Die Tabellen
 
-Die Datenbank steht schon: **`ctnutzerone_db3`**, frisch in KeyHelp angelegt
-und leer. Sie ist bewusst getrennt von der Rückmeldungs-Datenbank — deren
-Inhalt ist vertraulich und bleibt, der hier ist weder das eine noch das
-andere.
+**Steht schon — hier ist nichts mehr anzulegen.** Datenbank
+`ctnutzerone_db3` (KeyHelp), Benutzer `ctnutzerone_db3`@`localhost` mit
+`ALL PRIVILEGES` genau darauf und `USAGE` sonst. Bewusst getrennt von der
+Rückmeldungs-Datenbank `db2`: Deren Inhalt ist vertraulich und bleibt, der
+hier ist weder das eine noch das andere.
 
-Für MariaDB/MySQL, `utf8mb4`:
+Angelegt ist dies (MariaDB, `utf8mb4`, Collation `utf8mb4_uca1400_ai_ci`):
 
 ```sql
 CREATE TABLE wk_runde (
@@ -274,13 +293,18 @@ CREATE TABLE wk_teil (
 Kein Feld für einen Namen, keine IP im Klartext, keine Kennung, die zwei
 Runden verbindet. Wer die Tabelle ausliest, sieht Tiernamen und Zahlen.
 
-**Aufräumen** (Cron stündlich, oder mit Wahrscheinlichkeit 1/50 je Anfrage):
+**Aufräumen** — ebenfalls schon eingerichtet, als Event in der Datenbank:
 
 ```sql
-DELETE FROM wk_runde WHERE erstellt < NOW() - INTERVAL 24 HOUR;
+CREATE EVENT wk_aufraeumen
+  ON SCHEDULE EVERY 1 HOUR
+  DO DELETE FROM wk_runde WHERE erstellt < NOW() - INTERVAL 24 HOUR;
 ```
 
-`ON DELETE CASCADE` nimmt die Teilnehmer mit.
+`ON DELETE CASCADE` nimmt die Teilnehmer mit. Zu prüfen bleibt, ob
+`event_scheduler = ON` auch in der `[mysqld]`-Sektion der `my.cnf` steht —
+per `SET GLOBAL` gesetzt, überlebt es keinen Neustart, und dann wüchse die
+Datenbank still weiter.
 
 ---
 
@@ -332,22 +356,23 @@ genügt für die Abnahme:
 
 ## 11. Offene Fragen an euch
 
-1. **Endpunkt-Name**: `wettkampf.php` neben `feedback.php`, oder gehört das
-   inzwischen woandershin? Im Material steht die Adresse an genau einer Stelle
-   (`var API` in `assets/wettkampf.js`) und ist in einer Minute geändert.
-2. **Taktrate und Ratenlimit.** Vorgesehen ist ein Takt von 4 Sekunden je
+1. **Taktrate und Ratenlimit.** Vorgesehen ist ein Takt von 4 Sekunden je
    laufendem Gerät. Bei einer Klasse an einer IP sind das rund 22.000
    Anfragen in der Stunde. Sagt uns, was der Server verträgt — wir stellen
-   den Takt im Material darauf ein (8 s wäre auch noch gut spielbar).
-3. **Datenschutzerklärung**: Muss dort etwas ergänzt werden, oder ist
+   den Takt im Material darauf ein (8 s wäre auch noch gut spielbar). Das ist
+   die einzige Zahl hier, die wir von euch brauchen.
+2. **Datenschutzerklärung**: Muss dort etwas ergänzt werden, oder ist
    „24 Stunden, keine personenbezogenen Daten" von der bestehenden Formulierung
    gedeckt?
-4. **Ausfallverhalten**: Bei `rate limit` drosselt das Material den Takt
+3. **Ausfallverhalten**: Bei `rate limit` drosselt das Material den Takt
    selbst (Verdoppelung bis höchstens 30 s) und läuft weiter. Passt das, oder
    soll es bei zu viel Last hart auf den Ergebniscode zurückfallen?
-5. **`GET action=stand`** (§ 4.4) braucht das Material heute nicht — das Gerät
+4. **`GET action=stand`** (§ 4.4) braucht das Material heute nicht — das Gerät
    am Beamer spielt mit und bekommt die Liste über seine eigene Meldung. Baut
    es nur, wenn es euch ohnehin nichts kostet.
+
+Alles Übrige ist entschieden: Der Endpunkt gehört ins `tbk-webseite`-Repo, die
+Datenbank steht, die Tabellen stehen, das Aufräum-Event läuft.
 
 ---
 
