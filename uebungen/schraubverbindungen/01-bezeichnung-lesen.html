@@ -398,7 +398,9 @@ function bildLaenge(){
   /* Die Senkkopfschraube endet stumpf - hier gibt es keine Kuppe, an
      der die Masshilfslinie kuerzer ansetzen muesste. */
   mass(svg, x, b.ende, y2 + 60, "l = 60", y2 + b.rd);
-  txt(svg, b.ende + 10, y2 + 60, "Kopf eingerechnet",
+  /* Rechts neben beide Vergleichslinien: Zwischen ihnen lag die Zeile
+     auf der rechten. */
+  txt(svg, a.ende + 16, y2 + 60, "Kopf eingerechnet",
       {anker:"start", deckung:.75, groesse:10.5});
 
   /* Der Unterschied ist genau die Kopfhöhe. */
@@ -407,7 +409,12 @@ function bildLaenge(){
     linie(svg, xx, y2 + b.rd + 6, xx, yU - 4, SCHMAL, {strich:"5 4", deckung:.45});
   });
   var gU = svgEl("g", {style:"color:var(--accent)"}, svg);
-  mass(gU, b.ende, a.ende, yU, "k = 7,5");
+  /* Das Mass ist nur die Kopfhoehe breit - schmaler als seine eigene
+     Massszahl. Die steht deshalb daneben, sonst liegt sie auf den beiden
+     Vergleichslinien. */
+  mass(gU, b.ende, a.ende, yU, "");
+  txt(gU, a.ende + 16, yU + 4, "k = " + zahl(g.k),
+      {anker:"start", groesse:11, fett:true});
 
   return svg;
 }
@@ -421,14 +428,15 @@ function bildNormen(){
     "und ein ganz anderes Bauteil.");
 
   var y1 = 56;
-  txt(svg, x, 20, "ISO 4014 – mit Schaft", {anker:"start", fett:true});
+  txt(svg, x, 14, "ISO 4014 – mit Schaft", {anker:"start", fett:true});
   var a = schraube(svg, {x:x, y:y1, s:s, d:g.d, P:g.P, k:g.k, sw:g.s, l:60, b:b});
   mass(svg, a.kopfEnde, a.gewindeVon, y1 + 50, "Schaft l − b", y1 + a.rd);
   mass(svg, a.gewindeVon, a.ende, y1 - 38, "b = " + b,
     [y1 - a.rd, y1 - a.rd + a.fase]);
 
   var y2 = 160;
-  txt(svg, x, 124, "ISO 4017 – Vollgewinde", {anker:"start", fett:true});
+  /* Rechts: Links stehen die Masse der oberen Schraube. */
+  txt(svg, 444, 118, "ISO 4017 – Vollgewinde", {anker:"end", fett:true});
   var c = schraube(svg, {x:x, y:y2, s:s, d:g.d, P:g.P, k:g.k, sw:g.s, l:60, b:60});
   mass(svg, c.kopfEnde, c.ende, y2 + 50, "b = l = 60",
     [y2 + c.rd, y2 + c.rd - c.fase]);
@@ -541,7 +549,9 @@ function verbindung(svg, o){
   linie(svg, xs, y - rd - 16, xs + 14, y - wand - 6, SCHMAL, {deckung:.55});
   txt(svg, xs + 18, y - wand - 6, "Scheibe",
       {anker:"start", groesse:10, deckung:.75});
-  txt(svg, xMutter + g.m * s / 2, y + g.s * s / 2 + 14, "Mutter",
+  /* Unter dem Eckenmass, nicht unter der Schluesselweite: Der Sechskant
+     ist ueber Ecke gezeichnet und reicht weiter herunter. */
+  txt(svg, xMutter + g.m * s / 2, y + g.s * s * 0.578 + 16, "Mutter",
       {groesse:10, deckung:.75});
 
   /* Maße unten: nötig gegen gewählt. */

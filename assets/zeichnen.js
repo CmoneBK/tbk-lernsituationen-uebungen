@@ -71,6 +71,17 @@ function txt(g, x, y, s, opt){
     "text-anchor": opt.anker || "middle",
     "font-weight": opt.fett ? 700 : 500}, g);
   if(opt.deckung) t.setAttribute("opacity", opt.deckung);
+  /* "hof" legt eine Kontur in der Hintergrundfarbe hinter die Schrift. Das
+     ist fuer die kleinen Prinzipbilder gedacht, in denen unter der
+     Zeichnung keine Zeile mehr frei ist: Die Linie verschwindet dann hinter
+     der Schrift, statt sie zu zerschneiden. In den technischen Zeichnungen
+     wird es nicht benutzt - dort weicht der Text aus. */
+  if(opt.hof){
+    t.setAttribute("stroke", "var(--grund, #ffffff)");
+    t.setAttribute("stroke-width", 3);
+    t.setAttribute("stroke-linejoin", "round");
+    t.setAttribute("paint-order", "stroke");
+  }
   t.textContent = s;
   return t;
 }
@@ -465,6 +476,15 @@ var FUEGETEXT = {
   schraubkleben: "Schraube im Gewinde, Klebstoff in den Gewindegaengen"
 };
 
+/* Bildunterschrift eines Fuegebildes. Die Bilder sind unterschiedlich hoch -
+   die Zeile sitzt deshalb am Rand ihres eigenen Bildes, nicht auf einer
+   festen Hoehe. */
+function fbUnter(g, svg, text){
+  var vb = (svg.getAttribute("viewBox") || "0 0 220 140").split(/[ ,]+/);
+  var h = parseFloat(vb[3]) || 140;
+  return txt(g, 110, h - 8, text, {groesse:9.5, deckung:0.75, hof:true});
+}
+
 function fuegebild(svg, art){
   var g = svgEl("g", {}, svg);
   var fn = FUEGEBILDER[art];
@@ -547,7 +567,7 @@ FUEGEBILDER.schraube = function(g, svg, k){
   sechskantAnsicht(g, {achse:cx, von:106, bis:92, sw:32, s:1, faseAn:"von"});
   sechskantAnsicht(g, {achse:cx, von:22, bis:40, sw:32, s:1, faseAn:"von"});
   fbAchseV(g, 12, 124, cx);
-  txt(g, 110, 132, "Reibung in der Trennfuge", {groesse:9.5, deckung:0.75});
+  fbUnter(g, svg, "Reibung in der Trennfuge");
 };
 
 FUEGEBILDER.pressverband = function(g, svg, k){
@@ -598,8 +618,7 @@ FUEGEBILDER.pressverband = function(g, svg, k){
   pfeil(e, 166, 22, -1, 0);
   txt(e, 186, 14, "aufpressen", {groesse:9.5, deckung:0.8});
 
-  txt(g, 110, 132, "Übermaß presst – kein Formelement",
-      {groesse:9.5, deckung:0.75});
+  fbUnter(g, svg, "Übermaß presst – kein Formelement");
 };
 
 FUEGEBILDER.klemmverbindung = function(g, svg, k){
@@ -645,8 +664,7 @@ FUEGEBILDER.klemmverbindung = function(g, svg, k){
     faseAn:"von"});
   linie(g, sx, oben - 22, sx, unten + 8, SCHMAL, {strich:"12 2 2 2"});
 
-  txt(g, 110, 132, "Schlitz zugezogen – Nabe klemmt",
-      {groesse:9.5, deckung:0.75});
+  fbUnter(g, svg, "Schlitz zugezogen – Nabe klemmt");
 };
 
 FUEGEBILDER.spannsatz = function(g, svg, k){
@@ -667,7 +685,7 @@ FUEGEBILDER.spannsatz = function(g, svg, k){
   });
   fbWelle(g, 16, y - rw, 188, 2 * rw);                /* Welle, ungeschnitten */
   fbAchse(g, 8, 212, y);
-  txt(g, 110, 132, "Kegelringe pressen", {groesse:9.5, deckung:0.75});
+  fbUnter(g, svg, "Kegelringe pressen");
 };
 
 FUEGEBILDER.passfeder = function(g, svg, k){
@@ -703,7 +721,7 @@ FUEGEBILDER.passfeder = function(g, svg, k){
   kasten(g, cx - nb, yW - tN + 3, 2 * nb, tW + tN - 3, {fuell:"var(--card)"});
   kasten(g, cx - nb, yW - tN + 3, 2 * nb, tW + tN - 3, {fuell:mF});
   fbKreuz(g, cx, cy, rN);
-  txt(g, 110, 132, "Feder in beiden Nuten", {groesse:9.5, deckung:0.75});
+  fbUnter(g, svg, "Feder in beiden Nuten");
 };
 
 FUEGEBILDER.zahnwelle = function(g, svg, k){
@@ -726,7 +744,7 @@ FUEGEBILDER.zahnwelle = function(g, svg, k){
   fbVieleck(g, p, "var(--card)", false);
   fbVieleck(g, p, mW);
   fbKreuz(g, cx, cy, rN);
-  txt(g, 110, 132, "Zähne teilen die Last", {groesse:9.5, deckung:0.75});
+  fbUnter(g, svg, "Zähne teilen die Last");
 };
 
 FUEGEBILDER.stift = function(g, svg, k){
@@ -739,8 +757,7 @@ FUEGEBILDER.stift = function(g, svg, k){
   fbVoll(g, 103, 30, 14, 80);                         /* Stift, ungeschnitten */
   fbAchse(g, 8, 212, y);
   fbAchseV(g, 22, 118, 110);
-  txt(g, 110, 132, "Stift quer durch Welle und Nabe",
-      {groesse:9.5, deckung:0.75});
+  fbUnter(g, svg, "Stift quer durch Welle und Nabe");
 };
 
 FUEGEBILDER.schnapp = function(g, svg, k){
@@ -760,8 +777,7 @@ FUEGEBILDER.schnapp = function(g, svg, k){
   linie(e, 118, 8, 118, 22, BREIT);
   pfeil(e, 118, 28, 0, 1);
   txt(e, 100, 20, "stecken", {anker:"end", groesse:9.5, deckung:0.8});
-  txt(g, 110, 132, "Nase rastet unter dem Blech ein",
-      {groesse:9.5, deckung:0.75});
+  fbUnter(g, svg, "Nase rastet unter dem Blech ein");
 };
 
 FUEGEBILDER.bolzen = function(g, svg, k){
@@ -784,8 +800,7 @@ FUEGEBILDER.bolzen = function(g, svg, k){
   linie(g, 189, y + rb, 181, y + rb + 16, SCHMAL);
   linie(g, 195, y + rb, 203, y + rb + 16, SCHMAL);
   fbAchse(g, 14, 212, y);
-  txt(g, 110, 132, "Bolzen im Auge, mit Splint gesichert",
-      {groesse:9.5, deckung:0.75});
+  fbUnter(g, svg, "Bolzen im Auge, mit Splint gesichert");
 };
 
 FUEGEBILDER.falz = function(g, svg, k){
@@ -796,8 +811,7 @@ FUEGEBILDER.falz = function(g, svg, k){
     [141, 62], [141, 53], [20, 53]], m1);
   fbVieleck(g, [[200, 80], [80, 80], [80, 53], [132, 53], [132, 62],
     [89, 62], [89, 71], [200, 71]], m2);
-  txt(g, 110, 132, "Blechränder ineinander gehakt",
-      {groesse:9.5, deckung:0.75});
+  fbUnter(g, svg, "Blechränder ineinander gehakt");
 };
 
 FUEGEBILDER.schweissen = function(g, svg, k){
@@ -844,7 +858,7 @@ FUEGEBILDER.nieten = function(g, svg, k){
     + " L" + (cx - rd) + "," + o + " Z",
     fill:"var(--card)", stroke:"currentColor", "stroke-width":BREIT}, g);
   fbAchseV(g, 30, 108, cx);
-  txt(g, 110, 132, "Schaft füllt, Köpfe halten", {groesse:9.5, deckung:0.75});
+  fbUnter(g, svg, "Schaft füllt, Köpfe halten");
 };
 
 FUEGEBILDER.clinchen = function(g, svg, k){
@@ -860,8 +874,7 @@ FUEGEBILDER.clinchen = function(g, svg, k){
   fbVieleck(g, [[16, 53], [83.3, 53], [69.3, 87], [150.7, 87], [136.7, 53],
     [204, 53], [204, 62], [150.2, 62], [164.2, 96], [55.9, 96], [69.9, 62],
     [16, 62]], schraffur(svg, k + "_2", -45));
-  txt(g, 110, 132, "Bleche hinterschnitten durchgesetzt",
-      {groesse:9.5, deckung:0.75});
+  fbUnter(g, svg, "Bleche hinterschnitten durchgesetzt");
 };
 
 FUEGEBILDER.schraubkleben = function(g, svg, k){
@@ -901,6 +914,6 @@ FUEGEBILDER.schraubkleben = function(g, svg, k){
            {fuell:"currentColor", ohneRand:true});
   });
   fbAchseV(g, 14, 118, cx);
-  txt(g, 110, 132, "Gewinde zusätzlich verklebt", {groesse:9.5, deckung:0.75});
+  fbUnter(g, svg, "Gewinde zusätzlich verklebt");
 };
 

@@ -423,7 +423,8 @@ function bildWelle(){
   });
   kasten(svg, gx1 - 6, y - rw, gx2 - gx1 + 40, 2 * rw, {fuell:"var(--card)"});
   achse(svg, gx1 - 14, gx2 + 44, y);
-  txt(svg, gx1 + 76, y + 5, "Welle", {groesse:11, deckung:.85});
+  /* Nicht auf der Mittellinie. */
+  txt(svg, gx1 + 76, y - 10, "Welle", {groesse:11, deckung:.85});
   txt(svg, gx1, y + gh + 26, "Welle: keine Schraffur", {anker:"start", groesse:10.5, deckung:.8});
   txt(svg, gx1, y + gh + 42, "Gehäuse: geschnitten", {anker:"start", groesse:10.5, deckung:.8});
 

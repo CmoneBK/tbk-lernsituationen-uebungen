@@ -1160,8 +1160,9 @@ function bildDeckel(){
     txt(eg, h[3] + (h[6] === "start" ? 28 : -28), h[4] + 4, h[5],
         {anker:h[6], groesse:12});
   });
-  txt(eg, cx, cy - rDi + 16, "Dichtfl\u00e4che (verdeckt)",
-      {groesse:10.5, deckung:.7});
+  /* Ueber dem Aussenkreis: Auf seiner Hoehe lag die Zeile auf ihm. */
+  txt(eg, cx + 16, cy - rDi - 43, "Dichtfl\u00e4che (verdeckt)",
+      {anker:"start", groesse:10.5, deckung:.7});
 }
 
 /* Schnitt durch die Verschraubung: Schraube senkrecht, Kopf oben. Die
@@ -1271,7 +1272,9 @@ function bildSchnitt(){
   txt(g, xh + 64, yh - 48, "⌀ 9", {anker:"start", groesse:12});
 
   txt(g, achseX - 84, yDeckel - 12, "Deckel S235", {groesse:11.5});
-  txt(g, achseX + 100, yFlansch + hFlansch - 14, "Flansch GJL-250", {groesse:11.5});
+  /* Rechts neben dem Flansch: In ihm liegt die Benennung auf der
+     Schraffur, darunter steht sie schon ausserhalb des Bildes. */
+  txt(g, achseX + 218, yFlansch + hFlansch - 14, "Flansch GJL-250", {groesse:11.5});
   /* Die Dichtung ist nur 2 mm dick - die Benennung braucht eine Hinweislinie,
      sonst steht sie im Flansch und meint scheinbar den. */
   linie(g, achseX + 168, yDicht + hDicht / 2, achseX + 182, yDicht + 13, SCHMAL,

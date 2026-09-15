@@ -871,7 +871,8 @@ function bildLage(){
       bis:px + pb + 18, sw:34, s:1, faseAn:"bis"});
     achse(svg, sx - 56, px + pb + 30, y);
   });
-  txt(svg, sx - 30, reihe1 + 34, "Mutter", {groesse:11, deckung:.8, anker:"start"});
+  /* Rechts neben der Schraube: Links steht die Mittellinie des Bildes. */
+  txt(svg, sx + 80, reihe1 + 34, "Mutter", {groesse:11, deckung:.8, anker:"start"});
   txt(svg, px + pb + 8, reihe2 - 26, "Kopf", {groesse:11, deckung:.8, anker:"start"});
 
   /* Rolle auf dem Arm, darüber die Last. */
@@ -889,7 +890,7 @@ function bildLage(){
   linie(gL, lastX, 18, lastX, 58, BREIT);
   linie(gL, lastX, 58, lastX - 6, 46, BREIT);
   linie(gL, lastX, 58, lastX + 6, 46, BREIT);
-  txt(gL, lastX, 12, "F = 2,4 kN", {fett:true, groesse:13});
+  txt(gL, lastX, 18, "F = 2,4 kN", {fett:true, groesse:13});
 
   /* Maße: Hebelarm und Reihenabstand. Der Reihenabstand steht links neben
      den Schraubenenden - rechts müssten die Maßhilfslinien quer durch Arm

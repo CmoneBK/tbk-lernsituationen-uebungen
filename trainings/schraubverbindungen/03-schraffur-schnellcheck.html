@@ -432,9 +432,9 @@ function szeneVerschraubung(svg, g, o){
     var eg = svgEl("g", {"class":"erklaer"}, g);
     linie(eg, p1x + 16, y - loch, p1x + 16, oben - 12, SCHMAL, {deckung:.7});
     txt(eg, p1x + 16, oben - 16, "Loch ⌀ " + (o.lochGleich ? "10" : "11"),
-      {groesse:11, deckung:.9});
+      {groesse:11, deckung:.9, hof:true});
     linie(eg, ende - 14, y + rd, ende - 14, unten + 15, SCHMAL, {deckung:.7});
-    txt(eg, ende - 14, unten + 27, "Schaft ⌀ 10", {groesse:11, deckung:.9});
+    txt(eg, ende - 14, unten + 27, "Schaft ⌀ 10", {groesse:11, deckung:.9, hof:true});
   }
 
   if(o.schnitt){
@@ -494,7 +494,7 @@ function szeneZweiSchnitte(svg, g, o){
   }
   stueck(22, m1, "Schnitt A–A");
   stueck(186, m2, "Schnitt B–B");
-  txt(g, 165, 18, "ein und dasselbe Bauteil", {groesse:11, deckung:.75});
+  txt(g, 165, 18, "ein und dasselbe Bauteil", {groesse:11, deckung:.75, hof:true});
 }
 
 /* --- Aussengewinde: welche Linie ist breit, und wie endet das Gewinde? */
@@ -550,7 +550,7 @@ function szeneInnengewinde(svg, g, o){
   txt(g, x2 + 4, y - rD + 4, "d", {anker:"start", groesse:11, deckung:.85});
   txt(g, x2 + 4, y + rD1 + 4, "d₃", {anker:"start", groesse:11, deckung:.85});
   txt(g, (x1 + x2) / 2, y + aussen + 22, "Innengewinde (geschnitten)",
-    {groesse:11, deckung:.75});
+    {groesse:11, deckung:.75, hof:true});
 }
 
 /* --- Grundloch mit Gewinde: Bohrtiefe gegen Gewindetiefe */
@@ -607,9 +607,9 @@ function szeneStift(svg, g, o){
   if(o.schraffiert) kasten(g, sx, 32, sb, 80, {fuell:mS, strich:BREIT});
   linie(g, sx + sb / 2, 24, sx + sb / 2, 120, SCHMAL, {strich:"12 2 2 2"});
   linie(g, sx + sb / 2, 32, sx + sb / 2, 16, SCHMAL, {deckung:.6});
-  txt(g, sx + sb / 2, 12, "Passstift", {groesse:11, deckung:.9});
+  txt(g, sx + sb / 2, 12, "Passstift", {groesse:11, deckung:.9, hof:true});
   txt(g, (x1 + x2) / 2, 134, "Bauteile quer geschnitten, Stift längs",
-    {groesse:11, deckung:.75});
+    {groesse:11, deckung:.75, hof:true});
 }
 
 /* --- Rippe an einem Winkel: laengs in der Schnittebene */
@@ -632,8 +632,8 @@ function szeneRippe(svg, g, o){
      sie an Wand und Fuss stoesst, liegen sichtbare Koerperkanten. */
   linie(g, 78, 46, 78, 96, BREIT);
   linie(g, 78, 96, 160, 96, BREIT);
-  txt(g, 104, 88, "Rippe", {groesse:11, deckung:.9});
-  txt(g, 214, 66, "Bauteil geschnitten", {groesse:11, deckung:.75});
+  txt(g, 104, 88, "Rippe", {groesse:11, deckung:.9, hof:true});
+  txt(g, 214, 66, "Bauteil geschnitten", {groesse:11, deckung:.75, hof:true});
 }
 
 /* --- Schraffurwinkel */
@@ -646,8 +646,8 @@ function szeneWinkel(svg, g, o){
   var b = o.winkel * Math.PI / 180;
   linie(g, x0, y0, x0 + l, y0, SCHMAL, {deckung:.8});
   linie(g, x0, y0, x0 + l * Math.cos(b), y0 - l * Math.sin(b), SCHMAL, {deckung:.8});
-  txt(g, x0 + 30, y0 - 8, o.winkel + "°", {groesse:11.5, fett:true});
-  txt(g, 165, 124, "geschnittenes Bauteil", {groesse:11, deckung:.75});
+  txt(g, x0 + 30, y0 - 8, o.winkel + "°", {groesse:11.5, fett:true, hof:true});
+  txt(g, 165, 124, "geschnittenes Bauteil", {groesse:11, deckung:.75, hof:true});
 }
 
 /* --- Sehr schmale Flaeche: Dichtung zwischen zwei Platten */
@@ -662,7 +662,7 @@ function szeneBlech(svg, g, o){
     {fuell:o.geschwaerzt ? "currentColor" : mD, strich:BREIT});
   linie(g, 165, 72, 165, 124, SCHMAL, {deckung:.6});
   txt(g, 165, 136, "dünne Dichtung zwischen zwei Platten",
-    {groesse:11, deckung:.75});
+    {groesse:11, deckung:.75, hof:true});
 }
 
 /* --- Schraffur und Masszahl */
@@ -678,7 +678,7 @@ function szeneMassLinie(svg, g, o){
     kasten(g, 138, y - 19, 54, 26, {fuell:"var(--card)", ohneRand:true});
   }
   mass(g, x1, x2, y, "28", undefined);
-  txt(g, 165, 126, "Maß im schraffierten Feld", {groesse:11, deckung:.75});
+  txt(g, 165, 126, "Maß im schraffierten Feld", {groesse:11, deckung:.75, hof:true});
 }
 
 var SZENEN = {

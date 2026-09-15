@@ -22,6 +22,7 @@ folgenden aufhalten.
 | --- | --- |
 | `test.js` | Übungen zu den Schraubverbindungen: laufen sie, nehmen sie Eingaben an, stimmt die Rückmeldung? |
 | `test-assets.js` | Bausteine in `assets/`: lösen ihre Verweise auf, zeigen Rücklink und Werkzeug-Link auf etwas, das es gibt? |
+| `test-beschriftung.js` | Liegt eine Beschriftung im Weg? Misst jeden Text jeder Zeichnung im Browser - gegen Strichwerk, gegen anderen Text, gegen den Bildrand; in jedem Reiter, auf mehreren Stufen jeder Bewegung und in der Normdarstellung. Braucht Chrome. |
 | `test-backnav.js` | Der Rücklink: überall derselbe Knopf, nur Beschriftung und Ziel wechseln. |
 | `test-baukasten.js` | „Übung anpassen“: Knopf da, Tafel öffnet, Zahl der abwählbaren Teile stimmt. |
 | `test-bilder.js` | Übung 1 „Eine Bezeichnung lesen“: zeigen die drei Teile ihre Zeichnungen? |
