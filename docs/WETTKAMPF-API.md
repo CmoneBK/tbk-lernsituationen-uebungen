@@ -301,10 +301,15 @@ CREATE EVENT wk_aufraeumen
   DO DELETE FROM wk_runde WHERE erstellt < NOW() - INTERVAL 24 HOUR;
 ```
 
-`ON DELETE CASCADE` nimmt die Teilnehmer mit. Zu prüfen bleibt, ob
-`event_scheduler = ON` auch in der `[mysqld]`-Sektion der `my.cnf` steht —
-per `SET GLOBAL` gesetzt, überlebt es keinen Neustart, und dann wüchse die
-Datenbank still weiter.
+`event_scheduler = ON` steht in
+`/etc/mysql/mariadb.conf.d/99-tbk-wettkampf.cnf` und hat einen Neustart
+überstanden; per `SET GLOBAL` allein hätte es keinen überlebt, und die
+Datenbank wäre still weitergewachsen.
+
+Nachgemessen am 15.09.2026 mit einer 25 Stunden alten Runde samt Teilnehmer:
+vorher 1 Runde / 1 Teilnehmer, nach dem `DELETE` 0 / 0. `ON DELETE CASCADE`
+greift also — es bleiben keine verwaisten Ergebnisse zurück, wenn eine Runde
+verfällt.
 
 ---
 
@@ -371,8 +376,10 @@ genügt für die Abnahme:
    am Beamer spielt mit und bekommt die Liste über seine eigene Meldung. Baut
    es nur, wenn es euch ohnehin nichts kostet.
 
-Alles Übrige ist entschieden: Der Endpunkt gehört ins `tbk-webseite`-Repo, die
-Datenbank steht, die Tabellen stehen, das Aufräum-Event läuft.
+Alles Übrige ist entschieden und nachgemessen: Der Endpunkt gehört ins
+`tbk-webseite`-Repo, die Datenbank steht mit eigenem Benutzer, beide Tabellen
+sind angelegt, und das Aufräum-Event läuft stündlich und übersteht einen
+Neustart. Es fehlt nur noch `wettkampf.php` samt eigener Config.
 
 ---
 
