@@ -370,10 +370,14 @@ function szeneVerschraubung(svg, g, o){
     kasten(g, x, yv, w, h, {fuell:"var(--card)", ohneRand:true});
   }
 
-  /* Schaft und Gewinde. Quer zur Achse hat der Zylinder keine Kante. */
-  deckend(p1x, y - rd, ende - p1x, 2 * rd);
+  /* Schaft und Gewinde. Quer zur Achse hat der Zylinder keine Kante.
+     Ist die Schraube (falsch) geschnitten, beginnt ihre Schnittflaeche
+     schon am Kopf: Kopf und Schaft sind ein Koerper, zwischen ihnen liegt
+     keine Fuge. */
+  var schVon = o.schraubeSchraffiert ? kopfX : p1x;
+  deckend(schVon, y - rd, ende - schVon, 2 * rd);
   if(o.schraubeSchraffiert){
-    kasten(g, p1x, y - rd, ende - p1x, 2 * rd, {fuell:mT, ohneRand:true});
+    kasten(g, schVon, y - rd, ende - schVon, 2 * rd, {fuell:mT, ohneRand:true});
   }
   [-1, 1].forEach(function(v){
     linie(g, p1x, y + v * rd, ende, y + v * rd, BREIT);
@@ -400,14 +404,30 @@ function szeneVerschraubung(svg, g, o){
     });
   }
 
+  /* Der Kopf der geschnittenen Schraube: Er gehoert zu ihr, also laeuft
+     die Schnittflaeche ueber seine ganze Hoehe durch. An der
+     Auflageflaeche steht die Stufe zum Schaft. */
+  function kopfGeschnitten(von, bis, r){
+    kasten(g, von, y - r, bis - von, 2 * r, {fuell:mT, ohneRand:true});
+    [-1, 1].forEach(function(v){
+      linie(g, von, y + v * r, bis, y + v * r, BREIT);
+      linie(g, bis, y + v * rd, bis, y + v * r, BREIT);
+    });
+    linie(g, von, y - r, von, y + r, BREIT);
+  }
+
   /* Ein geschnittener Sechskant hat keine Fasenboegen. */
-  function normteil(von, bis, r, fase, schraffiert){
-    if(schraffiert){ geschnitten(von, bis, r); return; }
+  function normteil(von, bis, r, fase, schraffiert, eigen){
+    if(schraffiert){
+      if(eigen) kopfGeschnitten(von, bis, r);
+      else geschnitten(von, bis, r);
+      return;
+    }
     deckend(von, y - r * 1.16, bis - von, 2 * r * 1.16);
     sechskantAnsicht(g, {waagerecht:true, achse:y, von:von, bis:bis,
       sw:2 * r, s:1, faseAn:fase, fuell:"var(--card)"});
   }
-  normteil(kopfX, kopfX + kopfB, rk, "von", o.schraubeSchraffiert);
+  normteil(kopfX, kopfX + kopfB, rk, "von", o.schraubeSchraffiert, true);
 
   if(o.scheibeSchraffiert){
     geschnitten(schX, schX + schB, rs);
@@ -573,13 +593,15 @@ function szeneGrundloch(svg, g, o){
     + " L" + xBohr + "," + (y + rD1) + " Z", fill:"var(--card)",
     stroke:"none"}, g);
 
-  /* Die Umrisskanten einzeln: An der rechten Stirnflaeche muendet das Loch -
-     dort darf keine Linie quer ueber die Oeffnung laufen. */
+  /* An der rechten Stirnflaeche muendet das Loch. Die Kante dieser
+     Muendung laeuft rundum; ihre hintere Haelfte liegt hinter der
+     Schnittebene und ist sichtbar. Weil die Stirnflaeche quer zur
+     Blickrichtung steht, erscheint sie als Strich ueber die ganze
+     Oeffnung - die Umrisslinie laeuft dort also durch. */
   linie(g, x1, oben, x2, oben, DICK);
   linie(g, x1, unten, x2, unten, DICK);
   linie(g, x1, oben, x1, unten, DICK);
-  linie(g, x2, oben, x2, y - rD, DICK);
-  linie(g, x2, y + rD, x2, unten, DICK);
+  linie(g, x2, oben, x2, unten, DICK);
   [-1, 1].forEach(function(v){
     linie(g, xBohr, y + v * rD1, x2, y + v * rD1, DICK);
     linie(g, xGew, y + v * rD, x2, y + v * rD, DUENN);
