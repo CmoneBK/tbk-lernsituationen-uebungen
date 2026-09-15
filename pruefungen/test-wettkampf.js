@@ -26,6 +26,91 @@ const QUELLE = fs.readFileSync(path.join(BASIS, 'assets/wettkampf.js'), 'utf8');
 /* Ein Training im Kleinformat: Es sagt den Vertrag zu und schreibt bei jedem
    neuen Durchgang sechs Würfe mit. Mehr braucht es nicht, um zu sehen, ob
    zwei Geräte dieselbe Reihenfolge bekommen. */
+/* Eine Attrappe der Sammelstelle, gebaut nach docs/WETTKAMPF-API.md. Sie hält
+   ihre Runden im Speicher und antwortet sofort - so lässt sich prüfen, was
+   das Material schickt und was es aus der Antwort macht, ohne dass ein Server
+   laufen muss. */
+function sammelstelle(o) {
+  o = o || {};
+  const NAMEN = ['Adler', 'Ameise', 'Biber', 'Bussard', 'Dachs', 'Delfin'];
+  const runden = new Map();
+  const rufe = [];
+  if (o.runde) runden.set(o.runde.code, o.runde);
+
+  function neueRunde(code, pfad, titel) {
+    const r = { code, pfad, titel: titel || 'Training', teil: [] };
+    runden.set(code, r);
+    return r;
+  }
+  if (o.vorhanden) neueRunde(o.vorhanden, o.pfad || '/x/y.html', o.titel);
+
+  function beitritt(r) {
+    const nr = r.teil.length + 1;
+    const t = { nr, name: NAMEN[(nr - 1) % NAMEN.length], geheim: 'g' + nr,
+      runde: 0, richtig: 0, gesamt: 0, dauer: 0, fertig: false, weg: false };
+    r.teil.push(t);
+    return t;
+  }
+
+  function antwort(felder) {
+    const a = felder.action;
+    if (o.antwortet === false) return null;                 /* kein Server */
+    if (o.fehler && o.fehler[a]) return { ok: false, error: o.fehler[a] };
+    if (a === 'neu') {
+      const r = neueRunde(o.neuerCode || 'K7M2Q', felder.pfad, felder.titel);
+      const t = beitritt(r);
+      return { ok: true, code: r.code, nr: t.nr, name: t.name,
+        geheim: t.geheim, teilnehmer: r.teil.length };
+    }
+    if (a === 'beitreten') {
+      const r = runden.get(felder.code);
+      if (!r) return { ok: false, error: 'unbekannt' };
+      if (r.teil.length >= (o.platz == null ? 60 : o.platz)) return { ok: false, error: 'voll' };
+      const t = beitritt(r);
+      return { ok: true, code: r.code, nr: t.nr, name: t.name, geheim: t.geheim,
+        teilnehmer: r.teil.length, pfad: r.pfad, titel: r.titel };
+    }
+    if (a === 'stand') {
+      const r = runden.get(felder.code);
+      if (!r) return { ok: false, error: 'unbekannt' };
+      const t = r.teil.filter((x) => x.geheim === felder.geheim)[0];
+      if (!t) return { ok: false, error: 'fremd' };
+      if (!t.fertig) {
+        t.runde = Number(felder.runde) || 0;
+        t.richtig = Number(felder.richtig) || 0;
+        t.gesamt = Number(felder.gesamt) || 0;
+        t.dauer = Number(felder.dauer) || 0;
+        t.fertig = felder.fertig === '1';
+      }
+      if (o.wegNr) {
+        r.teil.forEach((x) => { x.weg = x.nr === o.wegNr && !x.fertig; });
+      }
+      const rang = r.teil.slice().sort((x, y) => (y.fertig - x.fertig)
+        || (y.richtig - x.richtig) || (x.dauer - y.dauer) || (x.nr - y.nr));
+      return { ok: true, serverzeit: 1789452359, rang };
+    }
+    return { ok: false, error: 'kaputt' };
+  }
+
+  return {
+    rufe,
+    runden,
+    /* Wird als window.fetch eingehängt. */
+    fetch(adresse, wie) {
+      const felder = {};
+      String((wie || {}).body || '').split('&').forEach((p) => {
+        if (!p) return;
+        const t = p.split('=');
+        felder[decodeURIComponent(t[0])] = decodeURIComponent((t[1] || '').replace(/\+/g, ' '));
+      });
+      rufe.push({ adresse: String(adresse), wie: wie || {}, felder });
+      const d = antwort(felder);
+      if (d === null) return Promise.reject(new Error('kein Server'));
+      return Promise.resolve({ json: () => Promise.resolve(d) });
+    },
+  };
+}
+
 function seite(o) {
   o = o || {};
   const vertrag = 'window.TBK_WETTKAMPF={neu:function(){'
@@ -44,6 +129,9 @@ function seite(o) {
     beforeParse(w) {
       w.__echt = w.Math.random;
       w.Element.prototype.scrollIntoView = function () {};
+      /* Ohne Attrappe gibt es kein fetch - dann muss der Baustein ohne
+         Sammelstelle auskommen, und genau das prüfen die ersten Abschnitte. */
+      if (o.api) { w.__api = o.api; w.fetch = o.api.fetch; }
     },
   });
   return dom.window;
@@ -51,8 +139,9 @@ function seite(o) {
 
 /* Die Tafel baut sich erst beim Öffnen auf. */
 function tafelAuf(w) {
-  w.document.getElementById('wk-knopf').click();
-  return w.document.getElementById('wk-tafel');
+  const t = w.document.getElementById('wk-tafel');
+  if (t.hidden) w.document.getElementById('wk-knopf').click();
+  return t;
 }
 
 function knopfMit(tafel, text) {
@@ -299,8 +388,11 @@ console.log('\nDer Ergebniscode');
      Versuchen faellt eine feste Zuordnung auf. */
   const gleiche = [];
   for (let i = 0; i < 20; i++) gleiche.push(ergebnisVon(2, 3));
+  /* Die Kennung hat zweiunddreißig Werte; bei zwanzig Ziehungen sind rund
+     fünfzehn verschiedene zu erwarten. Geprüft wird nur, dass überhaupt
+     gewürfelt wird - eine feste Kennung ergäbe genau einen. */
   p('zwei gleich gute Ergebnisse bekommen verschiedene Codes',
-    new Set(gleiche).size >= 15, new Set(gleiche).size + ' von 20 verschieden');
+    new Set(gleiche).size >= 10, new Set(gleiche).size + ' von 20 verschieden');
   /* Dieselben Treffer stecken trotzdem in allen. */
   p('und tragen trotzdem alle dasselbe Ergebnis',
     gleiche.every((c) => c.length === 6));
@@ -308,8 +400,11 @@ console.log('\nDer Ergebniscode');
 
 console.log('\nDer Punktestand');
 {
-  /* Drei Mitstreiter mit demselben Wettkampfcode. */
-  const fremd = [1, 3, 2].map((t) => ergebnisVon(t, 3));
+  /* Drei Mitstreiter mit demselben Wettkampfcode. Jeder mit einer anderen
+     Trefferzahl, auch anders als die eigene: Bei gleichem Ergebnis und
+     gleicher Sekunde haengt der Code nur noch an der zufaelligen Kennung,
+     und die Pruefung waere jedes zweiunddreissigste Mal eine andere. */
+  const fremd = [1, 3, 0].map((t) => ergebnisVon(t, 3));
 
   const w = seite();
   mitmachen(w, 'K7M2Q');
@@ -327,7 +422,7 @@ console.log('\nDer Punktestand');
   const liste = rangliste(t);
   p('alle vier stehen im Punktestand', liste.length === 4, String(liste.length));
   p('der Beste steht oben', liste[0].zahl.indexOf('3/3') === 0, liste[0].zahl);
-  p('der Schlechteste unten', liste[3].zahl.indexOf('1/3') === 0, liste[3].zahl);
+  p('der Schlechteste unten', liste[3].zahl.indexOf('0/3') === 0, liste[3].zahl);
   p('der Sieger ist hervorgehoben', liste[0].sieg && !liste[1].sieg);
   p('der Sieger wird auch genannt',
     /Sieger/.test(t.querySelector('.wk-sieger').textContent),
@@ -447,21 +542,40 @@ console.log('\nWenn die Seite ihren Durchgang selbst fuehrt');
   p('ohne Wettkampf passiert nichts', !still.document.getElementById('wk-ergebnis'));
 }
 
-console.log('\nKeine Anmeldung, keine Uebertragung');
+console.log('\nKeine Anmeldung, keine Spur');
 {
   const code = QUELLE.replace(/\/\*[\s\S]*?\*\//g, '');
   p('kein localStorage', !/localStorage/.test(code));
   p('kein sessionStorage', !/sessionStorage/.test(code));
   p('kein Cookie', !/document\.cookie/.test(code));
-  p('kein fetch', !/\bfetch\s*\(/.test(code));
   p('kein XMLHttpRequest', !/XMLHttpRequest/.test(code));
   p('kein WebSocket', !/WebSocket|RTCPeerConnection|EventSource/.test(code));
   p('kein sendBeacon', !/sendBeacon/.test(code));
-  /* Der Namensraum der SVG ist eine Kennung, keine Adresse - sonst darf
-     nichts nach draussen zeigen. */
+
+  /* Gesprochen wird nur mit der eigenen Sammelstelle, und nur ueber einen
+     Weg. Der Namensraum der SVG ist eine Kennung, keine Adresse. */
+  const rufe = code.match(/fetch\s*\(\s*([A-Za-z_$][\w$]*)/g) || [];
+  p('genau ein Ruf nach draussen', rufe.length === 1, rufe.join(' '));
+  const ziel = /var API = '([^']+)'/.exec(QUELLE);
+  p('und der geht an die eigene Sammelstelle',
+    !!ziel && ziel[1].indexOf('/api/') === 0, ziel && ziel[1]);
   const fremd = (QUELLE.match(/https?:\/\/[^\s'"]+/g) || [])
     .filter((a) => a !== 'http://www.w3.org/2000/svg');
   p('keine fremde Adresse', fremd.length === 0, fremd.join(' '));
+
+  /* Was hinausgeht, steht in genau einem Aufruf - und es ist nichts dabei,
+     woran eine Person zu erkennen waere. */
+  /* Nur echte Schluessel zaehlen - nicht das, was hinter einem Fragezeichen
+     als Zweig steht. */
+  const felder = [...(code.match(/ruf\(\{[\s\S]*?\}\s*,/g) || []).join('\n')
+    .matchAll(/[{,]\s*([a-z]+)\s*:/g)].map((m) => m[1]);
+  const erlaubt = ['action', 'code', 'geheim', 'runde', 'richtig', 'gesamt',
+    'dauer', 'fertig', 'pfad', 'titel', 'runden'];
+  const zuviel = felder.filter((f) => erlaubt.indexOf(f) < 0);
+  p('nur die verabredeten Felder gehen hinaus', zuviel.length === 0,
+    zuviel.join(' '));
+  p('kein Feld fuer einen Namen',
+    !/\bname\s*:\s*[^,}]*eingabe|input[^>]*name=|Spitzname|Vorname/i.test(code));
   p('der Code verlaesst das Geraet nur als Bild und als Adresse im eigenen Fenster',
     !/location\s*=|location\.href\s*=|\.submit\s*\(/.test(code));
 }
@@ -528,5 +642,205 @@ console.log('\nVerdrahtung');
     falscherPlatz.map((s) => path.relative(BASIS, s.f)).join(', '));
 }
 
-console.log(fehler ? '\n' + fehler + ' Befunde' : '\nalles gruen');
-process.exit(fehler ? 1 : 0);
+/* ---------------------------------------------------------------------- *
+ * Mit Sammelstelle. Ab hier ist alles asynchron: Der Baustein fragt, und
+ * erst die Antwort baut die Tafel neu.
+ * ---------------------------------------------------------------------- */
+
+function ruhe(n) {
+  let p = Promise.resolve();
+  for (let i = 0; i < (n || 4); i++) {
+    p = p.then(() => new Promise((los) => setTimeout(los, 1)));
+  }
+  return p;
+}
+
+/* Einen Wettkampf aufmachen, wie es der Knopf tut. */
+async function aufmachen(w) {
+  const t = tafelAuf(w);
+  knopfMit(t, 'Wettkampf starten').click();
+  await ruhe();
+  return w.document.getElementById('wk-tafel');
+}
+
+async function beitreten(w, c) {
+  const t = tafelAuf(w);
+  t.querySelector('#wk-eingabe').value = c;
+  knopfMit(t, 'Mitmachen').click();
+  await ruhe();
+  return w.document.getElementById('wk-tafel');
+}
+
+async function melden(w, richtig, mal) {
+  for (let i = 0; i < (mal || 1); i++) {
+    w.document.dispatchEvent(new w.CustomEvent('tbk-runde',
+      { detail: { richtig: i < richtig } }));
+  }
+  await ruhe();
+}
+
+(async function () {
+  console.log('\nEine Runde aufmachen');
+  {
+    const api = sammelstelle({ neuerCode: 'K7M2Q' });
+    const w = seite({ api });
+    const t = await aufmachen(w);
+    const ruf = api.rufe[0];
+    p('es wird gesendet', !!ruf);
+    p('als Formulardaten an die eigene Sammelstelle',
+      !!ruf && ruf.adresse.indexOf('/api/') === 0, ruf && ruf.adresse);
+    p('Aktion neu', !!ruf && ruf.felder.action === 'neu', ruf && ruf.felder.action);
+    p('mit dem Pfad des Trainings',
+      !!ruf && ruf.felder.pfad === '/unterrichtsmaterial/trainings/x/y.html',
+      ruf && ruf.felder.pfad);
+    p('mit dem Titel', !!ruf && ruf.felder.titel === 'Training', ruf && ruf.felder.titel);
+    p('mit der Rundenzahl', !!ruf && ruf.felder.runden === '3', ruf && ruf.felder.runden);
+    p('kein Name geht mit', !!ruf && !('name' in ruf.felder));
+
+    p('der Code kommt vom Server',
+      !!t.querySelector('.wk-code') && t.querySelector('.wk-code').textContent === 'K7M2Q',
+      t.querySelector('.wk-code') && t.querySelector('.wk-code').textContent);
+    p('der Durchgang beginnt', Array.isArray(w.__folge));
+    p('die Rangliste steht gleich in der Tafel', !!t.querySelector('.wk-rang'));
+    const liste = rangliste(t);
+    p('man selbst steht drin', liste.length === 1 && liste[0].ich, JSON.stringify(liste));
+    p('und zwar unter dem Namen vom Server', liste[0].wer === 'Adler', liste[0].wer);
+    p('kein Ergebniscode-Punktestand daneben',
+      !knopfMit(t, 'Punktestand'), 'Knopf Punktestand sollte fehlen');
+  }
+
+  console.log('\nZwei Geraete in derselben Runde');
+  {
+    const api = sammelstelle({ neuerCode: 'K7M2Q' });
+    const a = seite({ api });
+    await aufmachen(a);
+    const b = seite({ api });
+    const tb = await beitreten(b, 'K7M2Q');
+    p('das zweite Geraet tritt bei', Array.isArray(b.__folge));
+    p('es bekommt einen eigenen Namen',
+      rangliste(tb).filter((z) => z.ich)[0].wer === 'Ameise',
+      JSON.stringify(rangliste(tb)));
+    p('beide stehen in seiner Liste', rangliste(tb).length === 2);
+    p('gleicher Code, gleiche Aufgabenfolge',
+      JSON.stringify(a.__folge) === JSON.stringify(b.__folge));
+
+    /* Der Fortschritt des einen erscheint beim anderen. */
+    await melden(b, 2, 2);
+    const ta = tafelAuf(a);
+    await melden(a, 0, 1);
+    const zeilen = rangliste(a.document.getElementById('wk-tafel'));
+    p('der Fortschritt des anderen kommt an',
+      zeilen.some((z) => z.wer === 'Ameise' && /Runde 3 von 3/.test(z.zahl)),
+      JSON.stringify(zeilen));
+    p('der eigene Fortschritt auch',
+      zeilen.some((z) => z.ich && /Runde 2 von 3/.test(z.zahl)),
+      JSON.stringify(zeilen));
+    const gesendet = api.rufe.filter((r) => r.felder.action === 'stand');
+    p('gemeldet wird mit Geheimnis', gesendet.every((r) => !!r.felder.geheim));
+    p('und ohne alles, was jemanden verraet',
+      gesendet.every((r) => !('name' in r.felder) && !('titel' in r.felder)));
+  }
+
+  console.log('\nBis zum Ende');
+  {
+    const api = sammelstelle({ neuerCode: 'K7M2Q' });
+    const a = seite({ api });
+    await aufmachen(a);
+    const b = seite({ api });
+    await beitreten(b, 'K7M2Q');
+
+    await melden(b, 3, 3);                      /* b spielt fehlerfrei durch */
+    const eb = b.document.getElementById('wk-ergebnis');
+    p('das Ergebnis steht da', !!eb && /3 von 3 richtig/.test(eb.textContent),
+      eb && eb.textContent.slice(0, 50));
+    p('ohne Ergebniscode - den braucht hier niemand', !eb.querySelector('.wk-meins'));
+    p('dafuer mit dem eigenen Namen', /Ameise/.test(eb.textContent));
+    const schluss = api.rufe.filter((r) => r.felder.fertig === '1');
+    p('dem Server wird das Ende gemeldet', schluss.length > 0);
+    p('mit Treffern und Zeit', !!schluss[0]
+      && schluss[0].felder.richtig === '3' && 'dauer' in schluss[0].felder,
+      JSON.stringify(schluss[0] && schluss[0].felder));
+
+    await melden(a, 1, 3);
+    const zeilen = rangliste(a.document.getElementById('wk-tafel'));
+    p('der Bessere steht oben', zeilen[0].wer === 'Ameise', JSON.stringify(zeilen));
+    p('er ist als Sieger hervorgehoben', zeilen[0].sieg);
+    p('der Vorsprung wird genannt',
+      /Vorn: Ameise/.test(a.document.getElementById('wk-tafel').textContent));
+  }
+
+  console.log('\nWas die Sammelstelle sagen kann');
+  {
+    const w = seite({ api: sammelstelle({}) });     /* kennt K7M2Q nicht */
+    const t = await beitreten(w, 'K7M2Q');
+    p('unbekannter Code: die Tafel sagt es', /gibt es nicht mehr/.test(t.textContent),
+      t.textContent.slice(-80));
+    p('und nichts beginnt', w.__folge === undefined);
+
+    const voll = seite({ api: sammelstelle({ vorhanden: 'K7M2Q', platz: 0 }) });
+    const tv = await beitreten(voll, 'K7M2Q');
+    p('volle Runde: die Tafel sagt es', /voll/.test(tv.textContent));
+    p('und nichts beginnt', voll.__folge === undefined);
+
+    /* Ein Code, der zu einem anderen Training gehoert. */
+    const fremd = seite({ api: sammelstelle({ vorhanden: 'K7M2Q',
+      pfad: '/unterrichtsmaterial/trainings/x/anderes.html', titel: 'Anderes' }) });
+    const tf = await beitreten(fremd, 'K7M2Q');
+    p('fremdes Training: es wird gewarnt',
+      /anderen Training/.test(tf.textContent), tf.textContent.slice(0, 200));
+    p('aber der Durchgang beginnt trotzdem', Array.isArray(fremd.__folge));
+  }
+
+  console.log('\nWenn die Sammelstelle ausfaellt');
+  {
+    const w = seite({ api: sammelstelle({ antwortet: false }) });
+    const t = await aufmachen(w);
+    p('der Wettkampf beginnt trotzdem', Array.isArray(w.__folge));
+    p('mit einem selbst gewuerfelten Code',
+      !!t.querySelector('.wk-code') && t.querySelector('.wk-code').textContent.length === 5);
+    p('und dem Ergebniscode als Rueckfallebene', !!knopfMit(t, 'Punktestand'));
+    await melden(w, 2, 3);
+    const e = w.document.getElementById('wk-ergebnis');
+    p('am Ende steht wieder ein Ergebniscode', !!e && !!e.querySelector('.wk-meins'),
+      e && e.textContent.slice(0, 60));
+
+    /* Faellt sie mittendrin aus, laeuft der Durchgang weiter. */
+    const api = sammelstelle({ neuerCode: 'K7M2Q', fehler: { stand: 'db error' } });
+    const x = seite({ api });
+    const tx = await aufmachen(x);
+    p('Fehler beim Melden beendet nichts', Array.isArray(x.__folge));
+    await melden(x, 1, 3);
+    p('und der Durchgang kommt zu Ende',
+      !!x.document.getElementById('wk-ergebnis'));
+  }
+
+  console.log('\nVerlassene Zeilen');
+  {
+    const api = sammelstelle({ neuerCode: 'K7M2Q', wegNr: 2 });
+    const a = seite({ api });
+    await aufmachen(a);
+    const b = seite({ api });
+    await beitreten(b, 'K7M2Q');
+    await melden(a, 0, 1);
+    const zeilen = rangliste(a.document.getElementById('wk-tafel'));
+    p('wer weg ist, steht nicht in der Liste',
+      zeilen.length === 1 && zeilen[0].ich, JSON.stringify(zeilen));
+  }
+
+  console.log('\nDie Spezifikation liegt bei');
+  {
+    const doc = path.join(BASIS, 'docs', 'WETTKAMPF-API.md');
+    p('docs/WETTKAMPF-API.md ist da', fs.existsSync(doc));
+    const text = fs.existsSync(doc) ? fs.readFileSync(doc, 'utf8') : '';
+    const ziel = /var API = '([^']+)'/.exec(QUELLE);
+    p('sie nennt denselben Endpunkt',
+      !!ziel && text.indexOf(ziel[1].replace(/^\//, '')) > 0, ziel && ziel[1]);
+    ['neu', 'beitreten', 'stand'].forEach((a) => {
+      p('sie beschreibt action=' + a, text.indexOf('action=' + a) > 0);
+    });
+    p('sie haelt die Aufbewahrung fest', /24 Stunden/.test(text));
+  }
+
+  console.log(fehler ? '\n' + fehler + ' Befunde' : '\nalles gruen');
+  process.exit(fehler ? 1 : 0);
+}());

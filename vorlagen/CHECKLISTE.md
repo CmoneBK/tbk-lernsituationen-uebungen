@@ -208,10 +208,13 @@ window.TBK_WETTKAMPF = {
     {detail:{richtig: richtig, gesamt: runde.length}}));
   ```
 
-Sieger und Punktestand entstehen ohne Anmeldung und ohne Server: Jedes Gerät
-zeigt am Ende einen Ergebniscode aus sechs Zeichen, und wer ihn am
-Anzeigegerät einträgt, steht in der Rangliste. Dort steht kein Name — nur der
-Code. `pruefungen/test-wettkampf.js` prüft das alles nach.
+Sieger und Punktestand kommen von selbst: Wo die API aus
+[docs/WETTKAMPF-API.md](../docs/WETTKAMPF-API.md) antwortet, meldet jedes
+Gerät seinen Stand und bekommt dafür die Rangliste zurück — mit Namen, die
+der Server vergibt. Antwortet sie nicht (lokal geöffnet, GitHub Pages, kein
+Netz), zeigt jedes Gerät am Ende einen Ergebniscode aus sechs Zeichen, und
+wer ihn am Anzeigegerät einträgt, steht in der Liste. Beides ohne Namensfeld
+und ohne Speicher. `pruefungen/test-wettkampf.js` prüft beide Wege nach.
 
 ## 10. Trackingfrei — ohne Ausnahme
 

@@ -7,35 +7,37 @@
  *
  * build/build.mjs trägt sie in neuen Trainings nach.
  *
- * Wie es funktioniert - und warum ohne Server
- * ------------------------------------------
+ * Die Aufgabenfolge: immer im Browser
+ * -----------------------------------
  * Ein Training würfelt seine Aufgaben. Würfelt es mit demselben Startwert,
  * kommt dieselbe Reihenfolge heraus - auf jedem Gerät. Genau das ist der
  * Code: fünf Zeichen, aus denen der Startwert entsteht. Wer ihn eingibt oder
  * den QR-Code abfotografiert, bekommt Aufgabe für Aufgabe dasselbe wie alle
- * anderen und kann sich damit messen.
+ * anderen. Der Server weiß davon nichts und muss es auch nicht.
  *
- * Das braucht keine Anmeldung, keinen Account, keinen Server und keine
- * Datenübertragung - es läuft auch dann, wenn nur die Seite geladen ist.
+ * Die Mitstreiter: mit Sammelstelle, wenn es sie gibt
+ * --------------------------------------------------
+ * Wo die API aus docs/WETTKAMPF-API.md antwortet, laufen alle in einer Runde:
+ * Jedes Gerät meldet alle paar Sekunden seinen Stand und bekommt dafür die
+ * Rangliste zurück. Wer vorn liegt, steht auf jedem Bildschirm.
  *
- * Sieger und Punktestand - ohne dass jemand seinen Namen sagt
- * -----------------------------------------------------------
- * Am Ende seines Durchgangs zeigt jedes Gerät einen Ergebniscode: fünf
- * Zeichen, in denen Treffer, Rundenzahl und Zeit stecken, geprüft gegen den
- * Wettkampfcode. Wer ihn durchsagt oder am Anzeigegerät eintippt, steht im
- * Punktestand - die Rangliste baut sich also auf dem Gerät auf, das die
- * Codes einsammelt (üblicherweise das am Beamer).
+ * Anonym bleibt es trotzdem. Den Anzeigenamen vergibt die Sammelstelle aus
+ * einer festen Liste („Falke", „Luchs"), es gibt kein Feld für einen Namen,
+ * nichts wird auf dem Gerät gespeichert, und nach einem Tag löscht der Server
+ * die Runde samt Ergebnissen.
  *
- * Anonym ist das von Bauart wegen: In der Liste steht nur der Ergebniscode.
- * Welche Zeile zu wem gehört, weiß allein, wer den Code abgegeben hat. Es
- * gibt kein Namensfeld, nichts wird gespeichert und nichts verlässt das
- * Gerät. Eine Rangliste, die sich von selbst füllt, ginge nur über eine
- * Sammelstelle auf dem Server - die gibt es hier bewusst nicht.
+ * Ohne Sammelstelle: der Ergebniscode
+ * -----------------------------------
+ * Antwortet sie nicht - lokal geöffnet, auf GitHub Pages, oder das WLAN im
+ * Raum streikt -, läuft derselbe Wettkampf ohne sie weiter. Dann zeigt jedes
+ * Gerät am Ende einen Ergebniscode aus sechs Zeichen, in denen Treffer,
+ * Rundenzahl und Zeit stecken, geprüft gegen den Wettkampfcode. Wer ihn
+ * durchsagt oder am Anzeigegerät eintippt, steht im Punktestand; welche Zeile
+ * zu wem gehört, weiß allein, wer sie abgegeben hat.
  *
- * Fälschungssicher ist der Code nicht: Wer das Prüfzeichen nachrechnet, kann
- * sich eines ausdenken. Das Verfahren steht ja in dieser Datei. Es hält
- * Tippfehler und Codes aus der Runde davor heraus, mehr soll es nicht - wer
- * im Unterricht mogeln will, muss dafür nicht programmieren können.
+ * Fälschungssicher ist dieser Code nicht: Wer das Prüfzeichen nachrechnet,
+ * kann sich eines ausdenken - das Verfahren steht ja in dieser Datei. Es hält
+ * Tippfehler und Codes aus der Runde davor heraus, mehr soll es nicht.
  *
  * Was ein Training mitbringen muss
  * --------------------------------
@@ -82,8 +84,20 @@
   var code = null;
   var beginn = 0, uhrLauf = null;
   var runde = 0, richtig = 0;
-  var stand = [];                /* die eingetragenen Ergebnisse */
+  var stand = [];                /* die eingetragenen Ergebnisse, ohne Netz */
   var ansicht = 'wettkampf';     /* wettkampf | punktestand */
+
+  /* Mit Sammelstelle sieht jeder die anderen laufen; ohne sie tut es der
+     Ergebniscode. Welcher Weg es wird, entscheidet die erste Antwort -
+     gefragt wird nur, wenn ein Wettkampf beginnt. */
+  var API = '/api/wettkampf.php';
+  var TAKT = 4000;               /* so oft meldet ein laufendes Gerät */
+  var netz = null;               /* null = noch nicht gefragt */
+  var ich = null;                /* { nr, name, geheim } im Netzbetrieb */
+  var rang = [];                 /* die Rangliste, wie der Server sie sortiert */
+  var taktLauf = null;
+  var hinweis = '';              /* was der Tafel gerade zu sagen ist */
+  var letzterStand = null;       /* { treffer, gesamt, sek }, sobald fertig */
 
   /* ---------- Code und Startwert ---------- */
 
@@ -120,6 +134,104 @@
 
   function neuerCode() {
     return codeAusZahl(Math.floor(echterZufall() * 32 * 32 * 32 * 32 * 32));
+  }
+
+  /* ---------- Die Sammelstelle ---------- */
+
+  /* Ein Ruf, zwei Ausgänge. Was schiefgeht, geht leise schief: Die Aufgaben
+     laufen im Browser, die Rangliste ist Beiwerk. Fällt sie aus, darf davon
+     niemand etwas merken außer der Tafel.
+     docs/WETTKAMPF-API.md beschreibt, was dort antworten soll. */
+  function ruf(daten, gut, schief) {
+    /* Lokal geöffnet gibt es keine Sammelstelle - gar nicht erst fragen. */
+    if (location.protocol === 'file:' || typeof fetch !== 'function') {
+      schief('kein netz');
+      return;
+    }
+    var koerper = [];
+    for (var k in daten) {
+      if (daten.hasOwnProperty(k) && daten[k] !== '' && daten[k] !== null) {
+        koerper.push(encodeURIComponent(k) + '=' + encodeURIComponent(daten[k]));
+      }
+    }
+    var vorbei = false;
+    var wecker = setTimeout(function () {
+      if (!vorbei) { vorbei = true; schief('zeit'); }
+    }, 6000);
+    function fertigMit(f) {
+      return function (x) {
+        if (vorbei) return;
+        vorbei = true;
+        clearTimeout(wecker);
+        f(x);
+      };
+    }
+    fetch(API, { method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: koerper.join('&') })
+      .then(function (a) { return a.json(); })
+      .then(fertigMit(function (d) {
+        if (d && d.ok) gut(d);
+        else schief((d && d.error) || 'kaputt');
+      }))
+      .catch(fertigMit(function () { schief('netz'); }));
+  }
+
+  /* Meldet den eigenen Stand und bekommt dafür die Rangliste zurück - eine
+     Anfrage für beides, das halbiert bei einer Klasse die Last. */
+  function melden(fertig) {
+    if (netz !== true || !ich || !code) return;
+    /* Steht der Durchgang, gelten die Zahlen der Seite - der Baustein zählt
+       ja nur dort mit, wo er die Runden führt. */
+    var s = letzterStand;
+    ruf({
+      action: 'stand',
+      code: code,
+      geheim: ich.geheim,
+      runde: s ? s.gesamt : runde,
+      richtig: s ? s.treffer : richtig,
+      gesamt: s ? s.gesamt : gesamtRunden(),
+      dauer: s ? s.sek : Math.round((Date.now() - beginn) / 1000),
+      fertig: fertig || s ? 1 : 0,
+    }, function (d) {
+      rang = (d.rang || []).filter(function (z) { return !z.weg; });
+      tafelNachfuehren();
+      streifenZeigen();
+    }, function (e) {
+      /* Zu viele Anfragen: Takt verdoppeln und weiterlaufen. Alles andere
+         ist ein Grund, es beim Ergebniscode zu belassen. */
+      if (e === 'rate limit') { TAKT = Math.min(TAKT * 2, 30000); taktSetzen(); return; }
+      if (e === 'fremd' || e === 'unbekannt') { abschalten(); return; }
+    });
+  }
+
+  function gesamtRunden() {
+    if (typeof VERTRAG.runden === 'number') return VERTRAG.runden;
+    return 0;                    /* weiß die Seite selbst, sagt sie am Ende */
+  }
+
+  function taktSetzen() {
+    if (taktLauf) { clearInterval(taktLauf); taktLauf = null; }
+    if (netz !== true || zustand === 'aus') return;
+    /* Nach dem eigenen Ende langsamer: Dann schaut man nur noch zu, wie die
+       anderen fertig werden. */
+    taktLauf = setInterval(function () {
+      melden(zustand === 'fertig');
+    }, zustand === 'fertig' ? TAKT * 2 : TAKT);
+  }
+
+  /* Die Sammelstelle ist ausgefallen oder war nie da: zurück auf den
+     Ergebniscode, ohne dass der Durchgang etwas davon merkt. */
+  function abschalten() {
+    netz = false;
+    ich = null;
+    rang = [];
+    if (taktLauf) { clearInterval(taktLauf); taktLauf = null; }
+    tafelNachfuehren();
+  }
+
+  function tafelNachfuehren() {
+    if (!tafel.hidden) tafelBauen();
   }
 
   /* ---------- Der Ergebniscode ---------- */
@@ -247,6 +359,12 @@
       + 'outline:1px solid #b45309}'
     + '#wk-tafel .wk-rang .wk-wer{font-family:ui-monospace,SFMono-Regular,Menlo,'
       + 'Consolas,monospace;font-weight:700;letter-spacing:.08em}'
+    /* Im Netzbetrieb stehen dort Namen, keine Codes - die tragen sich als
+       Schreibmaschinenschrift schlecht. */
+    + '#wk-tafel .wk-namen .wk-wer{font-family:inherit;letter-spacing:0}'
+    + '#wk-tafel .wk-rang .wk-lauf{font-size:.8rem;color:var(--muted,#5f5f5a)}'
+    + ':root[data-thema-effektiv="dunkel"] #wk-tafel .wk-rang .wk-lauf'
+      + '{color:#a0a0a0}'
     + '#wk-tafel .wk-rang .wk-zahl{margin-left:auto;white-space:nowrap;'
       + 'font-variant-numeric:tabular-nums}'
     + '#wk-tafel .wk-rang .wk-ich{font-size:.78rem;font-weight:700;'
@@ -389,14 +507,49 @@
     return '';
   }
 
+  /* Die Rangliste aus der Sammelstelle: Namen statt Codes, und sie zeigt
+     auch, wer noch mittendrin ist. */
+  function ranglisteBauen(wohin) {
+    if (!rang.length) {
+      el('p', { text: 'Noch niemand da. Wer den Code eingibt oder den QR-Code '
+        + 'abfotografiert, erscheint hier von selbst.' }, wohin);
+      return;
+    }
+    var fertige = rang.filter(function (z) { return z.fertig; });
+    if (fertige.length > 1) {
+      el('p', { 'class': 'wk-sieger',
+        html: '<b>Vorn: ' + fertige[0].name + '</b> &ndash; ' + fertige[0].richtig
+          + ' von ' + fertige[0].gesamt + ' in ' + zeitText(fertige[0].dauer * 1000) },
+        wohin);
+    }
+    var liste = el('ol', { 'class': 'wk-rang wk-namen' }, wohin);
+    rang.forEach(function (z, i) {
+      var li = el('li', { 'class': i === 0 && z.fertig && rang.length > 1
+        ? 'wk-sieg' : '' }, liste);
+      el('span', { 'class': 'wk-wer', text: z.name }, li);
+      if (ich && z.nr === ich.nr) el('span', { 'class': 'wk-ich', text: 'du' }, li);
+      if (z.fertig) {
+        el('span', { 'class': 'wk-zahl', text: z.richtig + '/' + z.gesamt
+          + ' · ' + zeitText(z.dauer * 1000) }, li);
+      } else {
+        el('span', { 'class': 'wk-zahl wk-lauf', text: z.gesamt
+          ? 'Runde ' + Math.min(z.runde + 1, z.gesamt) + ' von ' + z.gesamt
+          : 'läuft noch' }, li);
+      }
+    });
+    el('p', { 'class': 'wk-leise', text: 'Kein Name, keine Anmeldung: Die '
+      + 'Namen vergibt der Wettkampf selbst und vergisst sie nach einem Tag '
+      + 'wieder.' }, wohin);
+  }
+
   function punktestandBauen() {
     el('h2', { text: 'Punktestand' }, tafel);
-    var rang = rangfolge();
+    var reihe = rangfolge();
 
-    if (rang.length > 1) {
+    if (reihe.length > 1) {
       el('p', { 'class': 'wk-sieger',
-        html: '<b>Sieger: ' + rang[0].code + '</b> &ndash; ' + rang[0].treffer
-          + ' von ' + rang[0].gesamt + ' in ' + zeitText(rang[0].sek * 1000) }, tafel);
+        html: '<b>Sieger: ' + reihe[0].code + '</b> &ndash; ' + reihe[0].treffer
+          + ' von ' + reihe[0].gesamt + ' in ' + zeitText(reihe[0].sek * 1000) }, tafel);
     }
 
     el('label', { 'for': 'wk-eingabe', text: 'Ergebniscode eintragen' }, tafel);
@@ -417,13 +570,13 @@
       if (e.key === 'Enter') { e.preventDefault(); los(); }
     });
 
-    if (!rang.length) {
+    if (!reihe.length) {
       el('p', { text: 'Noch niemand eingetragen. Jedes Gerät zeigt am Ende '
         + 'seines Durchgangs einen Ergebniscode - hier kommen sie zusammen.' }, tafel);
     } else {
       var liste = el('ol', { 'class': 'wk-rang' }, tafel);
-      rang.forEach(function (e, i) {
-        var li = el('li', { 'class': i === 0 && rang.length > 1 ? 'wk-sieg' : '' }, liste);
+      reihe.forEach(function (e, i) {
+        var li = el('li', { 'class': i === 0 && reihe.length > 1 ? 'wk-sieg' : '' }, liste);
         el('span', { 'class': 'wk-wer', text: e.code }, li);
         if (e.ich) el('span', { 'class': 'wk-ich', text: 'du' }, li);
         el('span', { 'class': 'wk-zahl', text: e.treffer + '/' + e.gesamt
@@ -447,14 +600,16 @@
 
   function tafelBauen() {
     tafel.textContent = '';
-    if (zustand !== 'aus' && ansicht === 'punktestand') return punktestandBauen();
+    if (zustand !== 'aus' && ansicht === 'punktestand' && netz !== true) {
+      return punktestandBauen();
+    }
     if (zustand === 'aus') {
       el('h2', { text: 'Um die Wette' }, tafel);
       el('p', { text: 'Alle mit demselben Code bekommen dieselben Aufgaben in '
         + 'derselben Reihenfolge. Wer schneller und genauer ist, gewinnt. Ohne '
         + 'Anmeldung, ohne Konto.' }, tafel);
       var start = el('button', { type: 'button', text: 'Wettkampf starten' }, tafel);
-      start.addEventListener('click', function () { beginnen(neuerCode()); });
+      start.addEventListener('click', aufmachen);
 
       el('hr', { 'class': 'wk-trenner' }, tafel);
       el('label', { 'for': 'wk-eingabe', text: 'Oder einen Code mitmachen' }, tafel);
@@ -462,14 +617,15 @@
         autocomplete: 'off', spellcheck: 'false', placeholder: 'z. B. K7M2Q' }, tafel);
       var knoepfe = el('div', { 'class': 'wk-knoepfe' }, tafel);
       var mit = el('button', { type: 'button', text: 'Mitmachen' }, knoepfe);
-      var fehler = el('p', { role: 'status', 'aria-live': 'polite' }, tafel);
+      var sagt = el('p', { role: 'status', 'aria-live': 'polite', text: hinweis }, tafel);
       function mitmachen() {
         var c = saeubern(eing.value);
         if (c.length !== LAENGE) {
-          fehler.textContent = 'Der Code hat fünf Zeichen.';
+          sagt.textContent = 'Der Code hat fünf Zeichen.';
           return;
         }
-        beginnen(c);
+        sagt.textContent = 'Einen Augenblick …';
+        beitreten(c);
       }
       mit.addEventListener('click', mitmachen);
       eing.addEventListener('keydown', function (e) {
@@ -483,16 +639,25 @@
     el('span', { 'class': 'wk-code', text: code }, tafel);
     el('p', { text: 'Wer diesen Code eingibt oder den Bildschirm abfotografiert, '
       + 'bekommt dieselben Aufgaben.'
-      + (eigenerDurchgang() ? '' : ' Zeit und Trefferzahl stehen am Ende des '
-        + 'Durchgangs - dort wird verglichen.') }, tafel);
+      + (netz === true ? ' Wer mitmacht, erscheint unten von selbst.'
+        : eigenerDurchgang() ? '' : ' Zeit und Trefferzahl stehen am Ende des '
+          + 'Durchgangs - dort wird verglichen.') }, tafel);
     qrBauen(tafel, adresse(code));
+    if (hinweis) el('p', { 'class': 'wk-sieger', text: hinweis }, tafel);
+
+    /* Mit Sammelstelle steht die Rangliste gleich hier und führt sich selbst
+       nach - ein zweiter Knopf dafür wäre nur ein Umweg. */
+    if (netz === true) ranglisteBauen(tafel);
+
     var kn = el('div', { 'class': 'wk-knoepfe' }, tafel);
-    var stehen = el('button', { type: 'button',
-      text: stand.length ? 'Punktestand (' + stand.length + ')' : 'Punktestand' }, kn);
-    stehen.addEventListener('click', function () {
-      ansicht = 'punktestand';
-      tafelBauen();
-    });
+    if (netz !== true) {
+      var stehen = el('button', { type: 'button',
+        text: stand.length ? 'Punktestand (' + stand.length + ')' : 'Punktestand' }, kn);
+      stehen.addEventListener('click', function () {
+        ansicht = 'punktestand';
+        tafelBauen();
+      });
+    }
     var neu = el('button', { type: 'button', 'class': 'leise', text: 'Noch einmal' }, kn);
     neu.addEventListener('click', function () { beginnen(code); });
     var aus = el('button', { type: 'button', 'class': 'leise', text: 'Beenden' }, kn);
@@ -522,14 +687,31 @@
     return Math.floor(s / 60) + ':' + (s % 60 < 10 ? '0' : '') + (s % 60);
   }
 
+  /* Wo steht man gerade? Im Netzbetrieb lässt sich das sagen. */
+  function platzText() {
+    if (netz !== true || !ich || !rang.length) return '';
+    for (var i = 0; i < rang.length; i++) {
+      if (rang[i].nr === ich.nr) {
+        return 'Platz ' + (i + 1) + ' von ' + rang.length;
+      }
+    }
+    return '';
+  }
+
   function streifenZeigen() {
+    if (zustand !== 'laeuft' || !eigenerDurchgang()) return;
     var s = streifen();
-    var mitRunden = typeof VERTRAG.runden === 'number';
+    var platz = platzText();
     s.innerHTML = '<span>Wettkampf <b>' + code + '</b></span>'
-      + (mitRunden ? '<span>Runde ' + Math.min(runde + 1, VERTRAG.runden)
-          + ' von ' + VERTRAG.runden + '</span>' : '')
+      + '<span>Runde ' + Math.min(runde + 1, VERTRAG.runden)
+        + ' von ' + VERTRAG.runden + '</span>'
       + '<span class="wk-uhr">' + zeitText(Date.now() - beginn) + '</span>'
-      + '<span class="wk-hin">Alle mit diesem Code haben dieselben Aufgaben.</span>';
+      + (platz ? '<span class="wk-uhr">' + platz + '</span>' : '')
+      + '<span class="wk-hin">'
+      + (netz === true
+        ? 'Du bist ' + ich.name + '. Die anderen stehen unter „Wettkampf“.'
+        : 'Alle mit diesem Code haben dieselben Aufgaben.')
+      + '</span>';
   }
 
   /* Das eigene Ergebnis ins Bild - und in den Punktestand. Der eigene Code
@@ -538,24 +720,34 @@
     var alt = document.getElementById('wk-ergebnis');
     if (alt) alt.remove();
 
-    var meins = ergebniscode(treffer, gesamt, sek);
-    /* Nur einmal eintragen - auch wenn dieselbe Runde zweimal endet oder
-       jemand denselben Code vorher schon eingetippt hat. */
-    stand = stand.filter(function (x) { return !x.ich && x.code !== meins; });
-    var eigen = ergebnisLesen(meins);
-    if (eigen) { eigen.ich = true; stand.push(eigen); }
-
     var e = el('div', { id: 'wk-ergebnis', role: 'status', 'data-druck': 'weg' });
     el('p', { 'class': 'wk-gross', text: treffer + ' von ' + gesamt
       + ' richtig, in ' + zeitText(sek * 1000) }, e);
-    el('p', { html: 'Dein Ergebniscode im Wettkampf <b>' + code + '</b>:' }, e);
-    el('span', { 'class': 'wk-meins', text: meins }, e);
-    el('p', { text: 'Sag ihn durch oder tipp ihn am Anzeigegerät in den '
-      + 'Punktestand. Dort steht kein Name - nur du weißt, welche Zeile deine '
-      + 'ist.' }, e);
-    var knopfStand = el('button', { type: 'button', text: 'Punktestand öffnen' }, e);
+
+    if (netz === true) {
+      /* Mit Sammelstelle braucht niemand etwas abzutippen: Die anderen
+         stehen schon in der Tafel, und der eigene Platz auch. */
+      el('p', { html: 'Du bist <b>' + (ich ? ich.name : '?') + '</b> im '
+        + 'Wettkampf <b>' + code + '</b>. Wo du stehst, sagt die Tafel - sie '
+        + 'führt sich nach, solange noch jemand spielt.' }, e);
+    } else {
+      var meins = ergebniscode(treffer, gesamt, sek);
+      /* Nur einmal eintragen - auch wenn dieselbe Runde zweimal endet oder
+         jemand denselben Code vorher schon eingetippt hat. */
+      stand = stand.filter(function (x) { return !x.ich && x.code !== meins; });
+      var eigen = ergebnisLesen(meins);
+      if (eigen) { eigen.ich = true; stand.push(eigen); }
+      el('p', { html: 'Dein Ergebniscode im Wettkampf <b>' + code + '</b>:' }, e);
+      el('span', { 'class': 'wk-meins', text: meins }, e);
+      el('p', { text: 'Sag ihn durch oder tipp ihn am Anzeigegerät in den '
+        + 'Punktestand. Dort steht kein Name - nur du weißt, welche Zeile deine '
+        + 'ist.' }, e);
+    }
+
+    var knopfStand = el('button', { type: 'button',
+      text: netz === true ? 'Rangliste öffnen' : 'Punktestand öffnen' }, e);
     knopfStand.addEventListener('click', function () {
-      ansicht = 'punktestand';
+      ansicht = netz === true ? 'wettkampf' : 'punktestand';
       tafel.hidden = false;
       knopf.setAttribute('aria-expanded', 'true');
       tafelBauen();
@@ -580,6 +772,59 @@
 
   /* ---------- Ablauf ---------- */
 
+  /* Eine Runde aufmachen. Den Code vergibt die Sammelstelle, damit nicht
+     zwei Lerngruppen gleichzeitig denselben ziehen. Ist sie nicht da,
+     würfeln wir ihn selbst - dann läuft der Wettkampf über Ergebniscodes. */
+  function aufmachen() {
+    hinweis = 'Einen Augenblick …';
+    tafelNachfuehren();
+    ruf({ action: 'neu', pfad: location.pathname,
+      titel: document.title.slice(0, 200),
+      runden: typeof VERTRAG.runden === 'number' ? VERTRAG.runden : '' },
+    function (d) {
+      netz = true;
+      ich = { nr: d.nr, name: d.name, geheim: d.geheim };
+      hinweis = '';
+      beginnen(d.code);
+    },
+    function () {
+      abschalten();
+      beginnen(neuerCode());
+    });
+  }
+
+  /* Einen Code mitmachen. Nur wenn die Sammelstelle ausdrücklich sagt, dass
+     es die Runde nicht gibt, hat der Code wirklich nicht gestimmt. Kommt gar
+     keine Antwort, beginnen wir ihn eben ohne sie - die Aufgabenfolge hängt
+     ja nur am Code. */
+  function beitreten(c) {
+    ruf({ action: 'beitreten', code: c, pfad: location.pathname },
+      function (d) {
+        netz = true;
+        ich = { nr: d.nr, name: d.name, geheim: d.geheim };
+        hinweis = d.pfad && d.pfad !== location.pathname
+          ? 'Achtung: Dieser Wettkampf gehört zu einem anderen Training ('
+            + (d.titel || d.pfad) + ').'
+          : '';
+        beginnen(c);
+      },
+      function (e) {
+        if (e === 'unbekannt') {
+          hinweis = 'Diesen Wettkampf gibt es nicht mehr. Eine Runde wird nach '
+            + 'einem Tag gelöscht.';
+          tafelNachfuehren();
+          return;
+        }
+        if (e === 'voll') {
+          hinweis = 'Dieser Wettkampf ist voll.';
+          tafelNachfuehren();
+          return;
+        }
+        abschalten();
+        beginnen(c);
+      });
+  }
+
   function beginnen(c) {
     /* Ein neuer Wettkampf macht den alten Punktestand ungültig - dessen
        Ergebniscodes gehören zu einem anderen Code. Dieselbe Runde noch
@@ -591,6 +836,7 @@
     ansicht = 'wettkampf';
     runde = 0;
     richtig = 0;
+    letzterStand = null;
     var alt = document.getElementById('wk-ergebnis');
     if (alt) alt.remove();
 
@@ -611,6 +857,12 @@
     try { history.replaceState(null, '', adresse(c)); }
     catch (e) { location.hash = 'w=' + c; }
 
+    /* Gleich einmal melden: Dann steht man sofort in der Liste der anderen,
+       und die eigene ist auch nicht leer. */
+    rang = [];
+    melden(false);
+    taktSetzen();
+
     tafelBauen();
     knopf.innerHTML = '<span aria-hidden="true">⚔</span> ' + code;
   }
@@ -620,7 +872,12 @@
     if (uhrLauf) { clearInterval(uhrLauf); uhrLauf = null; }
     var s = document.getElementById('wk-streifen');
     if (s) s.remove();
-    ergebnisZeigen(treffer, gesamt, Math.round((Date.now() - beginn) / 1000));
+    /* Die Zahlen der Seite gelten - der Baustein zählt nur mit, wo er darf. */
+    letzterStand = { treffer: treffer, gesamt: gesamt,
+      sek: Math.round((Date.now() - beginn) / 1000) };
+    melden(true);
+    taktSetzen();
+    ergebnisZeigen(treffer, gesamt, letzterStand.sek);
     tafelBauen();
   }
 
@@ -628,8 +885,14 @@
     zustand = 'aus';
     code = null;
     stand = [];
+    rang = [];
+    ich = null;
+    netz = null;
+    hinweis = '';
+    letzterStand = null;
     ansicht = 'wettkampf';
     Math.random = echterZufall;
+    if (taktLauf) { clearInterval(taktLauf); taktLauf = null; }
     if (uhrLauf) { clearInterval(uhrLauf); uhrLauf = null; }
     var s = document.getElementById('wk-streifen');
     if (s) s.remove();
@@ -644,11 +907,15 @@
   /* Jede beantwortete Aufgabe meldet sich. Kennt die Seite ihren Durchgang
      selbst, zählen wir nur mit; sonst beenden wir nach der letzten Runde. */
   document.addEventListener('tbk-runde', function (e) {
-    if (zustand !== 'laeuft' || !eigenerDurchgang()) return;
+    if (zustand !== 'laeuft') return;
     runde++;
     if (e && e.detail && e.detail.richtig) richtig++;
-    if (runde >= VERTRAG.runden) beenden(richtig, runde);
-    else streifenZeigen();
+    if (eigenerDurchgang() && runde >= VERTRAG.runden) { beenden(richtig, runde); return; }
+    streifenZeigen();
+    /* Damit die anderen den Fortschritt gleich sehen - und weil diese Meldung
+       den Takt neu setzt, kommt gleich danach keine zweite hinterher. */
+    melden(false);
+    taktSetzen();
   });
 
   /* Wer seinen Durchgang selbst führt, sagt am Ende, wie er ausgegangen ist -
@@ -663,6 +930,6 @@
   var ausAdresse = /(?:^|[#&])w=([0-9A-Z]+)/i.exec(location.hash || '');
   if (ausAdresse) {
     var c0 = saeubern(ausAdresse[1]);
-    if (c0.length === LAENGE) beginnen(c0);
+    if (c0.length === LAENGE) beitreten(c0);
   }
 }());

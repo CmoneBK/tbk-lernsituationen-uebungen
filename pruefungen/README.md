@@ -41,7 +41,7 @@ folgenden aufhalten.
 | `test-trainings.js` | Die Trainings: laufen sie, zählen sie richtig, heißen die Bausteine dort „Training“? |
 | `test-uebersicht.js` | Die Werkzeug-Übersicht: zwei Haupt-Tabs, Suche nur im offenen Tab. |
 | `test-werkzeug.js` | Rechnet das Werkzeug dieselben Werte wie das Tabellenbuch — und läuft es noch? |
-| `test-wettkampf.js` | Der Wettkampf: gleicher Code, gleiche Aufgabenfolge auf jedem Gerät; Ergebniscode, Punktestand und Sieger — ohne Namensfeld; kein Speicher, kein Netz, und `Math.random` gehört danach wieder der Seite. |
+| `test-wettkampf.js` | Der Wettkampf, beide Wege: gleicher Code → gleiche Aufgabenfolge; mit Sammelstelle die Rangliste nach `docs/WETTKAMPF-API.md` (als Attrappe), ohne sie der Ergebniscode. Kein Namensfeld, kein Speicher, keine fremde Adresse. |
 | `test-zahlenfeld.js` | Mausrad in Zahlenfeldern: ändert den Wert, hält die Seite an, lässt fremde Felder in Ruhe. |
 | **`test-zeichnungen.js`** | **Alle Zeichnungen gegen `vorlagen/ZEICHNUNGSREGELN.md`.** Siehe unten. |
 
