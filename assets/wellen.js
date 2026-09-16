@@ -350,3 +350,129 @@ WELLEN.spannwelle = {
     {x: 30, d: 22, text: "Rz 4"}
   ]
 };
+
+/* ==================================================================== *
+ * Abtriebswelle - Lernsituation 2
+ *
+ * Die schwierige. Jede Entscheidung für sich ist noch lehrbuchmäßig, aber
+ * sie widersprechen sich, und das muss aufgelöst werden:
+ *
+ *   X5CrNi18-10   Hauptanwendungsgruppe M, nicht P. Wer in der
+ *                 Stahlzeile nachschlägt, liest zu hohe Werte.
+ *   R0,3          Die engste Innenrundung erlaubt nur r_eps = 0,2 mm.
+ *                 Der Vorschub für Rz 4 wäre dann 0,08 mm - und liegt
+ *                 damit UNTER dem Schlichtbereich des Tabellenbuchs
+ *                 (0,1 bis 0,25 mm). Die Zeichnung fordert etwas, das
+ *                 sich so nicht drehen lässt.
+ *   Schmiedehaut  Das Rohteil ist gesenkgeschmiedet. Der erste Schnitt
+ *                 läuft durch wechselnde Tiefe und Zunder - Zeile 2 der
+ *                 Bedingungstabelle.
+ *   Passfedernut  Wird sie vor dem Schlichten gefräst, läuft die
+ *                 Schlichtschneide über eine Unterbrechung - Zeile 3.
+ *   Kegel 1:10    Der Vorschub läuft schräg zur Achse.
+ *   Bohrung       Innendrehen mit ausgekragter Bohrstange.
+ * ==================================================================== */
+WELLEN.abtriebswelle = {
+  id: "abtriebswelle",
+  name: "Abtriebswelle",
+  wo: "Lernsituation 2",
+  werkstoff: "X5CrNi18-10",
+  werkstoffnummer: "1.4301",
+  zustand: "warmgewalzter Stab",
+
+  laenge: 165,
+  abschnitte: [
+    {von: 0,  bis: 30,  d: 28, name: "Zapfen links"},
+    {von: 30, bis: 78,  d: 36, name: "Lagersitz"},
+    {von: 78, bis: 90,  d: 42, name: "Bund"},
+    /* Der Kegel: 1:10 heißt vier Millimeter Durchmesser auf vierzig
+       Millimeter Länge. `dBis` macht den Abschnitt kegelig. */
+    {von: 90, bis: 130, d: 38, dBis: 34, name: "Kegel 1:10"},
+    {von: 130, bis: 165, d: 24, name: "Gewindezapfen"}
+  ],
+  gewinde: {bezeichnung: "M24×3 – 6g", von: 134, bis: 165, P: 3,
+            d: 24, d3: 24 - 1.2268 * 3},
+  nuten: [],
+  /* Passfedernut nach DIN 6885-1: Für Ø 30 bis 38 mm sind das b = 10 mm
+     Breite und t1 = 5 mm Tiefe in der Welle. Sie liegt oben und ist nicht
+     rotationssymmetrisch - gefräst, nicht gedreht. */
+  laengsnuten: [{von: 38, bis: 70, breite: 10, tiefe: 5, d: 36,
+                 norm: "Passfeder DIN 6885-1 – A – 10 × 8 × 32"}],
+  /* Eine Sacklochbohrung von links, als verdeckte Kante gezeichnet. */
+  bohrungen: [{von: 0, bis: 40, d: 18, norm: "Ø18 H7, 40 tief"}],
+  freistiche: [],
+  rundungen: [{bei: 30, r: 0.3}, {bei: 78, r: 1.6}, {bei: 90, r: 0.8}],
+  /* Die R0,3 am ersten Absatz. Sie ist der Grund, warum sich die geforderte
+     Rz 4 am Lagersitz nicht drehen lässt: r_eps <= 0,2 mm, und der
+     Vorschub dazu läge unter dem, was das Tabellenbuch fürs Schlichten
+     vorsieht. */
+  kleinsterInnenradius: 0.3,
+  woher: "Rundung R0,3 am Absatz Ø28 auf Ø36",
+  gewindefreistich: {norm: "DIN 76 – A", von: 130, bis: 134},
+  zentrierbohrungen: {links: "–", rechts: "ISO 6411 – A3,15×6,7"},
+  rohteil: {d: 46, laenge: 172,
+            art: "Gesenkschmiedeteil mit Zunderhaut"},
+
+  toleranzen: [
+    {flaeche: "mantel_36", nennmass: 36, klasse: "k6", es: 18, ei: 2},
+    {flaeche: "bohrung_18", nennmass: 18, klasse: "H7", es: 18, ei: 0}
+  ],
+
+  flaechen: [
+    {id: "stirn_links", name: "linke Stirnfläche", bei: 0, art: "stirn",
+     verfahren: "abstechdrehen"},
+    {id: "bohrung_18", name: "Bohrung Ø18 H7", von: 0, bis: 40, d: 18,
+     art: "bohrung", verfahren: "innendrehen"},
+    {id: "mantel_28",  name: "Ø28 links", von: 0, bis: 30, d: 28,
+     art: "mantel", verfahren: "laengsrunddrehen", rz: 6.3},
+    {id: "schulter_30", name: "Schulter bei 30", bei: 30, art: "schulter",
+     verfahren: "querplandrehen"},
+    {id: "mantel_36",  name: "Lagersitz Ø36 k6", von: 30, bis: 78, d: 36,
+     art: "mantel", verfahren: "laengsrunddrehen", rz: 4},
+    {id: "laengsnut",  name: "Passfedernut 10 × 5", von: 38, bis: 70,
+     art: "laengsnut", verfahren: "fraesen"},
+    {id: "bund_42",    name: "Bund Ø42", von: 78, bis: 90, d: 42,
+     art: "mantel", verfahren: "laengsrunddrehen", rz: 10},
+    {id: "kegel",      name: "Kegel 1:10", von: 90, bis: 130, d: 38,
+     dBis: 34, art: "kegel", verfahren: "kegeldrehen", rz: 6.3},
+    {id: "freistich",  name: "Freistich DIN 76 – A", bei: 132, art: "nut",
+     verfahren: "einstechdrehen"},
+    {id: "gewinde",    name: "Gewinde M24×3", von: 134, bis: 165, d: 24,
+     art: "gewinde", verfahren: "gewindedrehen"},
+    {id: "stirn_rechts", name: "rechte Stirnfläche", bei: 165, art: "stirn",
+     verfahren: "querplandrehen"}
+  ],
+
+  masse: {
+    unten: [
+      {von: 0, bis: 30,  text: "30",  an: [28, 28]},
+      {von: 0, bis: 78,  text: "78",  an: [28, 36]},
+      {von: 0, bis: 90,  text: "90",  an: [28, 42]},
+      {von: 0, bis: 165, text: "165", an: [28, 24]}
+    ],
+    oben: [
+      {von: 134, bis: 165, text: "31", an: [24, 24]},
+      {von: 90,  bis: 130, text: "40", an: [42, 34]},
+      {von: 38,  bis: 70,  text: "32", an: [36, 36]}
+    ],
+    durchmesser: [
+      {d: 28, text: "Ø28",    seite: "links",  versatz: 26, vonMm: 0},
+      {d: 36, text: "Ø36 k6", seite: "links",  versatz: 52, vonMm: 30},
+      {d: 42, text: "Ø42",    seite: "mitte",  versatz: 84, ab: -40},
+      {d: 34, text: "Ø34",    seite: "rechts", versatz: 34, vonMm: 130,
+       ab: -30}
+    ]
+  },
+  bezeichnungen: [
+    {x: 20,  d: 18, text: "Ø18 H7, 40 tief",     ab: -18, hoch: 56},
+    {x: 54,  d: 36, text: "Passfedernut 10 × 5", ab: 14,  hoch: 34},
+    {x: 105, d: 36, text: "Kegel 1:10",          ab: -30, hoch: 60},
+    {x: 132, d: 21, text: "DIN 76 – A",          ab: 26,  hoch: 96},
+    {x: 150, d: 24, text: "M24×3 – 6g",          ab: 16,  hoch: 26}
+  ],
+  rauheiten: [
+    {x: 14,  d: 28, text: "Rz 6,3"},
+    {x: 74,  d: 36, text: "Rz 4"},
+    {x: 120, d: 35, text: "Rz 6,3"}
+  ]
+};

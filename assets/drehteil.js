@@ -22,8 +22,18 @@
  * trotzdem jede ihr eigenes Werkstück.
  *
  * Gezeichnet wird in Ansicht, nicht im Schnitt: Eine Welle wird im
- * Längsschnitt ohnehin nicht geschnitten dargestellt, und ohne Bohrung gibt
- * es nichts zu zeigen, was innen läge.
+ * Längsschnitt ohnehin nicht geschnitten dargestellt. Eine Innenbohrung
+ * erscheint deshalb als verdeckte Kante - schmale Strichlinie nach
+ * DIN ISO 128-50.
+ *
+ * Was die Maschine zeichnen kann
+ * ------------------------------
+ *   abschnitte     zylindrisch, und mit `dBis` kegelig
+ *   nuten          Sicherungsringnuten, rundum, gespiegelt
+ *   laengsnuten    Passfedernuten - sie liegen oben und werden nicht
+ *                  gespiegelt, denn sie sind nicht rotationssymmetrisch
+ *   bohrungen      Innenbohrungen als verdeckte Kanten
+ *   gewinde        Außen- und Kerndurchmesser nach DIN ISO 6410
  */
 "use strict";
 
@@ -44,19 +54,38 @@ function wellenMassstab(o){
 /* Der größte Durchmesser einer Welle - er bestimmt die Bildhöhe. */
 function wellenGroesstDurchmesser(w){
   var d = 0;
-  w.abschnitte.forEach(function(a){ if(a.d > d) d = a.d; });
+  w.abschnitte.forEach(function(a){
+    if(a.d > d) d = a.d;
+    if(a.dBis !== undefined && a.dBis > d) d = a.dBis;
+  });
   return d;
 }
 
+/* Der Halbmesser eines Abschnitts an der Stelle x. Bei einem kegeligen
+   Abschnitt (er trägt ein `dBis`) wird zwischen Anfang und Ende
+   geradlinig gerechnet - ein Kegelmantel ist im Längsschnitt eine
+   Gerade. */
+function abschnittRadius(a, x){
+  if(a.dBis === undefined) return a.d / 2;
+  var t = (x - a.von) / (a.bis - a.von);
+  return (a.d + (a.dBis - a.d) * Math.min(1, Math.max(0, t))) / 2;
+}
+
 /* Die Kontur einer Hälfte, von der Achse aus gemessen, als Punktfolge von
-   links nach rechts. Alles steckt darin: Fasen, Absätze, die Nuten und der
-   Gewindefreistich. Die andere Hälfte entsteht durch Spiegeln - eine Welle
-   ist rotationssymmetrisch, und was man zweimal zeichnet, weicht früher
-   oder später voneinander ab. */
+   links nach rechts. Alles steckt darin: Fasen, Absätze, Kegel, die Nuten
+   und der Gewindefreistich. Die andere Hälfte entsteht durch Spiegeln -
+   eine Welle ist rotationssymmetrisch, und was man zweimal zeichnet, weicht
+   früher oder später voneinander ab. */
 function wellenKontur(w){
   var a = w.abschnitte, fase = 0.5, p = [], i;
 
-  function bis(x, r){ p.push({x: x, r: r}); }
+  /* Zwei gleiche Punkte hintereinander ergaeben eine Linie der Laenge
+     null - unsichtbar, aber sie steht im Bild und wird mitgeprueft. */
+  function bis(x, r){
+    var v = p[p.length - 1];
+    if(v && Math.abs(v.x - x) < 1e-9 && Math.abs(v.r - r) < 1e-9) return;
+    p.push({x: x, r: r});
+  }
 
   /* Linke Stirnfläche mit Fase. */
   bis(0, a[0].d / 2 - fase);
@@ -65,7 +94,7 @@ function wellenKontur(w){
   /* Für jeden Abschnitt: erst, was auf seinem Mantel liegt, dann der
      Übergang zum nächsten. */
   for(i = 0; i < a.length; i++){
-    var r = a[i].d / 2;
+    var r = abschnittRadius(a[i], a[i].von);
 
     w.nuten.forEach(function(n){
       if(n.bei < a[i].von || n.bei >= a[i].bis) return;
@@ -75,8 +104,16 @@ function wellenKontur(w){
       bis(n.bei + n.breite, r);
     });
 
+    /* Ein kegeliger Abschnitt endet auf einem anderen Halbmesser als er
+       anfängt - die Gerade dorthin gehört in die Punktfolge. */
+    if(a[i].dBis !== undefined){
+      bis(a[i].von, a[i].d / 2);
+      bis(a[i].bis, a[i].dBis / 2);
+      r = a[i].dBis / 2;
+    }
+
     if(i === a.length - 1) break;
-    var rn = a[i + 1].d / 2, x = a[i].bis;
+    var rn = abschnittRadius(a[i + 1], a[i + 1].von), x = a[i].bis;
 
     if(w.gewindefreistich && x === w.gewindefreistich.von){
       /* Vor dem Gewinde geht der Durchmesser unter den Kerndurchmesser,
@@ -100,7 +137,8 @@ function wellenKontur(w){
   }
 
   /* Rechte Stirnfläche mit Fase. */
-  var rl = a[a.length - 1].d / 2;
+  var letzt = a[a.length - 1];
+  var rl = abschnittRadius(letzt, letzt.bis);
   bis(w.laenge - fase, rl);
   bis(w.laenge, rl - fase);
   return p;
@@ -170,6 +208,46 @@ function zeichneWelle(svg, w, o){
     linie(g, m.x(gw.von), m.y(gw.d3, true), m.x(gw.von), m.y(gw.d3, false),
           BREIT);
   }
+
+  /* Eine Innenbohrung. In der Ansicht ist sie eine verdeckte Kante:
+     schmale Strichlinie, DIN ISO 128-50. Geschnitten wird nicht - eine
+     Welle stellt man im Längsschnitt nicht geschnitten dar. */
+  (w.bohrungen || []).forEach(function(b){
+    [true, false].forEach(function(oben){
+      linie(g, m.x(b.von), m.y(b.d, oben), m.x(b.bis), m.y(b.d, oben),
+            SCHMAL, {strich:"6 3"});
+    });
+    /* Der Bohrungsgrund, wenn sie nicht durchgeht. */
+    if(b.bis < w.laenge){
+      linie(g, m.x(b.bis), m.y(b.d, true), m.x(b.bis), m.y(b.d, false),
+            SCHMAL, {strich:"6 3"});
+    }
+    if(b.von > 0){
+      linie(g, m.x(b.von), m.y(b.d, true), m.x(b.von), m.y(b.d, false),
+            SCHMAL, {strich:"6 3"});
+    }
+  });
+
+  /* Eine Längsnut (Passfedernut) - sie liegt oben und ist nicht
+     rotationssymmetrisch. Also wird sie nur einmal gezeichnet, nicht
+     gespiegelt: zwei Endbögen und der Nutgrund dazwischen. */
+  (w.laengsnuten || []).forEach(function(n){
+    var oben = true;
+    var rOben = m.y(n.d, oben), rGrund = m.y(n.d - 2 * n.tiefe, oben);
+    var halb = n.breite / 2 * m.s;
+    var x1 = m.x(n.von), x2 = m.x(n.bis);
+    /* Der Nutgrund als breite Vollinie - er ist eine sichtbare Kante. */
+    linie(g, x1, rGrund, x2, rGrund, BREIT);
+    /* Die beiden Enden als Halbkreise mit dem Halbmesser der halben
+       Nutbreite; in der Ansicht erscheinen sie als Bogen. */
+    [[x1, 1], [x2, -1]].forEach(function(e){
+      svgEl("path", {d: "M" + e[0].toFixed(1) + "," + rOben.toFixed(1)
+        + " A" + halb.toFixed(1) + "," + Math.abs(rGrund - rOben).toFixed(1)
+        + " 0 0 " + (e[1] > 0 ? 1 : 0) + " "
+        + (e[0] + e[1] * halb).toFixed(1) + "," + rGrund.toFixed(1),
+        fill:"none", stroke:"currentColor", "stroke-width":BREIT}, g);
+    });
+  });
 
   /* Mittellinie, zwei bis drei Millimeter über das Teil hinaus. */
   achse(g, m.x(-4), m.x(w.laenge + 4), m.achse);
@@ -277,7 +355,20 @@ function wellenMarkieren(g, m, w, ids, farbe){
 
   (w.flaechen || []).forEach(function(f){
     if(ids.indexOf(f.id) < 0) return;
-    if(f.art === "mantel" || f.art === "gewinde"){
+    if(f.art === "mantel" || f.art === "gewinde" || f.art === "kegel"){
+      [true, false].forEach(function(oben){
+        linie(e, m.x(f.von), m.y(f.d, oben), m.x(f.bis),
+              m.y(f.dBis === undefined ? f.d : f.dBis, oben),
+              BREIT * 2, {deckung: 0.45});
+      });
+    }else if(f.art === "laengsnut"){
+      var n = (w.laengsnuten || [])[0];
+      if(n){
+        linie(e, m.x(n.von), m.y(n.d - 2 * n.tiefe, true),
+              m.x(n.bis), m.y(n.d - 2 * n.tiefe, true), BREIT * 2,
+              {deckung: 0.45});
+      }
+    }else if(f.art === "bohrung"){
       [true, false].forEach(function(oben){
         linie(e, m.x(f.von), m.y(f.d, oben), m.x(f.bis), m.y(f.d, oben),
               BREIT * 2, {deckung: 0.45});
