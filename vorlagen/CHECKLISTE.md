@@ -96,8 +96,14 @@ Abzug — und dort besonders Abschnitt 6.1: vollständig bemaßt, aber nirgends
 doppelt.** Kurzfassung für eine Welle:
 
 * Zeichnen mit `masse` + `masseUnten` + `radien` + `bezeichnungen` +
-  `rauheiten`. Ohne `masseUnten` laufen die Hinweislinien in die obere
-  Maßkette; das ist der Grund, warum die Ebenen früher nicht zusammen durften.
+  `rauheiten` + `zentrierbohrungen`. Ohne `masseUnten` laufen die
+  Hinweislinien in die obere Maßkette; das ist der Grund, warum die Ebenen
+  früher nicht zusammen durften.
+* **Rautiefen stehen nie als blanker Text**, sondern auf dem Sinnbild nach
+  ISO 21920 — `rauheiten` erledigt das. **Zentrierbohrungen** gehören mit
+  ihrer Bezeichnung ins Bild (Schrägstrich, nicht ×), und die Nut braucht die
+  Hüllbedingung Ⓔ und `2× R` in der Draufsicht. Wo das im Buch steht, sagt
+  `ZEICHNUNGSREGELN.md` 6.2 bis 6.5.
 * Rundungen und Freistiche kommen aus `rundungen`/`freistiche` in
   `assets/wellen.js`. Fehlt dort die Lage (`ab`, `hoch`), setzt der Baustein
   sie zur schlankeren Seite — nachmessen mit `test-beschriftung.js`.

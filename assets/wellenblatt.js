@@ -54,6 +54,7 @@ function wellenblattStil(){
     + ".wellenblatt figcaption{font-size:13px;margin-top:6px;"
     + "color:var(--muted,#5f5f5a)}"
     + ".wellenblatt .blatt-einzelheit{max-width:330px}"
+    + ".wellenblatt .blatt-zweiriss{max-width:620px}"
     + ".wellenblatt table{width:100%;border-collapse:collapse;"
     + "font-size:14px;margin:0}"
     + ".wellenblatt th,.wellenblatt td{text-align:left;vertical-align:top;"
@@ -125,6 +126,16 @@ function wellenblattAngaben(w){
       + (b.bis < w.laenge ? " &middot; Sackloch" : " &middot; durchgehend")]);
   });
 
+  if(w.zentrierbohrungen){
+    var zb = w.zentrierbohrungen;
+    var wie = {darf: "darf am Fertigteil vorhanden sein",
+               erforderlich: "am Fertigteil erforderlich",
+               nicht: "darf am Fertigteil nicht vorhanden sein"}[zb.art];
+    z.push(["Zentrierbohrungen",
+      "links " + (zb.links || "–") + " &middot; rechts "
+      + (zb.rechts || "–") + (wie ? " &middot; " + wie : "")]);
+  }
+
   (w.freistiche || []).forEach(function(f){
     z.push(["Freistich", f.norm + " an der Schulter " + f.schulter]);
   });
@@ -179,7 +190,8 @@ function wellenblatt(ziel, w, o){
      die Hinweislinie der R1 durch die Angabe „Rz 6,3“ - gemessen, nicht
      vermutet, siehe pruefungen/test-beschriftung.js. */
   var op = {s: o.s || 5.8, masse: true, masseUnten: true,
-            bezeichnungen: true, rauheiten: true, radien: true};
+            bezeichnungen: true, rauheiten: true, radien: true,
+            zentrierbohrungen: true};
   var g = wellenGroesse(w, op);
   var svg = bild(f1.id, g.breite, g.hoehe,
     "Gesamtzeichnung der " + w.name + " mit allen Maßen",
@@ -213,19 +225,21 @@ function wellenblatt(ziel, w, o){
   if((w.laengsnuten || []).length){
     var f3 = document.createElement("figure");
     f3.id = vorne + "quernut";
-    f3.className = "blatt-einzelheit";
+    f3.className = "blatt-zweiriss";
     ziel.appendChild(f3);
 
     var n3 = w.laengsnuten[0];
     var q = nutQuerschnittGroesse(w, {s: 8});
-    var s3 = bild(f3.id, q.breite, q.hoehe,
-      "Querschnitt durch die Passfedernut mit Breite und Tiefe",
-      "<strong>Querschnitt durch die Passfedernut</strong> &ndash; Breite "
-      + "und Tiefe liegen quer zur Achse und sind in der Ansicht nicht "
-      + "einzutragen. Die gestrichelte Linie über der Nut ist die gedachte "
-      + "Mantelfläche, von der t<sub>1</sub> angetragen wird."
+    var dr = nutDraufsichtGroesse(w, {s: 8});
+    var s3 = bild(f3.id, q.breite + dr.breite, Math.max(q.hoehe, dr.hoehe),
+      "Querschnitt und Draufsicht der Passfedernut",
+      "<strong>Querschnitt und Draufsicht der Passfedernut</strong> "
+      + "&ndash; Breite und Tiefe liegen quer zur Achse, die runden Enden "
+      + "sieht man nur von oben. Die gestrichelte Linie über der Nut ist "
+      + "die gedachte Mantelfläche, von der t<sub>1</sub> angetragen wird."
       + (n3.norm ? " Dazu gehört die " + n3.norm + "." : ""));
     zeichneNutQuerschnitt(s3, w, {s: 8, x: q.x, y: q.y});
+    zeichneNutDraufsicht(s3, w, {s: 8, x: q.breite + dr.x, y: dr.y});
   }
 
   /* ---------- 3. Die übrigen Angaben ---------- */

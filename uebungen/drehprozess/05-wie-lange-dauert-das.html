@@ -222,27 +222,40 @@
         verwendeten. Dort ist die Drehzahl keine feste Zahl mehr, sondern
         wird laufend nachgeregelt, und gerechnet wird direkt mit
         v<sub>c</sub>:</p>
-      <span class="formel">t<sub>h</sub> = π · d · L · i /
-        (v<sub>c</sub> · 1000 · f)</span>
-      <p>Die <strong>1000</strong> gehört dazu: v<sub>c</sub> steht in
-        Metern je Minute, d und L in Millimetern. Eingesetzt wird für d
-        dasselbe wie bei der Drehzahl &ndash; beim Längsdrehen der
-        Durchmesser, beim Querplandrehen der mittlere Durchmesser
-        d<sub>m</sub>. Die Vorschubwege sind dieselben.</p>
-      <p>Und jetzt der Punkt, an dem man zweimal hinsehen muss:
-        <strong>Beide Formeln liefern dieselbe Zahl.</strong> Setzt man
-        n = v<sub>c</sub> · 1000 / (π · d) in t<sub>h</sub> = L · i / (n · f)
-        ein, steht die CNC-Formel da. Die Zeit ändert sich nicht.</p>
-      <p>Was sich ändert, ist, <em>was während des Schnitts passiert</em>.
-        Auf der konventionellen Maschine steht die Drehzahl fest; beim
-        Querplandrehen stimmt die Schnittgeschwindigkeit deshalb nur am
-        mittleren Durchmesser. Außen ist sie zu hoch, zur Mitte hin fällt
-        sie gegen null &ndash; und dort schneidet das Werkzeug nicht mehr,
-        es drückt. Die CNC hält v<sub>c</sub> konstant und erreicht damit
-        überall dieselbe Standzeit und dieselbe Oberfläche. Dafür muss die
-        Drehzahl zur Mitte hin immer weiter steigen, und irgendwann ist die
-        Spindel am Anschlag: Deshalb gehört zu G96 immer eine
-        Drehzahlbegrenzung.</p>
+      <span class="formel">t<sub>h</sub> = π · d<sub>m</sub> /
+        (v<sub>c</sub> · f) · (L · i)</span>
+      <p>Die Vorschubwege L sind dieselben wie oben. Neu ist, womit
+        gerechnet wird: <strong>immer mit dem mittleren Durchmesser</strong>
+        d<sub>m</sub> &ndash; beim Querplandrehen wie bisher, beim
+        <strong>Längsrunddrehen aber neuerdings auch</strong>, und zwar
+        d<sub>m</sub> = (d + d<sub>e</sub>) / 2 aus Anfangs- und
+        Enddurchmesser. Rechnet mit v<sub>c</sub> in m/min, so gehört wie
+        bei der Drehzahl der Faktor 1000 dazu.</p>
+      <p>Daraus folgt der Unterschied, und er ist kein sprachlicher:</p>
+      <ul>
+        <li><strong>Beim Querplandrehen kommt dieselbe Zeit heraus.</strong>
+          Beide Seiten rechnen mit demselben d<sub>m</sub>; setzt man
+          n = v<sub>c</sub> / (π · d<sub>m</sub>) in t<sub>h</sub> =
+          L · i / (n · f) ein, steht die CNC-Formel da.</li>
+        <li><strong>Beim Längsrunddrehen nicht.</strong> Die konventionelle
+          Maschine bekommt ihre Drehzahl aus dem <em>Anfangs</em>durchmesser
+          &ndash; die größte Drehzahl, die unterwegs noch passt. Die CNC
+          rechnet mit dem Mittelwert, und der ist kleiner. Die
+          <strong>CNC-Zeit fällt also kürzer aus</strong>.</li>
+      </ul>
+      <p>Der Grund dahinter: Auf der konventionellen Maschine steht die
+        Drehzahl fest, die Schnittgeschwindigkeit stimmt deshalb nur an
+        einem Durchmesser. Beim Querplandrehen fällt sie zur Mitte hin gegen
+        null &ndash; dort schneidet das Werkzeug nicht mehr, es drückt. Die
+        CNC hält v<sub>c</sub> konstant und erreicht überall dieselbe
+        Standzeit und dieselbe Oberfläche. Dafür muss die Drehzahl zur Mitte
+        hin immer weiter steigen, und irgendwann ist die Spindel am
+        Anschlag: Deshalb gehört zu G96 immer eine Drehzahlbegrenzung.</p>
+      <p class="fussnote">Zwei Kleinigkeiten von derselben Seite:
+        <strong>Fasen, Freistiche und Radien</strong> werden beim
+        Vorschubweg nicht mitgerechnet. Und beim Schlichten ist i = 1,
+        beim Querplandrehen i = Aufmaß / Schnitttiefe, immer ganzzahlig
+        aufgerundet.</p>
     </details>
 
     <div class="merksatz">

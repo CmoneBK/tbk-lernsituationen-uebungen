@@ -43,7 +43,10 @@
  *   bezeichnungen         Benennungen mit Hinweislinie (eigene Ebene);
  *                         `wennOhneMasse` blendet eine aus, sobald das
  *                         Bild bemasst ist - sonst stuende sie doppelt
- *   rauheiten             die geforderten Rautiefen im Bild
+ *   rauheiten             die geforderten Rautiefen im Bild; gezeichnet
+ *                         als Oberflaechenzeichen nach ISO 21920
+ *   zentrierbohrungen     Bezeichnung je Stirnflaeche und `art`:
+ *                         "darf" | "erforderlich" | "nicht" (DIN ISO 6411)
  *   allgemeineRautiefe    die Angabe im Schriftfeld, fuer alles Uebrige
  *
  * Gezeichnet wird in Ansicht, nicht im Schnitt: Eine Welle wird im
@@ -101,7 +104,7 @@ WELLEN.antriebswelle = {
      t2: 0.2, f: 2.5, schulter: "Ø20 auf Ø24", ab: -40, hoch: 76},
     {norm: "DIN 509 – E 0,6 × 0,3", bei: 52.3, r: 0.6, tiefe: 0.3,
      t2: 0.2, f: 2.5, schulter: "Bundschulter am Lagersitz Ø25",
-     ab: 40, hoch: 76}
+     ab: 52, hoch: 76}
   ],
   rundungen: [{bei: 42.3, r: 1, ab: -14, hoch: 44}],
   /* Der kleinste Innenradius der ganzen Kontur - und damit die Grenze für
@@ -120,7 +123,11 @@ WELLEN.antriebswelle = {
      Gewählt ist die Höchstlänge 3,5 mm. */
   gewindefreistich: {norm: "DIN 76 – A", von: 91.6, bis: 95.1,
                      r: 0.4, dg: 18.4, P: 1},
-  zentrierbohrungen: {links: "ISO 6411 – A2×4,25", rechts: "ISO 6411 – A2,5×5,3"},
+  /* Seite 118: Die Bezeichnung trennt d1 und d2 mit einem Schrägstrich.
+     `art` ist eine Entscheidung, keine Ableitung - das Teil wird zwischen
+     Spitzen gedreht, die Bohrungen dürfen am Fertigteil bleiben. */
+  zentrierbohrungen: {links: "ISO 6411 – A2/4,25",
+                      rechts: "ISO 6411 – A2,5/5,3", art: "darf"},
   rohteil: {d: 32, laenge: 135},
 
   /* Die beiden Funktionsflächen tragen ISO-Toleranzen. Grenzabmaße in
@@ -193,7 +200,10 @@ WELLEN.antriebswelle = {
   rauheiten: [
     {x: 16, d: 20, text: "Rz 4"},
     {x: 32, d: 24, text: "Rz 6"},
-    {x: 70, d: 25, text: "Rz 4"}
+    /* Weiter links als der Augenschein nahelegt: Das Oberflaechenzeichen
+       traegt seine Fahne nach rechts, und dort stehen Nut B und der
+       Gewindefreistich. Nachgemessen, siehe test-beschriftung.js. */
+    {x: 60, d: 25, text: "Rz 4"}
   ],
   allgemeineRautiefe: 10
 };
@@ -242,7 +252,8 @@ WELLEN.mitnehmerwelle = {
      vorher standen, wären unter der Mindestlänge. */
   gewindefreistich: {norm: "DIN 76 – A", von: 68, bis: 75,
                      r: 1.0, dg: 21, P: 2},
-  zentrierbohrungen: {links: "ISO 6411 – A2,5×5,3", rechts: "ISO 6411 – A3,15×6,7"},
+  zentrierbohrungen: {links: "ISO 6411 – A2,5/5,3",
+                      rechts: "ISO 6411 – A3,15/6,7", art: "darf"},
   rohteil: {d: 38, laenge: 112},
 
   flaechen: [
@@ -344,7 +355,8 @@ WELLEN.spannwelle = {
      und g1 = 3,2 bis g2 = 5,2 mm. Die 3,5 mm liegen im Bereich. */
   gewindefreistich: {norm: "DIN 76 – A", von: 58, bis: 61.5,
                      r: 0.8, dg: 13.7, P: 1.5},
-  zentrierbohrungen: {links: "ISO 6411 – A2×4,25", rechts: "ISO 6411 – A2,5×5,3"},
+  zentrierbohrungen: {links: "ISO 6411 – A2/4,25",
+                      rechts: "ISO 6411 – A2,5/5,3", art: "darf"},
   rohteil: {d: 28, laenge: 96},
 
   /* Zwei Passungen, absichtlich von anderer Art als bei der
@@ -404,7 +416,8 @@ WELLEN.spannwelle = {
   },
   bezeichnungen: [
     {x: 6.65,  d: 18, text: "Nut A",        ab: -30, hoch: 46},
-    {x: 43.65, d: 22, text: "Nut B",        ab: -46, hoch: 26},
+    /* Siehe Antriebswelle: Platz fuer die Fahne der Rz 4. */
+    {x: 43.65, d: 22, text: "Nut B",        ab: 20,  hoch: 46},
     {x: 59.7,  d: 15, text: "DIN 76 – A",   ab: -12, hoch: 46},
     {x: 76,    d: 16, text: "M16×1,5 – 6g", ab: 20,  hoch: 26,
      wennOhneMasse: true}
@@ -466,11 +479,12 @@ WELLEN.abtriebswelle = {
   /* Toleranzen aus dem Tabellenbuch, Passfedern DIN 6885-1: Die
      Wellennutbreite bekommt N9 - leichter Sitz, weil die Nabe montierbar
      bleiben soll; P9 (fester Sitz) wäre für wechselnde Belastung. Die
-     zulässige Abweichung von t1 ist bei d1 von 22 bis 130 mm +0,2 mm,
-     die der Nutlänge bei l bis 36 mm ebenfalls +0,2 mm. */
+     zulässige Abweichung von t1 ist bei d1 von 22 bis 130 mm +0,2 mm.
+     Die Nutlänge staffelt Seite 261 nach l: 6…28 → +0,2, 32…80 → +0,3,
+     90…400 → +0,5. Unsere Nut ist 32 mm lang, also +0,3. */
   laengsnuten: [{von: 38, bis: 70, breite: 10, tiefe: 5, d: 36,
                  breiteToleranz: "N9", tiefeToleranz: "+0,2",
-                 laengeToleranz: "+0,2", sitz: "leichter Sitz",
+                 laengeToleranz: "+0,3", sitz: "leichter Sitz",
                  hoeheFeder: 8,
                  norm: "Passfeder DIN 6885-1 – A – 10 × 8 × 32"}],
   /* Eine Sacklochbohrung von links, als verdeckte Kante gezeichnet. */
@@ -490,7 +504,9 @@ WELLEN.abtriebswelle = {
      vorher standen, wären deutlich unter der Mindestlänge. */
   gewindefreistich: {norm: "DIN 76 – A", von: 130, bis: 138,
                      r: 1.6, dg: 19.6, P: 3},
-  zentrierbohrungen: {links: "–", rechts: "ISO 6411 – A3,15×6,7"},
+  /* Links sitzt die Bohrung Ø18 H7 - dort ist keine Zentrierbohrung. */
+  zentrierbohrungen: {links: "–", rechts: "ISO 6411 – A3,15/6,7",
+                      art: "darf"},
   rohteil: {d: 46, laenge: 172,
             art: "Gesenkschmiedeteil mit Zunderhaut"},
 
@@ -536,7 +552,7 @@ WELLEN.abtriebswelle = {
     oben: [
       {von: 138, bis: 165, text: "27", an: [24, 24]},
       {von: 90,  bis: 130, text: "40", an: [42, 34]},
-      {von: 38,  bis: 70,  text: "32 +0,2", an: [36, 36]}
+      {von: 38,  bis: 70,  text: "32 +0,3", an: [36, 36]}
     ],
     durchmesser: [
       {d: 28, text: "Ø28",    seite: "links",  versatz: 26, vonMm: 0},

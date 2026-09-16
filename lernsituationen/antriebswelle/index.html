@@ -478,8 +478,11 @@
     <p class="fussnote">Das ist die Formel für <strong>konstante
       Drehzahl</strong> &ndash; die Maschine im Auftrag ist konventionell und
       hat feste Stufen. Für eine CNC mit konstanter Schnittgeschwindigkeit
-      steht im Tabellenbuch die Seite daneben; sie kommt auf dieselbe Zeit,
-      hält aber v<sub>c</sub> über den ganzen Schnitt ein. Beide Fälle
+      steht im Tabellenbuch die Seite daneben. Sie kommt beim
+      <em>Querplandrehen</em> auf dieselbe Zeit, beim
+      <em>Längsrunddrehen</em> aber auf eine kürzere: Dort rechnet sie mit
+      dem mittleren Durchmesser aus Anfangs- und Enddurchmesser, während
+      hier die Drehzahl aus dem Anfangsdurchmesser kommt. Beide Fälle
       rechnet das Werkzeug „Hauptnutzungszeit beim Drehen“ durch.</p>
 
     <p>Rechnet für die drei längsten Vorgänge den Vorschubweg und die Zeit.
@@ -704,7 +707,7 @@ function bilanz(id, richtig, gesamt, offen){
      Mit `masseUnten` steht keine Maßkette mehr ueber dem Teil, und die
      Benennungen, Freistiche und Rundungen bekommen dort Platz. */
   var o = {s:6.2, masse:true, masseUnten:true, bezeichnungen:true,
-           rauheiten:true, radien:true};
+           rauheiten:true, radien:true, zentrierbohrungen:true};
   var g = wellenGroesse(WELLE, o);
   var svg = bild("bildWelle", g.breite, g.hoehe,
     "Fertigungszeichnung der Antriebswelle mit allen Maßen",

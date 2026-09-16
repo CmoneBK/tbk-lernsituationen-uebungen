@@ -29,7 +29,7 @@
   figure.bild svg{width:100%; height:auto}
   /* Der Nutquerschnitt ist ein kleines Bild - auf voller Breite waere er
      groesser als das Werkstueck, zu dem er gehoert. */
-  figure.bild.schmal{max-width:360px}
+  figure.bild.schmal{max-width:620px}
   figure.bild figcaption{font-size:13px; color:var(--muted); margin-top:6px}
   /* Der Arbeitsplan ist das Handlungsprodukt - er darf breit sein. */
   table.plan{font-size:13.5px}
@@ -532,11 +532,12 @@
       Drehzahl</strong>: Die Maschine dieses Auftrags hat feste
       Drehzahlstufen, und genau die habt ihr in Teil 5 gewählt. Das
       Tabellenbuch führt daneben den CNC-Fall mit konstanter
-      Schnittgeschwindigkeit &ndash; dieselbe Zeit, aber v<sub>c</sub> wird
-      über den ganzen Schnitt gehalten. Beim Querplandrehen und beim
-      Kegeldrehen ist das der Unterschied zwischen „stimmt im Mittel“ und
-      „stimmt überall“. Das Werkzeug „Hauptnutzungszeit beim Drehen“ rechnet
-      beide Fälle.</p>
+      Schnittgeschwindigkeit. Der unterscheidet sich nicht nur im Ablauf,
+      sondern auch im Ergebnis: Beim <em>Querplandrehen</em> kommt dieselbe
+      Zeit heraus, beim <em>Längsrunddrehen</em> eine kürzere &ndash; dort
+      rechnet die CNC-Seite mit dem mittleren Durchmesser aus Anfangs- und
+      Enddurchmesser statt mit dem Anfangsdurchmesser. Das Werkzeug
+      „Hauptnutzungszeit beim Drehen“ rechnet beide Fälle.</p>
 
     <div class="tabellenrahmen">
       <table class="werte">
@@ -753,29 +754,36 @@ function bilanz(id, richtig, gesamt, offen){
      darueber Benennungen, Rundungen und Rautiefen. Nur weil keine Maßkette
      mehr ueber dem Teil steht, passen Maße und Benennungen in ein Bild. */
   var o = {s:5.6, masse:true, masseUnten:true, bezeichnungen:true,
-           rauheiten:true, radien:true};
+           rauheiten:true, radien:true, zentrierbohrungen:true};
   var g = wellenGroesse(WELLE, o);
   var svg = bild("bildWelle", g.breite, g.hoehe,
     "Fertigungszeichnung der Abtriebswelle mit allen Maßen",
     "Abtriebswelle aus X5CrNi18-10. Rohteil: Gesenkschmiedeteil Ø46 × 172 mm "
     + "mit Zunderhaut. Die Bohrung Ø18 H7 ist als verdeckte Kante "
     + "gestrichelt; die Passfedernut unterbricht die obere Mantellinie. "
-    + "Breite und Tiefe der Nut stehen im Querschnitt darunter.");
+    + "Breite, Tiefe und die runden Enden der Nut stehen in den beiden "
+    + "Rissen darunter.");
   o.x = g.x; o.y = g.y;
   zeichneWelle(svg, WELLE, o);
 
   /* Breite und Tiefe der Passfedernut liegen quer zur Achse - im
      Seitenriss sind sie nicht einzutragen. Dafuer der Querschnitt. */
   var q = nutQuerschnittGroesse(WELLE, {s:8});
+  var dr = nutDraufsichtGroesse(WELLE, {s:8});
   var n = WELLE.laengsnuten[0];
-  var sq = bild("bildNut", q.breite, q.hoehe,
-    "Querschnitt durch die Passfedernut mit Breite und Tiefe",
-    "<strong>Querschnitt A&ndash;A</strong> durch die Passfedernut. "
+  var sq = bild("bildNut", q.breite + dr.breite,
+    Math.max(q.hoehe, dr.hoehe),
+    "Querschnitt und Draufsicht der Passfedernut",
+    "<strong>Querschnitt und Draufsicht der Passfedernut.</strong> "
     + n.norm + " &ndash; " + n.sitz + ", Nutlänge "
-    + (n.bis - n.von) + " " + n.laengeToleranz + " mm. Die gestrichelte "
-    + "Linie über der Nut ist die gedachte Mantelfläche: Von ihr aus wird "
-    + "t<sub>1</sub> angetragen.");
+    + (n.bis - n.von) + " " + n.laengeToleranz + " mm. Breite und Tiefe "
+    + "liegen quer zur Achse, die runden Enden sieht man nur von oben "
+    + "&ndash; deshalb zwei Risse. Die gestrichelte Linie über der Nut ist "
+    + "die gedachte Mantelfläche: Von ihr aus wird t<sub>1</sub> "
+    + "angetragen. Das <em>R</em> ohne Zahl ist zulässig, weil der Radius "
+    + "aus der halben Nutbreite folgt.");
   zeichneNutQuerschnitt(sq, WELLE, {s:8, x:q.x, y:q.y});
+  zeichneNutDraufsicht(sq, WELLE, {s:8, x:q.breite + dr.x, y:dr.y});
 
   el("stufen").innerHTML = STUFEN.map(function(n){
     return "<span>" + n + "</span>"; }).join("");

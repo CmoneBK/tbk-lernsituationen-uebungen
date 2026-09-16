@@ -178,6 +178,66 @@ keine Maßkette mehr über dem Teil steht, ist dort Platz für Hinweislinien.
 Eine Benennung, die dasselbe sagt wie ein Maß — die Gewindebezeichnung etwa —
 trägt `wennOhneMasse: true` und verschwindet, sobald bemaßt wird.
 
+### 6.2 Nuten — Tabellenbuch Seite 82
+
+DIN EN ISO 129-1 (2022-02), am Scan gelesen:
+
+* **Nuttiefe:** bei *geschlossenen* Nuten von der Nutseite bemaßen, bei
+  *offenen* von der Gegenseite. Eine Wellennut ist geschlossen — t₁ wird
+  also von der (gedachten) Mantelfläche zum Nutgrund angetragen.
+* **Nutbreite** mit Passung **und Hüllbedingung**: `10 N9 Ⓔ`. Das Zeichen
+  zeichnet `huellbedingung()`, es wird nicht gesetzt — U+24BA fehlt in
+  vielen Schriften, und ein leeres Kästchen mitten in der Bemaßung ist
+  schlimmer als keine Angabe.
+* **Halbkreis-Enden:** Lässt sich der Radius aus anderen Maßen ableiten
+  (hier aus b/2), genügt ein **Radiuspfeil mit `R` ohne Wert**. Sichtbar ist
+  er nur von oben, deshalb die Draufsicht (`zeichneNutDraufsicht()`).
+* **Sicherungsringnuten:** Nuttiefe und Nutbreite müssen **einzeln**
+  eingetragen werden — genau das tut `zeichneNutEinzelheit()`.
+
+### 6.3 Oberflächenangaben — Tabellenbuch Seiten 112 bis 114
+
+DIN EN ISO 21920-1 (2022-12). **Die Seiten 110 und 111 gelten der
+zurückgezogenen ISO 1302 und sind dort als „nicht GPS konform" bezeichnet** —
+sie taugen nur noch für die Größen des Sinnbilds.
+
+* Eine Rautiefe steht **nie als blanker Text**. Sie steht auf der Fahne des
+  Sinnbilds: `oberflaechenzeichen()`.
+* Drei Varianten: nur der Winkel (alle Prozesse zulässig), Winkel mit Balken
+  (**Material muss abgetragen werden** — der Regelfall hier, jede Fläche
+  dieser Wellen wird gedreht), Winkel mit Kreis (kein Abtrag zulässig).
+* Größen (Seite 111): bei Schrifthöhe h ist der kurze Schenkel H₁ = 1,4 h,
+  der lange H₂ = 3,1 h, beide unter 60°.
+* `Rz 4` allein ist eine **vollständige** Angabe, solange alle Defaults
+  gelten (Seite 114, „Mindestangaben").
+* Lage: ohne `hoch` steht das Zeichen auf der Fläche (Fall 1), mit `hoch` am
+  Ende einer Hinweislinie, die in einer Pfeilspitze endet (Fall 2).
+* **Offen:** Die Sammelangabe für die übrigen Flächen zeigt das Buch nur auf
+  der zurückgezogenen Seite 111. Bis eine GPS-Seite dafür vorliegt, steht die
+  allgemeine Rautiefe in der Tabelle unter der Zeichnung, nicht als Sinnbild.
+
+### 6.4 Zentrierbohrungen — Tabellenbuch Seite 118
+
+DIN ISO 6411. Die Bezeichnung trennt d₁ und d₂ mit einem **Schrägstrich**:
+`ISO 6411 – A2/4,25` heißt Form A, d₁ = 2 mm, d₂ = 4,25 mm. Drei Fälle, die
+`art` in den Daten auswählt:
+
+| `art` | Zeichnung |
+| --- | --- |
+| `erforderlich` | Symbol `<` an der Stirnfläche, dahinter die Bezeichnung |
+| `darf` | nur die Bezeichnung an einer Hinweislinie, kein Symbol |
+| `nicht` | dasselbe Symbol mit einem Strich davor |
+
+Welcher Fall gilt, ist eine **Entscheidung der Konstruktion**, keine
+Ableitung — sie gehört in die Daten, nicht in den Zeichencode.
+
+### 6.5 Freistiche — Tabellenbuch Seite 119
+
+„In Zeichnungen werden Freistiche **meist vereinfacht mit der Bezeichnung**
+dargestellt." Genau das tut die `radien`-Ebene: eine Hinweislinie an den
+Absatz, daran `DIN 509 – E 0,6 × 0,3`. Die vollständige Darstellung als
+Einzelheit mit r, t₁, t₂ und f ist erlaubt, aber nicht gefordert.
+
 ---
 
 ## 7. Mittellinien

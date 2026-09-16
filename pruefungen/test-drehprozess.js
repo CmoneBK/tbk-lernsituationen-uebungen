@@ -1858,6 +1858,57 @@ console.log('\nVollstaendig bemasst - und nicht doppelt');
     p(name + ': die allgemeine Rautiefe steht in den Daten',
       w.allgemeineRautiefe > 0, String(w.allgemeineRautiefe));
 
+    /* --- Zentrierbohrungen: Bezeichnung nach DIN ISO 6411 --- */
+    if (w.zentrierbohrungen) {
+      const zb = w.zentrierbohrungen;
+      p(name + ': die Zentrierbohrungen sagen, ob sie bleiben duerfen',
+        ['darf', 'erforderlich', 'nicht'].indexOf(zb.art) >= 0,
+        String(zb.art));
+      ['links', 'rechts'].forEach((seite) => {
+        const t = zb[seite];
+        if (!t || t === '–') return;
+        /* Seite 118: "ISO 6411 - A4/8,5". Getrennt wird mit einem
+           Schraegstrich; frueher stand hier ein Mal-Zeichen. */
+        const m = /^ISO 6411 – ([RABC])([\d,]+)\/([\d,]+)$/.exec(t);
+        p(name + ' ' + seite + ': Bezeichnung nach DIN ISO 6411', !!m, t);
+        if (!m || !ALLES.zentrierbohrungen_6411) return;
+        const paare = ALLES.zentrierbohrungen_6411.nennmasse_d1_d2
+          .split(' - ').map((x) => x.trim());
+        p(name + ' ' + seite + ': das Masspaar steht in der Tabelle',
+          paare.indexOf(m[2] + '/' + m[3]) >= 0, m[2] + '/' + m[3]);
+      });
+    }
+
+    /* --- Die Passfedernut gegen DIN 6885-1 --- */
+    (w.laengsnuten || []).forEach((n) => {
+      const tab = ALLES.passfedern_6885;
+      if (!tab) return;
+      const zeile = tab.masse.find((z) => n.d > z.d1_von && n.d <= z.d1_bis);
+      if (!zeile) {
+        p(name + ': fuer Ø' + n.d + ' gibt es eine Zeile in DIN 6885-1', false);
+        return;
+      }
+      p(name + ': Nutbreite und Nuttiefe stehen so im Buch',
+        n.breite === zeile.b_h9 && n.tiefe === zeile.t1_welle,
+        'b=' + n.breite + '/' + zeile.b_h9
+        + ' t1=' + n.tiefe + '/' + zeile.t1_welle);
+      p(name + ': die Nutlaenge ist eine Nennlaenge',
+        tab._hinweis.indexOf(' ' + (n.bis - n.von) + ',') >= 0,
+        String(n.bis - n.von));
+      p(name + ': die Nutbreite hat eine Passung des Buches',
+        ['P9', 'N9'].indexOf(n.breiteToleranz) >= 0,
+        String(n.breiteToleranz));
+      /* Seite 261 staffelt die Abweichungen. Genau hier stand die
+         Laengentoleranz falsch: 32 mm liegt im Feld 32...80, also +0,3. */
+      const l = n.bis - n.von;
+      const soll = l <= 28 ? '+0,2' : (l <= 80 ? '+0,3' : '+0,5');
+      p(name + ': die Laengentoleranz der Nut passt zur Laenge',
+        n.laengeToleranz === soll, n.laengeToleranz + ' statt ' + soll);
+      const sollT = n.d <= 22 ? '+0,1' : (n.d <= 130 ? '+0,2' : '+0,3');
+      p(name + ': die Tiefentoleranz passt zum Durchmesser',
+        n.tiefeToleranz === sollT, n.tiefeToleranz + ' statt ' + sollT);
+    });
+
     /* --- Und nichts steht zweimal --- */
     const doppelt = [];
     const gesehen = new Set();
