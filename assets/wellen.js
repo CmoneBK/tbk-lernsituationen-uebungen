@@ -34,6 +34,7 @@
  *   rundungen             Innenrundungen an den Absätzen
  *   kleinsterInnenradius  die engste davon - Grenze für den Eckenradius
  *   flaechen              woran im Unterricht etwas zu entscheiden ist
+ *   toleranzen            ISO-Kurzzeichen der Funktionsflächen
  *   masse                 die Maßeintragung, wie sie im Bild stehen soll
  *   bezeichnungen         Benennungen mit Hinweislinie (eigene Ebene)
  *   rauheiten             die geforderten Rautiefen im Bild
@@ -287,6 +288,16 @@ WELLEN.spannwelle = {
   zentrierbohrungen: {links: "ISO 6411 – A2×4,25", rechts: "ISO 6411 – A2,5×5,3"},
   rohteil: {d: 28, laenge: 96},
 
+  /* Zwei Passungen, absichtlich von anderer Art als bei der
+     Antriebswelle: g6 ist eine Spielpassung, n6 eine Übermasspassung.
+     Der Ø18 liegt genau auf der Bereichsgrenze - die Zeile "über 10 bis
+     18" gilt, nicht die darüber. Das ist der Ablesefehler, um den es in
+     der Übung geht. */
+  toleranzen: [
+    {flaeche: "mantel_22", nennmass: 22, klasse: "g6", es: -7, ei: -20},
+    {flaeche: "mantel_18", nennmass: 18, klasse: "n6", es: 23, ei: 12}
+  ],
+
   flaechen: [
     {id: "stirn_links", name: "linke Stirnfläche", bei: 0, art: "stirn",
      verfahren: "abstechdrehen"},
@@ -323,8 +334,8 @@ WELLEN.spannwelle = {
       {von: 43,   bis: 90, text: "47",   an: [22, 16]}
     ],
     durchmesser: [
-      {d: 18, text: "Ø18", seite: "links", versatz: 26, vonMm: 0},
-      {d: 22, text: "Ø22", seite: "links", versatz: 52, vonMm: 14},
+      {d: 18, text: "Ø18 n6", seite: "links", versatz: 26, vonMm: 0},
+      {d: 22, text: "Ø22 g6", seite: "links", versatz: 52, vonMm: 14},
       {d: 26, text: "Ø26", seite: "mitte", versatz: 53, ab: -34}
     ]
   },

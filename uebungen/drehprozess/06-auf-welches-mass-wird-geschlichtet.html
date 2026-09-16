@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Auf welches Maß wird geschlichtet?</title>
+<meta name="description" content="Ø22 g6 und Ø18 n6: Grenzabmaße ablesen, Grenzmaße und Mittenmaß rechnen – und vier gemessene Teile beurteilen. Gutteil, Nacharbeit oder Ausschuss.">
+<meta name="dauer" content="25 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  table.werte td:first-child{font-weight:600}
+  table.werte input, table.werte select{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:6px 8px; border-radius:7px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  td.urteil{font-size:13px; font-weight:600; white-space:nowrap}
+  td.urteil.ja{color:var(--ok)}
+  td.urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+  .formel{
+    display:block; margin:10px 0; padding:10px 14px; border-radius:10px;
+    background:var(--bg); border:1px solid var(--border);
+    font-size:17px; text-align:center; font-variant-numeric:tabular-nums;
+  }
+  figure.bild{margin:0 0 18px}
+  figure.bild svg{width:100%; height:auto}
+  figure.bild figcaption{font-size:13px; color:var(--muted); margin-top:6px}
+  .kurz{
+    display:inline-block; padding:2px 10px; border-radius:6px;
+    background:var(--bg); border:1px solid var(--border-stark);
+    font-variant-numeric:tabular-nums; font-weight:700;
+  }
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Planung eines Drehprozesses</p>
+    <h1>Auf welches Maß wird geschlichtet?</h1>
+    <p class="lead">Das Nennmaß ist kein Zielmaß.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Die Lage:</strong> Zwei Flächen der <strong>Spannwelle</strong>
+        tragen ein ISO-Kurzzeichen: der Führungssitz
+        <span class="kurz">Ø22 g6</span> und der Zapfen
+        <span class="kurz">Ø18 n6</span>. Auf dem Ø22 soll eine Buchse
+        gleiten, auf dem Ø18 sitzt ein Ring fest.</p>
+      <p>Bevor geschlichtet wird, muss feststehen, <em>auf welches Maß</em>
+        gezielt wird &ndash; und das ist weder 22 noch 18.</p>
+      <p><strong>Das Tabellenbuch gehört aufgeschlagen daneben.</strong></p>
+    </div>
+
+    <h2><span class="nr">1</span>Die Grenzabmaße</h2>
+
+    <figure class="bild" id="bildWelle"></figure>
+
+    <p>Schlagt die Grenzabmaße im Auszug für das System Einheitsbohrung nach.
+      Achtet auf den <strong>Nennmaßbereich</strong>: Die Zeilen gehen über 6
+      bis 10, über 10 bis 18, über 18 bis 30 mm.</p>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Gesucht</th><th>Eintrag in µm</th>
+          <th>Stimmt?</th></tr></thead>
+        <tbody id="abmasse"></tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn1">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz1">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung und die Falle mit der Bereichsgrenze</summary>
+      <div id="loesung1"></div>
+      <div class="merksatz">
+        <strong>Der Ø18 liegt genau auf der Grenze.</strong> Es gilt die Zeile
+        „über 10 bis 18&ldquo;, nicht „über 18 bis 30&ldquo;. Die Grenze gehört
+        immer zur <em>unteren</em> Zeile &ndash; genau deshalb steht dort
+        „bis&ldquo; und hier „über&ldquo;.
+      </div>
+      <p>Ein Griff in die falsche Zeile kostet beim n6 vier Mikrometer. Das
+        klingt nach nichts, ist aber ein Drittel der ganzen Toleranz.</p>
+    </details>
+
+    <h2><span class="nr">2</span>Grenzmaße und Zielmaß</h2>
+
+    <span class="formel">Höchstmaß = N + es &nbsp;·&nbsp;
+      Mindestmaß = N + ei &nbsp;·&nbsp;
+      Mittenmaß = (Höchstmaß + Mindestmaß) / 2</span>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Gesucht</th><th>Eintrag in mm</th>
+          <th>Stimmt?</th></tr></thead>
+        <tbody id="masse"></tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn2">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz2">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: und warum auf die Mitte gezielt wird</summary>
+      <div id="loesung2"></div>
+      <div class="merksatz">
+        <strong>Beim Schlichten wird auf die Mitte der Toleranz gezielt,
+        nicht auf ein Grenzmaß.</strong>
+      </div>
+      <p>Der Grund: Alles, was beim Drehen schiefgeht, geht in <em>eine</em>
+        Richtung. Die Schneide verschleißt, und der Durchmesser wächst über
+        die Schicht. Das Werkstück ist warm und schrumpft beim Abkühlen. Die
+        Messunsicherheit kommt oben und unten dazu. Und nacharbeiten lässt
+        sich eine Welle nur nach unten.</p>
+      <p>Von der Mitte aus hat jeder dieser Fehler noch die halbe Toleranz
+        Platz. Vom Grenzmaß aus hat er keinen.</p>
+      <p><strong>Beim n6 liegt die ganze Toleranzzone über dem
+        Nennmaß.</strong> Wer auf 18,000 dreht, ist schon unter dem
+        Mindestmaß &ndash; und das Teil ist Ausschuss, obwohl es „auf Maß&ldquo;
+        ist.</p>
+    </details>
+
+    <h2><span class="nr">3</span>Vier Teile kommen von der Maschine</h2>
+    <p>Die Istmaße sind gemessen. Beurteilt jedes Teil: <strong>Gutteil</strong>,
+      <strong>Nacharbeit möglich</strong> oder <strong>Ausschuss</strong>.</p>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Teil</th><th>Urteil</th><th>Stimmt?</th></tr></thead>
+        <tbody id="teile"></tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn3">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz3">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: vier Urteile</summary>
+      <div id="loesung3"></div>
+      <div class="merksatz">
+        <strong>Die Regel für Wellen:</strong> zu groß heißt Nacharbeit
+        &ndash; es ist noch Werkstoff da. Zu klein heißt Ausschuss &ndash;
+        Werkstoff wächst nicht nach. Bei Bohrungen ist es umgekehrt.
+      </div>
+    </details>
+
+    <h2><span class="nr">4</span>Übertragen</h2>
+
+    <details>
+      <summary>1. Warum steht bei einem Maß ein Kurzzeichen und beim nächsten
+        nicht?</summary>
+      <p>Weil nur <strong>Funktionsflächen</strong> eine enge Toleranz
+        brauchen. Wo etwas sitzt, gleitet oder dichtet, muss das Maß stimmen
+        &ndash; überall sonst reicht die <strong>Allgemeintoleranz</strong>
+        aus dem Schriftfeld.</p>
+      <p>Das ist keine Bequemlichkeit, sondern Geld: Jede engere Toleranz
+        kostet einen Arbeitsgang, ein feineres Messmittel und mehr Ausschuss.
+        Ein Konstrukteur, der überall IT6 einträgt, macht das Teil teuer, ohne
+        es besser zu machen.</p>
+    </details>
+
+    <details>
+      <summary>2. g6 und n6 &ndash; woran erkennt man, was gemeint ist?</summary>
+      <p>Am <strong>Buchstaben</strong>. Er sagt, wo die Toleranzzone relativ
+        zum Nennmaß liegt:</p>
+      <ul>
+        <li>Buchstaben vor <strong>h</strong> (a bis g) liegen
+          <strong>unter</strong> dem Nennmaß &ndash; die Welle wird kleiner,
+          es entsteht <strong>Spiel</strong>.</li>
+        <li><strong>h</strong> endet genau am Nennmaß.</li>
+        <li>Buchstaben nach <strong>h</strong> (j bis z) liegen
+          <strong>über</strong> dem Nennmaß &ndash; die Welle wird größer, es
+          entsteht <strong>Übermaß</strong>.</li>
+      </ul>
+      <p>Also: g6 gleitet, n6 sitzt fest. Die Zahl sagt nur, wie breit die
+        Zone ist, nicht wo sie liegt.</p>
+    </details>
+
+    <details>
+      <summary>3. Das Teil wird warm gemessen und ist auf Maß. Was heißt
+        das?</summary>
+      <p>Dass es kalt <strong>zu klein</strong> ist. Stahl dehnt sich um rund
+        12 Mikrometer je Meter und Kelvin. Bei 22 mm Durchmesser und 20 K
+        Übertemperatur sind das etwa 5 µm &ndash; bei 13 µm Toleranzweite
+        mehr als ein Drittel.</p>
+      <p>Deshalb: Kühlschmierstoff zugeben, abkühlen lassen, und im Zweifel
+        den Fehler mitrechnen. Ein Maß, das warm stimmt, stimmt kalt
+        nicht.</p>
+    </details>
+
+    <details>
+      <summary>4. Woher weiß man, ob k, g oder n richtig ist?</summary>
+      <p>Aus der Funktion &ndash; und bei Wälzlagern aus einer eigenen
+        Tabelle. Sie ordnet der Belastungsart eine Passung zu: Ein Innenring
+        mit <strong>Umfangslast</strong> braucht eine Übergangs- oder
+        Übermaßpassung (j, k, m), sonst wandert er auf der Welle. Bei
+        <strong>Punktlast</strong> genügt Spiel (j, h, g, f).</p>
+      <p>Für Wellen wird dabei meist der Grundtoleranzgrad
+        <strong>IT6</strong> verwendet, für Bohrungen IT7.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Erst die Zeile, dann die Grenzmaße, dann die
+      Mitte. Und gezielt wird auf die Mitte &ndash; nie auf das Nennmaß und
+      nie auf ein Grenzmaß.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>Bohrung und Welle nebeneinander, mit der Passungsart dazu:</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-iso-toleranzen-und-passungen.html">Werkzeug ISO-Toleranzen und Passungen öffnen</a>
+    </p>
+    <p>Womit sich solche Maße prüfen lassen, steht in der Übung
+      <em>Womit wird das geprüft?</em>.</p>
+
+    <p class="fussnote"><strong>Woher die Angaben stammen:</strong> ISO-System
+      für Grenzmaße und Passungen, Auszug für das System Einheitsbohrung;
+      Toleranzen für den Einbau von Wälzlagern &ndash; Tabellenbuch Metall.
+      Die Spannwelle ist das Übungswerkstück dieses Pakets.</p>
+
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+      Maßgebend sind Norm und Tabellenbuch.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script src="../../assets/zeichnen.js"></script>
+<script src="../../assets/wellen.js"></script>
+<script src="../../assets/drehteil.js"></script>
+<script>var WELLE = WELLEN.spannwelle;</script>
+<script>
+"use strict";
+
+function el(id){ return document.getElementById(id); }
+function wert(id){
+  var e = el(id);
+  return e ? parseFloat(String(e.value).replace(",", ".")) : NaN;
+}
+function zahl(x, n){ return x.toFixed(n === undefined ? 3 : n).replace(".", ","); }
+
+function urteilen(id, ok, offen){
+  var u = el(id);
+  if(offen){ u.textContent = "–"; u.className = "urteil"; return 0; }
+  u.textContent = ok ? "richtig" : "nein";
+  u.className = "urteil " + (ok ? "ja" : "nein");
+  return ok ? 1 : 0;
+}
+function bilanz(id, richtig, gesamt, offen){
+  el(id).textContent = offen === gesamt
+    ? "Noch nichts eingetragen."
+    : richtig + " von " + gesamt + " richtig"
+      + (offen ? ", " + offen + " noch offen." : ".");
+}
+
+/* Die Grenzabmasse stehen bei der Welle (assets/wellen.js) - Zeichnung und
+   Rechnung haben damit eine Quelle. Hier wird daraus gerechnet. */
+var PASSUNGEN = WELLE.toleranzen.map(function(t){
+  var hoechst = t.nennmass + t.es / 1000;
+  var mindest = t.nennmass + t.ei / 1000;
+  return {id: t.klasse, nennmass: t.nennmass, klasse: t.klasse,
+          es: t.es, ei: t.ei, hoechst: hoechst, mindest: mindest,
+          weite: (t.es - t.ei) / 1000,
+          mitte: (hoechst + mindest) / 2,
+          bereich: t.nennmass <= 10 ? "über 6 bis 10 mm"
+            : (t.nennmass <= 18 ? "über 10 bis 18 mm" : "über 18 bis 30 mm"),
+          art: t.ei >= 0 ? "Übermaß" : (t.es <= 0 ? "Spiel" : "Übergang")};
+});
+function kurz(p){
+  return '<span class="kurz">Ø' + p.nennmass + " " + p.klasse + "</span>";
+}
+
+/* Die Welle mit ihren Maßen - die Kurzzeichen stehen darin. */
+(function zeichnung(){
+  var g = wellenGroesse(WELLE, {s:5.8, masse:true});
+  var svg = bild("bildWelle", g.breite, g.hoehe,
+    "Die Spannwelle mit Maßen und Toleranzangaben",
+    "Spannwelle aus C25E. Zwei Maße tragen ein ISO-Kurzzeichen: Ø22 g6 am "
+    + "Führungssitz und Ø18 n6 am Zapfen links.");
+  zeichneWelle(svg, WELLE, {x:g.x, y:g.y, s:5.8, masse:true});
+}());
+
+/* ---------- Teil 1: die Grenzabmaße ---------- */
+
+(function teil1(){
+  var aus = "", l = "";
+  PASSUNGEN.forEach(function(p){
+    [["es", "oberes Grenzabmaß es", p.es],
+     ["ei", "unteres Grenzabmaß ei", p.ei]].forEach(function(f){
+      aus += '<tr><td>Ø' + p.nennmass + " " + p.klasse + ": " + f[1] + '</td>'
+        + '<td><input type="number" id="a_' + p.id + '_' + f[0] + '" step="1"'
+        + ' inputmode="decimal" autocomplete="off"></td>'
+        + '<td class="urteil" id="ua_' + p.id + '_' + f[0] + '">–</td></tr>';
+    });
+    l += '<p><strong>Ø' + p.nennmass + " " + p.klasse + '</strong> &ndash; '
+      + 'Nennmaßbereich <strong>' + p.bereich + '</strong>, Zeile '
+      + p.klasse + ':<br>es = <strong>' + p.es + ' µm</strong>, '
+      + 'ei = <strong>' + p.ei + ' µm</strong><br>'
+      + 'Toleranz T = ' + p.es + ' − (' + p.ei + ') = <strong>'
+      + zahl(p.weite * 1000, 0) + ' µm</strong><br>'
+      + '<em>Die Zone liegt ' + (p.ei >= 0 ? "ganz über" :
+          (p.es <= 0 ? "ganz unter" : "um")) + ' dem Nennmaß &ndash; '
+      + p.art + '.</em></p>';
+  });
+  el("abmasse").innerHTML = aus;
+  el("loesung1").innerHTML = l;
+}());
+
+el("btn1").addEventListener("click", function(){
+  var r = 0, offen = 0, gesamt = 0;
+  PASSUNGEN.forEach(function(p){
+    [["es", p.es], ["ei", p.ei]].forEach(function(f){
+      gesamt++;
+      var v = wert("a_" + p.id + "_" + f[0]);
+      var leer = !isFinite(v); if(leer) offen++;
+      r += urteilen("ua_" + p.id + "_" + f[0], Math.abs(v - f[1]) < 0.6, leer);
+    });
+  });
+  bilanz("bilanz1", r, gesamt, offen);
+});
+
+/* ---------- Teil 2: Grenzmaße und Zielmaß ---------- */
+
+(function teil2(){
+  var aus = "", l = "";
+  PASSUNGEN.forEach(function(p){
+    [["h", "Höchstmaß", p.hoechst],
+     ["m", "Mindestmaß", p.mindest],
+     ["z", "<strong>Zielmaß für den Schlichtgang</strong>", p.mitte]
+    ].forEach(function(f){
+      aus += '<tr><td>Ø' + p.nennmass + " " + p.klasse + ": " + f[1] + '</td>'
+        + '<td><input type="number" id="m_' + p.id + '_' + f[0]
+        + '" step="0.001" inputmode="decimal" autocomplete="off"></td>'
+        + '<td class="urteil" id="um_' + p.id + '_' + f[0] + '">–</td></tr>';
+    });
+    l += '<p><strong>Ø' + p.nennmass + " " + p.klasse + '</strong><br>'
+      + 'Höchstmaß = ' + p.nennmass + ' + (' + zahl(p.es / 1000, 3)
+        + ') = <strong>' + zahl(p.hoechst, 3) + ' mm</strong><br>'
+      + 'Mindestmaß = ' + p.nennmass + ' + (' + zahl(p.ei / 1000, 3)
+        + ') = <strong>' + zahl(p.mindest, 3) + ' mm</strong><br>'
+      + 'Mittenmaß = (' + zahl(p.hoechst, 3) + ' + ' + zahl(p.mindest, 3)
+        + ') / 2 = <strong>' + zahl(p.mitte, 4) + ' mm</strong><br>'
+      + '<em>Nach oben und nach unten bleiben je '
+        + zahl(p.weite / 2 * 1000, 1) + ' µm Luft.</em></p>';
+  });
+  el("masse").innerHTML = aus;
+  el("loesung2").innerHTML = l;
+}());
+
+el("btn2").addEventListener("click", function(){
+  var r = 0, offen = 0, gesamt = 0;
+  PASSUNGEN.forEach(function(p){
+    [["h", p.hoechst], ["m", p.mindest], ["z", p.mitte]].forEach(function(f){
+      gesamt++;
+      var v = wert("m_" + p.id + "_" + f[0]);
+      var leer = !isFinite(v); if(leer) offen++;
+      /* Ein Tausendstel Spielraum: Wer das Mittenmaß rundet, soll nicht
+         danebenliegen. */
+      r += urteilen("um_" + p.id + "_" + f[0],
+        Math.abs(v - f[1]) <= 0.0011, leer);
+    });
+  });
+  bilanz("bilanz2", r, gesamt, offen);
+});
+
+/* ---------- Teil 3: vier gemessene Teile ---------- */
+
+/* Je Passung ein Teil zu gross und eines zu klein oder in Ordnung - damit
+   beide Richtungen vorkommen. Die Istmasse sind so gewaehlt, dass sie
+   deutlich ueber oder unter der Grenze liegen; ein Grenzfall waere eine
+   Frage nach der Messunsicherheit, nicht nach der Regel. */
+function urteilVon(p, ist){
+  if(ist > p.hoechst) return "nacharbeit";
+  if(ist < p.mindest) return "ausschuss";
+  return "gut";
+}
+
+var TEILE = (function(){
+  var aus = [];
+  PASSUNGEN.forEach(function(p, i){
+    var zwei = i === 0
+      ? [p.mitte, p.mindest - 0.004]
+      : [p.hoechst + 0.005, p.nennmass];
+    zwei.forEach(function(ist) {
+      ist = Math.round(ist * 1000) / 1000;
+      aus.push({p: p, ist: ist, soll: urteilVon(p, ist)});
+    });
+  });
+  return aus;
+}());
+
+(function teil3(){
+  var aus = "", l = "";
+  TEILE.forEach(function(t, i){
+    aus += '<tr><td>Ø' + t.p.nennmass + " " + t.p.klasse
+      + ' &ndash; gemessen <strong>' + zahl(t.ist, 3) + ' mm</strong></td>'
+      + '<td><select id="u_' + i + '" data-druck="ankreuzen">'
+      + '<option value="">bitte wählen</option>'
+      + '<option value="gut">Gutteil</option>'
+      + '<option value="nacharbeit">Nacharbeit möglich</option>'
+      + '<option value="ausschuss">Ausschuss</option></select></td>'
+      + '<td class="urteil" id="uu_' + i + '">–</td></tr>';
+    var namen = {gut:"Gutteil", nacharbeit:"Nacharbeit möglich",
+                 ausschuss:"Ausschuss"};
+    var grund = {
+      gut: "liegt zwischen den Grenzmaßen",
+      nacharbeit: "liegt über dem Höchstmaß " + zahl(t.p.hoechst, 3)
+        + " mm &ndash; es steht noch Werkstoff zum Wegdrehen da",
+      ausschuss: "liegt unter dem Mindestmaß " + zahl(t.p.mindest, 3)
+        + " mm &ndash; Werkstoff wächst nicht nach"
+    }[t.soll];
+    l += '<p><strong>Ø' + t.p.nennmass + " " + t.p.klasse + ', '
+      + zahl(t.ist, 3) + ' mm:</strong> ' + grund + ' &rarr; <strong>'
+      + namen[t.soll] + '</strong>'
+      + (t.ist === t.p.nennmass
+          ? '<br><em>Das ist genau das Nennmaß &ndash; und trotzdem '
+            + 'Ausschuss. Bei n6 liegt die ganze Toleranzzone darüber.</em>'
+          : '')
+      + '</p>';
+  });
+  el("teile").innerHTML = aus;
+  el("loesung3").innerHTML = l;
+}());
+
+el("btn3").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  TEILE.forEach(function(t, i){
+    var v = el("u_" + i).value;
+    if(!v) offen++;
+    r += urteilen("uu_" + i, v === t.soll, !v);
+  });
+  bilanz("bilanz3", r, TEILE.length, offen);
+});
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+</body>
+</html>

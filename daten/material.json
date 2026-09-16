@@ -87,6 +87,22 @@
       {
         "datei": "fertigungstechnik-beurteilung-bedingungen-fuer-die-fertigung.html",
         "name": "Werkzeug Bedingungen für die Fertigung beurteilen"
+      },
+      {
+        "datei": "fertigungstechnik-hauptnutzungszeit-beim-drehen.html",
+        "name": "Werkzeug Hauptnutzungszeit beim Drehen"
+      },
+      {
+        "datei": "fertigungstechnik-iso-toleranzen-und-passungen.html",
+        "name": "Werkzeug ISO-Toleranzen und Passungen"
+      },
+      {
+        "datei": "fertigungstechnik-messmittel-messschieber.html",
+        "name": "Werkzeug Messschieber"
+      },
+      {
+        "datei": "fertigungstechnik-messmittel-buegelmessschraube.html",
+        "name": "Werkzeug Bügelmessschraube"
       }
     ],
     "inhalt": [
@@ -105,6 +121,18 @@
       {
         "titel": "Wie fein muss der Vorschub sein?",
         "url": "uebungen/drehprozess/04-wie-fein-muss-der-vorschub-sein.html"
+      },
+      {
+        "titel": "Wie lange dauert das?",
+        "url": "uebungen/drehprozess/05-wie-lange-dauert-das.html"
+      },
+      {
+        "titel": "Auf welches Maß wird geschlichtet?",
+        "url": "uebungen/drehprozess/06-auf-welches-mass-wird-geschlichtet.html"
+      },
+      {
+        "titel": "Womit wird das geprüft?",
+        "url": "uebungen/drehprozess/07-womit-wird-das-geprueft.html"
       }
     ]
   },

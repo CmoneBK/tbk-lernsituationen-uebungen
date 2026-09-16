@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Womit wird das geprüft?</title>
+<meta name="description" content="Toleranzweiten gegen Ablesungen halten, Prüfmittel zuordnen, Prüfschritte an die richtige Stelle im Arbeitsplan setzen und das Prüfmaß angeben.">
+<meta name="dauer" content="25 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  table.werte td:first-child{font-weight:600}
+  table.werte input, table.werte select{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:6px 8px; border-radius:7px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  td.urteil{font-size:13px; font-weight:600; white-space:nowrap}
+  td.urteil.ja{color:var(--ok)}
+  td.urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+  figure.bild{margin:0 0 18px}
+  figure.bild svg{width:100%; height:auto}
+  figure.bild figcaption{font-size:13px; color:var(--muted); margin-top:6px}
+  .kurz{
+    display:inline-block; padding:2px 10px; border-radius:6px;
+    background:var(--bg); border:1px solid var(--border-stark);
+    font-variant-numeric:tabular-nums; font-weight:700;
+  }
+  ol.ziehliste{list-style:none; margin:0; padding:0; counter-reset:schritt}
+  ol.ziehliste li{
+    counter-increment:schritt; display:flex; gap:12px; align-items:flex-start;
+    background:var(--card); border:1px solid var(--border-stark);
+    border-radius:10px; padding:11px 13px; margin:0 0 8px; cursor:grab;
+  }
+  ol.ziehliste li:active{cursor:grabbing}
+  ol.ziehliste li::before{
+    content:counter(schritt); flex:0 0 auto;
+    display:inline-flex; align-items:center; justify-content:center;
+    width:28px; height:28px; border-radius:8px;
+    background:var(--bg); border:1px solid var(--border-stark);
+    font-weight:700; font-variant-numeric:tabular-nums;
+  }
+  ol.ziehliste li .text{flex:1; line-height:1.5}
+  ol.ziehliste li .griff{flex:0 0 auto; color:var(--muted); font-size:18px;
+    line-height:1.4; letter-spacing:2px}
+  ol.ziehliste li.pruefen{background:var(--bg)}
+  ol.ziehliste li.pruefen .text::before{
+    content:"Prüfen"; display:inline-block; margin-right:8px;
+    padding:1px 8px; border-radius:999px; font-size:12px; font-weight:700;
+    background:var(--card); border:1px solid var(--border-stark);
+  }
+  ol.ziehliste li.gezogen{opacity:.45}
+  ol.ziehliste li.ziel{border-color:var(--accent); border-style:dashed}
+  ol.ziehliste li.ja{border-left:5px solid var(--ok)}
+  ol.ziehliste li.nein{border-left:5px solid var(--bad)}
+  ol.ziehliste li:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  .ziehknoepfe{display:flex; gap:4px; flex-wrap:wrap}
+  .ziehknoepfe button{
+    font:600 13px/1 inherit; padding:5px 9px; border-radius:7px;
+    border:1px solid var(--border-stark); background:var(--bg); color:inherit;
+    cursor:pointer;
+  }
+  /* Auf dem Papier ist nichts zu ziehen - dort steht die Liste zum
+     Durchnummerieren. */
+  @media print{
+    ol.ziehliste li{cursor:auto}
+    .ziehknoepfe{display:none}
+  }
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Planung eines Drehprozesses</p>
+    <h1>Womit wird das geprüft?</h1>
+    <p class="lead">Ein Prüfschritt ohne Prüfmittel und Prüfmaß ist keiner.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Die Lage:</strong> Der Arbeitsplan für die
+        <strong>Spannwelle</strong> steht &ndash; aber er sagt nur, wie
+        gefertigt wird, nicht wie geprüft. Der Meister schickt ihn zurück:
+        „Ohne Prüfschritte gebe ich das nicht frei.&ldquo;</p>
+      <p>Drei Dinge fehlen: das <strong>Prüfmittel</strong>, die
+        <strong>Stelle</strong> im Ablauf und das <strong>Prüfmaß</strong>.</p>
+      <p><strong>Das Tabellenbuch gehört aufgeschlagen daneben.</strong></p>
+    </div>
+
+    <h2><span class="nr">1</span>Was ein Messmittel sehen kann</h2>
+
+    <figure class="bild" id="bildWelle"></figure>
+
+    <p>Die <strong>Ablesung</strong> ist der kleinste Schritt, den die Skala
+      hergibt:</p>
+
+    <div class="tabellenrahmen">
+      <table>
+        <thead><tr><th>Messmittel</th><th>Ablesung</th></tr></thead>
+        <tbody>
+          <tr><td>Messschieber, Nonius 1/20</td><td>0,05 mm</td></tr>
+          <tr><td>Messschieber, Nonius 1/50</td><td>0,02 mm</td></tr>
+          <tr><td>Bügelmessschraube</td><td>0,01 mm</td></tr>
+          <tr><td>Bügelmessschraube mit Nonius</td><td>0,001 mm</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Für jedes Maß der Spannwelle: <strong>Wie breit ist die Toleranz</strong>
+      &ndash; und welches ist das <strong>gröbste Messmittel, dessen Ablesung
+      noch feiner ist als diese Toleranz</strong>?</p>
+    <p>Die ersten beiden Maße tragen ein ISO-Kurzzeichen. Für die übrigen gilt
+      die Allgemeintoleranz <strong>m (mittel)</strong> aus dem Schriftfeld;
+      dort steht ein Grenzabmaß ±, und die Weite ist das Doppelte davon.</p>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Maß</th><th>T in µm</th><th>Messmittel</th>
+          <th>Stimmt?</th></tr></thead>
+        <tbody id="masse"></tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn1">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz1">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: fünf Maße, drei Messmittel</summary>
+      <div id="loesung1"></div>
+      <div class="merksatz">
+        <strong>Was hier sicher ist:</strong> Ein Messmittel, dessen Ablesung
+        <em>gröber</em> ist als die ganze Toleranz, kann über sie nichts
+        sagen. Es zeigt eine Zahl, aber keine Aussage.
+      </div>
+      <p><strong>Und wie fein muss es wirklich sein?</strong> Im Betrieb gilt
+        als Faustregel, dass die Ablesung höchstens ein Zehntel der Toleranz
+        betragen soll. Bei den engen ISO-Toleranzen hier wäre das mit keinem
+        Handmessmittel zu halten &ndash; 13 µm hießen 1,3 µm Ablesung.
+        Gemessen wird deshalb mit der Bügelmessschraube, und gefertigt wird
+        auf die <strong>Toleranzmitte</strong>: Was die Messunsicherheit noch
+        verschiebt, liegt dann immer noch im Feld.</p>
+    </details>
+
+    <h2><span class="nr">2</span>Wo die Prüfschritte hingehören</h2>
+    <p>Hier steht der Arbeitsplan als Liste &ndash; die Fertigungsvorgänge in
+      der richtigen Reihenfolge, die <strong>drei Prüfschritte</strong>
+      dazwischengewürfelt. Zieht sie an die Stelle, an der sie hingehören.</p>
+    <p class="fussnote" data-druck="weg">Ziehen, oder mit den Pfeiltasten
+      &ndash; die Karte anklicken und mit ↑ und ↓ verschieben.</p>
+
+    <ol class="ziehliste" id="ablaufListe"></ol>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btnAblauf">Reihenfolge prüfen</button>
+      <button type="button" class="knopf leise" id="btnAblaufNeu">Neu mischen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanzAblauf">Noch nichts geprüft.</p>
+
+    <details>
+      <summary>Lösung: der Arbeitsplan mit Prüfschritten</summary>
+      <ol id="ablaufLoesung"></ol>
+      <div class="merksatz">
+        <strong>Geprüft wird, wo noch etwas zu retten ist.</strong> Nach dem
+        Schruppen, solange das Aufmaß noch da ist. Nach dem Schlichten,
+        solange nachgeschlichtet werden kann. Und vor dem Abstechen, solange
+        das Teil gespannt ist. Danach kostet jede Abweichung ein neues
+        Ausrichten &ndash; oder das Teil.
+      </div>
+    </details>
+
+    <h2><span class="nr">3</span>Die Prüfmaße</h2>
+    <p>Ein Prüfschritt braucht ein <strong>Prüfmaß</strong>: die Zahl, gegen
+      die verglichen wird. Beim Schlichten ist das die Toleranzmitte, beim
+      Schruppen das Fertigmaß plus Aufmaß.</p>
+    <p>Das Schlichtaufmaß beträgt <strong>1 mm auf den Durchmesser</strong>.</p>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Prüfschritt</th><th>Prüfmaß in mm</th>
+          <th>Stimmt?</th></tr></thead>
+        <tbody id="pruefmasse"></tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn3">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz3">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: die drei Prüfmaße</summary>
+      <div id="loesung3"></div>
+    </details>
+
+    <h2><span class="nr">4</span>Übertragen</h2>
+
+    <details>
+      <summary>1. Warum steht ein Prüfschritt als eigene Zeile im Arbeitsplan
+        und nicht im Hinweisfeld?</summary>
+      <p>Weil er ein <strong>Arbeitsvorgang</strong> ist: Er braucht Zeit, ein
+        Betriebsmittel und jemanden, der ihn ausführt. Im Hinweisfeld steht,
+        worauf man achten muss; in der Vorgangsspalte steht, was getan
+        wird.</p>
+      <p>Der praktische Unterschied zeigt sich bei der Kalkulation. Was keine
+        eigene Zeile hat, taucht in keiner Zeitrechnung auf &ndash; und wird
+        dann gern weggelassen, wenn es eng wird.</p>
+    </details>
+
+    <details>
+      <summary>2. Der Messschieber zeigt 21,99. Ist der Ø22 g6 in
+        Ordnung?</summary>
+      <p><strong>Die Frage lässt sich so nicht beantworten.</strong> Die
+        Toleranz ist 13 µm breit, der Messschieber liest in Schritten von
+        20 oder 50 µm. Er kann also gar nicht zwischen Gutteil und Ausschuss
+        unterscheiden.</p>
+      <p>Die Anzeige ist keine Lüge &ndash; sie ist nur zu grob für diese
+        Frage. Hier gehört eine Bügelmessschraube hin.</p>
+    </details>
+
+    <details>
+      <summary>3. Warum wird gemessen, solange das Teil noch gespannt
+        ist?</summary>
+      <p>Weil sich nur dann noch nacharbeiten lässt, <em>ohne neu
+        auszurichten</em>. Ist das Teil einmal ausgespannt, läuft es beim
+        zweiten Einspannen nicht mehr exakt rund: Es entsteht ein
+        Rundlauffehler, und der geht voll in jedes Durchmessermaß ein.</p>
+      <p>Bei der Spannwelle kommt dazu, dass nach dem Abstechen überhaupt
+        nichts mehr geht &ndash; das Teil liegt dann in der Wanne.</p>
+    </details>
+
+    <details>
+      <summary>4. Das Gewinde: wie prüft man das?</summary>
+      <p>Nicht mit einem Messmittel, sondern mit einer <strong>Lehre</strong>.
+        Ein Gewindelehrring M16×1,5 – 6g muss sich von Hand aufschrauben
+        lassen; der Ausschussring darf nur ein paar Gänge fassen.</p>
+      <p>Der Grund: Ein Gewinde hat nicht ein Maß, sondern mehrere
+        gleichzeitig &ndash; Flankendurchmesser, Steigung, Flankenwinkel. Die
+        Lehre prüft alle zusammen, indem sie das nachbildet, was später
+        hineingeschraubt wird.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Erst die Toleranz, dann das Messmittel. Und
+      der Prüfschritt steht dort, wo eine Abweichung noch zu retten ist.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>Beide Messmittel zum Ablesen üben:</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-messmittel-messschieber.html">Werkzeug Messschieber öffnen</a>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-messmittel-buegelmessschraube.html">Werkzeug Bügelmessschraube öffnen</a>
+    </p>
+    <p>Woher die Grenzmaße kommen, steht in der Übung
+      <em>Auf welches Maß wird geschlichtet?</em>.</p>
+
+    <p class="fussnote"><strong>Woher die Angaben stammen:</strong> ISO-System
+      für Grenzmaße und Passungen; Allgemeintoleranzen für Längenmaße nach
+      DIN ISO 2768-1; Arbeitsplanung beim Drehen &ndash; Tabellenbuch Metall.
+      Die Ablesungen der Messmittel folgen den Werkzeugen
+      <em>Messschieber</em> und <em>Bügelmessschraube</em>.</p>
+
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+      Maßgebend sind Norm und Tabellenbuch.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script src="../../assets/zeichnen.js"></script>
+<script src="../../assets/wellen.js"></script>
+<script src="../../assets/drehteil.js"></script>
+<script>var WELLE = WELLEN.spannwelle;</script>
+<script>
+"use strict";
+
+function el(id){ return document.getElementById(id); }
+function wert(id){
+  var e = el(id);
+  return e ? parseFloat(String(e.value).replace(",", ".")) : NaN;
+}
+function zahl(x, n){ return x.toFixed(n === undefined ? 3 : n).replace(".", ","); }
+
+function urteilen(id, ok, offen){
+  var u = el(id);
+  if(offen){ u.textContent = "–"; u.className = "urteil"; return 0; }
+  u.textContent = ok ? "richtig" : "nein";
+  u.className = "urteil " + (ok ? "ja" : "nein");
+  return ok ? 1 : 0;
+}
+function bilanz(id, richtig, gesamt, offen){
+  el(id).textContent = offen === gesamt
+    ? "Noch nichts eingetragen."
+    : richtig + " von " + gesamt + " richtig"
+      + (offen ? ", " + offen + " noch offen." : ".");
+}
+
+/* Die Welle mit ihren Maßen - um sie geht es. */
+(function zeichnung(){
+  var g = wellenGroesse(WELLE, {s:5.8, masse:true});
+  var svg = bild("bildWelle", g.breite, g.hoehe,
+    "Die Spannwelle mit Maßen und Toleranzangaben",
+    "Spannwelle aus C25E. Zwei Maße tragen ein ISO-Kurzzeichen, die "
+    + "übrigen gelten nach Allgemeintoleranz.");
+  zeichneWelle(svg, WELLE, {x:g.x, y:g.y, s:5.8, masse:true});
+}());
+
+var MESSMITTEL = [
+  {id:"ms20", name:"Messschieber, Nonius 1/20", ablesung:0.05},
+  {id:"ms50", name:"Messschieber, Nonius 1/50", ablesung:0.02},
+  {id:"bms",  name:"Bügelmessschraube", ablesung:0.01},
+  {id:"bmsn", name:"Bügelmessschraube mit Nonius", ablesung:0.001}
+];
+
+/* Das groebste Messmittel, dessen Ablesung noch feiner ist als die ganze
+   Toleranz. Weiter geht die Aussage nicht - was darueber hinaus noetig
+   ist, entscheidet die Pruefmittelfaehigkeit, nicht diese Uebung. */
+function groebstes(weite){
+  var aus = null;
+  MESSMITTEL.forEach(function(m){
+    if(m.ablesung < weite && (!aus || m.ablesung > aus.ablesung)) aus = m;
+  });
+  return aus;
+}
+
+/* Allgemeintoleranz m (mittel) nach DIN ISO 2768-1: Grenzabmass in mm,
+   als plus/minus. Die Weite ist das Doppelte. */
+function allgemeinM(nennmass){
+  if(nennmass <= 3)   return 0.1;
+  if(nennmass <= 6)   return 0.1;
+  if(nennmass <= 30)  return 0.2;
+  if(nennmass <= 120) return 0.3;
+  return 0.5;
+}
+
+/* Die Masse der Spannwelle: zwei mit Kurzzeichen, drei nach
+   Allgemeintoleranz. */
+var MASSE = (function(){
+  var aus = WELLE.toleranzen.map(function(t){
+    var hoechst = t.nennmass + t.es / 1000;
+    var mindest = t.nennmass + t.ei / 1000;
+    return {id: t.klasse, text: "Ø" + t.nennmass + " " + t.klasse,
+            kurzzeichen: true, nennmass: t.nennmass,
+            weite: (t.es - t.ei) / 1000,
+            hoechst: hoechst, mindest: mindest,
+            mitte: (hoechst + mindest) / 2,
+            herkunft: "ISO-Kurzzeichen " + t.klasse};
+  });
+  [[26, "Bund Ø26"], [90, "Gesamtlänge 90"], [6, "Nut A bei 6"]]
+    .forEach(function(m, i){
+      var ab = allgemeinM(m[0]);
+      aus.push({id: "a" + i, text: m[1], kurzzeichen: false, nennmass: m[0],
+        weite: ab * 2,
+        herkunft: "Allgemeintoleranz m, Grenzabmaß ± " + zahl(ab, 2) + " mm"});
+    });
+  return aus;
+}());
+
+/* ---------- Teil 1: Toleranz und Messmittel ---------- */
+
+(function teil1(){
+  var aus = "", l = "";
+  MASSE.forEach(function(m){
+    var g = groebstes(m.weite);
+    aus += '<tr><td>' + m.text + '</td>'
+      + '<td><input type="number" id="t_' + m.id + '" step="1"'
+      + ' inputmode="decimal" autocomplete="off"></td>'
+      + '<td><select id="g_' + m.id + '" data-druck="ankreuzen">'
+      + '<option value="">bitte wählen</option>'
+      + MESSMITTEL.map(function(x){
+          return '<option value="' + x.id + '">' + x.name + '</option>';
+        }).join("")
+      + '</select></td>'
+      + '<td class="urteil" id="u_' + m.id + '">–</td></tr>';
+    l += '<p><strong>' + m.text + '</strong> &ndash; ' + m.herkunft + '<br>'
+      + 'T = <strong>' + zahl(m.weite * 1000, 0) + ' µm</strong> = '
+      + zahl(m.weite, 3) + ' mm<br>'
+      + 'Gröbstes Messmittel mit feinerer Ablesung: <strong>' + g.name
+      + '</strong> (' + zahl(g.ablesung, 3) + ' mm) &ndash; die Toleranz ist '
+      + zahl(m.weite / g.ablesung, 1) + ' Ablesungsschritte breit.</p>';
+  });
+  el("masse").innerHTML = aus;
+  el("loesung1").innerHTML = l;
+}());
+
+el("btn1").addEventListener("click", function(){
+  var r = 0, offen = 0, gesamt = 0;
+  MASSE.forEach(function(m){
+    gesamt += 2;
+    var t = wert("t_" + m.id), g = el("g_" + m.id).value;
+    var leer = !isFinite(t) && !g;
+    if(leer){ offen += 2; urteilen("u_" + m.id, false, true); return; }
+    if(!isFinite(t)) offen++;
+    if(!g) offen++;
+    var okT = isFinite(t) && Math.abs(t - m.weite * 1000) <= 0.6;
+    var okG = g === groebstes(m.weite).id;
+    if(okT) r++;
+    if(okG) r++;
+    urteilen("u_" + m.id, okT && okG, false);
+  });
+  bilanz("bilanz1", r, gesamt, offen);
+});
+
+/* ---------- Teil 2: die Prüfschritte einsortieren ---------- */
+
+/* Der Arbeitsplan der Spannwelle, Fertigungs- und Pruefvorgaenge
+   gemischt. `nr` ist die richtige Stelle. */
+var ABLAUF = [
+  {nr:1, pruefen:false, was:"Rohteil prüfen, einspannen, mit der Spitze stützen",
+   grund:"Ohne geprüftes Halbzeug und feste Spannung fängt niemand an."},
+  {nr:2, pruefen:false, was:"Rechte Stirnfläche querplandrehen und zentrieren",
+   grund:"Das freie Ende zuerst - es schafft die Bezugsfläche für alle "
+     + "Längenmaße und den Sitz für die Spitze."},
+  {nr:3, pruefen:false, was:"Absätze längsrunddrehen, schruppen",
+   grund:"Erst das Volumen weg. Das Schlichtaufmaß bleibt stehen."},
+  {nr:4, pruefen:true, was:"Schlichtaufmaß mit dem Messschieber prüfen",
+   grund:"Solange das Aufmaß noch da ist, lässt sich der Schlichtgang "
+     + "planen. Fehlt es, hat der Schlichtmeißel nichts mehr wegzunehmen - "
+     + "und das merkt man sonst erst, wenn das Maß zu klein ist."},
+  {nr:5, pruefen:false, was:"Kontur schlichten: Ø22 g6, Ø18 n6",
+   grund:"Jetzt die Oberfläche und die Passmaße. Gezielt wird auf die "
+     + "Toleranzmitte."},
+  {nr:6, pruefen:true, was:"Ø22 g6 und Ø18 n6 mit der Bügelmessschraube prüfen",
+   grund:"Direkt nach dem Schlichten, solange nachgeschlichtet werden kann. "
+     + "Der Messschieber taugt hier nicht: Seine Ablesung ist gröber als die "
+     + "ganze Toleranz."},
+  {nr:7, pruefen:false, was:"Gewindefreistich und Nuten A und B einstechen",
+   grund:"Nach dem Schlichten: Ein Schlichtwerkzeug, das über eine Nut "
+     + "läuft, schlägt auf und bricht aus."},
+  {nr:8, pruefen:false, was:"Gewinde M16×1,5 – 6g drehen",
+   grund:"Nach dem Gewindefreistich, damit das Werkzeug auslaufen kann."},
+  {nr:9, pruefen:true, was:"Gewinde, Nutbreiten und Längen prüfen",
+   grund:"Die letzte Gelegenheit: Danach ist das Teil ab. Das Gewinde mit "
+     + "dem Lehrring, die Längen mit dem Messschieber."},
+  {nr:10, pruefen:false, was:"Werkstück abstechen",
+   grund:"Der letzte Drehvorgang dieser Aufspannung. Danach fällt das Teil "
+     + "ab - Auffangen vorbereiten."}
+];
+
+/* Eine Startreihenfolge, in der die drei Pruefschritte falsch liegen, die
+   Fertigungsvorgaenge aber schon stimmen: Es geht hier um die Stelle der
+   Pruefung, nicht noch einmal um den Ablauf. */
+var reihenfolge = [1, 2, 4, 3, 5, 7, 8, 6, 10, 9];
+
+function ablaufZeichnen(){
+  el("ablaufListe").innerHTML = reihenfolge.map(function(nr, i){
+    var v = ABLAUF[nr - 1];
+    return '<li draggable="true" tabindex="0" data-nr="' + nr + '"'
+      + (v.pruefen ? ' class="pruefen"' : '')
+      + ' aria-label="Platz ' + (i + 1) + ' von ' + reihenfolge.length + ': '
+      + (v.pruefen ? "Prüfen: " : "") + v.was + '">'
+      + '<span class="text">' + v.was + '</span>'
+      + '<span class="ziehknoepfe" data-druck="weg">'
+      + '<button type="button" data-weg="-1" aria-label="nach oben">↑</button>'
+      + '<button type="button" data-weg="1" aria-label="nach unten">↓</button>'
+      + '</span>'
+      + '<span class="griff" aria-hidden="true">⋮⋮</span>'
+      + '</li>';
+  }).join("");
+}
+
+/* Eine Karte um einen Platz verschieben - das ist der Weg fuer Tastatur und
+   Knöpfe. Das Ziehen mit der Maus benutzt dieselbe Liste. */
+function schieben(von, nach){
+  if(nach < 0 || nach >= reihenfolge.length) return;
+  var karte = reihenfolge.splice(von, 1)[0];
+  reihenfolge.splice(nach, 0, karte);
+  ablaufZeichnen();
+  var neu = el("ablaufListe").children[nach];
+  if(neu) neu.focus();
+  el("bilanzAblauf").textContent = "Noch nichts geprüft.";
+}
+
+function platzVon(li){
+  return [].indexOf.call(el("ablaufListe").children, li);
+}
+
+(function ablaufBauen(){
+  ablaufZeichnen();
+
+  var liste = el("ablaufListe");
+  var gezogen = null;
+
+  liste.addEventListener("dragstart", function(e){
+    var li = e.target.closest("li");
+    if(!li) return;
+    gezogen = li;
+    li.classList.add("gezogen");
+    e.dataTransfer.effectAllowed = "move";
+    /* Firefox zieht nur, wenn etwas im Paket liegt. */
+    try{ e.dataTransfer.setData("text/plain", li.dataset.nr); }catch(err){}
+  });
+
+  liste.addEventListener("dragend", function(){
+    if(gezogen) gezogen.classList.remove("gezogen");
+    [].forEach.call(liste.children, function(x){ x.classList.remove("ziel"); });
+    gezogen = null;
+  });
+
+  liste.addEventListener("dragover", function(e){
+    if(!gezogen) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    var ueber = e.target.closest("li");
+    [].forEach.call(liste.children, function(x){ x.classList.remove("ziel"); });
+    if(ueber && ueber !== gezogen) ueber.classList.add("ziel");
+  });
+
+  liste.addEventListener("drop", function(e){
+    if(!gezogen) return;
+    e.preventDefault();
+    var ueber = e.target.closest("li");
+    [].forEach.call(liste.children, function(x){ x.classList.remove("ziel"); });
+    if(!ueber || ueber === gezogen) return;
+    schieben(platzVon(gezogen), platzVon(ueber));
+  });
+
+  /* Pfeiltasten und die beiden Knöpfe an jeder Karte. */
+  liste.addEventListener("keydown", function(e){
+    var li = e.target.closest("li");
+    if(!li) return;
+    if(e.key === "ArrowUp"){ e.preventDefault(); schieben(platzVon(li), platzVon(li) - 1); }
+    if(e.key === "ArrowDown"){ e.preventDefault(); schieben(platzVon(li), platzVon(li) + 1); }
+  });
+
+  liste.addEventListener("click", function(e){
+    var b = e.target.closest("button[data-weg]");
+    if(!b) return;
+    var li = b.closest("li");
+    schieben(platzVon(li), platzVon(li) + Number(b.dataset.weg));
+  });
+
+  el("ablaufLoesung").innerHTML = ABLAUF.map(function(v){
+    return "<li><strong>" + (v.pruefen ? "Prüfen: " : "") + v.was
+      + "</strong> &ndash; " + v.grund + "</li>";
+  }).join("");
+}());
+
+el("btnAblauf").addEventListener("click", function(){
+  var richtig = 0;
+  reihenfolge.forEach(function(nr, i){
+    var li = el("ablaufListe").children[i];
+    var ok = nr === i + 1;
+    if(ok) richtig++;
+    li.classList.remove("ja", "nein");
+    li.classList.add(ok ? "ja" : "nein");
+  });
+  el("bilanzAblauf").textContent = richtig === reihenfolge.length
+    ? "Alle zehn an der richtigen Stelle."
+    : richtig + " von " + reihenfolge.length + " an der richtigen Stelle.";
+});
+
+el("btnAblaufNeu").addEventListener("click", function(){
+  /* Nur die drei Pruefschritte wandern - die Fertigungsvorgaenge bleiben
+     in ihrer Reihenfolge stehen. Gemischt wird so lange, bis kein
+     Pruefschritt zufaellig richtig liegt. */
+  var pruef = [], rest = [];
+  ABLAUF.forEach(function(v){ (v.pruefen ? pruef : rest).push(v.nr); });
+  var i, j, t, plaetze;
+  do{
+    plaetze = [];
+    for(i = 0; i < reihenfolge.length; i++) plaetze.push(i);
+    for(i = plaetze.length - 1; i > 0; i--){
+      j = Math.floor(Math.random() * (i + 1));
+      t = plaetze[i]; plaetze[i] = plaetze[j]; plaetze[j] = t;
+    }
+    plaetze = plaetze.slice(0, pruef.length).sort(function(a, b){ return a - b; });
+  }while(plaetze.some(function(p, k){ return p === pruef[k] - 1; }));
+
+  var neu = [], ausRest = 0, ausPruef = 0;
+  for(i = 0; i < reihenfolge.length; i++){
+    if(plaetze.indexOf(i) >= 0) neu.push(pruef[ausPruef++]);
+    else neu.push(rest[ausRest++]);
+  }
+  reihenfolge = neu;
+  ablaufZeichnen();
+  el("bilanzAblauf").textContent = "Noch nichts geprüft.";
+});
+
+/* ---------- Teil 3: die Prüfmaße ---------- */
+
+var AUFMASS = 1.0;   /* Schlichtaufmaß auf den Durchmesser, in mm */
+
+var PRUEFMASSE = (function(){
+  var pass = MASSE.filter(function(m){ return m.kurzzeichen; });
+  var aus = pass.map(function(m){
+    return {id: "z_" + m.id,
+      text: "Nach dem Schlichten: " + m.text + ", Zielmaß",
+      soll: m.mitte, toleranz: 0.0011,
+      grund: "Die Toleranzmitte: (" + zahl(m.hoechst, 3) + " + "
+        + zahl(m.mindest, 3) + ") / 2 = <strong>" + zahl(m.mitte, 4)
+        + " mm</strong>. Darauf zielt der Schlichtgang."};
+  });
+  var g6 = pass.filter(function(m){ return m.id === "g6"; })[0];
+  aus.push({id: "aufmass",
+    text: "Nach dem Schruppen: Durchmesser am künftigen "
+      + g6.text.replace(" g6", ""),
+    soll: g6.nennmass + AUFMASS, toleranz: 0.06,
+    grund: "Fertigmaß plus Schlichtaufmaß auf den Durchmesser: "
+      + g6.nennmass + " + " + zahl(AUFMASS, 1) + " = <strong>"
+      + zahl(g6.nennmass + AUFMASS, 1) + " mm</strong>. Hier genügt der "
+      + "Messschieber - ein Zehntel mehr oder weniger Aufmaß schadet "
+      + "nicht."});
+  return aus;
+}());
+
+(function teil3(){
+  var aus = "", l = "";
+  PRUEFMASSE.forEach(function(p){
+    aus += '<tr><td>' + p.text + '</td>'
+      + '<td><input type="number" id="p_' + p.id + '" step="0.001"'
+      + ' inputmode="decimal" autocomplete="off"></td>'
+      + '<td class="urteil" id="up_' + p.id + '">–</td></tr>';
+    l += '<p><strong>' + p.text + ':</strong> ' + p.grund + '</p>';
+  });
+  el("pruefmasse").innerHTML = aus;
+  el("loesung3").innerHTML = l;
+}());
+
+el("btn3").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  PRUEFMASSE.forEach(function(p){
+    var v = wert("p_" + p.id);
+    var leer = !isFinite(v); if(leer) offen++;
+    r += urteilen("up_" + p.id, Math.abs(v - p.soll) <= p.toleranz, leer);
+  });
+  bilanz("bilanz3", r, PRUEFMASSE.length, offen);
+});
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+</body>
+</html>

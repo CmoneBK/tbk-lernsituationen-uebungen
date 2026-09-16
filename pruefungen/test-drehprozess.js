@@ -494,7 +494,8 @@ console.log('\nDie Uebungen');
   const ORDNER = path.join(BASIS, 'uebungen/drehprozess');
   const dateien = fs.readdirSync(ORDNER)
     .filter((f) => /^\d\d-.*\.html$/.test(f)).sort();
-  p('vier Uebungen liegen im Paket', dateien.length === 4, dateien.join(', '));
+  p('sieben Uebungen liegen im Paket', dateien.length === 7,
+    dateien.join(', '));
 
   /* Jede Uebung wird geladen und ihre Pruefknoepfe werden gedrueckt - ohne
      Eingabe. Erwartet wird "Noch nichts eingetragen": Wer nichts weiss, soll
@@ -901,6 +902,218 @@ console.log('\nDie Uebung zum Vorschub');
   d.getElementById('btn3').click();
   p('die Grenze wird richtig bestimmt',
     /5 von 5 richtig/.test(d.getElementById('bilanz3').textContent),
+    d.getElementById('bilanz3').textContent);
+  w.close();
+}
+
+console.log('\nDie Uebung zur Hauptnutzungszeit');
+{
+  const datei = '05-wie-lange-dauert-das.html';
+  const dom = new JSDOM(mitAssets(fs.readFileSync(
+    path.join(BASIS, 'uebungen/drehprozess', datei), 'utf8')), {
+    runScripts: 'dangerously',
+    url: 'https://t-bk.de/unterrichtsmaterial/uebungen/drehprozess/' + datei,
+    beforeParse(w) { w.Element.prototype.scrollIntoView = function () {}; },
+  });
+  const w = dom.window, d = w.document;
+  const hol = (id) => w.eval(
+    'VORGAENGE.filter(function(x){ return x.id === "' + id + '"; })[0]');
+
+  const vorgaenge = w.eval('VORGAENGE');
+  p('fuenf Vorgaenge werden gerechnet', vorgaenge.length === 5,
+    String(vorgaenge.length));
+
+  /* Der Vorschubweg ist die Stelle, an der es schiefgeht. Jeder Fall muss
+     An- und Ueberlauf enthalten - keiner darf L = l sein. */
+  const LA = w.eval('LA');
+  const ohne = vorgaenge.filter((v) => v.L <= 0.001);
+  p('jeder Weg ist groesser als null', ohne.length === 0);
+  p('An- und Ueberlauf sind angesetzt', LA >= 1 && LA <= 2, String(LA));
+
+  let summe = 0;
+  vorgaenge.forEach((v) => {
+    const t = w.eval('sekunden(VORGAENGE.filter(function(x){'
+      + ' return x.id === "' + v.id + '"; })[0])');
+    summe += t;
+    d.getElementById('w_' + v.id).value = v.L.toFixed(1);
+    d.getElementById('t_' + v.id).value = t.toFixed(1);
+  });
+  d.getElementById('zSumme').value = summe.toFixed(1);
+  d.getElementById('btn1').click();
+  d.getElementById('btn2').click();
+  p('die Vorschubwege werden erkannt',
+    /5 von 5 richtig/.test(d.getElementById('bilanz1').textContent),
+    d.getElementById('bilanz1').textContent);
+  p('die Zeiten und ihre Summe ebenso',
+    /6 von 6 richtig/.test(d.getElementById('bilanz2').textContent),
+    d.getElementById('bilanz2').textContent);
+
+  /* Die Drehzahlen muessen Stufen der Maschine sein - die Spannwelle ist
+     duenn genug, dass die Rechnung darueber hinausgeht. */
+  const stufen = w.eval('STUFEN');
+  const fremd = vorgaenge.filter((v) => stufen.indexOf(
+    w.eval('n(VORGAENGE.filter(function(x){ return x.id === "' + v.id
+      + '"; })[0])')) < 0);
+  p('jede Drehzahl ist eine Stufe der Maschine', fremd.length === 0,
+    fremd.map((v) => v.id).join(', '));
+
+  /* Teil 3: der doppelte Vorschub. Halbe Zeit, vierfache Rautiefe. */
+  const tn = w.eval('T_NORMAL'), td = w.eval('T_DOPPELT');
+  const rz = w.eval('RZ_DOPPELT');
+  p('der doppelte Vorschub halbiert die Zeit',
+    Math.abs(td - tn / 2) < 0.01, tn.toFixed(1) + ' -> ' + td.toFixed(1));
+  p('und vervierfacht die Rautiefe', Math.abs(rz - 16) < 0.2, rz.toFixed(1));
+  d.getElementById('dT').value = td.toFixed(1);
+  d.getElementById('dS').value = (tn - td).toFixed(1);
+  d.getElementById('dRz').value = rz.toFixed(1);
+  d.getElementById('dOk').value = 'nein';
+  d.getElementById('btn3').click();
+  p('und die Rechnung wird erkannt',
+    /4 von 4 richtig/.test(d.getElementById('bilanz3').textContent),
+    d.getElementById('bilanz3').textContent);
+  w.close();
+}
+
+console.log('\nDie Uebung zu den Passungen');
+{
+  const datei = '06-auf-welches-mass-wird-geschlichtet.html';
+  const dom = new JSDOM(mitAssets(fs.readFileSync(
+    path.join(BASIS, 'uebungen/drehprozess', datei), 'utf8')), {
+    runScripts: 'dangerously',
+    url: 'https://t-bk.de/unterrichtsmaterial/uebungen/drehprozess/' + datei,
+    beforeParse(w) { w.Element.prototype.scrollIntoView = function () {}; },
+  });
+  const w = dom.window, d = w.document;
+
+  const passungen = w.eval('PASSUNGEN');
+  p('die Spannwelle traegt zwei Passungen', passungen.length === 2,
+    passungen.map((x) => x.nennmass + ' ' + x.klasse).join(', '));
+  p('eine mit Spiel, eine mit Uebermass',
+    passungen.some((x) => x.es < 0) && passungen.some((x) => x.ei > 0),
+    passungen.map((x) => x.art).join(', '));
+
+  /* Der Durchmesser 18 liegt genau auf der Bereichsgrenze - es gilt die
+     untere Zeile. Das ist die Falle der Uebung. */
+  const n6 = passungen.filter((x) => x.klasse === 'n6')[0];
+  p('der Ø18 nimmt die Zeile ueber 10 bis 18',
+    n6 && /10 bis 18/.test(n6.bereich), n6 ? n6.bereich : 'kein n6');
+
+  passungen.forEach((x) => {
+    d.getElementById('a_' + x.id + '_es').value = String(x.es);
+    d.getElementById('a_' + x.id + '_ei').value = String(x.ei);
+    d.getElementById('m_' + x.id + '_h').value = x.hoechst.toFixed(3);
+    d.getElementById('m_' + x.id + '_m').value = x.mindest.toFixed(3);
+    d.getElementById('m_' + x.id + '_z').value = x.mitte.toFixed(4);
+  });
+  d.getElementById('btn1').click();
+  d.getElementById('btn2').click();
+  p('die Grenzabmasse werden erkannt',
+    /4 von 4 richtig/.test(d.getElementById('bilanz1').textContent),
+    d.getElementById('bilanz1').textContent);
+  p('Grenzmasse und Zielmass ebenso',
+    /6 von 6 richtig/.test(d.getElementById('bilanz2').textContent),
+    d.getElementById('bilanz2').textContent);
+
+  const teile = w.eval('TEILE');
+  p('vier Teile werden beurteilt', teile.length === 4);
+  p('und alle drei Urteile kommen vor',
+    new Set(teile.map((t) => t.soll)).size === 3,
+    teile.map((t) => t.soll).join(', '));
+  /* Das Teil, das genau auf Nennmass liegt, muss Ausschuss sein - sonst
+     faellt der wichtigste Punkt der Uebung unter den Tisch. */
+  const aufNenn = teile.filter((t) => t.ist === t.p.nennmass)[0];
+  p('das Teil auf Nennmass ist Ausschuss',
+    aufNenn && aufNenn.soll === 'ausschuss',
+    aufNenn ? aufNenn.soll : 'keines auf Nennmass');
+  teile.forEach((t, i) => { d.getElementById('u_' + i).value = t.soll; });
+  d.getElementById('btn3').click();
+  p('die Urteile werden erkannt',
+    /4 von 4 richtig/.test(d.getElementById('bilanz3').textContent),
+    d.getElementById('bilanz3').textContent);
+  w.close();
+}
+
+console.log('\nDie Uebung zu den Pruefschritten');
+{
+  const datei = '07-womit-wird-das-geprueft.html';
+  const dom = new JSDOM(mitAssets(fs.readFileSync(
+    path.join(BASIS, 'uebungen/drehprozess', datei), 'utf8')), {
+    runScripts: 'dangerously',
+    url: 'https://t-bk.de/unterrichtsmaterial/uebungen/drehprozess/' + datei,
+    beforeParse(w) { w.Element.prototype.scrollIntoView = function () {}; },
+  });
+  const w = dom.window, d = w.document;
+
+  const masse = w.eval('MASSE');
+  p('fuenf Masse werden beurteilt', masse.length === 5, String(masse.length));
+  p('zwei davon mit Kurzzeichen',
+    masse.filter((m) => m.kurzzeichen).length === 2);
+
+  /* Die Passungen muessen die Buegelmessschraube verlangen, die groben
+     Masse den Messschieber - sonst haette die Uebung keine Pointe. */
+  masse.forEach((m) => {
+    d.getElementById('t_' + m.id).value = String(Math.round(m.weite * 1000));
+    d.getElementById('g_' + m.id).value = w.eval('groebstes(' + m.weite + ').id');
+  });
+  d.getElementById('btn1').click();
+  p('Toleranzweiten und Messmittel werden erkannt',
+    /10 von 10 richtig/.test(d.getElementById('bilanz1').textContent),
+    d.getElementById('bilanz1').textContent);
+  const passungMittel = masse.filter((m) => m.kurzzeichen)
+    .map((m) => w.eval('groebstes(' + m.weite + ').id'));
+  p('fuer die Passungen reicht kein Messschieber',
+    passungMittel.every((id) => id === 'bms' || id === 'bmsn'),
+    passungMittel.join(', '));
+
+  /* Die Ziehliste: drei Pruefschritte sitzen falsch und muessen wandern. */
+  const karten = () => [...d.querySelectorAll('#ablaufListe li')];
+  p('zehn Karten liegen bereit', karten().length === 10,
+    String(karten().length));
+  p('drei davon sind Pruefschritte',
+    karten().filter((k) => k.classList.contains('pruefen')).length === 3);
+  p('jede laesst sich ziehen',
+    karten().every((k) => k.getAttribute('draggable') === 'true'));
+  p('jede ist mit der Tastatur erreichbar',
+    karten().every((k) => k.getAttribute('tabindex') === '0'));
+  p('die Startreihenfolge ist noch nicht richtig',
+    w.eval('reihenfolge').some((nr, i) => nr !== i + 1),
+    w.eval('reihenfolge').join(' '));
+
+  for (let runde = 0; runde < 40; runde++) {
+    const r = w.eval('reihenfolge');
+    let getan = false;
+    for (let i = 0; i < r.length; i++) {
+      if (r[i] !== i + 1) {
+        w.eval('schieben(' + r.indexOf(i + 1) + ', ' + i + ')');
+        getan = true;
+        break;
+      }
+    }
+    if (!getan) break;
+  }
+  d.getElementById('btnAblauf').click();
+  p('sie laesst sich sortieren',
+    /Alle zehn an der richtigen Stelle/.test(
+      d.getElementById('bilanzAblauf').textContent),
+    d.getElementById('bilanzAblauf').textContent);
+
+  /* Neu mischen darf keinen Pruefschritt an seinem Platz stehen lassen. */
+  let gut = true;
+  const pruefNr = w.eval('ABLAUF').filter((v) => v.pruefen).map((v) => v.nr);
+  for (let i = 0; i < 20; i++) {
+    d.getElementById('btnAblaufNeu').click();
+    const r = w.eval('reihenfolge');
+    if (r.some((nr, k) => nr === k + 1 && pruefNr.indexOf(nr) >= 0)) gut = false;
+  }
+  p('nach dem Mischen steht kein Pruefschritt zufaellig richtig', gut);
+
+  /* Die Pruefmasse: die Mitte der Toleranz und das Schruppmass. */
+  const pm = w.eval('PRUEFMASSE');
+  p('drei Pruefmasse sind gefragt', pm.length === 3, String(pm.length));
+  pm.forEach((x) => { d.getElementById('p_' + x.id).value = x.soll.toFixed(4); });
+  d.getElementById('btn3').click();
+  p('die Pruefmasse werden erkannt',
+    /3 von 3 richtig/.test(d.getElementById('bilanz3').textContent),
     d.getElementById('bilanz3').textContent);
   w.close();
 }

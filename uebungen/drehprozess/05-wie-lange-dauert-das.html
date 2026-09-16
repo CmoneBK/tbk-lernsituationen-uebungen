@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wie lange dauert das?</title>
+<meta name="description" content="Hauptnutzungszeit an der Spannwelle: Vorschubweg mit An- und Überlauf, Drehzahl, Zeit – und was passiert, wenn man den Vorschub verdoppelt.">
+<meta name="dauer" content="25 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  table.werte td:first-child{font-weight:600}
+  table.werte input, table.werte select{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:6px 8px; border-radius:7px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  td.urteil{font-size:13px; font-weight:600; white-space:nowrap}
+  td.urteil.ja{color:var(--ok)}
+  td.urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+  .formel{
+    display:block; margin:10px 0; padding:10px 14px; border-radius:10px;
+    background:var(--bg); border:1px solid var(--border);
+    font-size:17px; text-align:center; font-variant-numeric:tabular-nums;
+  }
+  figure.bild{margin:0 0 18px}
+  figure.bild svg{width:100%; height:auto}
+  figure.bild figcaption{font-size:13px; color:var(--muted); margin-top:6px}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Planung eines Drehprozesses</p>
+    <h1>Wie lange dauert das?</h1>
+    <p class="lead">Der Weg ist länger als die Fläche.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Die Lage:</strong> Der Arbeitsplan für die
+        <strong>Spannwelle</strong> steht. Drehzahlen und Vorschübe sind
+        eingetragen. Jetzt fragt die Arbeitsvorbereitung, wie lange das Teil
+        die Maschine belegt &ndash; und ohne diese Zahl lässt sich nicht
+        sagen, was es kostet.</p>
+      <p>Gesucht ist die <strong>Hauptnutzungszeit</strong>: die Zeit, in der
+        die Schneide wirklich schneidet.</p>
+      <p><strong>Das Tabellenbuch gehört aufgeschlagen daneben.</strong></p>
+    </div>
+
+    <h2><span class="nr">1</span>Der Vorschubweg</h2>
+
+    <figure class="bild" id="bildWelle"></figure>
+
+    <span class="formel">t<sub>h</sub> = L · i / (n · f)</span>
+
+    <p>Die Formel ist kurz, und drei ihrer vier Größen stehen schon fest. Neu
+      ist der <strong>Vorschubweg L</strong>. Er ist nicht die Länge der
+      Fläche: Das Werkzeug muss vor ihr anlaufen und darf erst hinter ihr
+      anhalten.</p>
+    <p>Angesetzt wird durchgehend
+      <strong>l<sub>a</sub> = l<sub>u</sub> = 2 mm</strong>. Ob der Überlauf
+      dazukommt, entscheidet die Kontur: Läuft das Werkzeug ins Freie, ja
+      &ndash; endet der Abschnitt an einer Schulter, nein.</p>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Vorgang</th><th>L in mm</th><th>Stimmt?</th></tr></thead>
+        <tbody id="wege"></tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn1">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz1">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: die fünf Wege</summary>
+      <div id="loesung1"></div>
+      <div class="merksatz">
+        <strong>Der häufigste Fehler:</strong> L = l setzen. Bei der 1,3 mm
+        breiten Nut ist der Anlaufweg größer als die Einstechtiefe selbst.
+      </div>
+    </details>
+
+    <h2><span class="nr">2</span>Die Zeiten</h2>
+    <p>Drehzahl und Vorschub stehen daneben &ndash; sie stammen aus den
+      Übungen <em>Vom Werkstoff zur Schnittgeschwindigkeit</em> und
+      <em>Wie fein muss der Vorschub sein?</em>. Rechnet die Zeit für jeden
+      Vorgang und die Summe.</p>
+    <p>Die Maschine hat feste Drehzahlstufen bis <strong>2000 1/min</strong>.
+      C25E lässt hohe Schnittgeschwindigkeiten zu, und die Spannwelle ist
+      dünn &ndash; rechnerisch kämen über 5000 1/min heraus. Genommen wird
+      die <strong>nächstkleinere Stufe</strong>; bei den ersten drei
+      Vorgängen ist das der Anschlag der Maschine, beim Abstechen nicht.</p>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Vorgang</th><th>n, f, L</th>
+          <th>t<sub>h</sub> in s</th><th>Stimmt?</th></tr></thead>
+        <tbody id="zeiten"></tbody>
+      </table>
+    </div>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Gesucht</th><th>Eintrag</th><th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>Summe aller fünf Zeiten in s</td>
+            <td><input type="number" id="zSumme" step="1" inputmode="decimal"
+              autocomplete="off"></td>
+            <td class="urteil" id="uzSumme">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn2">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz2">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: die Rechnungen im Einzelnen</summary>
+      <div id="loesung2"></div>
+    </details>
+
+    <h2><span class="nr">3</span>Was der doppelte Vorschub bringt</h2>
+    <p>Ein Kollege schlägt vor, den Schlichtgang am Führungssitz mit
+      <strong>doppeltem Vorschub</strong> zu fahren &ndash; „das geht doppelt
+      so schnell&ldquo;. Rechnet nach, was dabei herauskommt.</p>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Gesucht</th><th>Eintrag</th><th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>Zeit für den Führungssitz mit doppeltem Vorschub, in s</td>
+            <td><input type="number" id="dT" step="0.1" inputmode="decimal"
+              autocomplete="off"></td>
+            <td class="urteil" id="udT">–</td></tr>
+          <tr><td>Gesparte Zeit in s</td>
+            <td><input type="number" id="dS" step="0.1" inputmode="decimal"
+              autocomplete="off"></td>
+            <td class="urteil" id="udS">–</td></tr>
+          <tr><td>Rautiefe, die dabei entsteht, in µm</td>
+            <td><input type="number" id="dRz" step="0.1" inputmode="decimal"
+              autocomplete="off"></td>
+            <td class="urteil" id="udRz">–</td></tr>
+          <tr><td>Bleibt die geforderte Rz 4 eingehalten?</td>
+            <td><select id="dOk" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="ja">ja</option>
+              <option value="nein">nein</option>
+            </select></td>
+            <td class="urteil" id="udOk">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn3">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz3">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: ein schlechtes Geschäft</summary>
+      <div id="loesung3"></div>
+      <div class="merksatz">
+        <strong>Merksatz:</strong> Die Zeit halbiert sich, die Rautiefe
+        vervierfacht sich. In der Formel steht f linear in der Zeit, aber im
+        Quadrat in der Rautiefe. Zeit holt man beim Schlichten über den
+        <em>größeren Eckenradius</em>, nicht über den größeren Vorschub.
+      </div>
+    </details>
+
+    <h2><span class="nr">4</span>Übertragen</h2>
+
+    <details>
+      <summary>1. Warum steht die Hauptnutzungszeit überhaupt im
+        Arbeitsplan?</summary>
+      <p>Weil ohne sie kein Preis zustande kommt. Eine Maschinenstunde kostet
+        Geld, und der Arbeitsplan sagt, wie viele Stunden ein Teil braucht.
+        Erst damit lässt sich entscheiden, ob sich eine andere Maschine, ein
+        anderes Werkzeug oder ein anderer Ablauf lohnt.</p>
+      <p>Für den Dreher hat sie noch einen zweiten Wert: Sie sagt, wann er
+        wieder an der Maschine sein muss.</p>
+    </details>
+
+    <details>
+      <summary>2. Ist die Hauptnutzungszeit die ganze Zeit am Teil?</summary>
+      <p>Nein, nur der Teil, in dem gespant wird. Dazu kommen:</p>
+      <ul>
+        <li><strong>Nebenzeiten</strong> &ndash; spannen, messen, Werkzeug
+          wechseln, anfahren, Späne entfernen.</li>
+        <li><strong>Rüstzeiten</strong> &ndash; die Maschine für den Auftrag
+          herrichten. Sie fallen einmal je Los an, nicht je Teil.</li>
+      </ul>
+      <p>Bei einem <strong>Einzelstück</strong> wie der Spannwelle sind Neben-
+        und Rüstzeit ein Vielfaches der Hauptnutzungszeit. Deshalb lohnt hier
+        kein Feilschen am Vorschub &ndash; wohl aber eine Reihenfolge, die
+        Werkzeugwechsel spart.</p>
+    </details>
+
+    <details>
+      <summary>3. Warum wird beim Plandrehen mit d<sub>m</sub> gerechnet, beim
+        Vorschubweg aber mit d/2?</summary>
+      <p>Weil zwei verschiedene Fragen dahinterstehen.</p>
+      <p>Der <strong>Vorschubweg</strong> ist eine Strecke: Die Schneide fährt
+        von außen bis zur Mitte, also den halben Durchmesser weit.</p>
+      <p>Die <strong>Drehzahl</strong> soll eine Schnittgeschwindigkeit
+        einhalten. Die ändert sich unterwegs, weil der Durchmesser kleiner
+        wird. Mit einer festen Drehzahl trifft man sie deshalb nur im Mittel
+        &ndash; und dafür nimmt man den mittleren Durchmesser.</p>
+    </details>
+
+    <details>
+      <summary>4. Der Betrieb kauft eine CNC-Maschine mit konstanter
+        Schnittgeschwindigkeit. Was ändert sich?</summary>
+      <p>Die Drehzahl ist dann keine feste Zahl mehr, sondern wird laufend
+        nachgeregelt. Damit fällt der Umweg über den mittleren Durchmesser
+        weg &ndash; die Zeitformel rechnet direkt mit v<sub>c</sub>:</p>
+      <span class="formel">t<sub>h</sub> = π · d<sub>m</sub> · (L · i) /
+        (v<sub>c</sub> · f)</span>
+      <p>Im Tabellenbuch steht das auf der Seite neben der hier verwendeten.
+        Die Vorschubwege sind dieselben.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Erst den Weg, dann die Zeit. Und der Weg ist
+      immer länger als die Fläche.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>Alle Fälle des Vorschubwegs mit Bild, und die Rechnung zum
+      Durchspielen:</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-hauptnutzungszeit-beim-drehen.html">Werkzeug Hauptnutzungszeit beim Drehen öffnen</a>
+    </p>
+
+    <p class="fussnote"><strong>Woher die Angaben stammen:</strong>
+      „Hauptnutzungszeit beim Drehen mit konstanter Drehzahl&ldquo; &ndash;
+      Formel, Vorschubwege und An-/Überlauf; Schnittdaten beim Drehen und die
+      Tabelle zur erreichbaren Rautiefe &ndash; Tabellenbuch Metall. Die
+      Spannwelle ist das Übungswerkstück dieses Pakets.</p>
+
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+      Maßgebend sind Norm und Tabellenbuch.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script src="../../assets/zeichnen.js"></script>
+<script src="../../assets/wellen.js"></script>
+<script src="../../assets/drehteil.js"></script>
+<script>var WELLE = WELLEN.spannwelle;</script>
+<script>
+"use strict";
+
+/* An- und Ueberlauf. Das Tabellenbuch nennt 1 bis 2 mm; genommen wird der
+   obere Wert - dann liegt die Rechnung auf der sicheren Seite. */
+var LA = 2;
+
+/* Die Zeile "Verguetungsstahl, unlegiert, Rm <= 650" - die des C25E.
+   Startwerte bei normalen Bearbeitungsbedingungen. */
+var VC = {plan: 250, schruppen: 190, schlichten: 300, stechen: 135};
+
+/* Der Eckenradius des Schlichtwerkzeugs: Die engste Innenrundung der
+   Spannwelle ist die R1 am kleinen Absatz, also r_eps <= 0,9, genormt
+   0,8 mm. */
+var R_ECKE = 0.8;
+
+function el(id){ return document.getElementById(id); }
+function wert(id){
+  var e = el(id);
+  return e ? parseFloat(String(e.value).replace(",", ".")) : NaN;
+}
+function zahl(x, n){ return x.toFixed(n === undefined ? 1 : n).replace(".", ","); }
+function drehzahl(vc, d){ return Math.floor(vc * 1000 / (Math.PI * d)); }
+
+/* Die Drehzahlstufen der Werkstattmaschine - dieselbe Annahme wie in der
+   Lernsituation. Gerundet wird auf die naechstkleinere Stufe: aufwaerts
+   laege man ueber dem Richtwert des Buches. Bei kleinen Durchmessern und
+   den hohen Schnittgeschwindigkeiten des C25E ist die Maschine oben am
+   Anschlag - und genau das bestimmt dann die Zeit. */
+var STUFEN = [45, 63, 90, 125, 180, 250, 355, 500, 710, 1000, 1400, 2000];
+function stufe(x){
+  var aus = STUFEN[0];
+  for(var i = 0; i < STUFEN.length; i++) if(STUFEN[i] <= x) aus = STUFEN[i];
+  return aus;
+}
+function vorschub(rz, r){ return Math.sqrt(8 * r * rz / 1000); }
+function rautiefe(f, r){ return f * f / (8 * r) * 1000; }
+
+function urteilen(id, ok, offen){
+  var u = el(id);
+  if(offen){ u.textContent = "–"; u.className = "urteil"; return 0; }
+  u.textContent = ok ? "richtig" : "nein";
+  u.className = "urteil " + (ok ? "ja" : "nein");
+  return ok ? 1 : 0;
+}
+function bilanz(id, richtig, gesamt, offen){
+  el(id).textContent = offen === gesamt
+    ? "Noch nichts eingetragen."
+    : richtig + " von " + gesamt + " richtig"
+      + (offen ? ", " + offen + " noch offen." : ".");
+}
+
+/* Die Laengen kommen aus der Kontur, nicht aus dem Text - sonst stehen
+   zwei Zahlen fuer dieselbe Strecke. */
+function abschnitt(d){
+  return WELLE.abschnitte.filter(function(a){ return a.d === d; })[0];
+}
+var L_SITZ = abschnitt(22).bis - abschnitt(22).von;
+var L_ZAPFEN = abschnitt(18).bis - abschnitt(18).von;
+
+/* Die vier Vorgaenge, fuer die gerechnet wird. `weg` ist der Fall aus der
+   Bildtafel des Tabellenbuchs, `grund` sagt, welcher es ist und warum. */
+var VORGAENGE = [
+  {id:"plan", name:"Rechte Stirnfläche querplandrehen",
+   d: WELLE.rohteil.d, dn: WELLE.rohteil.d / 2, vc: VC.plan, f: 0.15, i: 1,
+   L: WELLE.rohteil.d / 2 + LA,
+   wegText:"L = d/2 + l<sub>a</sub> = " + WELLE.rohteil.d + "/2 + " + LA,
+   grund:"Querplandrehen am Vollzylinder: Die Schneide läuft von außen bis "
+     + "zur Mitte, also den halben Durchmesser weit. Kein Überlauf - dahinter "
+     + "ist nichts mehr. Die Drehzahl kommt aus d<sub>m</sub> = d/2."},
+  {id:"schrupp", name:"Führungssitz Ø22 schruppen",
+   d: 28, dn: 28, vc: VC.schruppen, f: 0.4, i: 1,
+   L: L_SITZ + LA,
+   wegText:"L = l + l<sub>a</sub> = " + zahl(L_SITZ, 0) + " + " + LA,
+   grund:"Längsrunddrehen mit Ansatz: Am Ende steht der Bund, also kein "
+     + "Überlauf. Gerechnet wird mit dem Rohteildurchmesser Ø28 - dort ist "
+     + "die Schnittgeschwindigkeit am größten."},
+  {id:"schlicht", name:"Führungssitz Ø22 schlichten",
+   d: 22, dn: 22, vc: VC.schlichten, f: vorschub(4, R_ECKE), i: 1,
+   L: L_SITZ + LA,
+   wegText:"L = l + l<sub>a</sub> = " + zahl(L_SITZ, 0) + " + " + LA,
+   grund:"Derselbe Weg, aber am Fertigdurchmesser Ø22 und mit dem "
+     + "Schlichtvorschub für Rz 4."},
+  {id:"nut", name:"Nut A einstechen",
+   d: 18, dn: 18, vc: VC.stechen, f: 0.08, i: 1,
+   L: WELLE.nuten[0].tiefe + LA,
+   wegText:"L = l + l<sub>a</sub> = " + zahl(WELLE.nuten[0].tiefe, 1)
+     + " + " + LA,
+   grund:"Einstechen: Der Weg ist die Einstechtiefe, hier 0,5 mm auf den "
+     + "Radius. Der Anlaufweg ist größer als der Einstich selbst."},
+  {id:"abstech", name:"Werkstück abstechen (Ø28)",
+   d: WELLE.rohteil.d, dn: WELLE.rohteil.d, vc: VC.stechen, f: 0.08, i: 1,
+   L: WELLE.rohteil.d / 2 + LA,
+   wegText:"L = l + l<sub>a</sub> = " + (WELLE.rohteil.d / 2) + " + " + LA,
+   grund:"Abstechen: Der Weg ist die Abstechtiefe, also der halbe "
+     + "Rohteildurchmesser. Hier bleibt die Maschine unter ihrem Anschlag - "
+     + "gerundet wird auf die nächstkleinere Stufe."}
+];
+
+function n(v){ return stufe(drehzahl(v.vc, v.dn)); }
+function sekunden(v){ return v.L * v.i / (n(v) * v.f) * 60; }
+
+/* Die Welle mit ihren Maßen - die Längen der Vorgänge stehen darin. */
+(function zeichnung(){
+  var g = wellenGroesse(WELLE, {s:5.8, masse:true});
+  var svg = bild("bildWelle", g.breite, g.hoehe,
+    "Die Spannwelle mit Maßen",
+    "Spannwelle aus C25E, Rohteil Ø28 × 96 mm. Die Längen der Abschnitte "
+    + "stehen unter dem Teil.");
+  zeichneWelle(svg, WELLE, {x:g.x, y:g.y, s:5.8, masse:true});
+}());
+
+/* ---------- Teil 1: die Vorschubwege ---------- */
+
+(function teil1(){
+  var aus = "", l = "";
+  VORGAENGE.forEach(function(v){
+    aus += '<tr><td>' + v.name + '</td>'
+      + '<td><input type="number" id="w_' + v.id + '" step="0.1"'
+      + ' inputmode="decimal" autocomplete="off"></td>'
+      + '<td class="urteil" id="uw_' + v.id + '">–</td></tr>';
+    l += '<p><strong>' + v.name + '</strong><br>'
+      + v.wegText + ' = <strong>' + zahl(v.L, 1) + ' mm</strong><br>'
+      + '<em>' + v.grund + '</em></p>';
+  });
+  el("wege").innerHTML = aus;
+  el("loesung1").innerHTML = l;
+}());
+
+el("btn1").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  VORGAENGE.forEach(function(v){
+    var x = wert("w_" + v.id);
+    var leer = !isFinite(x); if(leer) offen++;
+    r += urteilen("uw_" + v.id, Math.abs(x - v.L) <= 0.11, leer);
+  });
+  bilanz("bilanz1", r, VORGAENGE.length, offen);
+});
+
+/* ---------- Teil 2: die Zeiten ---------- */
+
+(function teil2(){
+  var aus = "", l = "", summe = 0;
+  VORGAENGE.forEach(function(v){
+    var t = sekunden(v);
+    summe += t;
+    aus += '<tr><td>' + v.name + '</td>'
+      + '<td>n = ' + n(v) + ' 1/min<br>f = ' + zahl(v.f, 2) + ' mm<br>'
+        + 'L = ' + zahl(v.L, 1) + ' mm</td>'
+      + '<td><input type="number" id="t_' + v.id + '" step="0.1"'
+      + ' inputmode="decimal" autocomplete="off"></td>'
+      + '<td class="urteil" id="ut_' + v.id + '">–</td></tr>';
+    l += '<p><strong>' + v.name + '</strong><br>'
+      + 'n = ' + (v.vc * 1000) + ' / (π · ' + zahl(v.dn, 1) + ') = '
+        + zahl(v.vc * 1000 / (Math.PI * v.dn), 1)
+        + (drehzahl(v.vc, v.dn) > 2000
+            ? ' – mehr, als die Maschine hergibt'
+            : '')
+        + ' → nächstkleinere Stufe <strong>'
+        + n(v) + ' 1/min</strong><br>'
+      + 't<sub>h</sub> = ' + zahl(v.L, 1) + ' · ' + v.i + ' / (' + n(v)
+        + ' · ' + zahl(v.f, 2) + ') = ' + zahl(t / 60, 3) + ' min = '
+        + '<strong>' + zahl(t, 1) + ' s</strong></p>';
+  });
+  el("zeiten").innerHTML = aus;
+  el("loesung2").innerHTML = l
+    + '<p><strong>Summe: ' + zahl(summe, 1) + ' s</strong></p>'
+    + '<p>Auffällig ist das Verhältnis: Das Einstechen der Nut dauert kaum '
+    + 'länger als eine Sekunde, das Schlichten des Führungssitzes ein '
+    + 'Vielfaches davon. Der Grund ist der feine Vorschub - er ist der Preis '
+    + 'für die Rautiefe.</p>';
+}());
+
+el("btn2").addEventListener("click", function(){
+  var r = 0, offen = 0, summe = 0;
+  VORGAENGE.forEach(function(v){
+    var t = sekunden(v);
+    summe += t;
+    var x = wert("t_" + v.id);
+    var leer = !isFinite(x); if(leer) offen++;
+    r += urteilen("ut_" + v.id, Math.abs(x - t) <= Math.max(0.6, t * 0.03),
+      leer);
+  });
+  var s = wert("zSumme");
+  var leerS = !isFinite(s); if(leerS) offen++;
+  r += urteilen("uzSumme", Math.abs(s - summe) <= Math.max(1.5, summe * 0.03),
+    leerS);
+  bilanz("bilanz2", r, VORGAENGE.length + 1, offen);
+});
+
+/* ---------- Teil 3: der doppelte Vorschub ---------- */
+
+var SCHLICHT = VORGAENGE.filter(function(v){ return v.id === "schlicht"; })[0];
+var T_NORMAL = sekunden(SCHLICHT);
+var F_DOPPELT = SCHLICHT.f * 2;
+var T_DOPPELT = SCHLICHT.L * SCHLICHT.i / (n(SCHLICHT) * F_DOPPELT) * 60;
+var RZ_DOPPELT = rautiefe(F_DOPPELT, R_ECKE);
+
+(function teil3(){
+  el("loesung3").innerHTML =
+    '<p><strong>Der Vorschub</strong> steigt von ' + zahl(SCHLICHT.f, 2)
+      + ' auf ' + zahl(F_DOPPELT, 2) + ' mm.</p>'
+    + '<p><strong>Die Zeit</strong> halbiert sich: t<sub>h</sub> = '
+      + zahl(SCHLICHT.L, 1) + ' / (' + n(SCHLICHT) + ' · '
+      + zahl(F_DOPPELT, 2) + ') = <strong>' + zahl(T_DOPPELT, 1)
+      + ' s</strong> statt ' + zahl(T_NORMAL, 1) + ' s. Gespart: <strong>'
+      + zahl(T_NORMAL - T_DOPPELT, 1) + ' s</strong>.</p>'
+    + '<p><strong>Die Rautiefe</strong> vervierfacht sich: R<sub>th</sub> = '
+      + zahl(F_DOPPELT, 2) + '² / (8 · ' + zahl(R_ECKE, 1) + ') = <strong>'
+      + zahl(RZ_DOPPELT, 1) + ' µm</strong> statt 4 µm.</p>'
+    + '<p>Gefordert ist Rz 4. Mit <strong>' + zahl(RZ_DOPPELT, 1)
+      + ' µm</strong> ist die Fläche <strong>nicht mehr in Ordnung</strong> '
+      + '&ndash; und muss noch einmal geschlichtet werden. Dann ist die '
+      + 'gesparte Zeit doppelt verloren.</p>';
+}());
+
+el("btn3").addEventListener("click", function(){
+  var r = 0, offen = 0;
+
+  var t = wert("dT");
+  var leerT = !isFinite(t); if(leerT) offen++;
+  r += urteilen("udT", Math.abs(t - T_DOPPELT) <= Math.max(0.6, T_DOPPELT * 0.03),
+    leerT);
+
+  var s = wert("dS");
+  var leerS = !isFinite(s); if(leerS) offen++;
+  r += urteilen("udS",
+    Math.abs(s - (T_NORMAL - T_DOPPELT)) <= Math.max(0.6, T_NORMAL * 0.03),
+    leerS);
+
+  var rz = wert("dRz");
+  var leerRz = !isFinite(rz); if(leerRz) offen++;
+  r += urteilen("udRz", Math.abs(rz - RZ_DOPPELT) <= RZ_DOPPELT * 0.06, leerRz);
+
+  var ok = el("dOk").value;
+  if(!ok) offen++;
+  r += urteilen("udOk", ok === "nein", !ok);
+
+  bilanz("bilanz3", r, 4, offen);
+});
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+</body>
+</html>
