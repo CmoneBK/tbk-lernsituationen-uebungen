@@ -56,6 +56,7 @@ const TYPEN = [
 
 const BACK_NAV = 'assets/back-nav.js';
 const WZ_LINK = 'assets/werkzeug-link.js';
+const FORTSCHRITT = 'assets/fortschritt.js';
 const BILDUNGSGANG = 'assets/bildungsgang.js';
 const QR = 'assets/qr.js';
 const BAUKASTEN = 'assets/baukasten.js';
@@ -99,6 +100,8 @@ const metaWert = (text, name) => {
  *   2. Die fehlende Einbindung von assets/back-nav.js.
  *   3. Die fehlende Einbindung von assets/werkzeug-link.js, sobald die Seite
  *      einen Werkzeug-Link (data-werkzeug) enthaelt.
+ *   4. Die fehlende Einbindung von assets/fortschritt.js, sobald die Seite
+ *      Felder zum Ausfuellen hat - ausser bei Trainings.
  * Mit --check wird nur gemeldet, nicht geschrieben.
  */
 async function seiteLesen(datei, { imPaket = false, baukasten = false } = {}) {
@@ -128,6 +131,13 @@ async function seiteLesen(datei, { imPaket = false, baukasten = false } = {}) {
   /* Wer den Wettkampf-Vertrag zusagt, braucht auch den Baustein dazu. Die
      Seite sagt das selbst - so muss der Typ hier nicht durchgereicht werden. */
   if (/TBK_WETTKAMPF/.test(text)) noetig.push({ pfad: WETTKAMPF, attr: '' });
+  /* Wer etwas ausfuellt, soll es nicht bei jedem Tabwechsel verlieren.
+     Trainings bleiben aussen vor: Dort ist jede Runde eine neue Aufgabe,
+     und eine wiederhergestellte Antwort gehoerte zur Aufgabe von gestern. */
+  const auszufuellen = /<textarea|<select|<input[^>]+type=["'](?:text|number)["']/i;
+  if (!rel.startsWith('trainings/') && auszufuellen.test(text)) {
+    noetig.push({ pfad: FORTSCHRITT, attr: '' });
+  }
   // Wo Zahlen eingestellt werden, soll das Mausrad den Wert aendern und nicht
   // nebenbei die Seite wegscrollen.
   if (/<input[^>]+type=["'](?:number|range)["']/i.test(text)) {

@@ -216,12 +216,38 @@ Netz), zeigt jedes Gerät am Ende einen Ergebniscode aus sechs Zeichen, und
 wer ihn am Anzeigegerät einträgt, steht in der Liste. Beides ohne Namensfeld
 und ohne Speicher. `pruefungen/test-wettkampf.js` prüft beide Wege nach.
 
-## 10. Trackingfrei — ohne Ausnahme
+## 10. Der gemerkte Stand
+
+`assets/fortschritt.js` merkt sich, was jemand ausgefüllt hat — im
+`localStorage` des eigenen Geräts, sonst nirgends. Der Build trägt den Baustein
+nach, sobald eine Seite Felder zum Ausfüllen hat. **Trainings bleiben außen
+vor:** Dort ist jede Runde eine neue Aufgabe, und eine wiederhergestellte
+Antwort gehörte zur Aufgabe von gestern.
+
+Zu tun ist dafür nichts — außer in zwei Fällen:
+
+* **Was nicht gemerkt werden soll**, bekommt `data-merken="nein"` — am Feld
+  oder an einem Container darum. So bleiben die Rückmeldung (Text, der
+  gesendet werden soll), der Wettkampf-Code (gehört zu genau dieser Runde),
+  die Bildungsgangauswahl und die Druckeinstellung außen vor.
+* **Felder ohne `id`** werden über ihre laufende Nummer wiedergefunden. Das
+  geht, solange sich die Seite nicht ändert; ändert sie sich, wird der alte
+  Stand verworfen statt irgendwo eingesetzt. Wer es sicherer haben will, gibt
+  erzeugten Feldern eine `id`.
+
+Nicht vergessen: Der Stand liegt nur auf **einem** Gerät. Wer die Aufgabe im
+Unterricht beginnt und zu Hause weitermacht, fängt von vorn an.
+
+## 11. Trackingfrei — ohne Ausnahme
 
 Keine Schrift, kein Skript, kein Bild von einem fremden Server. Kein CDN, keine
 Einbettung, kein Zählpixel. Alles liegt im Repo, alle Pfade sind relativ.
 
-## 11. Vor dem Committen
+Auch der gemerkte Stand ist kein Bruch damit: Er wird nicht gesendet, trägt
+keine Kennung und ist kein Cookie. Die Prüfung `test-fortschritt.js` fängt
+jeden Netzweg ab und sieht nach, dass keiner benutzt wird.
+
+## 12. Vor dem Committen
 
 ```bash
 node build/build.mjs          # Übersicht und Bausteine nachziehen

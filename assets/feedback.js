@@ -204,6 +204,10 @@
 
   var fenster = el('dialog', {
     id: 'tbk-feedback', 'data-druck': 'weg',
+    /* Der Fortschrittsbaustein laesst diesen Block aus: Eine Rueckmeldung
+       ist Text, der gesendet werden soll - kein Stand, den man wiederfinden
+       moechte. */
+    'data-merken': 'nein',
     'aria-labelledby': 'tbk-feedback-titel',
   }, document.body);
 

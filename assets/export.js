@@ -711,6 +711,10 @@
 
     var tafel = document.createElement('div');
     tafel.id = 'ex-tafel';
+    /* Nicht vom Fortschrittsbaustein merken lassen: Wohin die Loesungen
+       beim Drucken kommen, ist eine Einstellung fuer diesen Ausdruck -
+       kein Stand, den jemand wiederfinden moechte. */
+    tafel.setAttribute('data-merken', 'nein');
     tafel.hidden = true;
     tafel.setAttribute('role', 'dialog');
     tafel.setAttribute('aria-label', TYP + ' herunterladen');

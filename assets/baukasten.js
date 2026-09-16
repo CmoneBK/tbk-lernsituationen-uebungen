@@ -375,6 +375,10 @@
     var tafel = document.createElement('div');
     tafel.id = 'bk-tafel';
     tafel.hidden = true;
+    /* Nicht vom Fortschrittsbaustein merken lassen: Welche Teile gezeigt
+       werden, merkt sich bildungsgang.js schon selbst - zweimal waere
+       einmal zu viel. */
+    tafel.setAttribute('data-merken', 'nein');
     tafel.setAttribute('role', 'dialog');
     tafel.setAttribute('aria-label', TYP + ' anpassen');
 

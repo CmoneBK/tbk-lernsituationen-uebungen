@@ -445,7 +445,10 @@
   }
   knopfBeschriften();
 
+  /* Nicht gemerkt: Der Code gehoert zu genau dieser Runde. Ein Code von
+     gestern im Feld waere schlimmer als ein leeres Feld. */
   var tafel = el('div', { id: 'wk-tafel', role: 'dialog',
+    'data-merken': 'nein',
     'aria-label': 'Wettkampf', hidden: 'hidden' }, document.body);
 
   knopf.addEventListener('click', function () {
