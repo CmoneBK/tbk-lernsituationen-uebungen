@@ -136,7 +136,7 @@ console.log('\nStartwert ablesen: die Werkstoffe');
   });
   p('jede Zugfestigkeit passt zu ihrer Zeile', daneben.length === 0,
     daneben.map((s) => s.name + ' ' + s.mitte).join(', '));
-  /* 42CrMo4 ist der Werkstoff der Welle LF5 - an ihm haengt die ganze
+  /* 42CrMo4 ist der Werkstoff der Antriebswelle - an ihm haengt die ganze
      Lektion, also muss er stimmen. */
   const welle = WERKSTOFFE.filter((s) => s.name === '42CrMo4')[0];
   p('42CrMo4 ist dabei', !!welle);
@@ -508,10 +508,10 @@ console.log('\nDie Uebung zur Schnittgeschwindigkeit rechnet wie das Buch');
 
 console.log('\nDie Lernsituation');
 {
-  const voll = path.join(BASIS, 'lernsituationen/welle-lf5/index.html');
+  const voll = path.join(BASIS, 'lernsituationen/antriebswelle/index.html');
   const dom = new JSDOM(mitAssets(fs.readFileSync(voll, 'utf8')), {
     runScripts: 'dangerously',
-    url: 'https://t-bk.de/unterrichtsmaterial/lernsituationen/welle-lf5/',
+    url: 'https://t-bk.de/unterrichtsmaterial/lernsituationen/antriebswelle/',
     beforeParse(w) { w.Element.prototype.scrollIntoView = function () {}; },
   });
   const w = dom.window, d = w.document;
@@ -577,7 +577,7 @@ console.log('\nDie Lernsituation');
 
 console.log('\nDer Freistichradius - ueberall derselbe');
 {
-  /* Der kleinste Innenradius der Welle LF5 sind die Freistiche
+  /* Der kleinste Innenradius der Antriebswelle sind die Freistiche
      DIN 509 - E 0,6 x 0,3, nicht die R1 am Bund. Daraus folgt
      r_eps <= 0,5 mm, genormt 0,4 mm. Wer das verwechselt, waehlt ein
      Werkzeug, das an der eigenen Kontur haengen bleibt - und der Fehler
@@ -593,7 +593,7 @@ console.log('\nDer Freistichradius - ueberall derselbe');
   const stellen = [
     ['uebungen/drehprozess/03-eine-wendeschneidplatte-lesen.html', 'R_ENG = 0.6'],
     ['uebungen/drehprozess/04-wie-fein-muss-der-vorschub-sein.html', 'R_ENG = 0.6'],
-    ['lernsituationen/welle-lf5/index.html', 'R_ENG = 0.6'],
+    ['lernsituationen/antriebswelle/index.html', 'R_ENG = 0.6'],
   ];
   stellen.forEach((s) => {
     const text = fs.readFileSync(path.join(BASIS, s[0]), 'utf8');
@@ -757,7 +757,7 @@ console.log('\nDie beiden Stirnflaechen');
   const heikel = [
     'trainings/drehprozess/01-verfahren-erkennen.html',
     'uebungen/drehprozess/01-welches-verfahren-gehoert-hierher.html',
-    'lernsituationen/welle-lf5/index.html',
+    'lernsituationen/antriebswelle/index.html',
   ];
   const falsch = heikel.filter(
     (f) => /[Ll]inke Stirnfl\u00e4che querplandrehen/.test(lies(f)));

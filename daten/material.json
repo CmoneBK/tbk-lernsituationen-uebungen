@@ -2,6 +2,28 @@
   {
     "typ": "lernsituationen",
     "bereich": "Fertigungstechnik",
+    "kategorie": "Zerspanung",
+    "name": "Die Antriebswelle fertigen",
+    "url": "lernsituationen/antriebswelle/index.html",
+    "werkzeuge": [
+      {
+        "datei": "fertigungstechnik-zerspanung-drehprozess-planen.html",
+        "name": "Lektion Drehprozess planen"
+      },
+      {
+        "datei": "fertigungstechnik-vorschub-rautiefe-beim-schlichten.html",
+        "name": "Werkzeug Vorschub und Rautiefe beim Schlichten"
+      },
+      {
+        "datei": "fertigungstechnik-beurteilung-bedingungen-fuer-die-fertigung.html",
+        "name": "Werkzeug Bedingungen für die Fertigung beurteilen"
+      }
+    ],
+    "inhalt": []
+  },
+  {
+    "typ": "lernsituationen",
+    "bereich": "Fertigungstechnik",
     "kategorie": "Fügeverfahren",
     "name": "Der Gehäusedeckel",
     "url": "lernsituationen/gehaeusedeckel/index.html",
@@ -32,20 +54,6 @@
     "inhalt": []
   },
   {
-    "typ": "lernsituationen",
-    "bereich": "Fertigungstechnik",
-    "kategorie": "Zerspanung",
-    "name": "Die Welle LF5 fertigen",
-    "url": "lernsituationen/welle-lf5/index.html",
-    "werkzeuge": [
-      {
-        "datei": "fertigungstechnik-zerspanung-drehprozess-planen.html",
-        "name": "Werkzeug Drehprozess planen"
-      }
-    ],
-    "inhalt": []
-  },
-  {
     "typ": "uebungen",
     "bereich": "Fertigungstechnik",
     "kategorie": "Zerspanung",
@@ -54,7 +62,15 @@
     "werkzeuge": [
       {
         "datei": "fertigungstechnik-zerspanung-drehprozess-planen.html",
-        "name": "Werkzeug Drehprozess planen"
+        "name": "Lektion Drehprozess planen"
+      },
+      {
+        "datei": "fertigungstechnik-vorschub-rautiefe-beim-schlichten.html",
+        "name": "Werkzeug Vorschub und Rautiefe beim Schlichten"
+      },
+      {
+        "datei": "fertigungstechnik-beurteilung-bedingungen-fuer-die-fertigung.html",
+        "name": "Werkzeug Bedingungen für die Fertigung beurteilen"
       }
     ],
     "inhalt": [
@@ -155,7 +171,15 @@
     "werkzeuge": [
       {
         "datei": "fertigungstechnik-zerspanung-drehprozess-planen.html",
-        "name": "Werkzeug Drehprozess planen"
+        "name": "Lektion Drehprozess planen"
+      },
+      {
+        "datei": "fertigungstechnik-vorschub-rautiefe-beim-schlichten.html",
+        "name": "Werkzeug Vorschub und Rautiefe beim Schlichten"
+      },
+      {
+        "datei": "fertigungstechnik-beurteilung-bedingungen-fuer-die-fertigung.html",
+        "name": "Werkzeug Bedingungen für die Fertigung beurteilen"
       }
     ],
     "inhalt": [

@@ -1,484 +1,1 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Eine Wendeschneidplatte lesen</title>
-<meta name="description" content="Die Bezeichnung nach DIN ISO 1832 Stelle für Stelle zerlegen – und aus den Anforderungen der Welle LF5 umgekehrt eine Bezeichnung bilden.">
-<meta name="dauer" content="25 min">
-<link rel="stylesheet" href="../../assets/uebung.css">
-<style>
-  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
-  table.werte td:first-child{font-weight:600}
-  table.werte input, table.werte select{
-    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
-    padding:6px 8px; border-radius:7px; color:inherit; background:var(--bg);
-    border:1px solid var(--border-stark);
-  }
-  td.urteil{font-size:13px; font-weight:600; white-space:nowrap}
-  td.urteil.ja{color:var(--ok)}
-  td.urteil.nein{color:var(--bad)}
-  .bilanzzeile{font-weight:700; margin:14px 0 0}
-  /* Die Bezeichnung als Kette von Stellen. */
-  .bez{display:flex; flex-wrap:wrap; gap:6px; margin:6px 0 18px;
-    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
-  .bez span{
-    display:inline-flex; flex-direction:column; align-items:center;
-    min-width:40px; padding:8px 9px; border-radius:9px;
-    background:var(--bg); border:1px solid var(--border-stark);
-    font-size:19px; font-weight:700;
-  }
-  .bez span small{font-size:10.5px; font-weight:400; color:var(--muted);
-    font-family:inherit; margin-top:4px; text-align:center; line-height:1.3}
-  figure.bild{margin:0 0 18px}
-  figure.bild svg{width:100%; height:auto}
-  figure.bild figcaption{font-size:13px; color:var(--muted); margin-top:6px}
-</style>
-<script src="../../assets/thema.js"></script>
-</head>
-<body>
-  <header class="wrap">
-    <p class="herkunft">Übung &middot; Planung eines Drehprozesses</p>
-    <h1>Eine Wendeschneidplatte lesen</h1>
-    <p class="lead">Zehn Stellen, und keine davon ist Zierde.</p>
-  </header>
-
-  <main class="wrap">
-
-    <div class="box auftrag">
-      <p><strong>Die Lage:</strong> Im Werkzeugschrank liegt eine Schachtel mit
-        der Aufschrift <strong>DIN 4968 – D C G N 11 04 04 F R – P15</strong>.
-        Ob die Platte für die Welle LF5 taugt, steht nicht dabei &ndash; das
-        steht in der Bezeichnung selbst.</p>
-      <p>Diese Übung geht sie Stelle für Stelle durch und bildet danach
-        umgekehrt die Bezeichnung, die für den Lagersitz Ø25 gebraucht wird.</p>
-    </div>
-
-    <h2><span class="nr">1</span>Die Bezeichnung zerlegen</h2>
-
-    <div class="bez" id="bez"></div>
-
-    <p>Tragt ein, was an den Stellen steht, die über die Bearbeitung
-      entscheiden.</p>
-
-    <div class="tabellenrahmen">
-      <table class="werte">
-        <thead><tr><th>Stelle</th><th>Eintrag</th><th>Stimmt?</th></tr></thead>
-        <tbody>
-          <tr><td>1 – Eckenwinkel ε in Grad</td>
-            <td><input type="number" id="z1" step="1" inputmode="decimal"
-              autocomplete="off"></td>
-            <td class="urteil" id="u1">–</td></tr>
-          <tr><td>2 – Normal-Freiwinkel α<sub>n</sub> in Grad</td>
-            <td><input type="number" id="z2" step="1" inputmode="decimal"
-              autocomplete="off"></td>
-            <td class="urteil" id="u2">–</td></tr>
-          <tr><td>7 – Eckenradius r<sub>ε</sub> in mm</td>
-            <td><input type="number" id="z7" step="0.1" inputmode="decimal"
-              autocomplete="off"></td>
-            <td class="urteil" id="u7">–</td></tr>
-          <tr><td>9 – Schneidrichtung</td>
-            <td><select id="z9" data-druck="ankreuzen">
-              <option value="">bitte wählen</option>
-              <option value="R">rechtsschneidend</option>
-              <option value="L">linksschneidend</option>
-              <option value="N">rechts- und linksschneidend</option>
-            </select></td>
-            <td class="urteil" id="u9">–</td></tr>
-          <tr><td>10 – Hauptanwendungsgruppe des Schneidstoffs</td>
-            <td><select id="z10" data-druck="ankreuzen">
-              <option value="">bitte wählen</option>
-              <option value="P">P</option><option value="M">M</option>
-              <option value="K">K</option><option value="N">N</option>
-              <option value="S">S</option><option value="H">H</option>
-            </select></td>
-            <td class="urteil" id="u10">–</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <p style="margin-top:14px">
-      <button type="button" class="knopf" id="btn1">Prüfen</button>
-    </p>
-    <p class="bilanzzeile" id="bilanz1">Noch nichts eingetragen.</p>
-
-    <details>
-      <summary>Lösung: was die Platte kann</summary>
-      <p><strong>D</strong> ist eine Raute mit <strong>55°</strong>
-        Eckenwinkel &ndash; spitz genug für Konturen, stabil genug zum
-        Schlichten und Vorschlichten. <strong>C</strong> an Stelle 2 heißt
-        <strong>7°</strong> Freiwinkel, also eine positive Grundform: Sie
-        schneidet leichter und braucht weniger Kraft.</p>
-      <p><strong>04</strong> an Stelle 7 mal 0,1 ergibt
-        <strong>r<sub>ε</sub> = 0,4 mm</strong>. <strong>R</strong> an Stelle 9
-        heißt <strong>rechtsschneidend</strong> &ndash; die Platte arbeitet vom
-        Reitstock zum Futter, der Normalfall beim Längsrunddrehen.</p>
-      <p><strong>P15</strong> ist ein Schneidstoff der Gruppe
-        <strong>P</strong>, also für Stahl. Die 15 liegt im unteren Drittel der
-        Skala: eher hart und verschleißfest als zäh &ndash; passend zum
-        Schlichten, wo wenig Span und gleichmäßiger Schnitt herrschen.</p>
-      <p>Zusammen: eine <strong>Schlichtplatte für Stahl</strong>.</p>
-    </details>
-
-    <h2><span class="nr">2</span>Taugt sie für die Welle?</h2>
-
-    <figure class="bild" id="bildWelle"></figure>
-
-    <p>Der Lagersitz <strong>Ø25</strong> soll mit <strong>Rz 4</strong>
-      geschlichtet werden. Die Frage ist, ob das Werkzeug in die Kontur
-      passt &ndash; also: <strong>Wo ist die engste Innenrundung?</strong></p>
-    <p>Sehen Sie die ganze Zeichnung durch, nicht nur die Durchmesser. Auch
-      Freistiche haben Radien.</p>
-
-    <div class="tabellenrahmen">
-      <table class="werte">
-        <thead><tr><th>Frage</th><th>Eintrag</th><th>Stimmt?</th></tr></thead>
-        <tbody>
-          <tr><td>Engste Innenrundung r<sub>w</sub> der Kontur in mm</td>
-            <td><input type="number" id="pRw" step="0.1" inputmode="decimal"
-              autocomplete="off"></td>
-            <td class="urteil" id="upRw">–</td></tr>
-          <tr><td>Größter zulässiger Eckenradius r<sub>ε</sub> in mm
-            (r<sub>ε</sub> &le; r<sub>w</sub> &minus; 0,1)</td>
-            <td><input type="number" id="pMax" step="0.1" inputmode="decimal"
-              autocomplete="off"></td>
-            <td class="urteil" id="upMax">–</td></tr>
-          <tr><td>Passt r<sub>ε</sub> = 0,4 mm in die Kontur?</td>
-            <td><select id="pPasst" data-druck="ankreuzen">
-              <option value="">bitte wählen</option>
-              <option value="ja">ja</option>
-              <option value="nein">nein</option>
-            </select></td>
-            <td class="urteil" id="upPasst">–</td></tr>
-          <tr><td>Vorschub f für Rz 4 mit r<sub>ε</sub> = 0,4 mm, in mm</td>
-            <td><input type="number" id="pF" step="0.01" inputmode="decimal"
-              autocomplete="off"></td>
-            <td class="urteil" id="upF">–</td></tr>
-          <tr><td>Ist die Platte für Gruppe P geeignet?</td>
-            <td><select id="pGruppe" data-druck="ankreuzen">
-              <option value="">bitte wählen</option>
-              <option value="ja">ja</option>
-              <option value="nein">nein</option>
-            </select></td>
-            <td class="urteil" id="upGruppe">–</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <p style="margin-top:14px">
-      <button type="button" class="knopf" id="btn2">Prüfen</button>
-    </p>
-    <p class="bilanzzeile" id="bilanz2">Noch nichts eingetragen.</p>
-
-    <details>
-      <summary>Lösung: sie passt &ndash; aber nicht wegen der R1</summary>
-      <p>Der erste Blick fällt auf die <strong>R1</strong> am Übergang zum Bund.
-        Damit wäre r<sub>ε</sub> &le; 0,9 mm erlaubt, also 0,8 mm.
-        <strong>Das ist die falsche Stelle.</strong></p>
-      <p>Die engste Innenrundung der Kontur sind die beiden Freistiche
-        <strong>DIN 509 &ndash; E 0,6 × 0,3</strong>. Die erste Zahl der
-        Bezeichnung <em>ist</em> der Radius: <strong>r = 0,6 mm</strong>.
-        Daraus folgt:</p>
-      <p>r<sub>ε</sub> &le; 0,6 &minus; 0,1 = <strong>0,5 mm</strong>
-        &nbsp;&rarr;&nbsp; genormt <strong>0,4 mm</strong></p>
-      <p>Mit r<sub>ε</sub> = 0,4 mm ist die Platte also <strong>gerade
-        richtig</strong> &ndash; eine mit 0,8 mm wäre zu groß. Für Rz 4 folgt
-        der Vorschub:</p>
-      <p>f = √(8 · 0,4 · 0,004) = <strong>0,11 mm</strong></p>
-      <p>Die Tabelle im Tabellenbuch nennt für Rz 4 und r<sub>ε</sub> = 0,4 mm
-        denselben Wert. 0,11 mm liegt im Vorschubbereich des Schlichtens
-        (0,1 bis 0,25 mm) &ndash; die Kombination ist fahrbar.</p>
-      <div class="merksatz">
-        <strong>Der klassische Fehler:</strong> nur die Durchmesserübergänge
-        ansehen und die Freistiche vergessen. Sie sind meist die engsten
-        Stellen der ganzen Kontur, und sie stehen nicht als Radius in der
-        Zeichnung, sondern versteckt in einer Normbezeichnung. Wer sie
-        übersieht, wählt ein Werkzeug, das an der eigenen Kontur hängen
-        bleibt.
-      </div>
-      <p class="fussnote">Die Regel gilt dem Werkzeug, das die Kontur
-        <em>erzeugt</em> &ndash; beim Konturdrehen auf der CNC also dem
-        Schlichtwerkzeug, das auch durch die Freistiche fährt. Werden die
-        Freistiche mit einem eigenen Formwerkzeug gestochen, bindet für den
-        Schlichtmeißel nur die R1. Im Zweifel gilt die engere Grenze.</p>
-    </details>
-
-    <h2><span class="nr">3</span>Die Bezeichnung selbst bilden</h2>
-    <p>Gesucht ist eine Platte zum <strong>Schruppen</strong> der Welle LF5:
-      Stahl, kräftiger Schnitt, große Schnitttiefe, beidseitig verwendbar,
-      rechtsschneidend, Eckenradius 0,8 mm.</p>
-
-    <div class="tabellenrahmen">
-      <table class="werte">
-        <thead><tr><th>Stelle</th><th>Kennzeichen</th><th>Stimmt?</th></tr></thead>
-        <tbody>
-          <tr><td>1 – Plattengeometrie: großer, stabiler Eckenwinkel 80°</td>
-            <td><select id="b1" data-druck="ankreuzen">
-              <option value="">bitte wählen</option>
-              <option value="C">C</option><option value="D">D</option>
-              <option value="S">S</option><option value="T">T</option>
-              <option value="V">V</option><option value="W">W</option>
-            </select></td>
-            <td class="urteil" id="ub1">–</td></tr>
-          <tr><td>2 – Freiwinkel: beidseitig verwendbar</td>
-            <td><select id="b2" data-druck="ankreuzen">
-              <option value="">bitte wählen</option>
-              <option value="N">N</option><option value="A">A</option>
-              <option value="C">C</option><option value="E">E</option>
-              <option value="G">G</option>
-            </select></td>
-            <td class="urteil" id="ub2">–</td></tr>
-          <tr><td>7 – Kennzahl für r<sub>ε</sub> = 0,8 mm</td>
-            <td><input type="text" id="b7" autocomplete="off" placeholder="zwei Ziffern"></td>
-            <td class="urteil" id="ub7">–</td></tr>
-          <tr><td>9 – Schneidrichtung</td>
-            <td><select id="b9" data-druck="ankreuzen">
-              <option value="">bitte wählen</option>
-              <option value="R">R</option><option value="L">L</option>
-              <option value="N">N</option>
-            </select></td>
-            <td class="urteil" id="ub9">–</td></tr>
-        </tbody>
-      </table>
-    </div>
-
-    <p style="margin-top:14px">
-      <button type="button" class="knopf" id="btn3">Prüfen</button>
-    </p>
-    <p class="bilanzzeile" id="bilanz3">Noch nichts eingetragen.</p>
-
-    <details>
-      <summary>Lösung: C N … 08 … R</summary>
-      <p><strong>C</strong> &ndash; die 80°-Raute. Sie hat eine stabile Ecke und
-        ist damit die Schruppform schlechthin. <strong>W</strong> (Trigon, auch
-        80°) wäre ebenfalls möglich; C ist die häufigere Wahl beim
-        Längsrunddrehen.</p>
-      <p><strong>N</strong> &ndash; Freiwinkel 0°, negative Grundform. Eine
-        Platte ohne Freiwinkel lässt sich <strong>wenden</strong>: Sie hat auf
-        beiden Seiten Schneiden, also doppelt so viele wie eine positive. Beim
-        Schruppen zählt das, weil die Schneide schneller stumpf wird.</p>
-      <p><strong>08</strong> &ndash; Kennzahl mal 0,1 ergibt 0,8 mm. Ein großer
-        Eckenradius trägt höhere Vorschübe und stabilisiert die Ecke.</p>
-      <p><strong>R</strong> &ndash; rechtsschneidend, vom Reitstock zum Futter.</p>
-      <p>Zusammen etwa: <strong>C N M G 12 04 08 – P25</strong>. Ein
-        Schneidstoff mit höherer Kennzahl (P25 statt P15) ist beim Schruppen
-        richtig: zäher, verträgt den unterbrochenen Schnitt in der Walzhaut.</p>
-    </details>
-
-    <h2><span class="nr">4</span>Übertragen</h2>
-
-    <details>
-      <summary>1. Warum haben Schruppplatten meist einen größeren Eckenwinkel
-        als Schlichtplatten?</summary>
-      <p>Weil der Eckenwinkel darüber entscheidet, wie viel Werkstoff hinter der
-        Schneidenecke steht. Bei 80° ist die Ecke ein stumpfer Keil &ndash; sie
-        trägt Kraft und leitet Wärme ab. Bei 35° ist sie eine dünne Spitze, die
-        unter Schruppkräften ausbricht.</p>
-      <p>Umgekehrt kommt die spitze Platte in Ecken, an die die stumpfe nicht
-        heranreicht. Deshalb steht in der Eignungstabelle bei V „sehr gut" fürs
-        Formdrehen und „nicht geeignet" fürs Schruppen.</p>
-    </details>
-
-    <details>
-      <summary>2. Was heißt „negative Grundform" für die Schnittkräfte?</summary>
-      <p>Eine negative Platte steht senkrecht im Halter; der Freiwinkel entsteht
-        erst durch die Neigung des Halters. Sie drückt stärker in den Werkstoff
-        &ndash; die Schnittkraft ist höher, und die Maschine braucht mehr
-        Leistung.</p>
-      <p>Das Tabellenbuch stellt es als Skala dar: von der positiven Grundform
-        über die negative doppelseitige zur negativen einseitigen nehmen
-        <strong>Schnittkraft, Schnitttiefe und Vorschub zu</strong>. Wer eine
-        schwache Maschine hat oder ein dünnes Werkstück, wählt positiv.</p>
-    </details>
-
-    <details>
-      <summary>3. Die Platte im Schrank ist P15, gebraucht wird P25. Kann man
-        sie trotzdem nehmen?</summary>
-      <p>Für einen Schlichtgang ja, fürs Schruppen mit Walzhaut besser nicht.
-        Die Zahl gibt an, wo der Schneidstoff zwischen den beiden Enden liegt:
-        <strong>kleine Zahl</strong> heißt hart und verschleißfest,
-        <strong>große Zahl</strong> zäh und bruchsicher.</p>
-      <p>P15 hält hohe Schnittgeschwindigkeiten aus, bricht aber eher aus, wenn
-        der Schnitt unterbrochen ist. Genau das ist beim ersten Schnitt durch
-        die Walzhaut der Fall. Man kann es versuchen &ndash; und zahlt es
-        mit Standzeit.</p>
-    </details>
-
-    <details>
-      <summary>4. Eine Platte ist rechtsschneidend (R). Was passiert, wenn man
-        sie links einsetzt?</summary>
-      <p>Nichts Gutes. Die Schneide ist für eine Richtung geschliffen: Span- und
-        Freiflächen liegen so, dass der Span nach oben abläuft und die Freifläche
-        nicht schleift. Verkehrt herum drückt die Freifläche auf das Werkstück,
-        der Span staut sich, und die Ecke bricht.</p>
-      <p>Wer in beide Richtungen arbeiten will, nimmt eine
-        <strong>N</strong>-Platte &ndash; die ist rechts- und linksschneidend.
-        Das kostet allerdings die Möglichkeit, die Geometrie für eine Richtung
-        zu optimieren.</p>
-    </details>
-
-    <div class="merksatz">
-      <strong>Merksatz:</strong> Stelle 1 sagt, wie stabil die Ecke ist. Stelle
-      2 sagt, wie leicht sie schneidet. Stelle 7 mal 0,1 sagt, wie glatt die
-      Fläche wird. Alles andere ist Zubehör.
-    </div>
-
-    <p class="fussnote"><strong>Woher die Angaben stammen:</strong> Bezeichnung
-      von Wendeschneidplatten nach DIN ISO 1832 (2017-06), Auswahl der
-      Plattengeometrie und der Grundform aus der Fertigungsplanung beim Drehen
-      &ndash; Tabellenbuch Metall.</p>
-
-    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
-      Maßgebend sind Norm und Tabellenbuch.</p>
-
-  </main>
-
-  <footer class="wrap">
-    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
-  </footer>
-
-<script src="../../assets/zeichnen.js"></script>
-<script src="../../assets/wellen.js"></script>
-<script src="../../assets/drehteil.js"></script>
-<script>var WELLE = WELLEN.antriebswelle;</script>
-<script>
-"use strict";
-
-/* Die Platte aus dem Werkzeugschrank, Stelle für Stelle. */
-var PLATTE = [
-  {w:"D",   n:"Plattengeometrie"},
-  {w:"C",   n:"Freiwinkel"},
-  {w:"G",   n:"Toleranzklasse"},
-  {w:"N",   n:"Befestigung"},
-  {w:"11",  n:"Größe l"},
-  {w:"04",  n:"Dicke s"},
-  {w:"04",  n:"Schneidenecke"},
-  {w:"F",   n:"Schneide"},
-  {w:"R",   n:"Schneidrichtung"},
-  {w:"P15", n:"Schneidstoff"}
-];
-
-function el(id){ return document.getElementById(id); }
-function wert(id){
-  var e = el(id);
-  return e ? parseFloat(String(e.value).replace(",", ".")) : NaN;
-}
-
-function urteilen(id, ok, offen){
-  var u = el(id);
-  if(offen){ u.textContent = "–"; u.className = "urteil"; return 0; }
-  u.textContent = ok ? "richtig" : "nein";
-  u.className = "urteil " + (ok ? "ja" : "nein");
-  return ok ? 1 : 0;
-}
-
-function bilanz(id, richtig, gesamt, offen){
-  el(id).textContent = offen === gesamt
-    ? "Noch nichts eingetragen."
-    : richtig + " von " + gesamt + " richtig"
-      + (offen ? ", " + offen + " noch offen." : ".");
-}
-
-/* Die Bezeichnung als Kette. */
-(function bezBauen(){
-  var aus = "";
-  PLATTE.forEach(function(s, i){
-    aus += '<span>' + s.w + '<small>' + (i + 1) + '<br>' + s.n + '</small></span>';
-  });
-  el("bez").innerHTML = aus;
-}());
-
-/* Die Welle, damit die Kontur zur Hand ist. */
-(function zeichnung(){
-  var g = wellenGroesse(WELLE, {s:5.6, bezeichnungen:true});
-  var svg = bild("bildWelle", g.breite, g.hoehe,
-    "Die Welle LF5 mit Benennungen",
-    "Der Lagersitz Ø25 ist der längste Abschnitt; am Übergang zum Bund "
-    + "sitzt die Rundung R1.");
-  zeichneWelle(svg, WELLE, {x:g.x, y:g.y, s:5.6, bezeichnungen:true});
-}());
-
-/* ---------- Teil 1 ---------- */
-
-el("btn1").addEventListener("click", function(){
-  var r = 0, offen = 0;
-  [["z1", "u1", 55], ["z2", "u2", 7], ["z7", "u7", 0.4]].forEach(function(f){
-    var v = wert(f[0]);
-    var leer = !isFinite(v); if(leer) offen++;
-    r += urteilen(f[1], Math.abs(v - f[2]) < 0.01, leer);
-  });
-  var r9 = el("z9").value;
-  if(!r9) offen++;
-  r += urteilen("u9", r9 === "R", !r9);
-  var g10 = el("z10").value;
-  if(!g10) offen++;
-  r += urteilen("u10", g10 === "P", !g10);
-  bilanz("bilanz1", r, 5, offen);
-});
-
-/* ---------- Teil 2 ---------- */
-
-/* Die engste Innenrundung der Kontur: der Radius der Freistiche
-   DIN 509 - E 0,6 x 0,3. Nicht die R1 am Bund - das ist der Fehler, um den
-   es in Teil 2 geht. */
-var R_ENG = 0.6;
-
-/* f = Wurzel(8 * r_eps * Rth); Rth in Millimetern. */
-function vorschub(rzMikro, rEps){
-  return Math.sqrt(8 * rEps * rzMikro / 1000);
-}
-
-el("btn2").addEventListener("click", function(){
-  var r = 0, offen = 0;
-
-  var rw = wert("pRw");
-  var leerRw = !isFinite(rw); if(leerRw) offen++;
-  r += urteilen("upRw", Math.abs(rw - R_ENG) < 0.01, leerRw);
-
-  var max = wert("pMax");
-  var leerMax = !isFinite(max); if(leerMax) offen++;
-  r += urteilen("upMax", Math.abs(max - (R_ENG - 0.1)) < 0.01, leerMax);
-
-  var passt = el("pPasst").value;
-  if(!passt) offen++;
-  r += urteilen("upPasst", passt === "ja", !passt);
-
-  var f = wert("pF");
-  var leerF = !isFinite(f); if(leerF) offen++;
-  r += urteilen("upF", Math.abs(f - vorschub(4, 0.4)) <= 0.011, leerF);
-
-  var gr = el("pGruppe").value;
-  if(!gr) offen++;
-  r += urteilen("upGruppe", gr === "ja", !gr);
-
-  bilanz("bilanz2", r, 5, offen);
-});
-
-/* ---------- Teil 3 ---------- */
-
-el("btn3").addEventListener("click", function(){
-  var r = 0, offen = 0;
-  [["b1", "ub1", "C"], ["b2", "ub2", "N"], ["b9", "ub9", "R"]]
-    .forEach(function(f){
-      var v = el(f[0]).value;
-      if(!v) offen++;
-      r += urteilen(f[1], v === f[2], !v);
-    });
-  var k = String(el("b7").value).trim();
-  if(!k) offen++;
-  /* 08 und 8 sind beide gemeint - die führende Null ist Schreibweise. */
-  r += urteilen("ub7", k === "08" || k === "8", !k);
-  bilanz("bilanz3", r, 4, offen);
-});
-</script>
-
-<script src="../../assets/back-nav.js" data-ziel="./"></script>
-<script src="../../assets/feedback.js"></script>
-<script src="../../assets/zahlenfeld.js"></script>
-<script src="../../assets/bildungsgang.js"></script>
-<script src="../../assets/qr.js"></script>
-<script src="../../assets/baukasten.js"></script>
-<script src="../../assets/pdf.js"></script>
-<script src="../../assets/export.js"></script>
-</body>
-</html>
+<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Eine Wendeschneidplatte lesen</title><meta name="description" content="Die Bezeichnung nach DIN ISO 1832 Stelle für Stelle zerlegen – und aus den Anforderungen der Antriebswelle umgekehrt eine Bezeichnung bilden."><meta name="dauer" content="25 min"><link rel="stylesheet" href="../../assets/uebung.css"><style>  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */  table.werte td:first-child{font-weight:600}  table.werte input, table.werte select{    width:100%; box-sizing:border-box; font:inherit; font-size:14px;    padding:6px 8px; border-radius:7px; color:inherit; background:var(--bg);    border:1px solid var(--border-stark);  }  td.urteil{font-size:13px; font-weight:600; white-space:nowrap}  td.urteil.ja{color:var(--ok)}  td.urteil.nein{color:var(--bad)}  .bilanzzeile{font-weight:700; margin:14px 0 0}  /* Die Bezeichnung als Kette von Stellen. */  .bez{display:flex; flex-wrap:wrap; gap:6px; margin:6px 0 18px;    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}  .bez span{    display:inline-flex; flex-direction:column; align-items:center;    min-width:40px; padding:8px 9px; border-radius:9px;    background:var(--bg); border:1px solid var(--border-stark);    font-size:19px; font-weight:700;  }  .bez span small{font-size:10.5px; font-weight:400; color:var(--muted);    font-family:inherit; margin-top:4px; text-align:center; line-height:1.3}  figure.bild{margin:0 0 18px}  figure.bild svg{width:100%; height:auto}  figure.bild figcaption{font-size:13px; color:var(--muted); margin-top:6px}</style><script src="../../assets/thema.js"></script></head><body>  <header class="wrap">    <p class="herkunft">Übung &middot; Planung eines Drehprozesses</p>    <h1>Eine Wendeschneidplatte lesen</h1>    <p class="lead">Zehn Stellen, und keine davon ist Zierde.</p>  </header>  <main class="wrap">    <div class="box auftrag">      <p><strong>Die Lage:</strong> Im Werkzeugschrank liegt eine Schachtel mit        der Aufschrift <strong>DIN 4968 – D C G N 11 04 04 F R – P15</strong>.        Ob die Platte für die Antriebswelle taugt, steht nicht dabei &ndash; das        steht in der Bezeichnung selbst.</p>      <p>Diese Übung geht sie Stelle für Stelle durch und bildet danach        umgekehrt die Bezeichnung, die für den Lagersitz Ø25 gebraucht wird.</p>    </div>    <h2><span class="nr">1</span>Die Bezeichnung zerlegen</h2>    <div class="bez" id="bez"></div>    <p>Tragt ein, was an den Stellen steht, die über die Bearbeitung      entscheiden.</p>    <div class="tabellenrahmen">      <table class="werte">        <thead><tr><th>Stelle</th><th>Eintrag</th><th>Stimmt?</th></tr></thead>        <tbody>          <tr><td>1 – Eckenwinkel ε in Grad</td>            <td><input type="number" id="z1" step="1" inputmode="decimal"              autocomplete="off"></td>            <td class="urteil" id="u1">–</td></tr>          <tr><td>2 – Normal-Freiwinkel α<sub>n</sub> in Grad</td>            <td><input type="number" id="z2" step="1" inputmode="decimal"              autocomplete="off"></td>            <td class="urteil" id="u2">–</td></tr>          <tr><td>7 – Eckenradius r<sub>ε</sub> in mm</td>            <td><input type="number" id="z7" step="0.1" inputmode="decimal"              autocomplete="off"></td>            <td class="urteil" id="u7">–</td></tr>          <tr><td>9 – Schneidrichtung</td>            <td><select id="z9" data-druck="ankreuzen">              <option value="">bitte wählen</option>              <option value="R">rechtsschneidend</option>              <option value="L">linksschneidend</option>              <option value="N">rechts- und linksschneidend</option>            </select></td>            <td class="urteil" id="u9">–</td></tr>          <tr><td>10 – Hauptanwendungsgruppe des Schneidstoffs</td>            <td><select id="z10" data-druck="ankreuzen">              <option value="">bitte wählen</option>              <option value="P">P</option><option value="M">M</option>              <option value="K">K</option><option value="N">N</option>              <option value="S">S</option><option value="H">H</option>            </select></td>            <td class="urteil" id="u10">–</td></tr>        </tbody>      </table>    </div>    <p style="margin-top:14px">      <button type="button" class="knopf" id="btn1">Prüfen</button>    </p>    <p class="bilanzzeile" id="bilanz1">Noch nichts eingetragen.</p>    <details>      <summary>Lösung: was die Platte kann</summary>      <p><strong>D</strong> ist eine Raute mit <strong>55°</strong>        Eckenwinkel &ndash; spitz genug für Konturen, stabil genug zum        Schlichten und Vorschlichten. <strong>C</strong> an Stelle 2 heißt        <strong>7°</strong> Freiwinkel, also eine positive Grundform: Sie        schneidet leichter und braucht weniger Kraft.</p>      <p><strong>04</strong> an Stelle 7 mal 0,1 ergibt        <strong>r<sub>ε</sub> = 0,4 mm</strong>. <strong>R</strong> an Stelle 9        heißt <strong>rechtsschneidend</strong> &ndash; die Platte arbeitet vom        Reitstock zum Futter, der Normalfall beim Längsrunddrehen.</p>      <p><strong>P15</strong> ist ein Schneidstoff der Gruppe        <strong>P</strong>, also für Stahl. Die 15 liegt im unteren Drittel der        Skala: eher hart und verschleißfest als zäh &ndash; passend zum        Schlichten, wo wenig Span und gleichmäßiger Schnitt herrschen.</p>      <p>Zusammen: eine <strong>Schlichtplatte für Stahl</strong>.</p>    </details>    <h2><span class="nr">2</span>Taugt sie für die Welle?</h2>    <figure class="bild" id="bildWelle"></figure>    <p>Der Lagersitz <strong>Ø25</strong> soll mit <strong>Rz 4</strong>      geschlichtet werden. Die Frage ist, ob das Werkzeug in die Kontur      passt &ndash; also: <strong>Wo ist die engste Innenrundung?</strong></p>    <p>Sehen Sie die ganze Zeichnung durch, nicht nur die Durchmesser. Auch      Freistiche haben Radien.</p>    <div class="tabellenrahmen">      <table class="werte">        <thead><tr><th>Frage</th><th>Eintrag</th><th>Stimmt?</th></tr></thead>        <tbody>          <tr><td>Engste Innenrundung r<sub>w</sub> der Kontur in mm</td>            <td><input type="number" id="pRw" step="0.1" inputmode="decimal"              autocomplete="off"></td>            <td class="urteil" id="upRw">–</td></tr>          <tr><td>Größter zulässiger Eckenradius r<sub>ε</sub> in mm            (r<sub>ε</sub> &le; r<sub>w</sub> &minus; 0,1)</td>            <td><input type="number" id="pMax" step="0.1" inputmode="decimal"              autocomplete="off"></td>            <td class="urteil" id="upMax">–</td></tr>          <tr><td>Passt r<sub>ε</sub> = 0,4 mm in die Kontur?</td>            <td><select id="pPasst" data-druck="ankreuzen">              <option value="">bitte wählen</option>              <option value="ja">ja</option>              <option value="nein">nein</option>            </select></td>            <td class="urteil" id="upPasst">–</td></tr>          <tr><td>Vorschub f für Rz 4 mit r<sub>ε</sub> = 0,4 mm, in mm</td>            <td><input type="number" id="pF" step="0.01" inputmode="decimal"              autocomplete="off"></td>            <td class="urteil" id="upF">–</td></tr>          <tr><td>Ist die Platte für Gruppe P geeignet?</td>            <td><select id="pGruppe" data-druck="ankreuzen">              <option value="">bitte wählen</option>              <option value="ja">ja</option>              <option value="nein">nein</option>            </select></td>            <td class="urteil" id="upGruppe">–</td></tr>        </tbody>      </table>    </div>    <p style="margin-top:14px">      <button type="button" class="knopf" id="btn2">Prüfen</button>    </p>    <p class="bilanzzeile" id="bilanz2">Noch nichts eingetragen.</p>    <details>      <summary>Lösung: sie passt &ndash; aber nicht wegen der R1</summary>      <p>Der erste Blick fällt auf die <strong>R1</strong> am Übergang zum Bund.        Damit wäre r<sub>ε</sub> &le; 0,9 mm erlaubt, also 0,8 mm.        <strong>Das ist die falsche Stelle.</strong></p>      <p>Die engste Innenrundung der Kontur sind die beiden Freistiche        <strong>DIN 509 &ndash; E 0,6 × 0,3</strong>. Die erste Zahl der        Bezeichnung <em>ist</em> der Radius: <strong>r = 0,6 mm</strong>.        Daraus folgt:</p>      <p>r<sub>ε</sub> &le; 0,6 &minus; 0,1 = <strong>0,5 mm</strong>        &nbsp;&rarr;&nbsp; genormt <strong>0,4 mm</strong></p>      <p>Mit r<sub>ε</sub> = 0,4 mm ist die Platte also <strong>gerade        richtig</strong> &ndash; eine mit 0,8 mm wäre zu groß. Für Rz 4 folgt        der Vorschub:</p>      <p>f = √(8 · 0,4 · 0,004) = <strong>0,11 mm</strong></p>      <p>Die Tabelle im Tabellenbuch nennt für Rz 4 und r<sub>ε</sub> = 0,4 mm        denselben Wert. 0,11 mm liegt im Vorschubbereich des Schlichtens        (0,1 bis 0,25 mm) &ndash; die Kombination ist fahrbar.</p>      <div class="merksatz">        <strong>Der klassische Fehler:</strong> nur die Durchmesserübergänge        ansehen und die Freistiche vergessen. Sie sind meist die engsten        Stellen der ganzen Kontur, und sie stehen nicht als Radius in der        Zeichnung, sondern versteckt in einer Normbezeichnung. Wer sie        übersieht, wählt ein Werkzeug, das an der eigenen Kontur hängen        bleibt.      </div>      <p class="fussnote">Die Regel gilt dem Werkzeug, das die Kontur        <em>erzeugt</em> &ndash; beim Konturdrehen auf der CNC also dem        Schlichtwerkzeug, das auch durch die Freistiche fährt. Werden die        Freistiche mit einem eigenen Formwerkzeug gestochen, bindet für den        Schlichtmeißel nur die R1. Im Zweifel gilt die engere Grenze.</p>    </details>    <h2><span class="nr">3</span>Die Bezeichnung selbst bilden</h2>    <p>Gesucht ist eine Platte zum <strong>Schruppen</strong> der Antriebswelle:      Stahl, kräftiger Schnitt, große Schnitttiefe, beidseitig verwendbar,      rechtsschneidend, Eckenradius 0,8 mm.</p>    <div class="tabellenrahmen">      <table class="werte">        <thead><tr><th>Stelle</th><th>Kennzeichen</th><th>Stimmt?</th></tr></thead>        <tbody>          <tr><td>1 – Plattengeometrie: großer, stabiler Eckenwinkel 80°</td>            <td><select id="b1" data-druck="ankreuzen">              <option value="">bitte wählen</option>              <option value="C">C</option><option value="D">D</option>              <option value="S">S</option><option value="T">T</option>              <option value="V">V</option><option value="W">W</option>            </select></td>            <td class="urteil" id="ub1">–</td></tr>          <tr><td>2 – Freiwinkel: beidseitig verwendbar</td>            <td><select id="b2" data-druck="ankreuzen">              <option value="">bitte wählen</option>              <option value="N">N</option><option value="A">A</option>              <option value="C">C</option><option value="E">E</option>              <option value="G">G</option>            </select></td>            <td class="urteil" id="ub2">–</td></tr>          <tr><td>7 – Kennzahl für r<sub>ε</sub> = 0,8 mm</td>            <td><input type="text" id="b7" autocomplete="off" placeholder="zwei Ziffern"></td>            <td class="urteil" id="ub7">–</td></tr>          <tr><td>9 – Schneidrichtung</td>            <td><select id="b9" data-druck="ankreuzen">              <option value="">bitte wählen</option>              <option value="R">R</option><option value="L">L</option>              <option value="N">N</option>            </select></td>            <td class="urteil" id="ub9">–</td></tr>        </tbody>      </table>    </div>    <p style="margin-top:14px">      <button type="button" class="knopf" id="btn3">Prüfen</button>    </p>    <p class="bilanzzeile" id="bilanz3">Noch nichts eingetragen.</p>    <details>      <summary>Lösung: C N … 08 … R</summary>      <p><strong>C</strong> &ndash; die 80°-Raute. Sie hat eine stabile Ecke und        ist damit die Schruppform schlechthin. <strong>W</strong> (Trigon, auch        80°) wäre ebenfalls möglich; C ist die häufigere Wahl beim        Längsrunddrehen.</p>      <p><strong>N</strong> &ndash; Freiwinkel 0°, negative Grundform. Eine        Platte ohne Freiwinkel lässt sich <strong>wenden</strong>: Sie hat auf        beiden Seiten Schneiden, also doppelt so viele wie eine positive. Beim        Schruppen zählt das, weil die Schneide schneller stumpf wird.</p>      <p><strong>08</strong> &ndash; Kennzahl mal 0,1 ergibt 0,8 mm. Ein großer        Eckenradius trägt höhere Vorschübe und stabilisiert die Ecke.</p>      <p><strong>R</strong> &ndash; rechtsschneidend, vom Reitstock zum Futter.</p>      <p>Zusammen etwa: <strong>C N M G 12 04 08 – P25</strong>. Ein        Schneidstoff mit höherer Kennzahl (P25 statt P15) ist beim Schruppen        richtig: zäher, verträgt den unterbrochenen Schnitt in der Walzhaut.</p>    </details>    <h2><span class="nr">4</span>Übertragen</h2>    <details>      <summary>1. Warum haben Schruppplatten meist einen größeren Eckenwinkel        als Schlichtplatten?</summary>      <p>Weil der Eckenwinkel darüber entscheidet, wie viel Werkstoff hinter der        Schneidenecke steht. Bei 80° ist die Ecke ein stumpfer Keil &ndash; sie        trägt Kraft und leitet Wärme ab. Bei 35° ist sie eine dünne Spitze, die        unter Schruppkräften ausbricht.</p>      <p>Umgekehrt kommt die spitze Platte in Ecken, an die die stumpfe nicht        heranreicht. Deshalb steht in der Eignungstabelle bei V „sehr gut" fürs        Formdrehen und „nicht geeignet" fürs Schruppen.</p>    </details>    <details>      <summary>2. Was heißt „negative Grundform" für die Schnittkräfte?</summary>      <p>Eine negative Platte steht senkrecht im Halter; der Freiwinkel entsteht        erst durch die Neigung des Halters. Sie drückt stärker in den Werkstoff        &ndash; die Schnittkraft ist höher, und die Maschine braucht mehr        Leistung.</p>      <p>Das Tabellenbuch stellt es als Skala dar: von der positiven Grundform        über die negative doppelseitige zur negativen einseitigen nehmen        <strong>Schnittkraft, Schnitttiefe und Vorschub zu</strong>. Wer eine        schwache Maschine hat oder ein dünnes Werkstück, wählt positiv.</p>    </details>    <details>      <summary>3. Die Platte im Schrank ist P15, gebraucht wird P25. Kann man        sie trotzdem nehmen?</summary>      <p>Für einen Schlichtgang ja, fürs Schruppen mit Walzhaut besser nicht.        Die Zahl gibt an, wo der Schneidstoff zwischen den beiden Enden liegt:        <strong>kleine Zahl</strong> heißt hart und verschleißfest,        <strong>große Zahl</strong> zäh und bruchsicher.</p>      <p>P15 hält hohe Schnittgeschwindigkeiten aus, bricht aber eher aus, wenn        der Schnitt unterbrochen ist. Genau das ist beim ersten Schnitt durch        die Walzhaut der Fall. Man kann es versuchen &ndash; und zahlt es        mit Standzeit.</p>    </details>    <details>      <summary>4. Eine Platte ist rechtsschneidend (R). Was passiert, wenn man        sie links einsetzt?</summary>      <p>Nichts Gutes. Die Schneide ist für eine Richtung geschliffen: Span- und        Freiflächen liegen so, dass der Span nach oben abläuft und die Freifläche        nicht schleift. Verkehrt herum drückt die Freifläche auf das Werkstück,        der Span staut sich, und die Ecke bricht.</p>      <p>Wer in beide Richtungen arbeiten will, nimmt eine        <strong>N</strong>-Platte &ndash; die ist rechts- und linksschneidend.        Das kostet allerdings die Möglichkeit, die Geometrie für eine Richtung        zu optimieren.</p>    </details>    <div class="merksatz">      <strong>Merksatz:</strong> Stelle 1 sagt, wie stabil die Ecke ist. Stelle      2 sagt, wie leicht sie schneidet. Stelle 7 mal 0,1 sagt, wie glatt die      Fläche wird. Alles andere ist Zubehör.    </div>    <p class="fussnote"><strong>Woher die Angaben stammen:</strong> Bezeichnung      von Wendeschneidplatten nach DIN ISO 1832 (2017-06), Auswahl der      Plattengeometrie und der Grundform aus der Fertigungsplanung beim Drehen      &ndash; Tabellenbuch Metall.</p>    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.      Maßgebend sind Norm und Tabellenbuch.</p>  </main>  <footer class="wrap">    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>  </footer><script src="../../assets/zeichnen.js"></script><script src="../../assets/wellen.js"></script><script src="../../assets/drehteil.js"></script><script>var WELLE = WELLEN.antriebswelle;</script><script>"use strict";/* Die Platte aus dem Werkzeugschrank, Stelle für Stelle. */var PLATTE = [  {w:"D",   n:"Plattengeometrie"},  {w:"C",   n:"Freiwinkel"},  {w:"G",   n:"Toleranzklasse"},  {w:"N",   n:"Befestigung"},  {w:"11",  n:"Größe l"},  {w:"04",  n:"Dicke s"},  {w:"04",  n:"Schneidenecke"},  {w:"F",   n:"Schneide"},  {w:"R",   n:"Schneidrichtung"},  {w:"P15", n:"Schneidstoff"}];function el(id){ return document.getElementById(id); }function wert(id){  var e = el(id);  return e ? parseFloat(String(e.value).replace(",", ".")) : NaN;}function urteilen(id, ok, offen){  var u = el(id);  if(offen){ u.textContent = "–"; u.className = "urteil"; return 0; }  u.textContent = ok ? "richtig" : "nein";  u.className = "urteil " + (ok ? "ja" : "nein");  return ok ? 1 : 0;}function bilanz(id, richtig, gesamt, offen){  el(id).textContent = offen === gesamt    ? "Noch nichts eingetragen."    : richtig + " von " + gesamt + " richtig"      + (offen ? ", " + offen + " noch offen." : ".");}/* Die Bezeichnung als Kette. */(function bezBauen(){  var aus = "";  PLATTE.forEach(function(s, i){    aus += '<span>' + s.w + '<small>' + (i + 1) + '<br>' + s.n + '</small></span>';  });  el("bez").innerHTML = aus;}());/* Die Welle, damit die Kontur zur Hand ist. */(function zeichnung(){  var g = wellenGroesse(WELLE, {s:5.6, bezeichnungen:true});  var svg = bild("bildWelle", g.breite, g.hoehe,    "Die Antriebswelle mit Benennungen",    "Der Lagersitz Ø25 ist der längste Abschnitt; am Übergang zum Bund "    + "sitzt die Rundung R1.");  zeichneWelle(svg, WELLE, {x:g.x, y:g.y, s:5.6, bezeichnungen:true});}());/* ---------- Teil 1 ---------- */el("btn1").addEventListener("click", function(){  var r = 0, offen = 0;  [["z1", "u1", 55], ["z2", "u2", 7], ["z7", "u7", 0.4]].forEach(function(f){    var v = wert(f[0]);    var leer = !isFinite(v); if(leer) offen++;    r += urteilen(f[1], Math.abs(v - f[2]) < 0.01, leer);  });  var r9 = el("z9").value;  if(!r9) offen++;  r += urteilen("u9", r9 === "R", !r9);  var g10 = el("z10").value;  if(!g10) offen++;  r += urteilen("u10", g10 === "P", !g10);  bilanz("bilanz1", r, 5, offen);});/* ---------- Teil 2 ---------- *//* Die engste Innenrundung der Kontur: der Radius der Freistiche   DIN 509 - E 0,6 x 0,3. Nicht die R1 am Bund - das ist der Fehler, um den   es in Teil 2 geht. */var R_ENG = 0.6;/* f = Wurzel(8 * r_eps * Rth); Rth in Millimetern. */function vorschub(rzMikro, rEps){  return Math.sqrt(8 * rEps * rzMikro / 1000);}el("btn2").addEventListener("click", function(){  var r = 0, offen = 0;  var rw = wert("pRw");  var leerRw = !isFinite(rw); if(leerRw) offen++;  r += urteilen("upRw", Math.abs(rw - R_ENG) < 0.01, leerRw);  var max = wert("pMax");  var leerMax = !isFinite(max); if(leerMax) offen++;  r += urteilen("upMax", Math.abs(max - (R_ENG - 0.1)) < 0.01, leerMax);  var passt = el("pPasst").value;  if(!passt) offen++;  r += urteilen("upPasst", passt === "ja", !passt);  var f = wert("pF");  var leerF = !isFinite(f); if(leerF) offen++;  r += urteilen("upF", Math.abs(f - vorschub(4, 0.4)) <= 0.011, leerF);  var gr = el("pGruppe").value;  if(!gr) offen++;  r += urteilen("upGruppe", gr === "ja", !gr);  bilanz("bilanz2", r, 5, offen);});/* ---------- Teil 3 ---------- */el("btn3").addEventListener("click", function(){  var r = 0, offen = 0;  [["b1", "ub1", "C"], ["b2", "ub2", "N"], ["b9", "ub9", "R"]]    .forEach(function(f){      var v = el(f[0]).value;      if(!v) offen++;      r += urteilen(f[1], v === f[2], !v);    });  var k = String(el("b7").value).trim();  if(!k) offen++;  /* 08 und 8 sind beide gemeint - die führende Null ist Schreibweise. */  r += urteilen("ub7", k === "08" || k === "8", !k);  bilanz("bilanz3", r, 4, offen);});</script><script src="../../assets/back-nav.js" data-ziel="./"></script><script src="../../assets/feedback.js"></script><script src="../../assets/zahlenfeld.js"></script><script src="../../assets/bildungsgang.js"></script><script src="../../assets/qr.js"></script><script src="../../assets/baukasten.js"></script><script src="../../assets/pdf.js"></script><script src="../../assets/export.js"></script></body></html>

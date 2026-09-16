@@ -160,7 +160,7 @@ Jede steht hier, mit Grund. Was nicht hier steht, ist ein Fehler.
 
 | Übung „Eine Schraube im Spiel“ (Querkraft, Teil 4) | Spiel überhöht gezeichnet | 0,5 mm je Seite wären im Bild ein halber Pixel. Die Bildunterschrift sagt es. |
 
-| Welle LF5 (`assets/drehteil.js`) | R1 am Übergang zum Bund als scharfe Kante | Ein Radius von 1 mm wäre bei sechs Bildpunkten je Millimeter ein Pixel. Der Wert steht im Text und in der Lernsituation, wo er gebraucht wird — nämlich als Grenze für den Eckenradius. |
+| Antriebswelle (`assets/drehteil.js`) | R1 am Übergang zum Bund als scharfe Kante | Ein Radius von 1 mm wäre bei sechs Bildpunkten je Millimeter ein Pixel. Der Wert steht im Text und in der Lernsituation, wo er gebraucht wird — nämlich als Grenze für den Eckenradius. |
 
 | Lektion „Planung eines Drehprozesses“, Rillenprofil | Höhe stark überhöht | Die Rautiefe beträgt wenige Tausendstel Millimeter. Maßstäblich gezeichnet wäre die Fläche eine gerade Linie, und das Bild zeigte nichts. Die Bildunterschrift sagt es; das Bild ist farbig und damit keine technische Zeichnung. |
 

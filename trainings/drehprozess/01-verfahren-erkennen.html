@@ -1,467 +1,1 @@
-<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Verfahren erkennen</title>
-<meta name="description" content="Welches Drehverfahren gehört an diese Fläche? Kontur lesen, Werkzeugangaben zuordnen und die Reihenfolge begründen – an der Welle LF5.">
-<meta name="dauer" content="10 min">
-<link rel="stylesheet" href="../../assets/uebung.css">
-<style>
-  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
-  .aufgabe{
-    background:var(--bg); border:1px solid var(--border-stark); border-radius:10px;
-    padding:14px 16px; margin:0 0 16px; font-size:16px; line-height:1.7;
-  }
-  .aufgabe strong{font-size:17px}
-  .zaehler{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
-    font-size:13px; color:var(--muted); margin:0 0 10px}
-  .rechenweg{
-    background:var(--bg); border:1px solid var(--border); border-radius:10px;
-    padding:12px 16px; margin:12px 0 0; font-size:14.5px; line-height:1.9;
-  }
-  .rechenweg b{font-weight:700}
-  .rechenweg .schritt{display:block; color:var(--muted); font-size:12.5px; line-height:1.5}
-  .rechenweg .buch{
-    display:block; margin:6px 0 2px; padding:7px 10px; font-size:12.5px;
-    line-height:1.5; border-left:3px solid var(--ok); border-radius:0 8px 8px 0;
-    background:rgba(22,163,74,.10);
-  }
-  .art{
-    display:inline-block; margin:0 0 8px; padding:3px 10px; border-radius:999px;
-    background:var(--bg); border:1px solid var(--border);
-    font-size:12.5px; font-weight:600; color:var(--muted);
-  }
-  #bildAufgabe svg{width:100%; height:auto; max-height:230px}
-  #bildAufgabe{margin:0 0 14px}
-  .angaben{
-    margin:0 0 14px; padding:10px 14px; border-radius:10px;
-    background:var(--bg); border:1px solid var(--border);
-    font-size:15px; line-height:1.9; font-variant-numeric:tabular-nums;
-  }
-  .angaben span{display:block}
-</style>
-<script src="../../assets/thema.js"></script>
-</head>
-<body>
-  <header class="wrap">
-    <p class="herkunft">Training &middot; Drehprozess</p>
-    <h1>Verfahren erkennen</h1>
-    <p class="lead">Jede Fläche verlangt ihr Werkzeug &ndash; und ihre Stelle im Ablauf.</p>
-  </header>
-
-  <main class="wrap">
-
-    <div class="box auftrag">
-      <p><strong>Worum es geht:</strong> Bevor irgendetwas gerechnet wird, muss
-        die Kontur gelesen sein: Welche Fläche entsteht durch welches
-        Drehverfahren? Daraus folgt das Werkzeug, daraus die Spalte in der
-        Schnittdatentabelle &ndash; und daraus die Reihenfolge im Arbeitsplan.</p>
-      <p>Drei Rundenarten wechseln sich ab: eine markierte Fläche der Welle LF5
-        zuordnen, ein Verfahren an seinen Werkzeugangaben erkennen, und
-        entscheiden, was im Ablauf zuerst kommt.</p>
-    </div>
-
-    <h2><span class="nr">1</span>Aufgaben</h2>
-
-    <div class="box">
-      <div class="zaehler">
-        <span id="stand">Aufgabe 1</span>
-        <span id="punkte"></span>
-      </div>
-
-      <p class="art" id="art">&ndash;</p>
-      <figure id="bildAufgabe" data-druck="weg"></figure>
-      <div class="angaben" id="angaben" hidden></div>
-      <p class="aufgabe" id="aufgabe">&ndash;</p>
-
-      <div class="felder" id="felder"></div>
-
-      <p style="margin-top:16px">
-        <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
-        <button type="button" class="knopf leise" id="btnWeg">Begründung zeigen</button>
-        <button type="button" class="knopf leise" id="btnWeiter">Nächste Aufgabe</button>
-      </p>
-
-      <div class="rueckmeldung" id="rueck" hidden></div>
-      <div class="rechenweg" id="weg" hidden></div>
-    </div>
-
-    <h2><span class="nr">2</span>Die Verfahren im Überblick</h2>
-
-    <details>
-      <summary>1. Querplandrehen</summary>
-      <p>Die Schneide läuft <strong>quer zur Achse</strong>, von außen nach
-        innen. So entstehen alle Stirnflächen und alle Absätze, die senkrecht
-        zur Achse stehen.</p>
-      <p>Werkzeug: Plan- oder Schruppdrehmeißel, Eckenwinkel ε = 80° oder 90°,
-        Einstellwinkel κ = 45° bis 97°. Schnitttiefe a<sub>p</sub> = 1 bis 2 mm,
-        Vorschub f = 0,1 bis 0,2 mm.</p>
-      <p>Weil der Durchmesser während des Schnitts wandert, wird mit dem
-        mittleren Durchmesser gerechnet.</p>
-    </details>
-
-    <details>
-      <summary>2. Längsrunddrehen &ndash; schruppen und schlichten</summary>
-      <p>Die Schneide läuft <strong>parallel zur Achse</strong>. So entstehen
-        alle zylindrischen Mantelflächen.</p>
-      <p><strong>Schruppen</strong> holt das Material weg: a<sub>p</sub> = 2 bis
-        6 mm, f = 0,25 bis 0,6 mm, Eckenwinkel ε = 80° oder 55°. Der Vorschub
-        ist groß, die Oberfläche entsprechend rau.</p>
-      <p><strong>Schlichten</strong> macht die Fläche fertig: a<sub>p</sub> =
-        0,5 bis 2 mm, f = 0,1 bis 0,25 mm, ε = 55° oder 35°, Eckenradius
-        r<sub>ε</sub> = 0,2 bis 0,8 mm. Erst hier entscheidet sich die
-        Rautiefe.</p>
-    </details>
-
-    <details>
-      <summary>3. Einstechdrehen und Abstechdrehen</summary>
-      <p>Dasselbe Werkzeug, derselbe Weg &ndash; nur der Zweck ist ein anderer.
-        Die Schneide sticht quer ein, ihre Breite ist die Schnitttiefe
-        a<sub>p</sub> = 0,6 bis 6 mm. Der Vorschub bleibt klein: f = 0,05 bis
-        0,15 mm.</p>
-      <p><strong>Einstechen</strong> erzeugt Nuten und Freistiche.
-        <strong>Abstechen</strong> trennt das fertige Teil vom Stangenmaterial
-        &ndash; es ist deshalb immer der letzte Drehvorgang.</p>
-    </details>
-
-    <details>
-      <summary>4. Gewindedrehen</summary>
-      <p>Hier ist der Vorschub keine freie Wahl: Er <strong>ist die
-        Steigung</strong> des Gewindes. Bei M20×1 also f = 1 mm je Umdrehung.
-        Der Eckenwinkel folgt dem Gewindeprofil: 60° beim metrischen Gewinde,
-        55° beim Whitworth, 30° beim Trapezgewinde.</p>
-      <p>Die volle Tiefe entsteht in mehreren Zustellungen. Wie viele es sind,
-        steht im Tabellenbuch nach Steigung geordnet &ndash; dazu zwei bis vier
-        Leerdurchläufe zum Glätten. Und: Beim Gewindedrehen wird immer die
-        <strong>Drehzahl</strong> angegeben, nicht die Schnittgeschwindigkeit.</p>
-    </details>
-
-    <details>
-      <summary>5. Warum die Reihenfolge nicht beliebig ist</summary>
-      <ul>
-        <li><strong>Plandrehen und Zentrieren zuerst</strong> &ndash; erst dann
-          gibt es eine saubere Bezugsfläche und einen Sitz für die Spitze.</li>
-        <li><strong>Schruppen vor Schlichten</strong> &ndash; sonst wird die
-          fertige Fläche wieder weggenommen.</li>
-        <li><strong>Einstiche nach dem Schlichten</strong> &ndash; ein
-          Schlichtwerkzeug, das über eine Nut läuft, schlägt auf.</li>
-        <li><strong>Gewinde nach dem Freistich</strong> &ndash; das
-          Gewindewerkzeug braucht den Auslauf.</li>
-        <li><strong>Abstechen ganz zuletzt</strong> &ndash; danach hält das
-          Werkstück nicht mehr.</li>
-      </ul>
-    </details>
-
-    <div class="merksatz">
-      <strong>Merksatz:</strong> Erst plan und zentrieren, dann schruppen, dann
-      schlichten, dann einstechen, dann Gewinde, dann abstechen. Wer davon
-      abweicht, braucht einen Grund.
-    </div>
-
-    <h3>Weiterarbeiten</h3>
-    <p>Welche Schnittgeschwindigkeit zum Verfahren gehört, übt das Training
-      <em>Startwert ablesen</em>.</p>
-    <p class="fussnote"><strong>Woher die Zahlen stammen:</strong> Übersicht der
-      Drehverfahren mit Werkzeugangaben und Schnittgrößen, Tabellenbuch.
-      Die Welle LF5 ist die Fertigungszeichnung aus dem Unterricht.</p>
-
-    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
-      Maßgebend sind Norm und Tabellenbuch.</p>
-
-  </main>
-
-  <footer class="wrap">
-    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
-  </footer>
-
-<script src="../../assets/zeichnen.js"></script>
-<script src="../../assets/wellen.js"></script>
-<script src="../../assets/drehteil.js"></script>
-<script>var WELLE = WELLEN.antriebswelle;</script>
-<script>
-"use strict";
-
-var VERFAHREN = {
-  querplandrehen:  "Querplandrehen",
-  schruppen:       "Längsrunddrehen, Schruppen",
-  schlichten:      "Längsrunddrehen, Schlichten",
-  einstechdrehen:  "Einstechdrehen",
-  gewindedrehen:   "Gewindedrehen",
-  abstechdrehen:   "Abstechdrehen"
-};
-var AUSWAHL = ["Querplandrehen", "Längsrunddrehen, Schruppen",
-  "Längsrunddrehen, Schlichten", "Einstechdrehen", "Gewindedrehen",
-  "Abstechdrehen"];
-
-/* Die Flächen der Welle LF5, wie sie der Zeichenbaustein kennt, mit dem
-   Verfahren, das sie erzeugt, und dem Grund dafür. */
-var FLAECHEN = [
-  {id:"stirn_links", verfahren:"abstechdrehen",
-   grund:"Sie entsteht beim Trennen vom Stangenmaterial. Das Futter sitzt "
-     + "links, also fällt hier die letzte Fläche an - Abstechen ist immer "
-     + "der letzte Drehvorgang."},
-  {id:"mantel_20", verfahren:"schlichten",
-   grund:"Eine zylindrische Mantelfläche, und mit Rz 4 eine, die geschlichtet "
-     + "werden muss. Geschruppt wurde sie vorher."},
-  {id:"nut_a", verfahren:"einstechdrehen",
-   grund:"Eine 1,3 mm breite Nut entsteht durch ein Werkzeug, das quer "
-     + "einsticht. Die Nutbreite ist die Schneidenbreite."},
-  {id:"schulter_22", verfahren:"querplandrehen",
-   grund:"Auch ein Absatz steht senkrecht zur Achse - dieselbe Bewegung wie "
-     + "bei der Stirnfläche."},
-  {id:"mantel_24", verfahren:"schlichten",
-   grund:"Zylindrische Mantelfläche mit Rz 6 - geschlichtet."},
-  {id:"bund_30", verfahren:"schruppen",
-   grund:"Der Bund trägt nur Rz 10, die allgemeine Rautiefe. Was geschruppt "
-     + "ist, reicht hier."},
-  {id:"mantel_25", verfahren:"schlichten",
-   grund:"Lagersitz mit Rz 4 - ohne Schlichten nicht zu machen."},
-  {id:"nut_b", verfahren:"einstechdrehen",
-   grund:"Wie Nut A: quer einstechen, Breite gleich Schneidenbreite."},
-  {id:"freistich", verfahren:"einstechdrehen",
-   grund:"Der Gewindefreistich DIN 76 - A wird eingestochen, damit das "
-     + "Gewindewerkzeug auslaufen kann."},
-  {id:"gewinde", verfahren:"gewindedrehen",
-   grund:"M20×1 - der Vorschub ist die Steigung, also 1 mm je Umdrehung."},
-  {id:"stirn_rechts", verfahren:"querplandrehen",
-   grund:"Das freie Ende rechts wird zuerst bearbeitet: Die Schneide läuft "
-     + "quer zur Achse. Danach wird zentriert, damit die Reitstockspitze "
-     + "einen Sitz hat."}
-];
-
-/* Werkzeugangaben aus der Übersicht der Drehverfahren. Aus ihnen allein
-   lässt sich das Verfahren erkennen. */
-var ANGABEN = [
-  {verfahren:"querplandrehen",
-   zeilen:["Eckenwinkel ε = 80° oder 90°", "Einstellwinkel κ = 45° … 97°",
-           "Schnitttiefe a<sub>p</sub> = 1 … 2 mm", "Vorschub f = 0,1 … 0,2 mm"],
-   grund:"Kleine Schnitttiefe, kleiner Vorschub, großer Eckenwinkel und ein "
-     + "Einstellwinkel bis 97° - das ist die Angabe für das Querplandrehen."},
-  {verfahren:"schruppen",
-   zeilen:["Eckenwinkel ε = 80° oder 55°", "Einstellwinkel κ = 93° … 95°",
-           "Schnitttiefe a<sub>p</sub> = 2 … 6 mm", "Vorschub f = 0,25 … 0,6 mm"],
-   grund:"Die große Schnitttiefe und der große Vorschub sind eindeutig: Hier "
-     + "soll Material weg, nicht Oberfläche entstehen."},
-  {verfahren:"schlichten",
-   zeilen:["Eckenwinkel ε = 55° oder 35°", "Einstellwinkel κ = 93° … 107,5°",
-           "Eckenradius r<sub>ε</sub> = 0,2 … 0,8 mm",
-           "Schnitttiefe a<sub>p</sub> = 0,5 … 2 mm", "Vorschub f = 0,1 … 0,25 mm"],
-   grund:"Spitzer Eckenwinkel, kleiner Eckenradius, kleiner Vorschub - und "
-     + "als einziges Verfahren mit Angabe des Eckenradius, weil der die "
-     + "Rautiefe bestimmt."},
-  {verfahren:"einstechdrehen",
-   zeilen:["Schnittbreite a<sub>p</sub> = 0,6 … 6 mm",
-           "größte Stechtiefe t<sub>max</sub> = 5 … 50 mm",
-           "Vorschub f = 0,05 … 0,15 mm"],
-   grund:"Eine Schnittbreite statt eines Eckenwinkels, dazu eine Stechtiefe - "
-     + "das gibt es nur beim Ein- und Abstechen."},
-  {verfahren:"gewindedrehen",
-   zeilen:["Eckenwinkel ε = 60° (metrisch)", "Vorschub f = P (Steigung)",
-           "Schnitte i = Zustellungen + Leerschnitte"],
-   grund:"Der Vorschub ist keine Wahl, sondern die Steigung. Und statt einer "
-     + "Schnitttiefe steht dort eine Anzahl Schnitte."}
-];
-
-/* Paare für die Frage nach der Reihenfolge, mit dem Grund. */
-var REIHENFOLGE = [
-  {frueher:"Querplandrehen der rechten Stirnfläche",
-   spaeter:"Längsrunddrehen, Schruppen",
-   grund:"Erst die Stirnfläche, dann der Mantel: Ohne plane Stirnfläche gibt "
-     + "es keine Bezugsfläche für die Längenmaße."},
-  {frueher:"Längsrunddrehen, Schruppen", spaeter:"Längsrunddrehen, Schlichten",
-   grund:"Schruppen holt das Material weg, Schlichten macht die Fläche fertig. "
-     + "Umgekehrt wäre die fertige Fläche gleich wieder ab."},
-  {frueher:"Längsrunddrehen, Schlichten", spaeter:"Einstechen der Nut A",
-   grund:"Ein Schlichtwerkzeug, das über eine Nut läuft, schlägt auf und "
-     + "bricht die Schneide aus."},
-  {frueher:"Einstechen des Freistichs DIN 76 – A", spaeter:"Gewindedrehen",
-   grund:"Das Gewindewerkzeug braucht einen Auslauf. Ohne Freistich müsste es "
-     + "in der vollen Schulter anhalten."},
-  {frueher:"Gewindedrehen", spaeter:"Abstechdrehen",
-   grund:"Nach dem Abstechen hält das Werkstück nicht mehr - es ist immer der "
-     + "letzte Drehvorgang."},
-  {frueher:"Querplandrehen der rechten Stirnfläche",
-   spaeter:"Einstechen der Nut B",
-   grund:"Plandrehen und Zentrieren stehen am Anfang, die Nuten kommen nach "
-     + "dem Schlichten."}
-];
-
-function el(id){ return document.getElementById(id); }
-function waehle(liste){ return liste[Math.floor(Math.random() * liste.length)]; }
-
-/* ---------- Der Durchlauf ---------- */
-
-var aufgabe = null;
-var nr = 0, richtig = 0, versuche = 0;
-var gemeldet = false;
-
-function auswahlfeld(id, beschriftung, werte){
-  var s = '<label class="feld">' + beschriftung + '<select id="' + id + '">'
-    + '<option value="">bitte wählen</option>';
-  for(var i = 0; i < werte.length; i++){
-    s += '<option value="' + werte[i] + '">' + werte[i] + '</option>';
-  }
-  return s + '</select></label>';
-}
-
-/* Die Welle steht bei jeder Rundenart im Bild - auch wenn nicht nach einer
-   Fläche gefragt ist. Sie ist der Gegenstand, ueber den geredet wird; wer
-   die Reihenfolge begruenden soll, muss die Nuten sehen koennen. */
-function welleZeigen(markiert){
-  var g = wellenGroesse(WELLE, {s:5.4, bezeichnungen:true});
-  var svg = bild("bildAufgabe", g.breite, g.hoehe,
-    markiert ? "Die Welle LF5, eine Fläche hervorgehoben"
-             : "Die Welle LF5 mit Benennungen",
-    markiert ? "Welle LF5 &ndash; hervorgehoben ist die Fläche, um die es geht."
-             : "Welle LF5 aus 42CrMo4 &ndash; das Werkstück, um das es geht.");
-  var o = {x:g.x, y:g.y, s:5.4, bezeichnungen:true};
-  if(markiert) o.markiert = [markiert];
-  zeichneWelle(svg, WELLE, o);
-}
-
-function neueAufgabe(){
-  nr++;
-  var art = waehle(["flaeche", "angaben", "reihenfolge"]);
-  aufgabe = {art:art};
-  el("angaben").hidden = true;
-
-  if(art === "flaeche"){
-    var f = waehle(FLAECHEN);
-    aufgabe.f = f;
-    aufgabe.soll = VERFAHREN[f.verfahren];
-    el("art").textContent = "Welches Verfahren gehört hierher?";
-    welleZeigen(f.id);
-    el("aufgabe").innerHTML = "Hervorgehoben ist <strong>"
-      + flaechenname(f.id) + "</strong>. Durch welches Drehverfahren entsteht "
-      + "diese Fläche?";
-    el("felder").innerHTML = auswahlfeld("aV", "Drehverfahren", AUSWAHL);
-
-  }else if(art === "angaben"){
-    var a = waehle(ANGABEN);
-    aufgabe.a = a;
-    aufgabe.soll = VERFAHREN[a.verfahren];
-    el("art").textContent = "Welches Verfahren steht dahinter?";
-    welleZeigen(null);
-    el("angaben").hidden = false;
-    el("angaben").innerHTML = a.zeilen.map(function(z){
-      return "<span>" + z + "</span>"; }).join("");
-    el("aufgabe").innerHTML = "So steht es im Tabellenbuch bei einem der "
-      + "Drehverfahren. Bei welchem?";
-    el("felder").innerHTML = auswahlfeld("aV", "Drehverfahren", AUSWAHL);
-
-  }else{
-    var p = waehle(REIHENFOLGE);
-    var gedreht = Math.random() < 0.5;
-    aufgabe.p = p;
-    aufgabe.erst = gedreht ? p.spaeter : p.frueher;
-    aufgabe.zweit = gedreht ? p.frueher : p.spaeter;
-    aufgabe.soll = p.frueher;
-    el("art").textContent = "Was kommt zuerst?";
-    welleZeigen(null);
-    el("aufgabe").innerHTML = "Zwei Arbeitsvorgänge am selben Werkstück: "
-      + "<strong>" + aufgabe.erst + "</strong> und <strong>" + aufgabe.zweit
-      + "</strong>. Welcher steht im Arbeitsplan weiter oben?";
-    el("felder").innerHTML = auswahlfeld("aV", "kommt zuerst",
-      [aufgabe.erst, aufgabe.zweit]);
-  }
-
-  el("stand").textContent = "Aufgabe " + nr;
-  gemeldet = false;
-  el("rueck").hidden = true;
-  el("weg").hidden = true;
-}
-
-function flaechenname(id){
-  for(var i = 0; i < WELLE.flaechen.length; i++){
-    if(WELLE.flaechen[i].id === id) return WELLE.flaechen[i].name;
-  }
-  return id;
-}
-
-function punkteZeigen(){
-  el("punkte").textContent = versuche ? richtig + " von " + versuche + " richtig" : "";
-}
-
-function wegBauen(){
-  var a = aufgabe, buch = "";
-  if(a.art === "flaeche"){
-    buch = "<span class=\"buch\"><b>Nachschlagen:</b> Die Übersicht der "
-      + "Drehverfahren zeigt zu jedem Verfahren ein Bild der Bewegung - "
-      + "daran ist die Fläche wiederzuerkennen.</span>";
-    return "<span class=\"schritt\">" + flaechenname(a.f.id) + "</span>"
-      + a.f.grund + "<br><b>" + a.soll + "</b>" + buch;
-  }
-  if(a.art === "angaben"){
-    buch = "<span class=\"buch\"><b>Nachschlagen:</b> Diese Zeilen stehen "
-      + "wörtlich in der Übersicht der Drehverfahren.</span>";
-    return "<span class=\"schritt\">Woran man es erkennt</span>"
-      + a.a.grund + "<br><b>" + a.soll + "</b>" + buch;
-  }
-  return "<span class=\"schritt\">Die Reihenfolge</span>"
-    + a.p.grund + "<br>Zuerst: <b>" + a.p.frueher + "</b>";
-}
-
-el("btnPruefen").addEventListener("click", function(){
-  if(!aufgabe) return;
-  var r = el("rueck"), gewaehlt = el("aV").value;
-  if(!gewaehlt){
-    r.className = "rueckmeldung fast";
-    r.innerHTML = "<strong>Noch nichts gewählt.</strong> Auswählen "
-      + "&ndash; oder die Begründung zeigen lassen.";
-    r.hidden = false;
-    return;
-  }
-  var ok = gewaehlt === aufgabe.soll;
-  versuche++;
-  if(ok) richtig++;
-  rundeMelden(ok);
-  r.className = "rueckmeldung " + (ok ? "ja" : "nein");
-  r.innerHTML = "<strong>" + (ok ? "Richtig." : "Noch nicht.") + "</strong> "
-    + "Richtig ist <strong>" + aufgabe.soll + "</strong>"
-    + (ok ? "." : " &ndash; du hattest " + gewaehlt + ".");
-  r.hidden = false;
-  if(!ok){
-    el("weg").innerHTML = wegBauen();
-    el("weg").hidden = false;
-  }
-  punkteZeigen();
-});
-
-el("btnWeg").addEventListener("click", function(){
-  if(!aufgabe) return;
-  el("weg").innerHTML = wegBauen();
-  el("weg").hidden = false;
-});
-
-el("btnWeiter").addEventListener("click", neueAufgabe);
-
-window.TBK_WETTKAMPF = {
-  runden: 10,
-  neu: function(){
-    nr = 0; richtig = 0; versuche = 0;
-    punkteZeigen();
-    neueAufgabe();
-  }
-};
-
-function rundeMelden(ok){
-  if(gemeldet) return;
-  gemeldet = true;
-  document.dispatchEvent(new CustomEvent("tbk-runde", {detail:{richtig: !!ok}}));
-}
-
-neueAufgabe();
-punkteZeigen();
-</script>
-
-<script src="../../assets/back-nav.js" data-ziel="./"></script>
-<script src="../../assets/feedback.js"></script>
-<script src="../../assets/wettkampf.js"></script>
-<script src="../../assets/bildungsgang.js"></script>
-<script src="../../assets/qr.js"></script>
-<script src="../../assets/baukasten.js"></script>
-<script src="../../assets/pdf.js"></script>
-<script src="../../assets/export.js"></script>
-</body>
-</html>
+<!DOCTYPE html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Verfahren erkennen</title><meta name="description" content="Welches Drehverfahren gehört an diese Fläche? Kontur lesen, Werkzeugangaben zuordnen und die Reihenfolge begründen – an der Antriebswelle."><meta name="dauer" content="10 min"><link rel="stylesheet" href="../../assets/uebung.css"><style>  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */  .aufgabe{    background:var(--bg); border:1px solid var(--border-stark); border-radius:10px;    padding:14px 16px; margin:0 0 16px; font-size:16px; line-height:1.7;  }  .aufgabe strong{font-size:17px}  .zaehler{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;    font-size:13px; color:var(--muted); margin:0 0 10px}  .rechenweg{    background:var(--bg); border:1px solid var(--border); border-radius:10px;    padding:12px 16px; margin:12px 0 0; font-size:14.5px; line-height:1.9;  }  .rechenweg b{font-weight:700}  .rechenweg .schritt{display:block; color:var(--muted); font-size:12.5px; line-height:1.5}  .rechenweg .buch{    display:block; margin:6px 0 2px; padding:7px 10px; font-size:12.5px;    line-height:1.5; border-left:3px solid var(--ok); border-radius:0 8px 8px 0;    background:rgba(22,163,74,.10);  }  .art{    display:inline-block; margin:0 0 8px; padding:3px 10px; border-radius:999px;    background:var(--bg); border:1px solid var(--border);    font-size:12.5px; font-weight:600; color:var(--muted);  }  #bildAufgabe svg{width:100%; height:auto; max-height:230px}  #bildAufgabe{margin:0 0 14px}  .angaben{    margin:0 0 14px; padding:10px 14px; border-radius:10px;    background:var(--bg); border:1px solid var(--border);    font-size:15px; line-height:1.9; font-variant-numeric:tabular-nums;  }  .angaben span{display:block}</style><script src="../../assets/thema.js"></script></head><body>  <header class="wrap">    <p class="herkunft">Training &middot; Drehprozess</p>    <h1>Verfahren erkennen</h1>    <p class="lead">Jede Fläche verlangt ihr Werkzeug &ndash; und ihre Stelle im Ablauf.</p>  </header>  <main class="wrap">    <div class="box auftrag">      <p><strong>Worum es geht:</strong> Bevor irgendetwas gerechnet wird, muss        die Kontur gelesen sein: Welche Fläche entsteht durch welches        Drehverfahren? Daraus folgt das Werkzeug, daraus die Spalte in der        Schnittdatentabelle &ndash; und daraus die Reihenfolge im Arbeitsplan.</p>      <p>Drei Rundenarten wechseln sich ab: eine markierte Fläche der Antriebswelle        zuordnen, ein Verfahren an seinen Werkzeugangaben erkennen, und        entscheiden, was im Ablauf zuerst kommt.</p>    </div>    <h2><span class="nr">1</span>Aufgaben</h2>    <div class="box">      <div class="zaehler">        <span id="stand">Aufgabe 1</span>        <span id="punkte"></span>      </div>      <p class="art" id="art">&ndash;</p>      <figure id="bildAufgabe" data-druck="weg"></figure>      <div class="angaben" id="angaben" hidden></div>      <p class="aufgabe" id="aufgabe">&ndash;</p>      <div class="felder" id="felder"></div>      <p style="margin-top:16px">        <button type="button" class="knopf" id="btnPruefen">Prüfen</button>        <button type="button" class="knopf leise" id="btnWeg">Begründung zeigen</button>        <button type="button" class="knopf leise" id="btnWeiter">Nächste Aufgabe</button>      </p>      <div class="rueckmeldung" id="rueck" hidden></div>      <div class="rechenweg" id="weg" hidden></div>    </div>    <h2><span class="nr">2</span>Die Verfahren im Überblick</h2>    <details>      <summary>1. Querplandrehen</summary>      <p>Die Schneide läuft <strong>quer zur Achse</strong>, von außen nach        innen. So entstehen alle Stirnflächen und alle Absätze, die senkrecht        zur Achse stehen.</p>      <p>Werkzeug: Plan- oder Schruppdrehmeißel, Eckenwinkel ε = 80° oder 90°,        Einstellwinkel κ = 45° bis 97°. Schnitttiefe a<sub>p</sub> = 1 bis 2 mm,        Vorschub f = 0,1 bis 0,2 mm.</p>      <p>Weil der Durchmesser während des Schnitts wandert, wird mit dem        mittleren Durchmesser gerechnet.</p>    </details>    <details>      <summary>2. Längsrunddrehen &ndash; schruppen und schlichten</summary>      <p>Die Schneide läuft <strong>parallel zur Achse</strong>. So entstehen        alle zylindrischen Mantelflächen.</p>      <p><strong>Schruppen</strong> holt das Material weg: a<sub>p</sub> = 2 bis        6 mm, f = 0,25 bis 0,6 mm, Eckenwinkel ε = 80° oder 55°. Der Vorschub        ist groß, die Oberfläche entsprechend rau.</p>      <p><strong>Schlichten</strong> macht die Fläche fertig: a<sub>p</sub> =        0,5 bis 2 mm, f = 0,1 bis 0,25 mm, ε = 55° oder 35°, Eckenradius        r<sub>ε</sub> = 0,2 bis 0,8 mm. Erst hier entscheidet sich die        Rautiefe.</p>    </details>    <details>      <summary>3. Einstechdrehen und Abstechdrehen</summary>      <p>Dasselbe Werkzeug, derselbe Weg &ndash; nur der Zweck ist ein anderer.        Die Schneide sticht quer ein, ihre Breite ist die Schnitttiefe        a<sub>p</sub> = 0,6 bis 6 mm. Der Vorschub bleibt klein: f = 0,05 bis        0,15 mm.</p>      <p><strong>Einstechen</strong> erzeugt Nuten und Freistiche.        <strong>Abstechen</strong> trennt das fertige Teil vom Stangenmaterial        &ndash; es ist deshalb immer der letzte Drehvorgang.</p>    </details>    <details>      <summary>4. Gewindedrehen</summary>      <p>Hier ist der Vorschub keine freie Wahl: Er <strong>ist die        Steigung</strong> des Gewindes. Bei M20×1 also f = 1 mm je Umdrehung.        Der Eckenwinkel folgt dem Gewindeprofil: 60° beim metrischen Gewinde,        55° beim Whitworth, 30° beim Trapezgewinde.</p>      <p>Die volle Tiefe entsteht in mehreren Zustellungen. Wie viele es sind,        steht im Tabellenbuch nach Steigung geordnet &ndash; dazu zwei bis vier        Leerdurchläufe zum Glätten. Und: Beim Gewindedrehen wird immer die        <strong>Drehzahl</strong> angegeben, nicht die Schnittgeschwindigkeit.</p>    </details>    <details>      <summary>5. Warum die Reihenfolge nicht beliebig ist</summary>      <ul>        <li><strong>Plandrehen und Zentrieren zuerst</strong> &ndash; erst dann          gibt es eine saubere Bezugsfläche und einen Sitz für die Spitze.</li>        <li><strong>Schruppen vor Schlichten</strong> &ndash; sonst wird die          fertige Fläche wieder weggenommen.</li>        <li><strong>Einstiche nach dem Schlichten</strong> &ndash; ein          Schlichtwerkzeug, das über eine Nut läuft, schlägt auf.</li>        <li><strong>Gewinde nach dem Freistich</strong> &ndash; das          Gewindewerkzeug braucht den Auslauf.</li>        <li><strong>Abstechen ganz zuletzt</strong> &ndash; danach hält das          Werkstück nicht mehr.</li>      </ul>    </details>    <div class="merksatz">      <strong>Merksatz:</strong> Erst plan und zentrieren, dann schruppen, dann      schlichten, dann einstechen, dann Gewinde, dann abstechen. Wer davon      abweicht, braucht einen Grund.    </div>    <h3>Weiterarbeiten</h3>    <p>Welche Schnittgeschwindigkeit zum Verfahren gehört, übt das Training      <em>Startwert ablesen</em>.</p>    <p class="fussnote"><strong>Woher die Zahlen stammen:</strong> Übersicht der      Drehverfahren mit Werkzeugangaben und Schnittgrößen, Tabellenbuch.      Die Antriebswelle ist die Fertigungszeichnung aus dem Unterricht.</p>    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.      Maßgebend sind Norm und Tabellenbuch.</p>  </main>  <footer class="wrap">    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>  </footer><script src="../../assets/zeichnen.js"></script><script src="../../assets/wellen.js"></script><script src="../../assets/drehteil.js"></script><script>var WELLE = WELLEN.antriebswelle;</script><script>"use strict";var VERFAHREN = {  querplandrehen:  "Querplandrehen",  schruppen:       "Längsrunddrehen, Schruppen",  schlichten:      "Längsrunddrehen, Schlichten",  einstechdrehen:  "Einstechdrehen",  gewindedrehen:   "Gewindedrehen",  abstechdrehen:   "Abstechdrehen"};var AUSWAHL = ["Querplandrehen", "Längsrunddrehen, Schruppen",  "Längsrunddrehen, Schlichten", "Einstechdrehen", "Gewindedrehen",  "Abstechdrehen"];/* Die Flächen der Antriebswelle, wie sie der Zeichenbaustein kennt, mit dem   Verfahren, das sie erzeugt, und dem Grund dafür. */var FLAECHEN = [  {id:"stirn_links", verfahren:"abstechdrehen",   grund:"Sie entsteht beim Trennen vom Stangenmaterial. Das Futter sitzt "     + "links, also fällt hier die letzte Fläche an - Abstechen ist immer "     + "der letzte Drehvorgang."},  {id:"mantel_20", verfahren:"schlichten",   grund:"Eine zylindrische Mantelfläche, und mit Rz 4 eine, die geschlichtet "     + "werden muss. Geschruppt wurde sie vorher."},  {id:"nut_a", verfahren:"einstechdrehen",   grund:"Eine 1,3 mm breite Nut entsteht durch ein Werkzeug, das quer "     + "einsticht. Die Nutbreite ist die Schneidenbreite."},  {id:"schulter_22", verfahren:"querplandrehen",   grund:"Auch ein Absatz steht senkrecht zur Achse - dieselbe Bewegung wie "     + "bei der Stirnfläche."},  {id:"mantel_24", verfahren:"schlichten",   grund:"Zylindrische Mantelfläche mit Rz 6 - geschlichtet."},  {id:"bund_30", verfahren:"schruppen",   grund:"Der Bund trägt nur Rz 10, die allgemeine Rautiefe. Was geschruppt "     + "ist, reicht hier."},  {id:"mantel_25", verfahren:"schlichten",   grund:"Lagersitz mit Rz 4 - ohne Schlichten nicht zu machen."},  {id:"nut_b", verfahren:"einstechdrehen",   grund:"Wie Nut A: quer einstechen, Breite gleich Schneidenbreite."},  {id:"freistich", verfahren:"einstechdrehen",   grund:"Der Gewindefreistich DIN 76 - A wird eingestochen, damit das "     + "Gewindewerkzeug auslaufen kann."},  {id:"gewinde", verfahren:"gewindedrehen",   grund:"M20×1 - der Vorschub ist die Steigung, also 1 mm je Umdrehung."},  {id:"stirn_rechts", verfahren:"querplandrehen",   grund:"Das freie Ende rechts wird zuerst bearbeitet: Die Schneide läuft "     + "quer zur Achse. Danach wird zentriert, damit die Reitstockspitze "     + "einen Sitz hat."}];/* Werkzeugangaben aus der Übersicht der Drehverfahren. Aus ihnen allein   lässt sich das Verfahren erkennen. */var ANGABEN = [  {verfahren:"querplandrehen",   zeilen:["Eckenwinkel ε = 80° oder 90°", "Einstellwinkel κ = 45° … 97°",           "Schnitttiefe a<sub>p</sub> = 1 … 2 mm", "Vorschub f = 0,1 … 0,2 mm"],   grund:"Kleine Schnitttiefe, kleiner Vorschub, großer Eckenwinkel und ein "     + "Einstellwinkel bis 97° - das ist die Angabe für das Querplandrehen."},  {verfahren:"schruppen",   zeilen:["Eckenwinkel ε = 80° oder 55°", "Einstellwinkel κ = 93° … 95°",           "Schnitttiefe a<sub>p</sub> = 2 … 6 mm", "Vorschub f = 0,25 … 0,6 mm"],   grund:"Die große Schnitttiefe und der große Vorschub sind eindeutig: Hier "     + "soll Material weg, nicht Oberfläche entstehen."},  {verfahren:"schlichten",   zeilen:["Eckenwinkel ε = 55° oder 35°", "Einstellwinkel κ = 93° … 107,5°",           "Eckenradius r<sub>ε</sub> = 0,2 … 0,8 mm",           "Schnitttiefe a<sub>p</sub> = 0,5 … 2 mm", "Vorschub f = 0,1 … 0,25 mm"],   grund:"Spitzer Eckenwinkel, kleiner Eckenradius, kleiner Vorschub - und "     + "als einziges Verfahren mit Angabe des Eckenradius, weil der die "     + "Rautiefe bestimmt."},  {verfahren:"einstechdrehen",   zeilen:["Schnittbreite a<sub>p</sub> = 0,6 … 6 mm",           "größte Stechtiefe t<sub>max</sub> = 5 … 50 mm",           "Vorschub f = 0,05 … 0,15 mm"],   grund:"Eine Schnittbreite statt eines Eckenwinkels, dazu eine Stechtiefe - "     + "das gibt es nur beim Ein- und Abstechen."},  {verfahren:"gewindedrehen",   zeilen:["Eckenwinkel ε = 60° (metrisch)", "Vorschub f = P (Steigung)",           "Schnitte i = Zustellungen + Leerschnitte"],   grund:"Der Vorschub ist keine Wahl, sondern die Steigung. Und statt einer "     + "Schnitttiefe steht dort eine Anzahl Schnitte."}];/* Paare für die Frage nach der Reihenfolge, mit dem Grund. */var REIHENFOLGE = [  {frueher:"Querplandrehen der rechten Stirnfläche",   spaeter:"Längsrunddrehen, Schruppen",   grund:"Erst die Stirnfläche, dann der Mantel: Ohne plane Stirnfläche gibt "     + "es keine Bezugsfläche für die Längenmaße."},  {frueher:"Längsrunddrehen, Schruppen", spaeter:"Längsrunddrehen, Schlichten",   grund:"Schruppen holt das Material weg, Schlichten macht die Fläche fertig. "     + "Umgekehrt wäre die fertige Fläche gleich wieder ab."},  {frueher:"Längsrunddrehen, Schlichten", spaeter:"Einstechen der Nut A",   grund:"Ein Schlichtwerkzeug, das über eine Nut läuft, schlägt auf und "     + "bricht die Schneide aus."},  {frueher:"Einstechen des Freistichs DIN 76 – A", spaeter:"Gewindedrehen",   grund:"Das Gewindewerkzeug braucht einen Auslauf. Ohne Freistich müsste es "     + "in der vollen Schulter anhalten."},  {frueher:"Gewindedrehen", spaeter:"Abstechdrehen",   grund:"Nach dem Abstechen hält das Werkstück nicht mehr - es ist immer der "     + "letzte Drehvorgang."},  {frueher:"Querplandrehen der rechten Stirnfläche",   spaeter:"Einstechen der Nut B",   grund:"Plandrehen und Zentrieren stehen am Anfang, die Nuten kommen nach "     + "dem Schlichten."}];function el(id){ return document.getElementById(id); }function waehle(liste){ return liste[Math.floor(Math.random() * liste.length)]; }/* ---------- Der Durchlauf ---------- */var aufgabe = null;var nr = 0, richtig = 0, versuche = 0;var gemeldet = false;function auswahlfeld(id, beschriftung, werte){  var s = '<label class="feld">' + beschriftung + '<select id="' + id + '">'    + '<option value="">bitte wählen</option>';  for(var i = 0; i < werte.length; i++){    s += '<option value="' + werte[i] + '">' + werte[i] + '</option>';  }  return s + '</select></label>';}/* Die Welle steht bei jeder Rundenart im Bild - auch wenn nicht nach einer   Fläche gefragt ist. Sie ist der Gegenstand, ueber den geredet wird; wer   die Reihenfolge begruenden soll, muss die Nuten sehen koennen. */function welleZeigen(markiert){  var g = wellenGroesse(WELLE, {s:5.4, bezeichnungen:true});  var svg = bild("bildAufgabe", g.breite, g.hoehe,    markiert ? "Die Antriebswelle, eine Fläche hervorgehoben"             : "Die Antriebswelle mit Benennungen",    markiert ? "Antriebswelle &ndash; hervorgehoben ist die Fläche, um die es geht."             : "Antriebswelle aus 42CrMo4 &ndash; das Werkstück, um das es geht.");  var o = {x:g.x, y:g.y, s:5.4, bezeichnungen:true};  if(markiert) o.markiert = [markiert];  zeichneWelle(svg, WELLE, o);}function neueAufgabe(){  nr++;  var art = waehle(["flaeche", "angaben", "reihenfolge"]);  aufgabe = {art:art};  el("angaben").hidden = true;  if(art === "flaeche"){    var f = waehle(FLAECHEN);    aufgabe.f = f;    aufgabe.soll = VERFAHREN[f.verfahren];    el("art").textContent = "Welches Verfahren gehört hierher?";    welleZeigen(f.id);    el("aufgabe").innerHTML = "Hervorgehoben ist <strong>"      + flaechenname(f.id) + "</strong>. Durch welches Drehverfahren entsteht "      + "diese Fläche?";    el("felder").innerHTML = auswahlfeld("aV", "Drehverfahren", AUSWAHL);  }else if(art === "angaben"){    var a = waehle(ANGABEN);    aufgabe.a = a;    aufgabe.soll = VERFAHREN[a.verfahren];    el("art").textContent = "Welches Verfahren steht dahinter?";    welleZeigen(null);    el("angaben").hidden = false;    el("angaben").innerHTML = a.zeilen.map(function(z){      return "<span>" + z + "</span>"; }).join("");    el("aufgabe").innerHTML = "So steht es im Tabellenbuch bei einem der "      + "Drehverfahren. Bei welchem?";    el("felder").innerHTML = auswahlfeld("aV", "Drehverfahren", AUSWAHL);  }else{    var p = waehle(REIHENFOLGE);    var gedreht = Math.random() < 0.5;    aufgabe.p = p;    aufgabe.erst = gedreht ? p.spaeter : p.frueher;    aufgabe.zweit = gedreht ? p.frueher : p.spaeter;    aufgabe.soll = p.frueher;    el("art").textContent = "Was kommt zuerst?";    welleZeigen(null);    el("aufgabe").innerHTML = "Zwei Arbeitsvorgänge am selben Werkstück: "      + "<strong>" + aufgabe.erst + "</strong> und <strong>" + aufgabe.zweit      + "</strong>. Welcher steht im Arbeitsplan weiter oben?";    el("felder").innerHTML = auswahlfeld("aV", "kommt zuerst",      [aufgabe.erst, aufgabe.zweit]);  }  el("stand").textContent = "Aufgabe " + nr;  gemeldet = false;  el("rueck").hidden = true;  el("weg").hidden = true;}function flaechenname(id){  for(var i = 0; i < WELLE.flaechen.length; i++){    if(WELLE.flaechen[i].id === id) return WELLE.flaechen[i].name;  }  return id;}function punkteZeigen(){  el("punkte").textContent = versuche ? richtig + " von " + versuche + " richtig" : "";}function wegBauen(){  var a = aufgabe, buch = "";  if(a.art === "flaeche"){    buch = "<span class=\"buch\"><b>Nachschlagen:</b> Die Übersicht der "      + "Drehverfahren zeigt zu jedem Verfahren ein Bild der Bewegung - "      + "daran ist die Fläche wiederzuerkennen.</span>";    return "<span class=\"schritt\">" + flaechenname(a.f.id) + "</span>"      + a.f.grund + "<br><b>" + a.soll + "</b>" + buch;  }  if(a.art === "angaben"){    buch = "<span class=\"buch\"><b>Nachschlagen:</b> Diese Zeilen stehen "      + "wörtlich in der Übersicht der Drehverfahren.</span>";    return "<span class=\"schritt\">Woran man es erkennt</span>"      + a.a.grund + "<br><b>" + a.soll + "</b>" + buch;  }  return "<span class=\"schritt\">Die Reihenfolge</span>"    + a.p.grund + "<br>Zuerst: <b>" + a.p.frueher + "</b>";}el("btnPruefen").addEventListener("click", function(){  if(!aufgabe) return;  var r = el("rueck"), gewaehlt = el("aV").value;  if(!gewaehlt){    r.className = "rueckmeldung fast";    r.innerHTML = "<strong>Noch nichts gewählt.</strong> Auswählen "      + "&ndash; oder die Begründung zeigen lassen.";    r.hidden = false;    return;  }  var ok = gewaehlt === aufgabe.soll;  versuche++;  if(ok) richtig++;  rundeMelden(ok);  r.className = "rueckmeldung " + (ok ? "ja" : "nein");  r.innerHTML = "<strong>" + (ok ? "Richtig." : "Noch nicht.") + "</strong> "    + "Richtig ist <strong>" + aufgabe.soll + "</strong>"    + (ok ? "." : " &ndash; du hattest " + gewaehlt + ".");  r.hidden = false;  if(!ok){    el("weg").innerHTML = wegBauen();    el("weg").hidden = false;  }  punkteZeigen();});el("btnWeg").addEventListener("click", function(){  if(!aufgabe) return;  el("weg").innerHTML = wegBauen();  el("weg").hidden = false;});el("btnWeiter").addEventListener("click", neueAufgabe);window.TBK_WETTKAMPF = {  runden: 10,  neu: function(){    nr = 0; richtig = 0; versuche = 0;    punkteZeigen();    neueAufgabe();  }};function rundeMelden(ok){  if(gemeldet) return;  gemeldet = true;  document.dispatchEvent(new CustomEvent("tbk-runde", {detail:{richtig: !!ok}}));}neueAufgabe();punkteZeigen();</script><script src="../../assets/back-nav.js" data-ziel="./"></script><script src="../../assets/feedback.js"></script><script src="../../assets/wettkampf.js"></script><script src="../../assets/bildungsgang.js"></script><script src="../../assets/qr.js"></script><script src="../../assets/baukasten.js"></script><script src="../../assets/pdf.js"></script><script src="../../assets/export.js"></script></body></html>

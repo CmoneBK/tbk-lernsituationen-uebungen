@@ -1,10 +1,18 @@
 {
   "titel": "Fertigungstechnik: Zerspanung - Planung eines Drehprozesses",
-  "lead": "Vier Übungen an der Welle LF5: die Kontur in Drehverfahren zerlegen, Schnittgeschwindigkeit und Drehzahl bestimmen, das Werkzeug über seine Bezeichnung auswählen und den Vorschub zur geforderten Rautiefe rechnen.",
+  "lead": "Vier Übungen an der Antriebswelle: die Kontur in Drehverfahren zerlegen, Schnittgeschwindigkeit und Drehzahl bestimmen, das Werkzeug über seine Bezeichnung auswählen und den Vorschub zur geforderten Rautiefe rechnen.",
   "werkzeuge": [
     {
       "datei": "fertigungstechnik-zerspanung-drehprozess-planen.html",
-      "name": "Werkzeug Drehprozess planen"
+      "name": "Lektion Drehprozess planen"
+    },
+    {
+      "datei": "fertigungstechnik-vorschub-rautiefe-beim-schlichten.html",
+      "name": "Werkzeug Vorschub und Rautiefe beim Schlichten"
+    },
+    {
+      "datei": "fertigungstechnik-beurteilung-bedingungen-fuer-die-fertigung.html",
+      "name": "Werkzeug Bedingungen für die Fertigung beurteilen"
     }
   ],
   "reihenfolge": [
