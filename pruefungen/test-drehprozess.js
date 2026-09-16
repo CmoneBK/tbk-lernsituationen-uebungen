@@ -582,11 +582,13 @@ console.log('\nDer Freistichradius - ueberall derselbe');
      r_eps <= 0,5 mm, genormt 0,4 mm. Wer das verwechselt, waehlt ein
      Werkzeug, das an der eigenen Kontur haengen bleibt - und der Fehler
      zieht sich durch drei Uebungen, die Lernsituation und die Lektion. */
-  const baustein = fs.readFileSync(path.join(BASIS, 'assets/drehteil.js'), 'utf8');
-  p('der Zeichenbaustein kennt den kleinsten Innenradius',
-    /kleinsterInnenradius:\s*0\.6/.test(baustein));
-  p('und die Freistiche tragen ihren Radius',
-    (baustein.match(/r:\s*0\.6/g) || []).length === 2);
+  const daten = fs.readFileSync(path.join(BASIS, 'assets/wellen.js'), 'utf8');
+  const antriebswelle = daten.slice(daten.indexOf('WELLEN.antriebswelle'),
+                                    daten.indexOf('WELLEN.mitnehmerwelle'));
+  p('die Antriebswelle kennt ihren kleinsten Innenradius',
+    /kleinsterInnenradius:\s*0\.6/.test(antriebswelle));
+  p('und ihre Freistiche tragen ihren Radius',
+    (antriebswelle.match(/r:\s*0\.6/g) || []).length === 2);
 
   const stellen = [
     ['uebungen/drehprozess/03-eine-wendeschneidplatte-lesen.html', 'R_ENG = 0.6'],
@@ -611,6 +613,96 @@ console.log('\nDer Freistichradius - ueberall derselbe');
     falsch.join(', '));
 }
 
+console.log('\nAlle Wellen lassen sich zeichnen');
+{
+  /* Solange eine Welle auf keiner Seite steht, sieht die Zeichnungspruefung
+     sie nicht. Also wird hier jede einmal gezeichnet - mit Massen, mit
+     Benennungen und mit Rohteil - und nachgesehen, ob alles innerhalb der
+     Zeichenflaeche liegt, die wellenGroesse dafuer angibt. Laeuft etwas
+     hinaus, schneidet der Browser es ab. */
+  const SCHLUSS = '<' + '/script>';
+  const quellen = ['zeichnen.js', 'wellen.js', 'drehteil.js'].map((f) =>
+    '<script>' + fs.readFileSync(path.join(BASIS, 'assets', f), 'utf8')
+      .split(SCHLUSS).join('<\\/script>') + SCHLUSS).join('');
+  const dom = new JSDOM('<!doctype html><body><div id="z"></div>' + quellen,
+    { runScripts: 'dangerously' });
+  const w = dom.window;
+
+  const namen = Object.keys(w.WELLEN);
+  p('es sind mehrere Wellen', namen.length >= 3, namen.join(', '));
+
+  const faelle = [
+    { masse: true, rauheiten: true },
+    { bezeichnungen: true },
+    { rohteil: true, masse: true },
+  ];
+
+  namen.forEach((name) => {
+    const welle = w.WELLEN[name];
+    p(name + ': hat Kontur, Flaechen und Masse',
+      welle.abschnitte.length >= 3 && welle.flaechen.length >= 6
+      && (welle.masse.unten || []).length >= 3);
+
+    /* Die Abschnitte muessen lueckenlos aneinanderstossen - sonst klafft
+       in der Kontur ein Loch, das niemand sieht. */
+    let dicht = welle.abschnitte[0].von === 0;
+    welle.abschnitte.forEach((a, i) => {
+      if (i && a.von !== welle.abschnitte[i - 1].bis) dicht = false;
+    });
+    p(name + ': die Abschnitte stossen lueckenlos aneinander',
+      dicht && welle.abschnitte[welle.abschnitte.length - 1].bis
+        === welle.laenge);
+
+    /* Jede Flaeche muss auf der Welle liegen. */
+    const daneben = welle.flaechen.filter((f) => {
+      const x = f.bei !== undefined ? f.bei : f.von;
+      return x < 0 || x > welle.laenge;
+    });
+    p(name + ': jede Flaeche liegt auf der Welle', daneben.length === 0,
+      daneben.map((f) => f.id).join(', '));
+
+    /* Das Rohteil muss laenger und dicker sein als das Fertigteil. */
+    let groesstD = 0;
+    welle.abschnitte.forEach((a) => { if (a.d > groesstD) groesstD = a.d; });
+    p(name + ': das Rohteil ist groesser als das Fertigteil',
+      welle.rohteil.d > groesstD && welle.rohteil.laenge > welle.laenge,
+      'Rohteil ' + welle.rohteil.d + 'x' + welle.rohteil.laenge
+      + ', Teil ' + groesstD + 'x' + welle.laenge);
+
+    faelle.forEach((o) => {
+      const was = Object.keys(o).join('+');
+      const g = w.wellenGroesse(welle, Object.assign({ s: 6 }, o));
+      const svg = w.document.createElementNS(
+        'http://www.w3.org/2000/svg', 'svg');
+      w.document.getElementById('z').appendChild(svg);
+      w.zeichneWelle(svg, welle,
+        Object.assign({ x: g.x, y: g.y, s: 6 }, o));
+
+      let minX = 1e9, maxX = -1e9, minY = 1e9, maxY = -1e9, punkte = 0;
+      svg.querySelectorAll('line, text').forEach((e) => {
+        const paare = e.tagName === 'text'
+          ? [[+e.getAttribute('x'), +e.getAttribute('y')]]
+          : [[+e.getAttribute('x1'), +e.getAttribute('y1')],
+             [+e.getAttribute('x2'), +e.getAttribute('y2')]];
+        paare.forEach((xy) => {
+          if (!isFinite(xy[0]) || !isFinite(xy[1])) return;
+          punkte++;
+          minX = Math.min(minX, xy[0]); maxX = Math.max(maxX, xy[0]);
+          minY = Math.min(minY, xy[1]); maxY = Math.max(maxY, xy[1]);
+        });
+      });
+      p(name + ' (' + was + '): alles liegt im Bild',
+        punkte > 20 && minX >= -1 && minY >= -1
+        && maxX <= g.breite + 1 && maxY <= g.hoehe + 1,
+        punkte + ' Punkte, x ' + Math.round(minX) + '..' + Math.round(maxX)
+        + ' in 0..' + Math.round(g.breite) + ', y ' + Math.round(minY)
+        + '..' + Math.round(maxY) + ' in 0..' + Math.round(g.hoehe));
+      svg.remove();
+    });
+  });
+  w.close();
+}
+
 console.log('\nDie beiden Stirnflaechen');
 {
   /* Welches Verfahren welche Stirnflaeche erzeugt, entscheidet die
@@ -626,17 +718,24 @@ console.log('\nDie beiden Stirnflaechen');
      Lektion. */
   const lies = (f) => fs.readFileSync(path.join(BASIS, f), 'utf8');
 
-  const baustein = lies('assets/drehteil.js');
-  const verfahren = (id) => {
-    const m = baustein.match(
-      new RegExp('id: "' + id + '"[^]*?verfahren: "([a-z]+)"'));
-    return m && m[1];
-  };
-  p('links wird abgestochen', verfahren('stirn_links') === 'abstechdrehen',
-    String(verfahren('stirn_links')));
-  p('rechts wird querplangedreht',
-    verfahren('stirn_rechts') === 'querplandrehen',
-    String(verfahren('stirn_rechts')));
+  /* Und zwar bei jeder Welle - die Aufspannung ist bei allen dieselbe. */
+  const daten = lies('assets/wellen.js');
+  const wellen = daten.split('WELLEN.').slice(1);
+  p('es gibt mehr als eine Welle', wellen.length >= 3, String(wellen.length));
+  wellen.forEach((teil) => {
+    const name = teil.slice(0, teil.indexOf(' '));
+    const verfahren = (id) => {
+      const m = teil.match(
+        new RegExp('id: "' + id + '"[^]*?verfahren: "([a-z]+)"'));
+      return m && m[1];
+    };
+    p(name + ': links wird abgestochen',
+      verfahren('stirn_links') === 'abstechdrehen',
+      String(verfahren('stirn_links')));
+    p(name + ': rechts wird querplangedreht',
+      verfahren('stirn_rechts') === 'querplandrehen',
+      String(verfahren('stirn_rechts')));
+  });
 
   const tr = lies('trainings/drehprozess/01-verfahren-erkennen.html');
   p('Training 01 haelt sich daran',

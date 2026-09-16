@@ -478,7 +478,9 @@
   </footer>
 
 <script src="../../assets/zeichnen.js"></script>
+<script src="../../assets/wellen.js"></script>
 <script src="../../assets/drehteil.js"></script>
+<script>var WELLE = WELLEN.antriebswelle;</script>
 <script>
 "use strict";
 
@@ -531,11 +533,11 @@ function bilanz(id, richtig, gesamt, offen){
 /* ---------- Teil 1: Zeichnung, Stufen, Abschnitte ---------- */
 
 (function kopf(){
-  var g = wellenGroesse({s:6.2, masse:true, rauheiten:true});
+  var g = wellenGroesse(WELLE, {s:6.2, masse:true, rauheiten:true});
   var svg = bild("bildWelle", g.breite, g.hoehe,
     "Fertigungszeichnung der Welle LF5 mit Maßen und Rautiefen",
     "Welle LF5 aus 42CrMo4. Rohteil: Rundmaterial Ø32 × 135 mm.");
-  zeichneWelle(svg, {x:g.x, y:g.y, s:6.2, masse:true, rauheiten:true});
+  zeichneWelle(svg, WELLE, {x:g.x, y:g.y, s:6.2, masse:true, rauheiten:true});
 
   el("stufen").innerHTML = STUFEN.map(function(n){
     return "<span>" + n + "</span>"; }).join("");

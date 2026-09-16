@@ -176,7 +176,9 @@
   </footer>
 
 <script src="../../assets/zeichnen.js"></script>
+<script src="../../assets/wellen.js"></script>
 <script src="../../assets/drehteil.js"></script>
+<script>var WELLE = WELLEN.antriebswelle;</script>
 <script>
 "use strict";
 
@@ -307,7 +309,7 @@ function auswahlfeld(id, beschriftung, werte){
    Fläche gefragt ist. Sie ist der Gegenstand, ueber den geredet wird; wer
    die Reihenfolge begruenden soll, muss die Nuten sehen koennen. */
 function welleZeigen(markiert){
-  var g = wellenGroesse({s:5.4, bezeichnungen:true});
+  var g = wellenGroesse(WELLE, {s:5.4, bezeichnungen:true});
   var svg = bild("bildAufgabe", g.breite, g.hoehe,
     markiert ? "Die Welle LF5, eine Fläche hervorgehoben"
              : "Die Welle LF5 mit Benennungen",
@@ -315,7 +317,7 @@ function welleZeigen(markiert){
              : "Welle LF5 aus 42CrMo4 &ndash; das Werkstück, um das es geht.");
   var o = {x:g.x, y:g.y, s:5.4, bezeichnungen:true};
   if(markiert) o.markiert = [markiert];
-  zeichneWelle(svg, o);
+  zeichneWelle(svg, WELLE, o);
 }
 
 function neueAufgabe(){
@@ -371,8 +373,8 @@ function neueAufgabe(){
 }
 
 function flaechenname(id){
-  for(var i = 0; i < WELLENFLAECHEN.length; i++){
-    if(WELLENFLAECHEN[i].id === id) return WELLENFLAECHEN[i].name;
+  for(var i = 0; i < WELLE.flaechen.length; i++){
+    if(WELLE.flaechen[i].id === id) return WELLE.flaechen[i].name;
   }
   return id;
 }

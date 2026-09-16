@@ -241,7 +241,9 @@
   </footer>
 
 <script src="../../assets/zeichnen.js"></script>
+<script src="../../assets/wellen.js"></script>
 <script src="../../assets/drehteil.js"></script>
+<script>var WELLE = WELLEN.antriebswelle;</script>
 <script>
 "use strict";
 
@@ -339,13 +341,13 @@ function el(id){ return document.getElementById(id); }
      Hinweislinien laufen in die Maßhilfslinien. Welche Fläche gemeint ist,
      sagt die Tabelle darunter. */
   var o = {s:6.2, masse:true};
-  var g = wellenGroesse(o);
+  var g = wellenGroesse(WELLE, o);
   var svg = bild("bildWelle", g.breite, g.hoehe,
     "Fertigungszeichnung der Welle LF5 mit Maßen",
     "Welle LF5 aus 42CrMo4, Rohteil Ø32 × 135 mm. Die Nuten A und B sind "
     + "1,3 mm breit; die Einzelheiten dazu stehen auf der Zeichnung im "
     + "Maßstab 4:1.");
-  zeichneWelle(svg, {x:g.x, y:g.y, s:o.s, masse:true});
+  zeichneWelle(svg, WELLE, {x:g.x, y:g.y, s:o.s, masse:true});
 }());
 
 /* ---------- Teil 2: jeder Fläche ihr Verfahren ---------- */
