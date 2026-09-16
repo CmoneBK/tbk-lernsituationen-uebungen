@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hauptnutzungszeit</title>
+<meta name="description" content="Vorschubweg, Drehzahl, Vorschub: wie lange die Schneide wirklich schneidet. Mit An- und Überlauf, dem mittleren Durchmesser beim Plandrehen und der Anzahl der Schnitte.">
+<meta name="dauer" content="10 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .aufgabe{
+    background:var(--bg); border:1px solid var(--border-stark); border-radius:10px;
+    padding:14px 16px; margin:0 0 16px; font-size:16px; line-height:1.7;
+  }
+  .aufgabe strong{font-size:17px}
+  .zaehler{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:13px; color:var(--muted); margin:0 0 10px}
+  .rechenweg{
+    background:var(--bg); border:1px solid var(--border); border-radius:10px;
+    padding:12px 16px; margin:12px 0 0; font-size:14.5px; line-height:2;
+    font-variant-numeric:tabular-nums;
+  }
+  .rechenweg b{font-weight:700}
+  .rechenweg .schritt{display:block; color:var(--muted); font-size:12.5px; line-height:1.5}
+  .rechenweg .buch{
+    display:block; margin:6px 0 2px; padding:7px 10px; font-size:12.5px;
+    line-height:1.5; border-left:3px solid var(--ok); border-radius:0 8px 8px 0;
+    background:rgba(22,163,74,.10);
+  }
+  .art{
+    display:inline-block; margin:0 0 8px; padding:3px 10px; border-radius:999px;
+    background:var(--bg); border:1px solid var(--border);
+    font-size:12.5px; font-weight:600; color:var(--muted);
+  }
+  .formel{
+    display:block; margin:10px 0; padding:10px 14px; border-radius:10px;
+    background:var(--bg); border:1px solid var(--border);
+    font-size:17px; text-align:center; font-variant-numeric:tabular-nums;
+  }
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Drehprozess</p>
+    <h1>Hauptnutzungszeit</h1>
+    <p class="lead">Die Zeit, in der die Schneide wirklich schneidet.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Worum es geht:</strong> Drehzahl und Vorschub stehen fest
+        &ndash; damit lässt sich ausrechnen, wie lange ein Vorgang dauert. Die
+        Formel ist kurz. Die Stolperstelle ist der <strong>Vorschubweg</strong>:
+        Er ist nicht die Länge der Fläche, sondern länger, weil das Werkzeug
+        vorher anläuft und hinterher überläuft.</p>
+      <p>Drei Rundenarten wechseln sich ab: den Vorschubweg bestimmen, die Zeit
+        aus L, n und f rechnen, und beides in einem Zug.</p>
+      <p>Es zählt alles, was <strong>bis 2 % daneben</strong> liegt; der
+        Vorschubweg muss auf ein Zehntel stimmen.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Aufgaben</h2>
+
+    <div class="box">
+      <div class="zaehler">
+        <span id="stand">Aufgabe 1</span>
+        <span id="punkte"></span>
+      </div>
+
+      <p class="art" id="art">&ndash;</p>
+      <p class="aufgabe" id="aufgabe">&ndash;</p>
+
+      <div class="felder" id="felder"></div>
+
+      <p style="margin-top:16px">
+        <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+        <button type="button" class="knopf leise" id="btnWeg">Rechenweg zeigen</button>
+        <button type="button" class="knopf leise" id="btnWeiter">Nächste Aufgabe</button>
+      </p>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+      <div class="rechenweg" id="weg" hidden></div>
+    </div>
+
+    <h2><span class="nr">2</span>Woher die Zahlen kommen</h2>
+
+    <details>
+      <summary>1. Die Formel</summary>
+      <span class="formel">t<sub>h</sub> = L · i / (n · f)</span>
+      <p>Oben der Weg, unten die Geschwindigkeit: In einer Minute legt das
+        Werkzeug n · f Millimeter zurück &ndash; n Umdrehungen, und je
+        Umdrehung f Millimeter. Der Weg L geteilt durch diese Strecke ergibt
+        die Zeit in Minuten. Muss der Weg mehrfach abgefahren werden, kommt die
+        Zahl der Schnitte i dazu.</p>
+      <p>Alle Längen in Millimetern, n in 1/min, f in mm &ndash; heraus kommen
+        <strong>Minuten</strong>.</p>
+    </details>
+
+    <details>
+      <summary>2. An- und Überlauf</summary>
+      <p>Das Werkzeug muss vor der Fläche schon fahren, bevor es schneidet, und
+        darf erst hinter ihr anhalten. Das Tabellenbuch setzt dafür
+        <strong>l<sub>a</sub> = l<sub>u</sub> = 1 bis 2 mm</strong> an; hier
+        wird durchgehend mit <strong>2 mm</strong> gerechnet.</p>
+      <p>Ob der Überlauf dazukommt, entscheidet die Kontur:</p>
+      <ul>
+        <li><strong>Längsrunddrehen ohne Ansatz</strong> &ndash; das Werkzeug
+          läuft am Ende ins Freie: L = l + l<sub>a</sub> + l<sub>u</sub></li>
+        <li><strong>Längsrunddrehen mit Ansatz</strong> &ndash; am Ende steht
+          eine Schulter, es gibt keinen Überlauf: L = l + l<sub>a</sub></li>
+      </ul>
+      <div class="merksatz">
+        <strong>Häufigster Fehler:</strong> L = l setzen. Bei einer 6 mm
+        breiten Nut sind An- und Überlauf ein Drittel des Weges.
+      </div>
+    </details>
+
+    <details>
+      <summary>3. Beim Plandrehen ist der Weg der halbe Durchmesser</summary>
+      <p>Die Schneide fährt von außen nach innen &ndash; also den halben
+        Durchmesser weit, nicht den ganzen:</p>
+      <span class="formel">L = d / 2 + l<sub>a</sub></span>
+      <p>Steht in der Mitte ein Ansatz oder eine Bohrung, wird nur der Ring
+        zwischen beiden Durchmessern abgefahren:</p>
+      <span class="formel">L = (d &minus; d<sub>1</sub>) / 2 + l<sub>a</sub></span>
+      <p>Und die Drehzahl kommt aus dem <strong>mittleren Durchmesser</strong>:
+        d<sub>m</sub> = d/2 beim Vollzylinder,
+        d<sub>m</sub> = (d + d<sub>1</sub>)/2 mit Ansatz.</p>
+    </details>
+
+    <details>
+      <summary>4. Wofür man die Zeit braucht</summary>
+      <p>Für den Preis. Ein Arbeitsplan ohne Zeiten sagt nicht, was das Teil
+        kostet &ndash; und ohne das lässt sich nicht entscheiden, ob sich eine
+        andere Maschine, ein anderes Werkzeug oder ein anderer Ablauf
+        lohnt.</p>
+      <p>Die Hauptnutzungszeit ist dabei nur ein Teil. Dazu kommen
+        <strong>Nebenzeiten</strong> (spannen, messen, Werkzeug wechseln) und
+        <strong>Rüstzeiten</strong>. Bei einem Einzelstück sind sie ein
+        Vielfaches der Hauptnutzungszeit; erst bei größeren Stückzahlen dreht
+        sich das Verhältnis um.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Erst den Weg, dann die Zeit. Und der Weg ist
+      immer länger als die Fläche.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>Woher Drehzahl und Vorschub kommen, üben die Trainings
+      <em>Drehzahl rechnen</em> und <em>Vorschub und Rautiefe</em>.</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-hauptnutzungszeit-beim-drehen.html">Werkzeug Hauptnutzungszeit beim Drehen öffnen</a>
+    </p>
+    <p class="fussnote"><strong>Woher die Zahlen stammen:</strong>
+      „Hauptnutzungszeit beim Drehen mit konstanter Drehzahl&ldquo; &ndash;
+      Formel, Vorschubwege und An-/Überlauf, Tabellenbuch Metall. Die Seite
+      daneben rechnet dasselbe für CNC mit konstanter
+      Schnittgeschwindigkeit.</p>
+
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+      Maßgebend sind Norm und Tabellenbuch.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* An- und Überlauf. Das Tabellenbuch nennt 1 bis 2 mm; genommen wird der
+   obere Wert - dann liegt die Rechnung auf der sicheren Seite. */
+var LA = 2;
+var TOLERANZ = 0.02;
+
+var LAENGEN = [12, 18, 24, 30, 35, 40, 45, 50, 60, 70, 80];
+var DURCHMESSER = [16, 18, 20, 22, 25, 26, 28, 32, 40, 45, 50, 63];
+var TEMPO = [80, 100, 110, 130, 150, 160, 180, 200, 220, 250];
+var VORSCHUEBE = [0.08, 0.1, 0.11, 0.14, 0.16, 0.2, 0.25, 0.3, 0.4];
+var DREHZAHLEN = [250, 355, 500, 710, 1000, 1400, 2000];
+
+function el(id){ return document.getElementById(id); }
+function zahl(x, n){ return x.toFixed(n === undefined ? 1 : n).replace(".", ","); }
+function waehle(liste){ return liste[Math.floor(Math.random() * liste.length)]; }
+function wert(id){
+  var e = el(id);
+  return e ? parseFloat(String(e.value).replace(",", ".")) : NaN;
+}
+
+/* Die Drehzahl wird ganzzahlig abgerundet - so steht es im Tabellenbuch. */
+function drehzahl(vc, d){ return Math.floor(vc * 1000 / (Math.PI * d)); }
+
+/* ---------- Die Fälle des Vorschubweges ---------- */
+
+var FAELLE = [
+  {id:"laengs_ohne", name:"Längsrunddrehen, ohne Ansatz",
+   text:"läuft am Ende ins Freie",
+   formel:"L = l + l<sub>a</sub> + l<sub>u</sub>",
+   weg:function(a){ return a.l + LA + LA; }},
+  {id:"laengs_mit", name:"Längsrunddrehen, mit Ansatz",
+   text:"endet an einer Schulter",
+   formel:"L = l + l<sub>a</sub>",
+   weg:function(a){ return a.l + LA; }},
+  {id:"plan_voll", name:"Querplandrehen, Vollzylinder",
+   text:"wird bis zur Mitte plangedreht",
+   formel:"L = d/2 + l<sub>a</sub>",
+   weg:function(a){ return a.d / 2 + LA; }},
+  {id:"plan_ansatz", name:"Querplandrehen, mit Ansatz",
+   text:"wird bis zum Ansatz plangedreht",
+   formel:"L = (d &minus; d<sub>1</sub>)/2 + l<sub>a</sub>",
+   weg:function(a){ return (a.d - a.d1) / 2 + LA; }},
+  {id:"stechen", name:"Einstechdrehen",
+   text:"wird eingestochen",
+   formel:"L = l + l<sub>a</sub>",
+   weg:function(a){ return a.l + LA; }}
+];
+
+function fall(id){
+  return FAELLE.filter(function(f){ return f.id === id; })[0];
+}
+
+/* ---------- Der Durchlauf ---------- */
+
+var aufgabe = null;
+var nr = 0, richtig = 0, versuche = 0;
+var gemeldet = false;
+
+function feld(id, beschriftung, schritt){
+  return '<label class="feld">' + beschriftung
+    + '<input type="number" id="' + id + '" step="' + (schritt || "1")
+    + '" inputmode="decimal" autocomplete="off"></label>';
+}
+
+function neueAufgabe(){
+  nr++;
+  var art = waehle(["weg", "zeit", "ganz"]);
+  aufgabe = {art:art};
+
+  if(art === "weg"){
+    var f = waehle(FAELLE);
+    var a = {l: waehle(LAENGEN), d: waehle(DURCHMESSER)};
+    if(f.id === "stechen") a.l = waehle([2, 3, 4, 5, 6, 8]);
+    if(f.id === "plan_ansatz"){
+      a.d1 = waehle([10, 12, 16, 18, 20]);
+      if(a.d1 >= a.d) a.d1 = Math.max(6, a.d - 10);
+    }
+    aufgabe.fall = f.id;
+    aufgabe.masse = a;
+    aufgabe.soll = f.weg(a);
+    el("art").textContent = f.name;
+    el("aufgabe").innerHTML = beschreibung(f, a)
+      + " Wie groß ist der <strong>Vorschubweg L</strong>? "
+      + "(l<sub>a</sub> = l<sub>u</sub> = " + LA + " mm)";
+    el("felder").innerHTML = feld("aL", "L in mm", "0.1");
+
+  }else if(art === "zeit"){
+    var L = waehle([18, 22, 26, 32, 41.3, 52, 64, 72, 84]);
+    var n = waehle(DREHZAHLEN), fv = waehle(VORSCHUEBE);
+    var i = waehle([1, 1, 1, 2, 3]);
+    aufgabe.L = L; aufgabe.n = n; aufgabe.f = fv; aufgabe.i = i;
+    aufgabe.soll = L * i / (n * fv);
+    el("art").textContent = "Hauptnutzungszeit";
+    el("aufgabe").innerHTML = "Der Vorschubweg ist <strong>" + zahl(L, 1)
+      + " mm</strong>, die Drehzahl <strong>" + n + " 1/min</strong>, der "
+      + "Vorschub <strong>" + zahl(fv, 2) + " mm</strong>"
+      + (i > 1 ? ", und der Weg wird <strong>" + i + "-mal</strong> abgefahren"
+               : ", ein Schnitt")
+      + ". Wie lange dauert der Vorgang?";
+    el("felder").innerHTML = feld("aT", "t<sub>h</sub> in min", "0.01");
+
+  }else{
+    var fg = waehle([fall("laengs_mit"), fall("laengs_ohne")]);
+    var ag = {l: waehle(LAENGEN), d: waehle(DURCHMESSER)};
+    var vc = waehle(TEMPO), fvg = waehle(VORSCHUEBE);
+    var ng = drehzahl(vc, ag.d);
+    aufgabe.fall = fg.id; aufgabe.masse = ag; aufgabe.vc = vc;
+    aufgabe.f = fvg; aufgabe.n = ng; aufgabe.i = 1;
+    aufgabe.L = fg.weg(ag);
+    aufgabe.soll = aufgabe.L / (ng * fvg);
+    el("art").textContent = "Von vorn";
+    el("aufgabe").innerHTML = beschreibung(fg, ag)
+      + " Aus dem Tabellenbuch kommt v<sub>c</sub> = <strong>" + vc
+      + " m/min</strong>, der Vorschub ist <strong>" + zahl(fvg, 2)
+      + " mm</strong>, ein Schnitt. Gesucht sind Drehzahl und Zeit.";
+    el("felder").innerHTML = feld("aN", "n in 1/min", "1")
+      + feld("aT", "t<sub>h</sub> in min", "0.01");
+  }
+
+  el("stand").textContent = "Aufgabe " + nr;
+  gemeldet = false;
+  el("rueck").hidden = true;
+  el("weg").hidden = true;
+  var erstes = el("felder").querySelector("input");
+  if(erstes) erstes.focus();
+}
+
+function beschreibung(f, a){
+  if(f.id === "plan_voll"){
+    return "Eine Stirnfläche mit <strong>Ø" + a.d + " mm</strong> " + f.text
+      + ".";
+  }
+  if(f.id === "plan_ansatz"){
+    return "Eine Stirnfläche von <strong>Ø" + a.d + " mm</strong> " + f.text
+      + " bei <strong>Ø" + a.d1 + " mm</strong>.";
+  }
+  if(f.id === "stechen"){
+    return "Eine Nut von <strong>" + zahl(a.l, 0) + " mm</strong> Tiefe "
+      + f.text + ".";
+  }
+  return "Ein Abschnitt von <strong>" + zahl(a.l, 0) + " mm</strong> Länge "
+    + "(Ø" + a.d + " mm) wird längsrundgedreht und " + f.text + ".";
+}
+
+function punkteZeigen(){
+  el("punkte").textContent = versuche ? richtig + " von " + versuche + " richtig" : "";
+}
+
+function buch(text){
+  return "<span class=\"buch\"><b>Nachschlagen:</b> " + text + "</span>";
+}
+
+function wegZeile(f, a){
+  if(f.id === "plan_voll"){
+    return f.formel + "<br>L = " + a.d + "/2 + " + LA;
+  }
+  if(f.id === "plan_ansatz"){
+    return f.formel + "<br>L = (" + a.d + " &minus; " + a.d1 + ")/2 + " + LA;
+  }
+  if(f.id === "laengs_ohne"){
+    return f.formel + "<br>L = " + zahl(a.l, 0) + " + " + LA + " + " + LA;
+  }
+  return f.formel + "<br>L = " + zahl(a.l, 0) + " + " + LA;
+}
+
+function wegBauen(){
+  var a = aufgabe;
+
+  if(a.art === "weg"){
+    var f = fall(a.fall);
+    return ""
+      + "<span class=\"schritt\">" + f.name + " &ndash; " + f.text + "</span>"
+      + wegZeile(f, a.masse) + " = <b>" + zahl(a.soll, 1) + " mm</b>"
+      + buch("Die Vorschubwege stehen als Bildtafel bei der "
+          + "Hauptnutzungszeit - ein Bild je Fall.");
+  }
+
+  if(a.art === "zeit"){
+    return ""
+      + "<span class=\"schritt\">Je Minute legt das Werkzeug n · f zurück</span>"
+      + "n · f = " + a.n + " · " + zahl(a.f, 2) + " = <b>"
+        + zahl(a.n * a.f, 1) + " mm/min</b>"
+      + "<span class=\"schritt\">Weg durch Geschwindigkeit</span>"
+      + "t<sub>h</sub> = L · i / (n · f) = " + zahl(a.L, 1) + " · " + a.i
+        + " / (" + a.n + " · " + zahl(a.f, 2) + ")"
+      + "<br>t<sub>h</sub> = <b>" + zahl(a.soll, 3) + " min</b> = <b>"
+        + zahl(a.soll * 60, 1) + " s</b>"
+      + buch("t<sub>h</sub> = L · i / (n · f) - die Formel steht rechts "
+          + "neben der Bildtafel.");
+  }
+
+  var fg = fall(a.fall);
+  return ""
+    + "<span class=\"schritt\">Erst der Weg</span>"
+    + wegZeile(fg, a.masse) + " = <b>" + zahl(a.L, 1) + " mm</b>"
+    + "<span class=\"schritt\">Dann die Drehzahl, ganzzahlig abgerundet</span>"
+    + "n = " + (a.vc * 1000) + " / (π · " + a.masse.d + ") = "
+      + zahl(a.vc * 1000 / (Math.PI * a.masse.d), 1) + " &rarr; <b>" + a.n
+      + " 1/min</b>"
+    + "<span class=\"schritt\">Dann die Zeit</span>"
+    + "t<sub>h</sub> = " + zahl(a.L, 1) + " / (" + a.n + " · "
+      + zahl(a.f, 2) + ") = <b>" + zahl(a.soll, 3) + " min</b> = <b>"
+      + zahl(a.soll * 60, 1) + " s</b>"
+    + buch("Drehzahl abrunden, Schnitte aufrunden - beides geht in Richtung "
+        + "Sicherheit.");
+}
+
+function nichtsEingetragen(){
+  var r = el("rueck");
+  r.className = "rueckmeldung fast";
+  r.innerHTML = "<strong>Noch nichts eingetragen.</strong> Ausfüllen "
+    + "&ndash; oder den Rechenweg zeigen lassen.";
+  r.hidden = false;
+}
+
+el("btnPruefen").addEventListener("click", function(){
+  if(!aufgabe) return;
+  var a = aufgabe, r = el("rueck"), ok, text;
+
+  if(a.art === "weg"){
+    var L = wert("aL");
+    if(!isFinite(L)){ nichtsEingetragen(); return; }
+    ok = Math.abs(L - a.soll) <= 0.11;
+    text = "L = <strong>" + zahl(a.soll, 1) + " mm</strong> "
+      + (ok ? "&ndash; getroffen." : "&ndash; du hattest " + zahl(L, 1) + ".");
+
+  }else if(a.art === "zeit"){
+    var t = wert("aT");
+    if(!isFinite(t)){ nichtsEingetragen(); return; }
+    ok = Math.abs(t - a.soll) <= Math.max(0.005, a.soll * TOLERANZ);
+    text = "t<sub>h</sub> = <strong>" + zahl(a.soll, 3) + " min</strong> "
+      + "(" + zahl(a.soll * 60, 1) + " s) "
+      + (ok ? "&ndash; getroffen." : "&ndash; du hattest " + zahl(t, 3) + ".");
+
+  }else{
+    var n = wert("aN"), tg = wert("aT");
+    if(!isFinite(n) && !isFinite(tg)){ nichtsEingetragen(); return; }
+    var okN = isFinite(n) && Math.abs(n - a.n) <= Math.max(1, a.n * TOLERANZ);
+    var okT = isFinite(tg)
+      && Math.abs(tg - a.soll) <= Math.max(0.005, a.soll * TOLERANZ);
+    ok = okN && okT;
+    text = "n = <strong>" + a.n + " 1/min</strong> "
+      + (okN ? "&ndash; getroffen. " : "&ndash; du hattest "
+          + (isFinite(n) ? zahl(n, 0) : "nichts") + ". ")
+      + "t<sub>h</sub> = <strong>" + zahl(a.soll, 3) + " min</strong> "
+      + (okT ? "&ndash; getroffen." : "&ndash; du hattest "
+          + (isFinite(tg) ? zahl(tg, 3) : "nichts") + ".");
+  }
+
+  versuche++;
+  if(ok) richtig++;
+  rundeMelden(ok);
+  r.className = "rueckmeldung " + (ok ? "ja" : "nein");
+  r.innerHTML = "<strong>" + (ok ? "Richtig." : "Noch nicht.") + "</strong> " + text;
+  r.hidden = false;
+  if(!ok){
+    el("weg").innerHTML = wegBauen();
+    el("weg").hidden = false;
+  }
+  punkteZeigen();
+});
+
+el("btnWeg").addEventListener("click", function(){
+  if(!aufgabe) return;
+  el("weg").innerHTML = wegBauen();
+  el("weg").hidden = false;
+});
+
+el("btnWeiter").addEventListener("click", neueAufgabe);
+
+/* Wettkampf (assets/wettkampf.js): Wer denselben Code hat, bekommt dieselbe
+   Aufgabenfolge. */
+window.TBK_WETTKAMPF = {
+  runden: 10,
+  neu: function(){
+    nr = 0; richtig = 0; versuche = 0;
+    punkteZeigen();
+    neueAufgabe();
+  }
+};
+
+function rundeMelden(ok){
+  if(gemeldet) return;
+  gemeldet = true;
+  document.dispatchEvent(new CustomEvent("tbk-runde", {detail:{richtig: !!ok}}));
+}
+
+neueAufgabe();
+punkteZeigen();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/wettkampf.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+</body>
+</html>

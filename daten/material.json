@@ -196,6 +196,22 @@
       {
         "datei": "fertigungstechnik-beurteilung-bedingungen-fuer-die-fertigung.html",
         "name": "Werkzeug Bedingungen für die Fertigung beurteilen"
+      },
+      {
+        "datei": "fertigungstechnik-hauptnutzungszeit-beim-drehen.html",
+        "name": "Werkzeug Hauptnutzungszeit beim Drehen"
+      },
+      {
+        "datei": "fertigungstechnik-iso-toleranzen-und-passungen.html",
+        "name": "Werkzeug ISO-Toleranzen und Passungen"
+      },
+      {
+        "datei": "fertigungstechnik-messmittel-messschieber.html",
+        "name": "Werkzeug Messschieber"
+      },
+      {
+        "datei": "fertigungstechnik-messmittel-buegelmessschraube.html",
+        "name": "Werkzeug Bügelmessschraube"
       }
     ],
     "inhalt": [
@@ -222,6 +238,18 @@
       {
         "titel": "Die Bezeichnung zusammensetzen",
         "url": "trainings/drehprozess/06-bezeichnung-zusammensetzen.html"
+      },
+      {
+        "titel": "Hauptnutzungszeit",
+        "url": "trainings/drehprozess/07-hauptnutzungszeit.html"
+      },
+      {
+        "titel": "Toleranzmitte",
+        "url": "trainings/drehprozess/08-toleranzmitte.html"
+      },
+      {
+        "titel": "Messmittel wählen",
+        "url": "trainings/drehprozess/09-messmittel-waehlen.html"
       }
     ]
   },

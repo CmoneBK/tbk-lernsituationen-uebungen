@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Toleranzmitte</title>
+<meta name="description" content="Vom ISO-Kurzzeichen zu den Grenzmaßen und zum Zielmaß: Höchstmaß, Mindestmaß, Mittenmaß – und die Entscheidung Gutteil, Nacharbeit oder Ausschuss.">
+<meta name="dauer" content="10 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .aufgabe{
+    background:var(--bg); border:1px solid var(--border-stark); border-radius:10px;
+    padding:14px 16px; margin:0 0 16px; font-size:16px; line-height:1.7;
+  }
+  .aufgabe strong{font-size:17px}
+  .zaehler{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:13px; color:var(--muted); margin:0 0 10px}
+  .rechenweg{
+    background:var(--bg); border:1px solid var(--border); border-radius:10px;
+    padding:12px 16px; margin:12px 0 0; font-size:14.5px; line-height:2;
+    font-variant-numeric:tabular-nums;
+  }
+  .rechenweg b{font-weight:700}
+  .rechenweg .schritt{display:block; color:var(--muted); font-size:12.5px; line-height:1.5}
+  .rechenweg .buch{
+    display:block; margin:6px 0 2px; padding:7px 10px; font-size:12.5px;
+    line-height:1.5; border-left:3px solid var(--ok); border-radius:0 8px 8px 0;
+    background:rgba(22,163,74,.10);
+  }
+  .art{
+    display:inline-block; margin:0 0 8px; padding:3px 10px; border-radius:999px;
+    background:var(--bg); border:1px solid var(--border);
+    font-size:12.5px; font-weight:600; color:var(--muted);
+  }
+  .formel{
+    display:block; margin:10px 0; padding:10px 14px; border-radius:10px;
+    background:var(--bg); border:1px solid var(--border);
+    font-size:17px; text-align:center; font-variant-numeric:tabular-nums;
+  }
+  .kurz{
+    display:inline-block; padding:2px 10px; border-radius:6px;
+    background:var(--bg); border:1px solid var(--border-stark);
+    font-variant-numeric:tabular-nums; font-weight:700;
+  }
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Drehprozess</p>
+    <h1>Toleranzmitte</h1>
+    <p class="lead">Ø25 k6 heißt nicht 25 mm.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Worum es geht:</strong> Hinter einem Nennmaß steht ein
+        <strong>Buchstabe</strong> und eine <strong>Zahl</strong>: die Lage der
+        Toleranzzone und ihre Weite. Daraus werden Höchstmaß und Mindestmaß
+        &ndash; und daraus das Maß, auf das der Schlichtgang zielt.</p>
+      <p>Drei Rundenarten wechseln sich ab: Grenzmaße bilden, das Mittenmaß
+        rechnen, und ein gemessenes Istmaß beurteilen.</p>
+      <p>Bei den Maßen zählt alles, was <strong>bis 0,001 mm daneben</strong>
+        liegt.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Aufgaben</h2>
+
+    <div class="box">
+      <div class="zaehler">
+        <span id="stand">Aufgabe 1</span>
+        <span id="punkte"></span>
+      </div>
+
+      <p class="art" id="art">&ndash;</p>
+      <p class="aufgabe" id="aufgabe">&ndash;</p>
+
+      <div class="felder" id="felder"></div>
+
+      <p style="margin-top:16px">
+        <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+        <button type="button" class="knopf leise" id="btnWeg">Rechenweg zeigen</button>
+        <button type="button" class="knopf leise" id="btnWeiter">Nächste Aufgabe</button>
+      </p>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+      <div class="rechenweg" id="weg" hidden></div>
+    </div>
+
+    <h2><span class="nr">2</span>Woher die Zahlen kommen</h2>
+
+    <details>
+      <summary>1. Was im Kurzzeichen steht</summary>
+      <p><span class="kurz">Ø25 k6</span> heißt: Nennmaß 25 mm, Grundabmaß
+        <strong>k</strong>, Grundtoleranzgrad <strong>IT6</strong>.</p>
+      <ul>
+        <li>Der <strong>Buchstabe</strong> sagt, wo die Toleranzzone liegt
+          &ndash; über, unter oder um das Nennmaß herum.</li>
+        <li>Die <strong>Zahl</strong> sagt, wie breit sie ist. Je größer die
+          Zahl, desto grober.</li>
+        <li><strong>Großbuchstabe</strong> = Bohrung,
+          <strong>Kleinbuchstabe</strong> = Welle.</li>
+      </ul>
+      <p>Die Grenzabmaße stehen im Tabellenbuch nach Nennmaßbereich. Für die
+        Welle heißen sie <strong>es</strong> (oben) und <strong>ei</strong>
+        (unten), für die Bohrung <strong>ES</strong> und
+        <strong>EI</strong>.</p>
+      <span class="formel">Höchstmaß = N + es &nbsp;·&nbsp;
+        Mindestmaß = N + ei</span>
+    </details>
+
+    <details>
+      <summary>2. Der Nennmaßbereich</summary>
+      <p>Dieselbe Toleranzklasse ist bei 8 mm enger als bei 40 mm. Deshalb hat
+        die Tabelle Zeilen nach <strong>Nennmaßbereich</strong>: über 6 bis 10,
+        über 10 bis 18, über 18 bis 30, über 30 bis 50 mm.</p>
+      <div class="merksatz">
+        <strong>Häufigster Fehler:</strong> die Zeile daneben nehmen. Bei
+        genau 30 mm gilt „über 18 bis 30&ldquo;, nicht „über 30 bis 50&ldquo;
+        &ndash; die Grenze gehört zur unteren Zeile.
+      </div>
+    </details>
+
+    <details>
+      <summary>3. Warum auf die Mitte gezielt wird</summary>
+      <span class="formel">Mittenmaß = (Höchstmaß + Mindestmaß) / 2</span>
+      <p>Weil alles, was beim Drehen schiefgeht, in <em>eine</em> Richtung
+        geht:</p>
+      <ul>
+        <li>Die Schneide <strong>verschleißt</strong> &ndash; der Durchmesser
+          wächst über die Schicht.</li>
+        <li>Das Werkstück ist <strong>warm</strong> &ndash; was warm auf Maß
+          ist, ist kalt zu klein.</li>
+        <li>Die <strong>Messunsicherheit</strong> kommt oben und unten
+          dazu.</li>
+        <li><strong>Nacharbeiten</strong> lässt sich eine Welle nur nach
+          unten.</li>
+      </ul>
+      <p>Von der Mitte aus hat jeder dieser Fehler noch die halbe Toleranz
+        Platz. Vom Grenzmaß aus hat er keinen.</p>
+    </details>
+
+    <details>
+      <summary>4. Gutteil, Nacharbeit oder Ausschuss</summary>
+      <p>Bei einer <strong>Welle</strong> (Kleinbuchstabe):</p>
+      <ul>
+        <li>Istmaß zwischen Mindest- und Höchstmaß &ndash;
+          <strong>Gutteil</strong>.</li>
+        <li>Istmaß <strong>über</strong> dem Höchstmaß &ndash;
+          <strong>Nacharbeit</strong>: Es ist noch Werkstoff da, der
+          weggedreht werden kann.</li>
+        <li>Istmaß <strong>unter</strong> dem Mindestmaß &ndash;
+          <strong>Ausschuss</strong>: Werkstoff wächst nicht nach.</li>
+      </ul>
+      <p>Bei einer <strong>Bohrung</strong> ist es umgekehrt: zu klein lässt
+        sich aufbohren, zu groß nicht mehr retten.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Das Nennmaß ist kein Zielmaß. Gezielt wird auf
+      die Mitte der Toleranz &ndash; bei k6 liegt die sogar ganz über dem
+      Nennmaß.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>Womit sich solche Maße überhaupt prüfen lassen, übt das Training
+      <em>Messmittel wählen</em>.</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-iso-toleranzen-und-passungen.html">Werkzeug ISO-Toleranzen und Passungen öffnen</a>
+    </p>
+    <p class="fussnote"><strong>Woher die Zahlen stammen:</strong> ISO-System
+      für Grenzmaße und Passungen, Auszug für das System Einheitsbohrung
+      &ndash; Tabellenbuch Metall.</p>
+
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+      Maßgebend sind Norm und Tabellenbuch.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Grenzabmasse in Mikrometern, System Einheitsbohrung, nach
+   Nennmassbereich: [oberes, unteres]. Bei Wellen es/ei, bei Bohrungen
+   ES/EI. Abgelesen aus dem Auszug des Tabellenbuchs. */
+var ABMASSE = [
+  {bis: 10, w: {H7:[15,0], f7:[-13,-28], g6:[-5,-14], h6:[0,-9],  j6:[7,-2],
+                k6:[10,1], n6:[19,10], r6:[28,19], s6:[32,23]}},
+  {bis: 18, w: {H7:[18,0], f7:[-16,-34], g6:[-6,-17], h6:[0,-11], j6:[8,-3],
+                k6:[12,1], n6:[23,12], r6:[34,23], s6:[39,28]}},
+  {bis: 30, w: {H7:[21,0], f7:[-20,-41], g6:[-7,-20], h6:[0,-13], j6:[9,-4],
+                k6:[15,2], n6:[28,15], r6:[41,28], s6:[48,35]}},
+  {bis: 50, w: {H7:[25,0], f7:[-25,-50], g6:[-9,-25], h6:[0,-16], j6:[11,-5],
+                k6:[18,2], n6:[33,17], r6:[50,34], s6:[59,43]}}
+];
+
+var WELLENKLASSEN = ["f7", "g6", "h6", "j6", "k6", "n6", "r6", "s6"];
+var NENNMASSE = [8, 10, 12, 14, 16, 18, 20, 22, 25, 28, 30, 32, 35, 40, 45, 50];
+
+function bereich(n){
+  for(var i = 0; i < ABMASSE.length; i++){
+    if(n <= ABMASSE[i].bis) return ABMASSE[i];
+  }
+  return ABMASSE[ABMASSE.length - 1];
+}
+function bereichText(n){
+  var von = 6;
+  for(var i = 0; i < ABMASSE.length; i++){
+    if(n <= ABMASSE[i].bis) return "über " + von + " bis " + ABMASSE[i].bis + " mm";
+    von = ABMASSE[i].bis;
+  }
+  return "";
+}
+
+function el(id){ return document.getElementById(id); }
+function zahl(x, n){ return x.toFixed(n === undefined ? 3 : n).replace(".", ","); }
+function waehle(liste){ return liste[Math.floor(Math.random() * liste.length)]; }
+function wert(id){
+  var e = el(id);
+  return e ? parseFloat(String(e.value).replace(",", ".")) : NaN;
+}
+
+/* Alles, was zu einem Kurzzeichen gehoert - an einer Stelle gerechnet. */
+function passung(n, klasse){
+  var a = bereich(n).w[klasse];
+  var hoechst = n + a[0] / 1000;
+  var mindest = n + a[1] / 1000;
+  return {nennmass: n, klasse: klasse, es: a[0], ei: a[1],
+          hoechst: hoechst, mindest: mindest,
+          weite: (a[0] - a[1]) / 1000,
+          mitte: (hoechst + mindest) / 2,
+          bereich: bereichText(n)};
+}
+
+/* ---------- Der Durchlauf ---------- */
+
+var aufgabe = null;
+var nr = 0, richtig = 0, versuche = 0;
+var gemeldet = false;
+
+function feld(id, beschriftung, schritt){
+  return '<label class="feld">' + beschriftung
+    + '<input type="number" id="' + id + '" step="' + (schritt || "0.001")
+    + '" inputmode="decimal" autocomplete="off"></label>';
+}
+
+function neueAufgabe(){
+  nr++;
+  var art = waehle(["grenzen", "mitte", "urteil"]);
+  var p = passung(waehle(NENNMASSE), waehle(WELLENKLASSEN));
+  aufgabe = {art:art, p:p};
+  var kurz = '<span class="kurz">Ø' + p.nennmass + " " + p.klasse + "</span>";
+
+  if(art === "grenzen"){
+    el("art").textContent = "Grenzmaße";
+    el("aufgabe").innerHTML = "Auf der Zeichnung steht " + kurz + ". Wie groß "
+      + "sind Höchstmaß und Mindestmaß?";
+    el("felder").innerHTML = feld("aH", "Höchstmaß in mm")
+      + feld("aM", "Mindestmaß in mm");
+
+  }else if(art === "mitte"){
+    el("art").textContent = "Zielmaß";
+    el("aufgabe").innerHTML = "Der Schlichtgang soll " + kurz + " treffen. "
+      + "Auf welches Maß wird gezielt &ndash; und wie breit ist die Toleranz?";
+    el("felder").innerHTML = feld("aZ", "Mittenmaß in mm")
+      + feld("aT", "Toleranz T in µm", "1");
+
+  }else{
+    /* Ein Istmass, das mal drin liegt, mal darueber, mal darunter. */
+    var fall = waehle(["gut", "gross", "klein"]);
+    var ist;
+    if(fall === "gut"){
+      ist = p.mitte + (Math.random() - 0.5) * p.weite * 0.7;
+    }else if(fall === "gross"){
+      ist = p.hoechst + (0.002 + Math.random() * 0.02);
+    }else{
+      ist = p.mindest - (0.002 + Math.random() * 0.02);
+    }
+    ist = Math.round(ist * 1000) / 1000;
+    aufgabe.ist = ist;
+    aufgabe.urteil = ist > p.hoechst ? "nacharbeit"
+      : (ist < p.mindest ? "ausschuss" : "gut");
+    el("art").textContent = "Gutteil?";
+    el("aufgabe").innerHTML = "Gefordert ist " + kurz + ". Gemessen wurden "
+      + "<strong>" + zahl(ist, 3) + " mm</strong>. Wie lautet das Urteil?";
+    el("felder").innerHTML =
+      '<label class="feld">Urteil'
+      + '<select id="aU" data-druck="ankreuzen">'
+      + '<option value="">bitte wählen</option>'
+      + '<option value="gut">Gutteil</option>'
+      + '<option value="nacharbeit">Nacharbeit möglich</option>'
+      + '<option value="ausschuss">Ausschuss</option>'
+      + '</select></label>';
+  }
+
+  el("stand").textContent = "Aufgabe " + nr;
+  gemeldet = false;
+  el("rueck").hidden = true;
+  el("weg").hidden = true;
+  var erstes = el("felder").querySelector("input, select");
+  if(erstes) erstes.focus();
+}
+
+function punkteZeigen(){
+  el("punkte").textContent = versuche ? richtig + " von " + versuche + " richtig" : "";
+}
+
+function buch(text){
+  return "<span class=\"buch\"><b>Nachschlagen:</b> " + text + "</span>";
+}
+
+function grenzenZeile(p){
+  return ""
+    + "<span class=\"schritt\">Nennmaßbereich " + p.bereich + ", Zeile "
+      + p.klasse + "</span>"
+    + "es = " + p.es + " µm, &nbsp;ei = " + p.ei + " µm"
+    + "<span class=\"schritt\">Grenzmaße</span>"
+    + "Höchstmaß = " + p.nennmass + " + (" + zahl(p.es / 1000, 3)
+      + ") = <b>" + zahl(p.hoechst, 3) + " mm</b><br>"
+    + "Mindestmaß = " + p.nennmass + " + (" + zahl(p.ei / 1000, 3)
+      + ") = <b>" + zahl(p.mindest, 3) + " mm</b>";
+}
+
+function wegBauen(){
+  var a = aufgabe, p = a.p;
+
+  if(a.art === "grenzen"){
+    return grenzenZeile(p)
+      + buch("Die Grenzabmaße stehen im Auszug für das System "
+          + "Einheitsbohrung, nach Nennmaßbereich geordnet.");
+  }
+
+  if(a.art === "mitte"){
+    return grenzenZeile(p)
+      + "<span class=\"schritt\">Toleranz</span>"
+      + "T = es &minus; ei = " + p.es + " &minus; (" + p.ei + ") = <b>"
+        + zahl(p.weite * 1000, 0) + " µm</b>"
+      + "<span class=\"schritt\">Zielmaß für den Schlichtgang</span>"
+      + "Mittenmaß = (" + zahl(p.hoechst, 3) + " + " + zahl(p.mindest, 3)
+        + ") / 2 = <b>" + zahl(p.mitte, 4) + " mm</b>"
+      + buch("Die Regel steht nicht in der Tabelle, sondern in der Praxis: "
+          + "Verschleiß, Wärme und Messunsicherheit ziehen alle in dieselbe "
+          + "Richtung.");
+  }
+
+  var urteilText = {
+    gut: "Das Istmaß liegt zwischen den Grenzmaßen &ndash; <b>Gutteil</b>.",
+    nacharbeit: "Das Istmaß liegt <b>über</b> dem Höchstmaß. Bei einer Welle "
+      + "ist das Nacharbeit: Es steht noch Werkstoff zum Wegdrehen da.",
+    ausschuss: "Das Istmaß liegt <b>unter</b> dem Mindestmaß. Werkstoff "
+      + "wächst nicht nach &ndash; <b>Ausschuss</b>."
+  }[a.urteil];
+
+  return grenzenZeile(p)
+    + "<span class=\"schritt\">Vergleich</span>"
+    + "Istmaß " + zahl(a.ist, 3) + " mm gegen " + zahl(p.mindest, 3)
+      + " … " + zahl(p.hoechst, 3) + " mm"
+    + "<br>" + urteilText
+    + buch("Bei einer Bohrung ist es umgekehrt: zu klein lässt sich "
+        + "aufbohren, zu groß nicht mehr retten.");
+}
+
+function nichtsEingetragen(){
+  var r = el("rueck");
+  r.className = "rueckmeldung fast";
+  r.innerHTML = "<strong>Noch nichts eingetragen.</strong> Ausfüllen "
+    + "&ndash; oder den Rechenweg zeigen lassen.";
+  r.hidden = false;
+}
+
+el("btnPruefen").addEventListener("click", function(){
+  if(!aufgabe) return;
+  var a = aufgabe, p = a.p, r = el("rueck"), ok, text;
+
+  if(a.art === "grenzen"){
+    var h = wert("aH"), m = wert("aM");
+    if(!isFinite(h) && !isFinite(m)){ nichtsEingetragen(); return; }
+    var okH = isFinite(h) && Math.abs(h - p.hoechst) <= 0.0011;
+    var okM = isFinite(m) && Math.abs(m - p.mindest) <= 0.0011;
+    ok = okH && okM;
+    text = "Höchstmaß <strong>" + zahl(p.hoechst, 3) + " mm</strong> "
+      + (okH ? "&ndash; getroffen. " : "&ndash; du hattest "
+          + (isFinite(h) ? zahl(h, 3) : "nichts") + ". ")
+      + "Mindestmaß <strong>" + zahl(p.mindest, 3) + " mm</strong> "
+      + (okM ? "&ndash; getroffen." : "&ndash; du hattest "
+          + (isFinite(m) ? zahl(m, 3) : "nichts") + ".");
+
+  }else if(a.art === "mitte"){
+    var z = wert("aZ"), t = wert("aT");
+    if(!isFinite(z) && !isFinite(t)){ nichtsEingetragen(); return; }
+    var okZ = isFinite(z) && Math.abs(z - p.mitte) <= 0.0011;
+    var okT = isFinite(t) && Math.abs(t - p.weite * 1000) <= 0.6;
+    ok = okZ && okT;
+    text = "Mittenmaß <strong>" + zahl(p.mitte, 4) + " mm</strong> "
+      + (okZ ? "&ndash; getroffen. " : "&ndash; du hattest "
+          + (isFinite(z) ? zahl(z, 4) : "nichts") + ". ")
+      + "T = <strong>" + zahl(p.weite * 1000, 0) + " µm</strong> "
+      + (okT ? "&ndash; getroffen." : "&ndash; du hattest "
+          + (isFinite(t) ? zahl(t, 0) : "nichts") + ".");
+
+  }else{
+    var u = el("aU").value;
+    if(!u){ nichtsEingetragen(); return; }
+    ok = u === a.urteil;
+    var namen = {gut:"Gutteil", nacharbeit:"Nacharbeit möglich",
+                 ausschuss:"Ausschuss"};
+    text = "Richtig wäre <strong>" + namen[a.urteil] + "</strong> "
+      + (ok ? "&ndash; getroffen." : "&ndash; du hattest "
+          + namen[u] + ".");
+  }
+
+  versuche++;
+  if(ok) richtig++;
+  rundeMelden(ok);
+  r.className = "rueckmeldung " + (ok ? "ja" : "nein");
+  r.innerHTML = "<strong>" + (ok ? "Richtig." : "Noch nicht.") + "</strong> " + text;
+  r.hidden = false;
+  if(!ok){
+    el("weg").innerHTML = wegBauen();
+    el("weg").hidden = false;
+  }
+  punkteZeigen();
+});
+
+el("btnWeg").addEventListener("click", function(){
+  if(!aufgabe) return;
+  el("weg").innerHTML = wegBauen();
+  el("weg").hidden = false;
+});
+
+el("btnWeiter").addEventListener("click", neueAufgabe);
+
+/* Wettkampf (assets/wettkampf.js): Wer denselben Code hat, bekommt dieselbe
+   Aufgabenfolge. */
+window.TBK_WETTKAMPF = {
+  runden: 10,
+  neu: function(){
+    nr = 0; richtig = 0; versuche = 0;
+    punkteZeigen();
+    neueAufgabe();
+  }
+};
+
+function rundeMelden(ok){
+  if(gemeldet) return;
+  gemeldet = true;
+  document.dispatchEvent(new CustomEvent("tbk-runde", {detail:{richtig: !!ok}}));
+}
+
+neueAufgabe();
+punkteZeigen();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/wettkampf.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+</body>
+</html>

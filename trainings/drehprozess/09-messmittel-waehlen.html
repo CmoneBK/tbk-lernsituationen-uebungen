@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Messmittel wählen</title>
+<meta name="description" content="Wie breit ist die Toleranz – und was kann ein Messschieber davon überhaupt sehen? Toleranzweiten aus ISO-Kurzzeichen und Allgemeintoleranzen, verglichen mit der Ablesung.">
+<meta name="dauer" content="10 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .aufgabe{
+    background:var(--bg); border:1px solid var(--border-stark); border-radius:10px;
+    padding:14px 16px; margin:0 0 16px; font-size:16px; line-height:1.7;
+  }
+  .aufgabe strong{font-size:17px}
+  .zaehler{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:13px; color:var(--muted); margin:0 0 10px}
+  .rechenweg{
+    background:var(--bg); border:1px solid var(--border); border-radius:10px;
+    padding:12px 16px; margin:12px 0 0; font-size:14.5px; line-height:2;
+    font-variant-numeric:tabular-nums;
+  }
+  .rechenweg b{font-weight:700}
+  .rechenweg .schritt{display:block; color:var(--muted); font-size:12.5px; line-height:1.5}
+  .rechenweg .buch{
+    display:block; margin:6px 0 2px; padding:7px 10px; font-size:12.5px;
+    line-height:1.5; border-left:3px solid var(--ok); border-radius:0 8px 8px 0;
+    background:rgba(22,163,74,.10);
+  }
+  .art{
+    display:inline-block; margin:0 0 8px; padding:3px 10px; border-radius:999px;
+    background:var(--bg); border:1px solid var(--border);
+    font-size:12.5px; font-weight:600; color:var(--muted);
+  }
+  .kurz{
+    display:inline-block; padding:2px 10px; border-radius:6px;
+    background:var(--bg); border:1px solid var(--border-stark);
+    font-variant-numeric:tabular-nums; font-weight:700;
+  }
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Drehprozess</p>
+    <h1>Messmittel wählen</h1>
+    <p class="lead">Eine Zahl im Fenster ist noch keine Aussage.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Worum es geht:</strong> Bevor man misst, muss feststehen,
+        <em>wie genau</em> gemessen werden muss. Das sagt die
+        <strong>Toleranzweite</strong> &ndash; und die steht entweder als
+        ISO-Kurzzeichen am Maß oder als Allgemeintoleranz im Schriftfeld.</p>
+      <p>Drei Rundenarten wechseln sich ab: Toleranzweite aus einem
+        Kurzzeichen, Toleranzweite nach Allgemeintoleranz, und die Frage, ob
+        ein bestimmtes Messmittel davon überhaupt etwas sieht.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Aufgaben</h2>
+
+    <div class="box">
+      <div class="zaehler">
+        <span id="stand">Aufgabe 1</span>
+        <span id="punkte"></span>
+      </div>
+
+      <p class="art" id="art">&ndash;</p>
+      <p class="aufgabe" id="aufgabe">&ndash;</p>
+
+      <div class="felder" id="felder"></div>
+
+      <p style="margin-top:16px">
+        <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+        <button type="button" class="knopf leise" id="btnWeg">Rechenweg zeigen</button>
+        <button type="button" class="knopf leise" id="btnWeiter">Nächste Aufgabe</button>
+      </p>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+      <div class="rechenweg" id="weg" hidden></div>
+    </div>
+
+    <h2><span class="nr">2</span>Woher die Zahlen kommen</h2>
+
+    <details>
+      <summary>1. Zwei Wege zur Toleranz</summary>
+      <p>Ein Maß <strong>mit</strong> ISO-Kurzzeichen trägt seine Toleranz
+        selbst: <span class="kurz">Ø25 k6</span> heißt +0,015 / +0,002 mm, also
+        <strong>13 µm</strong> Weite.</p>
+      <p>Ein Maß <strong>ohne</strong> Eintrag gilt nach
+        <strong>Allgemeintoleranz</strong>. Welche, steht im Schriftfeld:
+        f (fein), m (mittel), c (grob) oder v (sehr grob). Die Tabelle gibt ein
+        <strong>Grenzabmaß ±</strong> je Nennmaßbereich &ndash; die Weite ist
+        das Doppelte davon.</p>
+      <div class="merksatz">
+        <strong>Häufigster Fehler:</strong> das Grenzabmaß für die Weite
+        halten. ±0,2 mm sind <strong>0,4 mm</strong> Toleranz, nicht 0,2.
+      </div>
+    </details>
+
+    <details>
+      <summary>2. Was ein Messmittel sehen kann</summary>
+      <p>Die <strong>Ablesung</strong> ist der kleinste Schritt, den die Skala
+        hergibt:</p>
+      <ul>
+        <li>Messschieber, Nonius 1/20 &ndash; <strong>0,05 mm</strong></li>
+        <li>Messschieber, Nonius 1/50 &ndash; <strong>0,02 mm</strong></li>
+        <li>Bügelmessschraube &ndash; <strong>0,01 mm</strong></li>
+        <li>Bügelmessschraube mit Nonius &ndash; <strong>0,001 mm</strong></li>
+      </ul>
+      <p>Sicher ist zunächst nur das Offensichtliche: Ist die Ablesung
+        <em>größer</em> als die ganze Toleranz, kann das Messmittel über sie
+        nichts sagen. Es zeigt dann zwar eine Zahl, aber die beantwortet die
+        Frage nicht.</p>
+    </details>
+
+    <details>
+      <summary>3. Und wie fein muss es wirklich sein?</summary>
+      <p>Im Betrieb gilt als Faustregel, dass die Ablesung
+        <strong>höchstens ein Zehntel</strong> der Toleranzweite betragen
+        soll. Bei engen ISO-Toleranzen ist das mit Handmessmitteln nicht zu
+        halten: 13 µm Weite hieße 1,3 µm Ablesung &ndash; das schafft nur ein
+        Feinmessgerät.</p>
+      <p>In der Praxis sieht es deshalb so aus:</p>
+      <ul>
+        <li><strong>Allgemeintoleranzen</strong> (Zehntel bis Millimeter)
+          &ndash; Messschieber.</li>
+        <li><strong>ISO-Toleranzen IT6 und IT7</strong> &ndash;
+          Bügelmessschraube, und gemessen wird auf die
+          <strong>Toleranzmitte</strong>: Was die Messunsicherheit noch
+          verschiebt, liegt dann immer noch im Feld.</li>
+        <li><strong>Feiner</strong> &ndash; Feinzeiger, Messuhr gegen
+          Endmaße, Lehren.</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>4. Prüfen gehört in den Arbeitsplan</summary>
+      <p>Nicht als Randnotiz, sondern als <strong>eigene
+        Vorgangszeile</strong> &ndash; mit Nummer, Prüfmittel und Prüfmaß, wie
+        jeder andere Vorgang auch.</p>
+      <p>Und an der richtigen Stelle: dort, wo noch etwas zu retten ist.
+        Nach dem Schruppen (ist das Aufmaß noch da?), nach dem Schlichten
+        (stimmt das Passmaß?) und vor dem Abstechen (stimmen die Längen?).
+        Danach kostet jede Abweichung ein neues Ausrichten &ndash; oder das
+        Teil.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Erst die Toleranz, dann das Messmittel. Nie
+      umgekehrt.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>Woher die Grenzmaße kommen, übt das Training
+      <em>Toleranzmitte</em>.</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-messmittel-messschieber.html">Werkzeug Messschieber öffnen</a>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-messmittel-buegelmessschraube.html">Werkzeug Bügelmessschraube öffnen</a>
+    </p>
+    <p class="fussnote"><strong>Woher die Zahlen stammen:</strong> ISO-System
+      für Grenzmaße und Passungen sowie Allgemeintoleranzen für Längenmaße
+      nach DIN ISO 2768-1 &ndash; Tabellenbuch Metall. Die Ablesungen der
+      Messmittel folgen den Werkzeugen <em>Messschieber</em> und
+      <em>Bügelmessschraube</em>.</p>
+
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+      Maßgebend sind Norm und Tabellenbuch.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Grenzabmasse in Mikrometern, System Einheitsbohrung, nach
+   Nennmassbereich: [oberes, unteres]. */
+var ABMASSE = [
+  {bis: 10, w: {H7:[15,0], f7:[-13,-28], g6:[-5,-14], h6:[0,-9],
+                k6:[10,1], n6:[19,10]}},
+  {bis: 18, w: {H7:[18,0], f7:[-16,-34], g6:[-6,-17], h6:[0,-11],
+                k6:[12,1], n6:[23,12]}},
+  {bis: 30, w: {H7:[21,0], f7:[-20,-41], g6:[-7,-20], h6:[0,-13],
+                k6:[15,2], n6:[28,15]}},
+  {bis: 50, w: {H7:[25,0], f7:[-25,-50], g6:[-9,-25], h6:[0,-16],
+                k6:[18,2], n6:[33,17]}}
+];
+var KLASSEN = ["H7", "f7", "g6", "h6", "k6", "n6"];
+var NENNMASSE = [8, 10, 12, 16, 18, 20, 22, 25, 28, 30, 35, 40, 45, 50];
+
+/* Allgemeintoleranzen fuer Laengenmasse nach DIN ISO 2768-1: Grenzabmass
+   in Millimetern, als plus/minus. Die Toleranzweite ist das Doppelte. */
+var ALLGEMEIN = {
+  bereiche: [
+    {von: 0.5, bis: 3,   f: 0.05, m: 0.1, c: 0.2, v: null},
+    {von: 3,   bis: 6,   f: 0.05, m: 0.1, c: 0.3, v: 0.5},
+    {von: 6,   bis: 30,  f: 0.1,  m: 0.2, c: 0.5, v: 1},
+    {von: 30,  bis: 120, f: 0.15, m: 0.3, c: 0.8, v: 1.5},
+    {von: 120, bis: 400, f: 0.2,  m: 0.5, c: 1.2, v: 2.5}
+  ],
+  namen: {f: "f (fein)", m: "m (mittel)", c: "c (grob)", v: "v (sehr grob)"}
+};
+
+var MESSMITTEL = [
+  {name: "Messschieber, Nonius 1/20", ablesung: 0.05},
+  {name: "Messschieber, Nonius 1/50", ablesung: 0.02},
+  {name: "Bügelmessschraube", ablesung: 0.01},
+  {name: "Bügelmessschraube mit Nonius", ablesung: 0.001}
+];
+
+function el(id){ return document.getElementById(id); }
+function zahl(x, n){ return x.toFixed(n === undefined ? 2 : n).replace(".", ","); }
+function waehle(liste){ return liste[Math.floor(Math.random() * liste.length)]; }
+function wert(id){
+  var e = el(id);
+  return e ? parseFloat(String(e.value).replace(",", ".")) : NaN;
+}
+
+function bereich(n){
+  for(var i = 0; i < ABMASSE.length; i++){
+    if(n <= ABMASSE[i].bis) return ABMASSE[i];
+  }
+  return ABMASSE[ABMASSE.length - 1];
+}
+function bereichText(n){
+  var von = 6;
+  for(var i = 0; i < ABMASSE.length; i++){
+    if(n <= ABMASSE[i].bis) return "über " + von + " bis " + ABMASSE[i].bis + " mm";
+    von = ABMASSE[i].bis;
+  }
+  return "";
+}
+function allgemeinBereich(n){
+  for(var i = 0; i < ALLGEMEIN.bereiche.length; i++){
+    var b = ALLGEMEIN.bereiche[i];
+    if(n > b.von && n <= b.bis) return b;
+  }
+  return ALLGEMEIN.bereiche[2];
+}
+
+/* ---------- Der Durchlauf ---------- */
+
+var aufgabe = null;
+var nr = 0, richtig = 0, versuche = 0;
+var gemeldet = false;
+
+function feld(id, beschriftung, schritt){
+  return '<label class="feld">' + beschriftung
+    + '<input type="number" id="' + id + '" step="' + (schritt || "1")
+    + '" inputmode="decimal" autocomplete="off"></label>';
+}
+
+function neueAufgabe(){
+  nr++;
+  var art = waehle(["iso", "allgemein", "reicht"]);
+  aufgabe = {art:art};
+
+  if(art === "iso"){
+    var n = waehle(NENNMASSE), k = waehle(KLASSEN);
+    var a = bereich(n).w[k];
+    aufgabe.n = n; aufgabe.k = k; aufgabe.es = a[0]; aufgabe.ei = a[1];
+    aufgabe.soll = a[0] - a[1];
+    el("art").textContent = "Toleranz aus dem Kurzzeichen";
+    el("aufgabe").innerHTML = "Auf der Zeichnung steht "
+      + '<span class="kurz">Ø' + n + " " + k + "</span>. Wie breit ist die "
+      + "Toleranzzone?";
+    el("felder").innerHTML = feld("aT", "T in µm", "1");
+
+  }else if(art === "allgemein"){
+    var na = waehle(NENNMASSE), kl = waehle(["f", "m", "c", "v"]);
+    var b = allgemeinBereich(na);
+    if(b[kl] === null) kl = "m";
+    aufgabe.n = na; aufgabe.kl = kl; aufgabe.ab = b[kl]; aufgabe.b = b;
+    aufgabe.soll = b[kl] * 2;
+    el("art").textContent = "Allgemeintoleranz";
+    el("aufgabe").innerHTML = "Ein Längenmaß von <strong>" + na
+      + " mm</strong> steht ohne Toleranzeintrag auf der Zeichnung. Im "
+      + "Schriftfeld steht die Toleranzklasse <strong>"
+      + ALLGEMEIN.namen[kl] + "</strong>. Wie groß sind Grenzabmaß und "
+      + "Toleranzweite?";
+    el("felder").innerHTML = feld("aA", "Grenzabmaß ± in mm", "0.01")
+      + feld("aW", "Weite T in mm", "0.01");
+
+  }else{
+    /* Mal eine Passung, mal eine Allgemeintoleranz - beide kommen vor. */
+    var mm = waehle(MESSMITTEL);
+    var weite, herkunft;
+    if(Math.random() < 0.6){
+      var nr2 = waehle(NENNMASSE), k2 = waehle(KLASSEN);
+      var a2 = bereich(nr2).w[k2];
+      weite = (a2[0] - a2[1]) / 1000;
+      herkunft = '<span class="kurz">Ø' + nr2 + " " + k2 + "</span>";
+    }else{
+      var nr3 = waehle(NENNMASSE), kl3 = waehle(["f", "m", "c"]);
+      var b3 = allgemeinBereich(nr3);
+      weite = b3[kl3] * 2;
+      herkunft = "ein Maß von " + nr3 + " mm nach Allgemeintoleranz <b>"
+        + ALLGEMEIN.namen[kl3] + "</b>";
+    }
+    aufgabe.weite = weite; aufgabe.mm = mm;
+    aufgabe.schritte = weite / mm.ablesung;
+    aufgabe.soll = mm.ablesung < weite ? "ja" : "nein";
+    el("art").textContent = "Reicht das Messmittel?";
+    el("aufgabe").innerHTML = "Zu prüfen ist " + herkunft
+      + ". Zur Verfügung steht: <strong>" + mm.name + "</strong>, Ablesung "
+      + zahl(mm.ablesung, 3) + " mm. Löst dieses Messmittel die Toleranz auf "
+      + "&ndash; und wie viele Ablesungsschritte ist sie breit?";
+    el("felder").innerHTML =
+      '<label class="feld">Löst es auf?'
+      + '<select id="aJ" data-druck="ankreuzen">'
+      + '<option value="">bitte wählen</option>'
+      + '<option value="ja">ja</option>'
+      + '<option value="nein">nein, gröber als die Toleranz</option>'
+      + '</select></label>'
+      + feld("aS", "Schritte", "0.1");
+  }
+
+  el("stand").textContent = "Aufgabe " + nr;
+  gemeldet = false;
+  el("rueck").hidden = true;
+  el("weg").hidden = true;
+  var erstes = el("felder").querySelector("input, select");
+  if(erstes) erstes.focus();
+}
+
+function punkteZeigen(){
+  el("punkte").textContent = versuche ? richtig + " von " + versuche + " richtig" : "";
+}
+
+function buch(text){
+  return "<span class=\"buch\"><b>Nachschlagen:</b> " + text + "</span>";
+}
+
+function wegBauen(){
+  var a = aufgabe;
+
+  if(a.art === "iso"){
+    return ""
+      + "<span class=\"schritt\">Nennmaßbereich " + bereichText(a.n)
+        + ", Zeile " + a.k + "</span>"
+      + "oberes Grenzabmaß " + a.es + " µm, unteres " + a.ei + " µm"
+      + "<span class=\"schritt\">Weite ist die Differenz</span>"
+      + "T = " + a.es + " &minus; (" + a.ei + ") = <b>" + a.soll + " µm</b> = <b>"
+        + zahl(a.soll / 1000, 3) + " mm</b>"
+      + buch("Die Grenzabmaße stehen im Auszug für das System "
+          + "Einheitsbohrung, nach Nennmaßbereich geordnet.");
+  }
+
+  if(a.art === "allgemein"){
+    return ""
+      + "<span class=\"schritt\">Nennmaßbereich über " + a.b.von + " bis "
+        + a.b.bis + " mm, Klasse " + ALLGEMEIN.namen[a.kl] + "</span>"
+      + "Grenzabmaß = <b>± " + zahl(a.ab, 2) + " mm</b>"
+      + "<span class=\"schritt\">Die Weite ist das Doppelte</span>"
+      + "T = 2 · " + zahl(a.ab, 2) + " = <b>" + zahl(a.soll, 2) + " mm</b> = <b>"
+        + zahl(a.soll * 1000, 0) + " µm</b>"
+      + buch("Allgemeintoleranzen für Längenmaße nach DIN ISO 2768-1 - sie "
+          + "gelten für alle Maße ohne eigenen Toleranzeintrag.");
+  }
+
+  return ""
+    + "<span class=\"schritt\">Erst die Toleranzweite</span>"
+    + "T = <b>" + zahl(a.weite * 1000, 0) + " µm</b> = "
+      + zahl(a.weite, 3) + " mm"
+    + "<span class=\"schritt\">Dann die Ablesung dagegenhalten</span>"
+    + a.mm.name + ": " + zahl(a.mm.ablesung, 3) + " mm"
+    + "<br>Schritte = " + zahl(a.weite, 3) + " / " + zahl(a.mm.ablesung, 3)
+      + " = <b>" + zahl(a.schritte, 1) + "</b>"
+    + "<br>" + (a.soll === "ja"
+        ? "Die Ablesung ist feiner als die Toleranz &ndash; das Messmittel "
+          + "<b>löst sie auf</b>."
+        : "Die Ablesung ist <b>gröber als die ganze Toleranz</b>. Das "
+          + "Messmittel zeigt eine Zahl, aber keine Aussage.")
+    + buch("Als Faustregel soll die Ablesung höchstens ein Zehntel der "
+        + "Toleranz betragen. Bei engen ISO-Toleranzen ist das mit "
+        + "Handmessmitteln nicht zu halten - dort wird auf die "
+        + "Toleranzmitte gezielt.");
+}
+
+function nichtsEingetragen(){
+  var r = el("rueck");
+  r.className = "rueckmeldung fast";
+  r.innerHTML = "<strong>Noch nichts eingetragen.</strong> Ausfüllen "
+    + "&ndash; oder den Rechenweg zeigen lassen.";
+  r.hidden = false;
+}
+
+el("btnPruefen").addEventListener("click", function(){
+  if(!aufgabe) return;
+  var a = aufgabe, r = el("rueck"), ok, text;
+
+  if(a.art === "iso"){
+    var t = wert("aT");
+    if(!isFinite(t)){ nichtsEingetragen(); return; }
+    ok = Math.abs(t - a.soll) <= 0.6;
+    text = "T = <strong>" + a.soll + " µm</strong> "
+      + (ok ? "&ndash; getroffen." : "&ndash; du hattest " + zahl(t, 0) + ".");
+
+  }else if(a.art === "allgemein"){
+    var ab = wert("aA"), wt = wert("aW");
+    if(!isFinite(ab) && !isFinite(wt)){ nichtsEingetragen(); return; }
+    var okA = isFinite(ab) && Math.abs(ab - a.ab) <= 0.005;
+    var okW = isFinite(wt) && Math.abs(wt - a.soll) <= 0.005;
+    ok = okA && okW;
+    text = "Grenzabmaß <strong>± " + zahl(a.ab, 2) + " mm</strong> "
+      + (okA ? "&ndash; getroffen. " : "&ndash; du hattest "
+          + (isFinite(ab) ? zahl(ab, 2) : "nichts") + ". ")
+      + "Weite <strong>" + zahl(a.soll, 2) + " mm</strong> "
+      + (okW ? "&ndash; getroffen." : "&ndash; du hattest "
+          + (isFinite(wt) ? zahl(wt, 2) : "nichts") + ".");
+
+  }else{
+    var j = el("aJ").value, s = wert("aS");
+    if(!j && !isFinite(s)){ nichtsEingetragen(); return; }
+    var okJ = j === a.soll;
+    var okS = isFinite(s)
+      && Math.abs(s - a.schritte) <= Math.max(0.06, a.schritte * 0.02);
+    ok = okJ && okS;
+    text = (a.soll === "ja" ? "Es löst auf. " : "Es löst nicht auf. ")
+      + "Die Toleranz ist <strong>" + zahl(a.schritte, 1)
+      + " Ablesungsschritte</strong> breit "
+      + (okS ? "&ndash; getroffen." : "&ndash; du hattest "
+          + (isFinite(s) ? zahl(s, 1) : "nichts") + ".");
+  }
+
+  versuche++;
+  if(ok) richtig++;
+  rundeMelden(ok);
+  r.className = "rueckmeldung " + (ok ? "ja" : "nein");
+  r.innerHTML = "<strong>" + (ok ? "Richtig." : "Noch nicht.") + "</strong> " + text;
+  r.hidden = false;
+  if(!ok){
+    el("weg").innerHTML = wegBauen();
+    el("weg").hidden = false;
+  }
+  punkteZeigen();
+});
+
+el("btnWeg").addEventListener("click", function(){
+  if(!aufgabe) return;
+  el("weg").innerHTML = wegBauen();
+  el("weg").hidden = false;
+});
+
+el("btnWeiter").addEventListener("click", neueAufgabe);
+
+/* Wettkampf (assets/wettkampf.js): Wer denselben Code hat, bekommt dieselbe
+   Aufgabenfolge. */
+window.TBK_WETTKAMPF = {
+  runden: 10,
+  neu: function(){
+    nr = 0; richtig = 0; versuche = 0;
+    punkteZeigen();
+    neueAufgabe();
+  }
+};
+
+function rundeMelden(ok){
+  if(gemeldet) return;
+  gemeldet = true;
+  document.dispatchEvent(new CustomEvent("tbk-runde", {detail:{richtig: !!ok}}));
+}
+
+neueAufgabe();
+punkteZeigen();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/wettkampf.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+</body>
+</html>

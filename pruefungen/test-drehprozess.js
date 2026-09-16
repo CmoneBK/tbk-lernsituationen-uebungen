@@ -43,7 +43,8 @@ if (!fs.existsSync(QUELLE)) {
   console.log('\nnichts zu pruefen');
   process.exit(0);
 }
-const BUCH = JSON.parse(fs.readFileSync(QUELLE, 'utf8')).zerspanung_drehen;
+const ALLES = JSON.parse(fs.readFileSync(QUELLE, 'utf8'));
+const BUCH = ALLES.zerspanung_drehen;
 if (!BUCH) {
   console.log('  ohne   daten.json kennt noch keinen Abschnitt zerspanung_drehen');
   console.log('\nnichts zu pruefen');
@@ -267,6 +268,158 @@ console.log('\nVorschub und Rautiefe: gegen die Tabelle');
     nicht.slice(0, 4).join(', '));
 }
 
+console.log('\nHauptnutzungszeit: durchspielen');
+{
+  const x = seite('07-hauptnutzungszeit.html');
+  const dx = x.document;
+
+  /* Der Vorschubweg ist die Stelle, an der es schiefgeht: Wer L = l setzt,
+     laesst An- und Ueberlauf weg. Also wird jeder Fall einmal gegen die
+     Formel des Buches gerechnet. */
+  const LA = x.eval('LA');
+  p('An- und Ueberlauf sind angesetzt', LA >= 1 && LA <= 2, String(LA));
+  const faelle = x.eval('FAELLE').map((f) => f.id);
+  p('alle fuenf Faelle des Vorschubweges sind da', faelle.length === 5,
+    faelle.join(', '));
+  const probe = {l: 50, d: 40, d1: 20};
+  const erwartet = {laengs_ohne: 50 + 2 * LA, laengs_mit: 50 + LA,
+    plan_voll: 20 + LA, plan_ansatz: 10 + LA, stechen: 50 + LA};
+  const schief = faelle.filter((id) => Math.abs(
+    x.eval('fall("' + id + '").weg(' + JSON.stringify(probe) + ')')
+    - erwartet[id]) > 1e-9);
+  p('jeder Fall rechnet den Weg des Buches', schief.length === 0,
+    schief.join(', '));
+
+  const arten = {}, nicht = [];
+  for (let i = 0; i < 45; i++) {
+    const a = x.eval('aufgabe');
+    arten[a.art] = (arten[a.art] || 0) + 1;
+    if (a.art === 'weg') dx.getElementById('aL').value = String(a.soll);
+    else if (a.art === 'zeit') dx.getElementById('aT').value = a.soll.toFixed(3);
+    else {
+      dx.getElementById('aN').value = String(a.n);
+      dx.getElementById('aT').value = a.soll.toFixed(3);
+    }
+    dx.getElementById('btnPruefen').click();
+    if (!/Richtig\./.test(dx.getElementById('rueck').textContent)) {
+      nicht.push(a.art + ': '
+        + dx.getElementById('rueck').textContent.trim().slice(0, 70));
+    }
+    dx.getElementById('btnWeg').click();
+    dx.getElementById('btnWeiter').click();
+  }
+  p('45 Aufgaben mit der eigenen Rechnung geloest', nicht.length === 0,
+    nicht.slice(0, 2).join(' | '));
+  p('alle drei Rundenarten kamen vor', Object.keys(arten).length === 3,
+    JSON.stringify(arten));
+}
+
+console.log('\nToleranzmitte: durchspielen');
+{
+  const x = seite('08-toleranzmitte.html');
+  const dx = x.document;
+
+  /* Die Grenzabmasse muessen dieselben sein wie im Tabellenbuch - sonst
+     uebt das Training gegen die Quelle, mit der geprueft wird. */
+  if (ALLES.passungen && ALLES.passungen.einheitsbohrung_h7_um) {
+    const buch = ALLES.passungen.einheitsbohrung_h7_um.werte;
+    const zeilen = {10: '6…10', 18: '10…18', 30: '18…30', 50: '30…50'};
+    const falsch = [];
+    x.eval('ABMASSE').forEach((zeile) => {
+      const soll = buch[zeilen[zeile.bis]];
+      if (!soll) return;
+      Object.keys(zeile.w).forEach((k) => {
+        if (!soll[k]) return;
+        if (zeile.w[k][0] !== soll[k][0] || zeile.w[k][1] !== soll[k][1]) {
+          falsch.push('bis ' + zeile.bis + ' ' + k);
+        }
+      });
+    });
+    p('die Grenzabmasse stimmen mit dem Buch', falsch.length === 0,
+      falsch.slice(0, 5).join(', '));
+  }
+
+  /* Bei k6 liegt die ganze Toleranzzone ueber dem Nennmass - das ist der
+     Fall, in dem das Nennmass als Zielmass schon Ausschuss waere. */
+  const k6 = x.eval('passung(25, "k6")');
+  p('k6 liegt ganz ueber dem Nennmass',
+    k6.mindest > 25 && k6.mitte > 25, String(k6.mindest));
+
+  const arten = {}, nicht = [];
+  for (let i = 0; i < 45; i++) {
+    const a = x.eval('aufgabe');
+    arten[a.art] = (arten[a.art] || 0) + 1;
+    if (a.art === 'grenzen') {
+      dx.getElementById('aH').value = a.p.hoechst.toFixed(3);
+      dx.getElementById('aM').value = a.p.mindest.toFixed(3);
+    } else if (a.art === 'mitte') {
+      dx.getElementById('aZ').value = a.p.mitte.toFixed(4);
+      dx.getElementById('aT').value = String(Math.round(a.p.weite * 1000));
+    } else {
+      dx.getElementById('aU').value = a.urteil;
+    }
+    dx.getElementById('btnPruefen').click();
+    if (!/Richtig\./.test(dx.getElementById('rueck').textContent)) {
+      nicht.push(a.art + ': '
+        + dx.getElementById('rueck').textContent.trim().slice(0, 70));
+    }
+    dx.getElementById('btnWeg').click();
+    dx.getElementById('btnWeiter').click();
+  }
+  p('45 Aufgaben mit der eigenen Rechnung geloest', nicht.length === 0,
+    nicht.slice(0, 2).join(' | '));
+  p('alle drei Rundenarten kamen vor', Object.keys(arten).length === 3,
+    JSON.stringify(arten));
+}
+
+console.log('\nMessmittel waehlen: durchspielen');
+{
+  const x = seite('09-messmittel-waehlen.html');
+  const dx = x.document;
+
+  /* Die Allgemeintoleranz gibt ein Grenzabmass, keine Weite - das ist der
+     Fehler, um den es in der zweiten Rundenart geht. */
+  if (ALLES.allgemeintoleranzen) {
+    const buch = ALLES.allgemeintoleranzen.laengenmasse_mm;
+    const spalten = ['0,5…3', '3…6', '6…30', '30…120', '120…400'];
+    const falsch = [];
+    x.eval('ALLGEMEIN').bereiche.forEach((b, i) => {
+      ['f', 'm', 'c', 'v'].forEach((k) => {
+        const name = {f: 'f (fein)', m: 'm (mittel)', c: 'c (grob)',
+          v: 'v (sehr grob)'}[k];
+        if (buch[name][i] !== b[k]) falsch.push(spalten[i] + ' ' + k);
+      });
+    });
+    p('die Allgemeintoleranzen stimmen mit dem Buch', falsch.length === 0,
+      falsch.slice(0, 5).join(', '));
+  }
+
+  const arten = {}, nicht = [];
+  for (let i = 0; i < 45; i++) {
+    const a = x.eval('aufgabe');
+    arten[a.art] = (arten[a.art] || 0) + 1;
+    if (a.art === 'iso') dx.getElementById('aT').value = String(a.soll);
+    else if (a.art === 'allgemein') {
+      dx.getElementById('aA').value = String(a.ab);
+      dx.getElementById('aW').value = String(a.soll);
+    } else {
+      dx.getElementById('aJ').value = a.soll;
+      dx.getElementById('aS').value = a.schritte.toFixed(1);
+    }
+    dx.getElementById('btnPruefen').click();
+    if (!/Richtig\./.test(dx.getElementById('rueck').textContent)) {
+      nicht.push(a.art + ': '
+        + dx.getElementById('rueck').textContent.trim().slice(0, 70));
+    }
+    dx.getElementById('btnWeg').click();
+    dx.getElementById('btnWeiter').click();
+  }
+  p('45 Aufgaben mit der eigenen Rechnung geloest', nicht.length === 0,
+    nicht.slice(0, 2).join(' | '));
+  p('alle drei Rundenarten kamen vor', Object.keys(arten).length === 3,
+    JSON.stringify(arten));
+}
+
 console.log('\nDie Trainings mit einer Auswahl');
 [['01-verfahren-erkennen.html', 'aV'],
  ['02-werkstoffgruppe-bestimmen.html', 'aG'],
@@ -302,7 +455,7 @@ console.log('\nDas Paket');
 {
   const dateien = fs.readdirSync(path.join(BASIS, 'trainings/drehprozess'))
     .filter((f) => /^\d\d-.*\.html$/.test(f)).sort();
-  p('sechs Trainings liegen im Paket', dateien.length === 6, dateien.join(', '));
+  p('neun Trainings liegen im Paket', dateien.length === 9, dateien.join(', '));
   const info = JSON.parse(fs.readFileSync(
     path.join(BASIS, 'trainings/drehprozess/info.json'), 'utf8'));
   const fehlend = info.reihenfolge.filter((f) => dateien.indexOf(f) < 0);
@@ -314,7 +467,7 @@ console.log('\nDas Paket');
      der Grund, warum es dieses Paket gibt. */
   const ohne = dateien.filter((f) => !fs.readFileSync(
     path.join(BASIS, 'trainings/drehprozess', f), 'utf8').includes('TBK_WETTKAMPF'));
-  p('alle sechs machen beim Wettkampf mit', ohne.length === 0, ohne.join(', '));
+  p('alle neun machen beim Wettkampf mit', ohne.length === 0, ohne.join(', '));
 }
 
 console.log('\nDie Verdrahtung');

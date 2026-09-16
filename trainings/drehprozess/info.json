@@ -1,6 +1,6 @@
 {
   "titel": "Fertigungstechnik: Zerspanung - Planung eines Drehprozesses",
-  "lead": "Vom Werkstück zum Arbeitsplan: Verfahren wählen, Schnittdaten nachschlagen, Werkzeug bestimmen, Vorschub berechnen – jedes Training übt einen Griff ins Tabellenbuch.",
+  "lead": "Vom Werkstück zum Arbeitsplan: Verfahren wählen, Schnittdaten nachschlagen, Werkzeug bestimmen, Vorschub berechnen, Zeit und Toleranzmitte treffen, Messmittel wählen – jedes Training übt einen Griff ins Tabellenbuch.",
   "werkzeuge": [
     {
       "datei": "fertigungstechnik-zerspanung-drehprozess-planen.html",
@@ -13,6 +13,22 @@
     {
       "datei": "fertigungstechnik-beurteilung-bedingungen-fuer-die-fertigung.html",
       "name": "Werkzeug Bedingungen für die Fertigung beurteilen"
+    },
+    {
+      "datei": "fertigungstechnik-hauptnutzungszeit-beim-drehen.html",
+      "name": "Werkzeug Hauptnutzungszeit beim Drehen"
+    },
+    {
+      "datei": "fertigungstechnik-iso-toleranzen-und-passungen.html",
+      "name": "Werkzeug ISO-Toleranzen und Passungen"
+    },
+    {
+      "datei": "fertigungstechnik-messmittel-messschieber.html",
+      "name": "Werkzeug Messschieber"
+    },
+    {
+      "datei": "fertigungstechnik-messmittel-buegelmessschraube.html",
+      "name": "Werkzeug Bügelmessschraube"
     }
   ],
   "reihenfolge": [
@@ -21,6 +37,9 @@
     "03-startwert-ablesen.html",
     "04-drehzahl-rechnen.html",
     "05-vorschub-und-rautiefe.html",
-    "06-bezeichnung-zusammensetzen.html"
+    "06-bezeichnung-zusammensetzen.html",
+    "07-hauptnutzungszeit.html",
+    "08-toleranzmitte.html",
+    "09-messmittel-waehlen.html"
   ]
 }
