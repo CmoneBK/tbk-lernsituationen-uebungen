@@ -1,0 +1,178 @@
+<!-- Erzeugt von build/build.mjs – nicht von Hand bearbeiten.
+     Design ändern: build/paket-vorlage.html, danach neu bauen. -->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Planung eines Drehprozesses</title>
+<meta name="description" content="Vier Übungen an der Welle LF5: die Kontur in Drehverfahren zerlegen, Schnittgeschwindigkeit und Drehzahl bestimmen, das Werkzeug über seine Bezeichnung auswählen und den Vorschub zur geforderten Rautiefe rechnen.">
+<!-- ACHTUNG: Diese Datei ist die VORLAGE für die Seite eines Übungs- oder
+     Trainingspakets. Die ausgelieferten index.html der Pakete werden daraus
+     von build/build.mjs erzeugt - Änderungen am Design also hier vornehmen und
+     anschließend "node build/build.mjs" ausführen. Ersetzt werden der
+     Platzhalter-Kommentar INHALT und die Felder in doppelten Klammern. -->
+<style>
+  :root{
+    --bg:#f7f7f5; --fg:#1a1a1a; --muted:#5f5f5a;
+    --card:#fff; --border:#e3e3df; --accent:#2b6cb0; --accent-fg:#fff;
+    --shadow:0 1px 3px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.05);
+  }
+  /* Dunkel gilt, wenn das System dunkel steht - es sei denn, im
+     Materialbereich wurde ausdruecklich hell gewaehlt (assets/thema.js). */
+  @media (prefers-color-scheme:dark){
+    :root:not([data-thema="hell"]){
+      --bg:#151517; --fg:#ececec; --muted:#a0a0a0;
+      --card:#1e1e21; --border:#2c2c30; --accent:#5b9bd5; --accent-fg:#0b0b0c;
+      --shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);}
+  }
+  /* Ausdruecklich dunkel gewaehlt - auch auf einem hellen System. */
+  :root[data-thema="dunkel"]{
+      --bg:#151517; --fg:#ececec; --muted:#a0a0a0;
+      --card:#1e1e21; --border:#2c2c30; --accent:#5b9bd5; --accent-fg:#0b0b0c;
+      --shadow:0 1px 3px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);}
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--fg);
+    font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  }
+  a{color:var(--accent)}
+  .wrap{width:100%; max-width:760px; margin:0 auto; padding:0 20px}
+  /* Platz für den schwebenden Rücklink oben links. */
+  header{padding:72px 0 8px}
+  .herkunft{
+    font-size:13px; font-weight:700; text-transform:uppercase;
+    letter-spacing:.06em; color:var(--muted); margin:0 0 6px;
+  }
+  h1{font-size:clamp(24px,4vw,32px); letter-spacing:-.5px; margin:0 0 10px}
+  .lead{color:var(--muted); font-size:17px; margin:0}
+  .anzahl-oben{
+    display:inline-block; margin-top:14px; font-size:13px; font-weight:600;
+    padding:3px 10px; border-radius:999px;
+    background:rgba(43,108,176,.14); color:var(--accent);
+  }
+
+  /* --- Werkzeug-Hinweis --- */
+  .werkzeuge{
+    background:var(--card); border:1px solid var(--border); border-radius:12px;
+    padding:16px 18px; margin:28px 0 0; box-shadow:var(--shadow);
+  }
+  .werkzeuge-lead{margin:0 0 10px; font-size:14px; color:var(--muted)}
+  a.werkzeug{
+    display:inline-flex; align-items:center; gap:8px;
+    font-weight:600; font-size:15px; text-decoration:none;
+    border:1px solid var(--accent); border-radius:999px; padding:7px 16px;
+    margin:0 8px 6px 0;
+  }
+  a.werkzeug::after{content:"\2197"; font-weight:400}
+  a.werkzeug:hover{background:var(--accent); color:var(--accent-fg)}
+
+  /* --- Liste der Übungen --- */
+  ol.liste{list-style:none; counter-reset:nr; margin:26px 0 0; padding:0}
+  ol.liste li{counter-increment:nr; margin:0 0 12px}
+  a.eintrag{
+    display:block; position:relative; padding:16px 18px 16px 56px;
+    background:var(--card); border:1px solid var(--border); border-radius:12px;
+    text-decoration:none; color:inherit; box-shadow:var(--shadow);
+    transition:transform .15s ease, border-color .15s ease;
+  }
+  a.eintrag::before{
+    content:counter(nr); position:absolute; left:18px; top:16px;
+    width:26px; height:26px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--accent); color:var(--accent-fg);
+    font-size:13px; font-weight:700;
+  }
+  a.eintrag:hover{transform:translateY(-3px); border-color:var(--accent)}
+  .eintrag-kopf{display:flex; flex-wrap:wrap; align-items:baseline; gap:10px}
+  .eintrag-name{font-weight:600; font-size:16px}
+  .dauer{
+    font-size:12px; font-weight:600; color:var(--muted);
+    border:1px solid var(--border); border-radius:999px; padding:1px 8px;
+  }
+  .besch{display:block; margin-top:4px; color:var(--muted); font-size:14px}
+
+  footer{
+    text-align:center; color:var(--muted); font-size:13px;
+    padding:40px 0 32px; border-top:1px solid var(--border); margin-top:48px;
+  }
+  footer a{color:var(--muted)}
+  @media (prefers-reduced-motion:reduce){
+    a.eintrag{transition:none} a.eintrag:hover{transform:none}
+  }
+</style>
+<script src="../../assets/thema.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Fertigungstechnik · Zerspanung</p>
+    <h1>Planung eines Drehprozesses</h1>
+    <p class="lead">Vier Übungen an der Welle LF5: die Kontur in Drehverfahren zerlegen, Schnittgeschwindigkeit und Drehzahl bestimmen, das Werkzeug über seine Bezeichnung auswählen und den Vorschub zur geforderten Rautiefe rechnen.</p>
+    <span class="anzahl-oben">4 Übungen</span>
+  </header>
+
+  <div class="wrap"><div class="bg-zeile" id="tbk-bg"></div></div>
+
+  <main class="wrap">
+      <div class="werkzeuge">
+        <p class="werkzeuge-lead">Passendes interaktives Werkzeug:</p>
+        <a class="werkzeug" data-werkzeug="fertigungstechnik-zerspanung-drehprozess-planen.html">Werkzeug Drehprozess planen</a>
+      </div>
+
+      <ol class="liste">
+        <li><a class="eintrag" href="01-welches-verfahren-gehoert-hierher.html"><span class="eintrag-kopf"><span class="eintrag-name">Welches Verfahren gehört hierher?</span><span class="dauer">25 min</span></span><span class="besch">Die Kontur der Welle LF5 zerlegen: Jeder Fläche ihr Drehverfahren zuordnen und die Reihenfolge der Arbeitsvorgänge begründen.</span></a></li>
+        <li><a class="eintrag" href="02-vom-werkstoff-zur-schnittgeschwindigkeit.html"><span class="eintrag-kopf"><span class="eintrag-name">Vom Werkstoff zur Schnittgeschwindigkeit</span><span class="dauer">30 min</span></span><span class="besch">42CrMo4 auf der Zeichnung – und am Ende eine Drehzahl an der Maschine. Der ganze Weg mit dem Tabellenbuch, zweimal unter verschiedenen Bedingungen.</span></a></li>
+        <li><a class="eintrag" href="03-eine-wendeschneidplatte-lesen.html"><span class="eintrag-kopf"><span class="eintrag-name">Eine Wendeschneidplatte lesen</span><span class="dauer">25 min</span></span><span class="besch">Die Bezeichnung nach DIN ISO 1832 Stelle für Stelle zerlegen – und aus den Anforderungen der Welle LF5 umgekehrt eine Bezeichnung bilden.</span></a></li>
+        <li><a class="eintrag" href="04-wie-fein-muss-der-vorschub-sein.html"><span class="eintrag-kopf"><span class="eintrag-name">Wie fein muss der Vorschub sein?</span><span class="dauer">25 min</span></span><span class="besch">Rz 4, Rz 6, Rz 10: drei Forderungen der Welle LF5, drei Vorschübe. Und was es kostet, wenn man am Vorschub spart – oder ihn verdoppelt.</span></a></li>
+      </ol>
+  </main>
+
+<script>
+/* Der Bildungsgang gilt fuer die ganze Seite t-bk.de. Hier bestimmt er, welche
+   Uebungen des Pakets ueberhaupt aufgelistet werden - abgewaehlt wird nichts
+   unerreichbar, die Seiten selbst bleiben offen. */
+(function () {
+  var B = window.tbkBildungsgang;
+  if (!B) return;
+  var zeilen = [].slice.call(document.querySelectorAll('.liste > li'));
+  var leer = document.createElement('p');
+  leer.className = 'bg-hinweis';
+  leer.hidden = true;
+  leer.textContent = 'Für diesen Bildungsgang ist hier nichts vorgesehen.';
+  var liste = document.querySelector('.liste');
+  if (liste) liste.parentNode.insertBefore(leer, liste.nextSibling);
+
+  function anwenden() {
+    var bg = B.lesen();
+    var da = 0;
+    zeilen.forEach(function (li) {
+      var passt = B.gilt(li, bg);
+      li.hidden = !passt;
+      if (passt) da++;
+    });
+    leer.hidden = da > 0;
+  }
+
+  var w = B.waehler(anwenden);
+  var zeile = document.getElementById('tbk-bg');
+  zeile.appendChild(w.knoten);
+  var hinweis = document.createElement('p');
+  hinweis.className = 'bg-hinweis';
+  hinweis.textContent = 'Zeigt nur, was im Bildungsplan vorgesehen ist – '
+    + 'in der Übung selbst lässt sich die Wahl ändern.';
+  zeile.appendChild(hinweis);
+  B.beiFremderWahl(function (neu) { w.feld.value = neu; anwenden(); });
+  anwenden();
+})();
+</script>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script src="../../assets/back-nav.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+</body>
+</html>

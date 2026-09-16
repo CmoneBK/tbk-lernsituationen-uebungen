@@ -300,19 +300,25 @@ function auswahlfeld(id, beschriftung, werte){
   return s + '</select></label>';
 }
 
+/* Die Welle steht bei jeder Rundenart im Bild - auch wenn nicht nach einer
+   Fläche gefragt ist. Sie ist der Gegenstand, ueber den geredet wird; wer
+   die Reihenfolge begruenden soll, muss die Nuten sehen koennen. */
 function welleZeigen(markiert){
-  var g = wellenGroesse({s:5.4});
+  var g = wellenGroesse({s:5.4, bezeichnungen:true});
   var svg = bild("bildAufgabe", g.breite, g.hoehe,
-    "Die Welle LF5, eine Fläche hervorgehoben",
-    "Welle LF5 &ndash; hervorgehoben ist die Fläche, um die es geht.");
-  zeichneWelle(svg, {x:g.x, y:g.y, s:5.4, markiert:[markiert]});
+    markiert ? "Die Welle LF5, eine Fläche hervorgehoben"
+             : "Die Welle LF5 mit Benennungen",
+    markiert ? "Welle LF5 &ndash; hervorgehoben ist die Fläche, um die es geht."
+             : "Welle LF5 aus 42CrMo4 &ndash; das Werkstück, um das es geht.");
+  var o = {x:g.x, y:g.y, s:5.4, bezeichnungen:true};
+  if(markiert) o.markiert = [markiert];
+  zeichneWelle(svg, o);
 }
 
 function neueAufgabe(){
   nr++;
   var art = waehle(["flaeche", "angaben", "reihenfolge"]);
   aufgabe = {art:art};
-  el("bildAufgabe").hidden = true;
   el("angaben").hidden = true;
 
   if(art === "flaeche"){
@@ -320,7 +326,6 @@ function neueAufgabe(){
     aufgabe.f = f;
     aufgabe.soll = VERFAHREN[f.verfahren];
     el("art").textContent = "Welches Verfahren gehört hierher?";
-    el("bildAufgabe").hidden = false;
     welleZeigen(f.id);
     el("aufgabe").innerHTML = "Hervorgehoben ist <strong>"
       + flaechenname(f.id) + "</strong>. Durch welches Drehverfahren entsteht "
@@ -332,6 +337,7 @@ function neueAufgabe(){
     aufgabe.a = a;
     aufgabe.soll = VERFAHREN[a.verfahren];
     el("art").textContent = "Welches Verfahren steht dahinter?";
+    welleZeigen(null);
     el("angaben").hidden = false;
     el("angaben").innerHTML = a.zeilen.map(function(z){
       return "<span>" + z + "</span>"; }).join("");
@@ -347,6 +353,7 @@ function neueAufgabe(){
     aufgabe.zweit = gedreht ? p.frueher : p.spaeter;
     aufgabe.soll = p.frueher;
     el("art").textContent = "Was kommt zuerst?";
+    welleZeigen(null);
     el("aufgabe").innerHTML = "Zwei Arbeitsvorgänge am selben Werkstück: "
       + "<strong>" + aufgabe.erst + "</strong> und <strong>" + aufgabe.zweit
       + "</strong>. Welcher steht im Arbeitsplan weiter oben?";

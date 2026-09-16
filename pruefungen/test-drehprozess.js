@@ -324,5 +324,200 @@ console.log('\nDie Verdrahtung');
   }
 }
 
+console.log('\nDie Uebungen');
+{
+  const ORDNER = path.join(BASIS, 'uebungen/drehprozess');
+  const dateien = fs.readdirSync(ORDNER)
+    .filter((f) => /^\d\d-.*\.html$/.test(f)).sort();
+  p('vier Uebungen liegen im Paket', dateien.length === 4, dateien.join(', '));
+
+  /* Jede Uebung wird geladen und ihre Pruefknoepfe werden gedrueckt - ohne
+     Eingabe. Erwartet wird "Noch nichts eingetragen": Wer nichts weiss, soll
+     nicht faelschlich gelobt werden. */
+  dateien.forEach((datei) => {
+    const voll = path.join(ORDNER, datei);
+    const dom = new JSDOM(mitAssets(fs.readFileSync(voll, 'utf8')), {
+      runScripts: 'dangerously',
+      url: 'https://t-bk.de/unterrichtsmaterial/uebungen/drehprozess/' + datei,
+      beforeParse(w) {
+        w.Element.prototype.scrollIntoView = function () {};
+        w.__laut = [];
+        w.addEventListener('error', (e) => w.__laut.push(String(e.message)));
+      },
+    });
+    const w = dom.window, d = w.document;
+    p(datei + ': laedt ohne Fehler', w.__laut.length === 0, w.__laut[0]);
+
+    const knoepfe = [...d.querySelectorAll('button.knopf')]
+      .filter((b) => /Pr\u00fcfen/.test(b.textContent));
+    p(datei + ': hat Pruefknoepfe', knoepfe.length > 0, String(knoepfe.length));
+    knoepfe.forEach((b) => b.click());
+    const bilanzen = [...d.querySelectorAll('.bilanzzeile')];
+    p(datei + ': ohne Eingabe wird nichts als richtig gewertet',
+      bilanzen.every((z) => /Noch nichts eingetragen/.test(z.textContent)),
+      bilanzen.map((z) => z.textContent).join(' | ').slice(0, 110));
+
+    /* Und jede Loesung steht vollstaendig da - eine leere Loesung ist
+       schlimmer als keine. */
+    const loesungen = [...d.querySelectorAll('details')];
+    const leer = loesungen.filter((x) => x.textContent.trim().length < 60);
+    p(datei + ': jede Loesung ist ausgefuehrt', leer.length === 0,
+      leer.length + ' zu kurz');
+    w.close();
+  });
+}
+
+console.log('\nDie Uebung zur Schnittgeschwindigkeit rechnet wie das Buch');
+{
+  const datei = '02-vom-werkstoff-zur-schnittgeschwindigkeit.html';
+  const dom = new JSDOM(mitAssets(fs.readFileSync(
+    path.join(BASIS, 'uebungen/drehprozess', datei), 'utf8')), {
+    runScripts: 'dangerously',
+    url: 'https://t-bk.de/unterrichtsmaterial/uebungen/drehprozess/' + datei,
+    beforeParse(w) { w.Element.prototype.scrollIntoView = function () {}; },
+  });
+  const w = dom.window, d = w.document;
+  const start = w.eval('STARTWERTE');
+  const zeile = BUCH.schnittdaten_drehen.P.verguetungsstahl_legiert[1];
+  const paare = {plan: 'querplandrehen', schr: 'laengsrund_schruppen',
+    schl: 'laengsrund_schlichten', abst: 'abstechen_einstechen',
+    gew: 'gewindedrehen'};
+  const schief = start.filter((v) => JSON.stringify(v.werte)
+    !== JSON.stringify(zeile[paare[v.id]]));
+  p('die fuenf Zellen stimmen mit dem Buch', schief.length === 0,
+    schief.map((v) => v.id).join(', '));
+
+  /* Den ganzen Weg einmal richtig ausfuellen. */
+  d.getElementById('wNr').value = '1.7225';
+  d.getElementById('wZu').value = '+QT';
+  d.getElementById('wRmU').value = '1000';
+  d.getElementById('wRmO').value = '1200';
+  d.getElementById('wRmM').value = '1100';
+  d.getElementById('btn1').click();
+  p('Teil 1 wird als vollstaendig richtig erkannt',
+    /5 von 5 richtig/.test(d.getElementById('bilanz1').textContent),
+    d.getElementById('bilanz1').textContent);
+
+  d.getElementById('wG').value = 'P';
+  d.getElementById('wZ').value = 'd';
+  d.getElementById('btn2').click();
+  p('Teil 2 ebenso',
+    /2 von 2 richtig/.test(d.getElementById('bilanz2').textContent),
+    d.getElementById('bilanz2').textContent);
+
+  start.forEach((v) => { d.getElementById('s_' + v.id).value = String(v.werte[1]); });
+  d.getElementById('btn3').click();
+  p('Teil 3 ebenso',
+    /5 von 5 richtig/.test(d.getElementById('bilanz3').textContent),
+    d.getElementById('bilanz3').textContent);
+
+  const faelle = w.eval('FAELLE');
+  const schrupp = w.eval('SCHRUPPEN');
+  faelle.forEach((f) => {
+    const vc = schrupp[f.griff];
+    d.getElementById('b_' + f.id).value = f.urteil;
+    d.getElementById('v_' + f.id).value = String(vc);
+    d.getElementById('n_' + f.id).value = String(w.eval('drehzahl(' + vc + ', 30)'));
+  });
+  d.getElementById('btn4').click();
+  p('Teil 4 ebenso',
+    /6 von 6 richtig/.test(d.getElementById('bilanz4').textContent),
+    d.getElementById('bilanz4').textContent);
+  w.close();
+}
+
+console.log('\nDie Lernsituation');
+{
+  const voll = path.join(BASIS, 'lernsituationen/welle-lf5/index.html');
+  const dom = new JSDOM(mitAssets(fs.readFileSync(voll, 'utf8')), {
+    runScripts: 'dangerously',
+    url: 'https://t-bk.de/unterrichtsmaterial/lernsituationen/welle-lf5/',
+    beforeParse(w) { w.Element.prototype.scrollIntoView = function () {}; },
+  });
+  const w = dom.window, d = w.document;
+
+  p('der Arbeitsplan hat acht Vorgaenge',
+    d.querySelectorAll('#arbeitsplan tr').length === 8,
+    String(d.querySelectorAll('#arbeitsplan tr').length));
+  p('und drei Felder je Zeile zum Ausfuellen',
+    d.querySelectorAll('#arbeitsplan textarea').length === 24,
+    String(d.querySelectorAll('#arbeitsplan textarea').length));
+  p('die Werkzeugliste steht bereit',
+    d.querySelectorAll('#werkzeugliste tr').length >= 6);
+  p('die Musterloesung des Arbeitsplans ist vollstaendig',
+    d.querySelectorAll('#planLoesung tr').length === 8);
+
+  /* Keine Drehzahl darf als Platzhalter stehen bleiben. */
+  const plan = d.getElementById('planLoesung').textContent;
+  p('keine Drehzahl blieb bei null stehen', !/n = 0 1\/min/.test(plan));
+
+  /* Die Drehzahlen der Musterloesung muessen Stufen der Maschine sein. */
+  const stufen = w.eval('STUFEN');
+  /* Die Gruppe herausziehen, nicht alle Ziffern der Fundstelle - sonst
+     haengt die 1 aus "1/min" hinten an der Drehzahl. */
+  const genannt = [...plan.matchAll(/n = (\d+) 1\/min/g)]
+    .map((m) => Number(m[1]));
+  const fremd = genannt.filter((n) => stufen.indexOf(n) < 0);
+  p(genannt.length + ' Drehzahlen sind Stufen der Maschine', fremd.length === 0,
+    fremd.join(', '));
+
+  /* Und der ganze Weg einmal richtig ausgefuellt. */
+  d.getElementById('wRm').value = '1100';
+  d.getElementById('wG').value = 'P';
+  d.getElementById('wB').value = 'normal';
+  d.getElementById('btn3').click();
+  p('Werkstoff und Bedingungen werden erkannt',
+    /3 von 3 richtig/.test(d.getElementById('bilanz3').textContent),
+    d.getElementById('bilanz3').textContent);
+
+  const vorgaenge = w.eval('VORGAENGE');
+  vorgaenge.forEach((v) => {
+    d.getElementById('vc_' + v.id).value = String(v.vc);
+    d.getElementById('n_' + v.id).value =
+      String(w.eval('stufe(drehzahl(' + v.vc + ', ' + v.d + '))'));
+  });
+  d.getElementById('btn4').click();
+  p('alle Schnittdaten werden erkannt',
+    /12 von 12 richtig/.test(d.getElementById('bilanz4').textContent),
+    d.getElementById('bilanz4').textContent);
+
+  d.getElementById('vR').value = '0.8';
+  d.getElementById('vF4').value = String(w.eval('vorschub(4, 0.8)'));
+  d.getElementById('vF10').value = String(w.eval('vorschub(10, 0.8)'));
+  d.getElementById('btn5').click();
+  p('die Vorschuebe werden erkannt',
+    /3 von 3 richtig/.test(d.getElementById('bilanz5').textContent),
+    d.getElementById('bilanz5').textContent);
+  w.close();
+}
+
+console.log('\nDie Lektion im Werkzeug-Repo');
+{
+  const { TOOLS, teilweise } = require('./orte');
+  if (teilweise(TOOLS, 'die Werkzeuge')) {
+    const datei = path.join(TOOLS,
+      'fertigungstechnik-zerspanung-drehprozess-planen.html');
+    p('die Lektion liegt im Werkzeug-Repo', fs.existsSync(datei));
+    if (fs.existsSync(datei)) {
+      const text = fs.readFileSync(datei, 'utf8');
+      p('sie ist als Lektion gekennzeichnet',
+        /name="art" content="lektion"/.test(text));
+      p('sie hat die fuenf Schritte als Reiter',
+        ['kontur', 'werkstoff', 'schnitt', 'werkzeug', 'vorschub', 'hinweise']
+          .every((r) => text.indexOf('data-tab="' + r + '"') > 0));
+      p('sie nennt ihre Quellen', /Tabellenbuch Metall/.test(text));
+    }
+    /* Der Zeichenbaustein liegt in beiden Repos - er muss derselbe sein,
+       sonst zeichnet die Lektion eine andere Welle als die Uebungen. */
+    [['assets/zeichnen.js', 'zeichnen.js'],
+     ['assets/drehteil.js', 'drehteil.js']].forEach((paar) => {
+      const hier = fs.readFileSync(path.join(BASIS, paar[0]), 'utf8');
+      const dort = path.join(TOOLS, 'assets', paar[1]);
+      p(paar[1] + ' ist in beiden Repos derselbe',
+        fs.existsSync(dort) && fs.readFileSync(dort, 'utf8') === hier);
+    });
+  }
+}
+
 console.log(fehler ? '\n' + fehler + ' Befunde' : '\nalles gruen');
 process.exit(fehler ? 1 : 0);

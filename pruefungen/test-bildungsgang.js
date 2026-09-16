@@ -380,8 +380,8 @@ console.log('\nÜbersichten');
 
   const alle = await laden(path.join(MAT, 'index.html'),
     { wurzel: MAT, praefix: '', url: 'https://t-bk.de/unterrichtsmaterial/' });
-  p('ohne Wahl sind beide Lernsituationen da',
-    ls(alle.d).every((e) => e.charAt(0) === '+') && ls(alle.d).length === 2,
+  p('ohne Wahl sind alle Lernsituationen da',
+    ls(alle.d).every((e) => e.charAt(0) === '+') && ls(alle.d).length >= 2,
     ls(alle.d).join(' '));
 
   const pak = await laden(path.join(MAT, 'uebungen/schraubverbindungen/index.html'),

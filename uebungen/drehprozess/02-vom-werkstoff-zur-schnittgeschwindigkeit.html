@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vom Werkstoff zur Schnittgeschwindigkeit</title>
+<meta name="description" content="42CrMo4 auf der Zeichnung – und am Ende eine Drehzahl an der Maschine. Der ganze Weg mit dem Tabellenbuch, zweimal unter verschiedenen Bedingungen.">
+<meta name="dauer" content="30 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  table.werte td:first-child{font-weight:600}
+  table.werte input, table.werte select{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:6px 8px; border-radius:7px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  td.urteil{font-size:13px; font-weight:600; white-space:nowrap}
+  td.urteil.ja{color:var(--ok)}
+  td.urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+  .formel{
+    display:block; margin:10px 0; padding:10px 14px; border-radius:10px;
+    background:var(--bg); border:1px solid var(--border);
+    font-size:17px; text-align:center; font-variant-numeric:tabular-nums;
+  }
+  .zelle{
+    display:inline-flex; gap:10px; align-items:baseline; padding:5px 12px;
+    border-radius:8px; background:var(--bg); border:1px solid var(--border);
+    font-variant-numeric:tabular-nums;
+  }
+  .zelle span{color:var(--muted)}
+  .zelle b{font-size:17px; color:var(--fg)}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Planung eines Drehprozesses</p>
+    <h1>Vom Werkstoff zur Schnittgeschwindigkeit</h1>
+    <p class="lead">Vier Griffe ins Buch, und die Maschine weiß, wie schnell sie drehen soll.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Die Lage:</strong> Auf der Zeichnung der Welle LF5 steht genau
+        eine Angabe zum Werkstoff: <strong>42CrMo4</strong>. Mehr nicht. Daraus
+        muss am Ende eine Drehzahl werden, die sich an der Maschine einstellen
+        lässt.</p>
+      <p>Der Weg dahin führt über vier Stationen im Tabellenbuch. Diese Übung
+        geht ihn Schritt für Schritt &ndash; und dann noch einmal, unter
+        anderen Bedingungen.</p>
+      <p><strong>Das Tabellenbuch gehört aufgeschlagen daneben.</strong></p>
+    </div>
+
+    <h2><span class="nr">1</span>Was hinter 42CrMo4 steckt</h2>
+    <p>Schlagt den Werkstoff in der Tabelle der Vergütungsstähle nach. Das
+      Werkstück ist an der dicksten Stelle Ø30 &ndash; achtet auf die Spalte
+      für den <strong>Walzdurchmesser</strong>.</p>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Gesucht</th><th>Eintrag</th><th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>Werkstoffnummer</td>
+            <td><input type="text" id="wNr" autocomplete="off" placeholder="z. B. 1.0000"></td>
+            <td class="urteil" id="uNr">–</td></tr>
+          <tr><td>Behandlungszustand für diese Werte</td>
+            <td><select id="wZu" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="+A">+A (weichgeglüht)</option>
+              <option value="+N">+N (normalgeglüht)</option>
+              <option value="+QT">+QT (vergütet)</option>
+            </select></td>
+            <td class="urteil" id="uZu">–</td></tr>
+          <tr><td>Zugfestigkeit R<sub>m</sub>, untere Grenze in N/mm²</td>
+            <td><input type="number" id="wRmU" step="10" inputmode="decimal" autocomplete="off"></td>
+            <td class="urteil" id="uRmU">–</td></tr>
+          <tr><td>Zugfestigkeit R<sub>m</sub>, obere Grenze in N/mm²</td>
+            <td><input type="number" id="wRmO" step="10" inputmode="decimal" autocomplete="off"></td>
+            <td class="urteil" id="uRmO">–</td></tr>
+          <tr><td>gemittelte Zugfestigkeit in N/mm²</td>
+            <td><input type="number" id="wRmM" step="10" inputmode="decimal" autocomplete="off"></td>
+            <td class="urteil" id="uRmM">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn1">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz1">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung und warum der Durchmesser zählt</summary>
+      <p><strong>42CrMo4, Werkstoffnummer 1.7225, Zustand +QT.</strong> Für
+        Walzdurchmesser über 16 bis 40 mm steht dort R<sub>m</sub> = 1000 bis
+        1200 N/mm², gemittelt also <strong>1100 N/mm²</strong>.</p>
+      <p>Der Durchmesser steht in der Tabelle, weil ein Vergütungsstahl beim
+        Abschrecken von außen nach innen durchhärtet. Im dicken Stück kommt die
+        Wirkung nicht bis zur Mitte &ndash; derselbe Stahl ist dort weicher.
+        Deshalb hat jede Zeile mehrere Spalten, und man muss die nehmen, in die
+        das Werkstück fällt. Für Ø30 ist das die Spalte „über 16 bis 40".</p>
+      <p>Der Zustand <strong>+QT</strong> ist der vergütete. Ein 42CrMo4 wird
+        praktisch immer vergütet geliefert &ndash; darum geht es bei einem
+        Vergütungsstahl. Im weichgeglühten Zustand stünde dort ein ganz anderer
+        Wert, und damit eine andere Zeile in der Schnittdatentabelle.</p>
+    </details>
+
+    <h2><span class="nr">2</span>Gruppe und Zeile</h2>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Gesucht</th><th>Eintrag</th><th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>Hauptanwendungsgruppe nach DIN ISO 513</td>
+            <td><select id="wG" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="P">P</option><option value="M">M</option>
+              <option value="K">K</option><option value="N">N</option>
+              <option value="S">S</option><option value="H">H</option>
+            </select></td>
+            <td class="urteil" id="uG">–</td></tr>
+          <tr><td>Zeile der Schnittdatentabelle</td>
+            <td><select id="wZ" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="a">Baustahl, R&#8202;m &gt; 500</option>
+              <option value="b">Vergütungsstahl, unlegiert, R&#8202;m &gt; 650</option>
+              <option value="c">Vergütungsstahl, legiert, R&#8202;m &le; 750</option>
+              <option value="d">Vergütungsstahl, legiert, R&#8202;m &gt; 750</option>
+              <option value="e">Werkzeugstahl, R&#8202;m &gt; 750</option>
+            </select></td>
+            <td class="urteil" id="uZ">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn2">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz2">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: P, und warum nicht M</summary>
+      <p>42CrMo4 ist ein <strong>legierter Vergütungsstahl</strong> &ndash;
+        Stahl, also Gruppe <strong>P</strong>. Das Chrom im Namen führt gern in
+        die Irre: Nichtrostend wird ein Stahl erst ab etwa 10,5 % Chrom, und
+        dann trägt er ein <strong>X</strong> vor der Bezeichnung. 42CrMo4 hat
+        rund 1 % Chrom und rostet wie jeder andere Vergütungsstahl.</p>
+      <p>Mit R<sub>m</sub> = 1100 N/mm² fällt er in die Zeile
+        <strong>„Vergütungsstahl, legiert, R<sub>m</sub> &gt; 750"</strong>.
+        Die Zeile darüber (≤ 750) hätte fast <strong>ein Drittel höhere</strong>
+        Schnittgeschwindigkeiten &ndash; ein Griff daneben, und die Schneide
+        hält nicht durch.</p>
+    </details>
+
+    <h2><span class="nr">3</span>Die Startwerte</h2>
+    <p>Jetzt steht die Zeile fest. Tragt für jedes Verfahren den
+      <strong>Startwert</strong> ein &ndash; den fett gedruckten Wert, der bei
+      normalen Bearbeitungsbedingungen gilt.</p>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Verfahren</th><th>v<sub>c</sub> in m/min</th>
+          <th>Stimmt?</th></tr></thead>
+        <tbody id="startwerte"></tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn3">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz3">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: die fünf Startwerte</summary>
+      <div id="loesung3"></div>
+      <p>Auffällig: Geschlichtet wird mit <strong>150</strong>, geschruppt nur
+        mit <strong>110</strong> m/min. Das überrascht viele &ndash; man würde
+        erwarten, dass der grobe Schnitt schneller geht. Der Grund ist die
+        Wärme: Beim Schruppen fließt viel mehr Span über die Schneide, und der
+        trägt die Wärme hinein. Kleinerer Span erlaubt höhere Geschwindigkeit.</p>
+    </details>
+
+    <h2><span class="nr">4</span>Zwei Werkstätten, zwei Drehzahlen</h2>
+    <p>Derselbe Werkstoff, dasselbe Verfahren &ndash; aber die Umstände sind
+      verschieden. Beurteilt für jede Werkstatt die Bearbeitungsbedingungen und
+      rechnet die Drehzahl aus.</p>
+    <p>Gedreht wird jeweils der <strong>Bund Ø30</strong> im
+      <strong>Längsrunddrehen, Schruppen</strong>.</p>
+
+    <div class="box" id="fallA"></div>
+    <div class="box" id="fallB"></div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn4">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz4">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: wie die Bedingungen den Wert verschieben</summary>
+      <div id="loesung4"></div>
+      <span class="formel">n = v<sub>c</sub> / (π · d)</span>
+      <p>Die berechnete Drehzahl wird <strong>abgerundet</strong> &ndash; der
+        Richtwert ist eine Obergrenze, keine Zielvorgabe.</p>
+      <p>Zwischen den beiden Werkstätten liegen mehr als
+        <strong>hundert Umdrehungen</strong> in der Minute. Das ist keine
+        Kleinigkeit: Es ist der Unterschied zwischen einer Schneide, die eine
+        Schicht hält, und einer, die nach zwanzig Minuten stumpf ist.</p>
+    </details>
+
+    <h2><span class="nr">5</span>Übertragen</h2>
+
+    <details>
+      <summary>1. Warum steht in der Tabelle überhaupt ein Bereich und nicht
+        eine Zahl?</summary>
+      <p>Weil die Schnittgeschwindigkeit kein Naturgesetz ist, sondern ein
+        <strong>Kompromiss</strong>. Höher heißt schneller fertig und bessere
+        Oberfläche &ndash; und kürzere Standzeit der Schneide. Niedriger heißt
+        das Umgekehrte.</p>
+      <p>Wo genau man sich einordnet, hängt davon ab, was gerade teurer ist: die
+        Maschinenstunde oder die Wendeschneidplatte. Die Tabelle gibt den
+        Rahmen, die Entscheidung bleibt beim Planer. Der fette Startwert ist der
+        Vorschlag für den Normalfall.</p>
+    </details>
+
+    <details>
+      <summary>2. Die Welle wird zwischen Spitzen gedreht statt im Futter. Was
+        ändert das?</summary>
+      <p>Zwischen Spitzen ist das Werkstück an beiden Enden gehalten &ndash; es
+        biegt sich unter dem Schnittdruck deutlich weniger durch. Das verbessert
+        die <strong>Stabilität</strong>, also die Spalte in der
+        Bedingungstabelle.</p>
+      <p>Bei 135 mm Länge auf 32 mm Durchmesser ist das Verhältnis noch
+        harmlos. Bei einer langen dünnen Welle wäre es der Unterschied zwischen
+        „normal" und „ungünstig" &ndash; und damit zwischen Startwert und
+        unterem Grenzwert.</p>
+    </details>
+
+    <details>
+      <summary>3. Das Rohteil ist warmgewalzt und trägt Walzhaut. Was heißt das
+        für den ersten Schnitt?</summary>
+      <p>Walzhaut, Gusshaut und Schmiedehaut sind hart und ungleichmäßig
+        &ndash; sie enthalten Zunder und Sand. Die Bedingungstabelle führt sie
+        deshalb in der mittleren Zeile: <em>wechselnde Schnitttiefe, Guss- oder
+        Schmiedehaut</em>.</p>
+      <p>Praktisch heißt das: Der <strong>erste</strong> Schnitt muss tief genug
+        greifen, um unter der Haut zu bleiben. Eine Schneide, die in der Haut
+        läuft, ist schnell hin. Und für diesen Schnitt geht man mit der
+        Schnittgeschwindigkeit eher nach unten.</p>
+    </details>
+
+    <details>
+      <summary>4. Die Maschine schafft die berechnete Drehzahl nicht &ndash;
+        ihre höchste Stufe liegt darunter. Und nun?</summary>
+      <p>Dann wird mit der höchsten möglichen Stufe gedreht. Das ist
+        unproblematisch: Eine zu <em>kleine</em> Schnittgeschwindigkeit kostet
+        Zeit, schadet der Schneide aber nicht.</p>
+      <p>Umgekehrt wäre es kritisch. Deshalb wird die berechnete Drehzahl
+        abgerundet und auf die <strong>nächstkleinere</strong> Stufe gegangen
+        &ndash; nie auf die nächstgrößere.</p>
+      <p>Anders liegt der Fall beim Gewindedrehen: Dort hängt die Drehzahl mit
+        dem Vorschub zusammen, weil f = P sein muss. Eine zu hohe Drehzahl
+        bedeutet dort eine Vorschubgeschwindigkeit, bei der die Maschine am Ende
+        des Gewindes nicht mehr rechtzeitig anhält.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Werkstoff, Durchmesser, Zustand &rarr;
+      R<sub>m</sub>. R<sub>m</sub> und Sorte &rarr; Zeile. Verfahren &rarr;
+      Spalte. Bedingungen &rarr; welcher der drei Werte. Erst dann wird
+      gerechnet.
+    </div>
+
+    <p class="fussnote"><strong>Woher die Zahlen stammen:</strong>
+      Vergütungsstähle nach DIN EN ISO 683-2, Hauptanwendungsgruppen nach
+      DIN ISO 513, Schnittdaten und Bearbeitungsbedingungen aus dem Abschnitt
+      „Spanende Fertigung (Drehen)" &ndash; alles Tabellenbuch Metall.</p>
+
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+      Maßgebend sind Norm und Tabellenbuch.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Die Zeile "Vergütungsstahl, legiert, Rm > 750" aus den Schnittdaten beim
+   Drehen: [unterer Grenzwert, Startwert, oberer Grenzwert] in m/min. */
+var STARTWERTE = [
+  {id:"plan",  name:"Querplandrehen",              werte:[80, 130, 180]},
+  {id:"schr",  name:"Längsrunddrehen, Schruppen",  werte:[70, 110, 160]},
+  {id:"schl",  name:"Längsrunddrehen, Schlichten", werte:[100, 150, 200]},
+  {id:"abst",  name:"Abstechdrehen, Einstechdrehen", werte:[95, 105, 115]},
+  {id:"gew",   name:"Gewindedrehen",               werte:[90, 100, 110]}
+];
+
+/* Zwei Werkstätten, zwei Zeilen der Bedingungstabelle. */
+var FAELLE = [
+  {id:"A", titel:"Werkstatt A – die neue Maschine",
+   text:"Eine stabile CNC-Drehmaschine mit Innenkühlung. Das Rohteil ist "
+     + "gezogen und blank, der Schnitt läuft gleichmäßig durch. Gespannt wird "
+     + "kurz im Futter, zusätzlich gestützt durch die Reitstockspitze.",
+   eingriff:"glatter, gleichmäßiger Schnitt an vorbearbeiteter Oberfläche",
+   stabil:"++",
+   urteil:"günstig", griff:2,
+   grund:"Glatter Schnitt und hohe Stabilität treffen sich in der Tabelle bei "
+     + "„günstig“. Also der obere Grenzwert."},
+  {id:"B", titel:"Werkstatt B – die alte Maschine",
+   text:"Eine ältere konventionelle Drehmaschine, Kühlung von Hand. Das "
+     + "Rohteil ist warmgewalzt und trägt Walzhaut, der erste Schnitt läuft "
+     + "durch wechselnde Tiefe. Gespannt wird lang ausgespannt im Futter, ohne "
+     + "Spitze.",
+   eingriff:"wechselnde Schnitttiefe, Guss- oder Schmiedehaut",
+   stabil:"−",
+   urteil:"ungünstig", griff:0,
+   grund:"Wechselnde Schnitttiefe und geringe Stabilität ergeben "
+     + "„ungünstig“. Also der untere Grenzwert."}
+];
+
+var D_BUND = 30;
+
+function el(id){ return document.getElementById(id); }
+function wert(id){
+  var e = el(id);
+  return e ? parseFloat(String(e.value).replace(",", ".")) : NaN;
+}
+function zahl(x, n){ return x.toFixed(n === undefined ? 0 : n).replace(".", ","); }
+function drehzahl(vc, d){ return Math.floor(vc * 1000 / (Math.PI * d)); }
+
+function urteilen(id, ok, offen){
+  var u = el(id);
+  if(offen){ u.textContent = "–"; u.className = "urteil"; return 0; }
+  u.textContent = ok ? "richtig" : "nein";
+  u.className = "urteil " + (ok ? "ja" : "nein");
+  return ok ? 1 : 0;
+}
+
+function bilanz(id, richtig, gesamt, offen){
+  el(id).textContent = offen === gesamt
+    ? "Noch nichts eingetragen."
+    : richtig + " von " + gesamt + " richtig"
+      + (offen ? ", " + offen + " noch offen." : ".");
+}
+
+/* ---------- Teil 1 ---------- */
+
+el("btn1").addEventListener("click", function(){
+  var r = 0, offen = 0, p;
+
+  var nr = String(el("wNr").value).trim().replace(",", ".");
+  p = !nr; if(p) offen++;
+  r += urteilen("uNr", nr === "1.7225", p);
+
+  var zu = el("wZu").value;
+  p = !zu; if(p) offen++;
+  r += urteilen("uZu", zu === "+QT", p);
+
+  [["wRmU", "uRmU", 1000], ["wRmO", "uRmO", 1200], ["wRmM", "uRmM", 1100]]
+    .forEach(function(f){
+      var v = wert(f[0]);
+      var leer = !isFinite(v); if(leer) offen++;
+      r += urteilen(f[1], Math.abs(v - f[2]) < 1, leer);
+    });
+
+  bilanz("bilanz1", r, 5, offen);
+});
+
+/* ---------- Teil 2 ---------- */
+
+el("btn2").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  var g = el("wG").value, z = el("wZ").value;
+  if(!g) offen++;
+  r += urteilen("uG", g === "P", !g);
+  if(!z) offen++;
+  r += urteilen("uZ", z === "d", !z);
+  bilanz("bilanz2", r, 2, offen);
+});
+
+/* ---------- Teil 3 ---------- */
+
+(function teil3(){
+  var aus = "", l = "";
+  STARTWERTE.forEach(function(v){
+    aus += '<tr><td>' + v.name + '</td>'
+      + '<td><input type="number" id="s_' + v.id + '" step="5"'
+      + ' inputmode="decimal" autocomplete="off"></td>'
+      + '<td class="urteil" id="su_' + v.id + '">–</td></tr>';
+    l += '<p><strong>' + v.name + ':</strong> <span class="zelle">'
+      + '<span>' + v.werte[0] + '</span> &ndash; <b>' + v.werte[1]
+      + '</b> &ndash; <span>' + v.werte[2] + '</span></span> m/min</p>';
+  });
+  el("startwerte").innerHTML = aus;
+  el("loesung3").innerHTML = l;
+}());
+
+el("btn3").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  STARTWERTE.forEach(function(v){
+    var x = wert("s_" + v.id);
+    var leer = !isFinite(x); if(leer) offen++;
+    r += urteilen("su_" + v.id, Math.abs(x - v.werte[1]) < 1, leer);
+  });
+  bilanz("bilanz3", r, STARTWERTE.length, offen);
+});
+
+/* ---------- Teil 4 ---------- */
+
+var SCHRUPPEN = STARTWERTE[1].werte;
+
+(function teil4(){
+  var l = "";
+  FAELLE.forEach(function(f){
+    var vc = SCHRUPPEN[f.griff];
+    el("fall" + f.id).innerHTML =
+      '<p><strong>' + f.titel + '</strong></p>'
+      + '<p>' + f.text + '</p>'
+      + '<div class="tabellenrahmen"><table class="werte"><tbody>'
+      + '<tr><td>Bearbeitungsbedingungen</td>'
+        + '<td><select id="b_' + f.id + '" data-druck="ankreuzen">'
+        + '<option value="">bitte wählen</option>'
+        + '<option value="günstig">günstig</option>'
+        + '<option value="normal">normal</option>'
+        + '<option value="ungünstig">ungünstig</option></select></td>'
+        + '<td class="urteil" id="bu_' + f.id + '">–</td></tr>'
+      + '<tr><td>v<sub>c</sub> in m/min</td>'
+        + '<td><input type="number" id="v_' + f.id + '" step="5"'
+        + ' inputmode="decimal" autocomplete="off"></td>'
+        + '<td class="urteil" id="vu_' + f.id + '">–</td></tr>'
+      + '<tr><td>Drehzahl n in 1/min</td>'
+        + '<td><input type="number" id="n_' + f.id + '" step="1"'
+        + ' inputmode="decimal" autocomplete="off"></td>'
+        + '<td class="urteil" id="nu_' + f.id + '">–</td></tr>'
+      + '</tbody></table></div>';
+
+    l += '<p><strong>' + f.titel + '</strong><br>'
+      + 'Schneideneingriff: ' + f.eingriff + '.<br>'
+      + 'Stabilität von Maschine, Kühlung, Einspannung und Werkstück: '
+        + f.stabil + '.<br>'
+      + f.grund + '<br>'
+      + 'v<sub>c</sub> = <strong>' + vc + ' m/min</strong><br>'
+      + 'n = ' + (vc * 1000) + ' / (π · ' + D_BUND + ') = '
+        + zahl(vc * 1000 / (Math.PI * D_BUND), 1) + ' &rarr; abgerundet '
+        + '<strong>' + drehzahl(vc, D_BUND) + ' 1/min</strong></p>';
+  });
+  el("loesung4").innerHTML = l;
+}());
+
+el("btn4").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  FAELLE.forEach(function(f){
+    var vc = SCHRUPPEN[f.griff];
+    var b = el("b_" + f.id).value;
+    if(!b) offen++;
+    r += urteilen("bu_" + f.id, b === f.urteil, !b);
+
+    var v = wert("v_" + f.id);
+    var leerV = !isFinite(v); if(leerV) offen++;
+    r += urteilen("vu_" + f.id, Math.abs(v - vc) < 1, leerV);
+
+    var n = wert("n_" + f.id);
+    var leerN = !isFinite(n); if(leerN) offen++;
+    r += urteilen("nu_" + f.id,
+      Math.abs(n - drehzahl(vc, D_BUND)) <= 2, leerN);
+  });
+  bilanz("bilanz4", r, 6, offen);
+});
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

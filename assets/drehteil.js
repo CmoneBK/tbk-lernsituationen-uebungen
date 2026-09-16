@@ -273,6 +273,9 @@ function wellenMasse(g, m){
 
 /* Benennungen mit Hinweislinie - Erklärebene, deshalb gestrichelt und in
    einer eigenen Gruppe. Sie gehören nicht zur Zeichnung.
+   Nicht zusammen mit `masse` verwenden: Die Hinweislinien laufen dann in die
+   Maßhilfslinien der oberen Maßkette. Entweder die Zeichnung mit Maßen oder
+   das Bild mit Benennungen - zwei Bilder sind besser als ein überfülltes.
    Die Höhen sind gestaffelt: Vier Benennungen auf 130 mm Länge stoßen sonst
    aneinander. */
 function wellenBezeichnungen(g, m){

@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wie fein muss der Vorschub sein?</title>
+<meta name="description" content="Rz 4, Rz 6, Rz 10: drei Forderungen der Welle LF5, drei Vorschübe. Und was es kostet, wenn man am Vorschub spart – oder ihn verdoppelt.">
+<meta name="dauer" content="25 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  table.werte td:first-child{font-weight:600}
+  table.werte input, table.werte select{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:6px 8px; border-radius:7px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  td.urteil{font-size:13px; font-weight:600; white-space:nowrap}
+  td.urteil.ja{color:var(--ok)}
+  td.urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+  .formel{
+    display:block; margin:10px 0; padding:10px 14px; border-radius:10px;
+    background:var(--bg); border:1px solid var(--border);
+    font-size:17px; text-align:center; font-variant-numeric:tabular-nums;
+  }
+  figure.bild{margin:0 0 18px}
+  figure.bild svg{width:100%; height:auto}
+  figure.bild figcaption{font-size:13px; color:var(--muted); margin-top:6px}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Planung eines Drehprozesses</p>
+    <h1>Wie fein muss der Vorschub sein?</h1>
+    <p class="lead">Die Zeichnung fordert eine Rautiefe. Das Werkzeug liefert sie &ndash; oder nicht.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Die Lage:</strong> Auf der Welle LF5 stehen drei verschiedene
+        Rautiefen: <strong>Rz 10</strong> als allgemeine Angabe im Schriftfeld,
+        <strong>Rz 6</strong> am Ø24 und <strong>Rz 4</strong> an den beiden
+        Lagersitzen Ø20 und Ø25.</p>
+      <p>Drei Forderungen, drei Vorschübe &ndash; und drei verschiedene
+        Antworten auf die Frage, ob überhaupt geschlichtet werden muss.</p>
+    </div>
+
+    <figure class="bild" id="bildWelle"></figure>
+
+    <h2><span class="nr">1</span>Woher die Rillen kommen</h2>
+    <p>Die Werkzeugecke ist rund, nicht spitz. Bei jeder Umdrehung wandert sie
+      um den Vorschub f weiter und lässt zwischen zwei Bahnen einen Grat stehen.
+      Wie hoch der wird, folgt aus Kreis und Sehne:</p>
+
+    <span class="formel">R<sub>th</sub> = f² / (8 · r<sub>ε</sub>)
+      &nbsp;&nbsp;&rarr;&nbsp;&nbsp;
+      f = √(8 · r<sub>ε</sub> · R<sub>th</sub>)</span>
+
+    <p>R<sub>th</sub> ist die <em>theoretische</em> Rautiefe; für die Planung
+      wird R<sub>th</sub> &asymp; R<sub>z</sub> gesetzt. Achtung bei den
+      Einheiten: R<sub>th</sub> in Mikrometern, r<sub>ε</sub> und f in
+      Millimetern.</p>
+
+    <p>Das Schlichtwerkzeug hat einen Eckenradius <strong>r<sub>ε</sub> =
+      0,4 mm</strong>. Rechnet für jede geforderte Rautiefe den Vorschub aus.</p>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Fläche und Forderung</th><th>f in mm</th>
+          <th>Stimmt?</th></tr></thead>
+        <tbody id="liste1"></tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn1">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz1">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung und die Gegenprobe im Tabellenbuch</summary>
+      <div id="loesung1"></div>
+      <p>Im Tabellenbuch steht die Rechnung schon fertig: eine Tabelle mit
+        Rautiefen in den Zeilen und Eckenradien in den Spalten, darin der
+        Vorschub. Für Rz 4 und r<sub>ε</sub> = 0,4 mm steht dort
+        <strong>0,11 mm</strong> &ndash; genau das Ergebnis der Rechnung.</p>
+      <p><strong>Rz 10 ist der interessante Fall.</strong> Der Vorschub dafür
+        wäre 0,18 mm. Aber das ist die <em>allgemeine</em> Rautiefe der
+        Zeichnung, und der Schruppvorgang liefert sie nicht: Beim Schruppen
+        liegt f zwischen 0,25 und 0,6 mm, und daraus wird selbst mit
+        r<sub>ε</sub> = 0,8 mm eine Rautiefe von 10 bis 56 µm. Am Bund Ø30 wird
+        deshalb mit dem kleinsten Schruppvorschub gearbeitet &ndash; oder
+        zusätzlich geschlichtet, wenn die Fläche es verlangt.</p>
+    </details>
+
+    <h2><span class="nr">2</span>Was ein größerer Eckenradius bringt</h2>
+    <p>Derselbe Lagersitz Ø25 mit Rz 4, aber ein Werkzeug mit
+      <strong>r<sub>ε</sub> = 0,8 mm</strong>.</p>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Gesucht</th><th>Eintrag</th><th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>Vorschub f mit r<sub>ε</sub> = 0,8 mm, in mm</td>
+            <td><input type="number" id="gF" step="0.01" inputmode="decimal"
+              autocomplete="off"></td>
+            <td class="urteil" id="ugF">–</td></tr>
+          <tr><td>Umdrehungen für die 39,3 mm des Ø25 bei r<sub>ε</sub> = 0,4 mm</td>
+            <td><input type="number" id="gU4" step="1" inputmode="decimal"
+              autocomplete="off"></td>
+            <td class="urteil" id="ugU4">–</td></tr>
+          <tr><td>Umdrehungen für dieselbe Strecke bei r<sub>ε</sub> = 0,8 mm</td>
+            <td><input type="number" id="gU8" step="1" inputmode="decimal"
+              autocomplete="off"></td>
+            <td class="urteil" id="ugU8">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn2">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz2">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: ein Drittel weniger Umdrehungen</summary>
+      <div id="loesung2"></div>
+      <p>Die Zahl der Umdrehungen folgt aus dem Weg geteilt durch den Vorschub
+        je Umdrehung:</p>
+      <span class="formel">Umdrehungen = L / f</span>
+      <p>Mit der Drehzahl daraus die Zeit: t = L / (f · n). Das Tabellenbuch
+        führt diese Rechnung unter „Hauptnutzungszeit beim Drehen" aus &ndash;
+        dort kommen noch An- und Überlauf des Werkzeugs dazu.</p>
+      <p>Die Nachricht: <strong>Derselbe Rz, ein Drittel weniger Zeit</strong>,
+        nur weil das Werkzeug eine rundere Ecke hat. Das ist der Grund, warum
+        man beim Schlichten den größten Eckenradius nimmt, den die Kontur
+        zulässt.</p>
+    </details>
+
+    <h2><span class="nr">3</span>Die Grenze</h2>
+    <p>Warum nicht gleich r<sub>ε</sub> = 1,6 mm? Weil der Radius in die Kontur
+      passen muss. An der Welle LF5 ist die kleinste Innenrundung
+      <strong>R1</strong>, am Übergang vom Ø24 zum Bund Ø30.</p>
+
+    <span class="formel">r<sub>ε</sub> &le; r<sub>w</sub> &minus; 0,1 mm</span>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Frage</th><th>Eintrag</th><th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>Größter rechnerisch zulässiger r<sub>ε</sub> in mm</td>
+            <td><input type="number" id="hMax" step="0.1" inputmode="decimal"
+              autocomplete="off"></td>
+            <td class="urteil" id="uhMax">–</td></tr>
+          <tr><td>Nächstkleinere genormte Größe in mm</td>
+            <td><select id="hNorm" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="0.2">0,2</option><option value="0.4">0,4</option>
+              <option value="0.6">0,6</option><option value="0.8">0,8</option>
+              <option value="1.2">1,2</option><option value="1.6">1,6</option>
+            </select></td>
+            <td class="urteil" id="uhNorm">–</td></tr>
+          <tr><td>Kleinster Vorschub, den das Schlichten laut Tabellenbuch
+            vorsieht, in mm</td>
+            <td><input type="number" id="hFmin" step="0.01" inputmode="decimal"
+              autocomplete="off"></td>
+            <td class="urteil" id="uhFmin">–</td></tr>
+          <tr><td>Welche Rautiefe ergäbe dieser kleinste Vorschub mit
+            r<sub>ε</sub> = 0,8 mm, in µm?</td>
+            <td><input type="number" id="hRz" step="0.1" inputmode="decimal"
+              autocomplete="off"></td>
+            <td class="urteil" id="uhRz">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn3">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz3">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: wo Schluss ist</summary>
+      <div id="loesung3"></div>
+      <p>Mit r<sub>ε</sub> = 0,8 mm und dem kleinsten Schlichtvorschub von
+        0,1 mm wäre eine Rautiefe von rund <strong>1,6 µm</strong> erreichbar
+        &ndash; deutlich feiner, als die Welle fordert. Nach unten ist also Luft.</p>
+      <p>Die Grenze liegt woanders: Wer eine Rautiefe verlangt, die auch damit
+        nicht mehr zu drehen ist, muss das Verfahren wechseln.
+        <strong>Schleifen</strong> beginnt ungefähr dort, wo das Drehen aufhört
+        &ndash; und kostet einen zweiten Aufspannvorgang.</p>
+    </details>
+
+    <h2><span class="nr">4</span>Übertragen</h2>
+
+    <details>
+      <summary>1. Ein Kollege verdoppelt den Vorschub, „um schneller fertig zu
+        werden". Was passiert mit der Oberfläche?</summary>
+      <p>Sie wird <strong>viermal</strong> so rau. In der Formel steht f im
+        Quadrat: Doppelter Vorschub, vierfache Rautiefe. Aus Rz 4 werden Rz 16
+        &ndash; das ist der Unterschied zwischen einem Lagersitz und einer
+        Fläche, an der man sich schneidet.</p>
+      <p>Die Zeit halbiert sich dabei nur. Ein schlechtes Geschäft, wenn die
+        Zeichnung Rz 4 fordert.</p>
+    </details>
+
+    <details>
+      <summary>2. Warum reicht es nicht, den Vorschub sehr klein zu machen?</summary>
+      <p>Weil unterhalb einer gewissen Spandicke die Schneide nicht mehr
+        schneidet, sondern <strong>drückt</strong>. Der Werkstoff wird
+        verformt statt abgetrennt, die Fläche wird schlechter statt besser, und
+        die Schneide verschleißt an der Freifläche.</p>
+      <p>Deshalb steht im Tabellenbuch beim Schlichten ein Vorschubbereich von
+        0,1 bis 0,25 mm und nicht „beliebig klein". Wer feiner will, muss den
+        Eckenradius vergrößern &ndash; nicht den Vorschub weiter senken.</p>
+    </details>
+
+    <details>
+      <summary>3. Die Rautiefe wird nachgemessen und liegt über dem berechneten
+        Wert. Woran kann das liegen?</summary>
+      <p>R<sub>th</sub> ist die <em>theoretische</em> Rautiefe &ndash; sie
+        beschreibt nur die Rillenspur der Geometrie. Dazu kommt in der Praxis:</p>
+      <ul>
+        <li><strong>Aufbauschneiden</strong> bei zu kleiner
+          Schnittgeschwindigkeit: Werkstoff schweißt an der Schneide fest und
+          reißt Stücke aus der Fläche.</li>
+        <li><strong>Vibrationen</strong>, wenn das Werkstück zu lang ausgespannt
+          ist &ndash; sie zeichnen ein Muster in die Oberfläche.</li>
+        <li><strong>Verschleiß</strong> der Schneidenecke: Der Eckenradius ist
+          nach einiger Zeit nicht mehr der, der in der Bezeichnung steht.</li>
+      </ul>
+      <p>Deshalb rechnet man mit R<sub>th</sub> und plant etwas Reserve ein.</p>
+    </details>
+
+    <details>
+      <summary>4. Am Bund Ø30 steht nur Rz 10. Lohnt ein Schlichtgang trotzdem?</summary>
+      <p>Für die Oberfläche nicht &ndash; Rz 10 ist die allgemeine Rautiefe, die
+        an keiner Funktionsfläche liegt. Der Bund trägt hier weder ein Lager
+        noch eine Dichtung.</p>
+      <p>Für das <strong>Maß</strong> kann es anders aussehen: Schruppen
+        hinterlässt nicht nur eine raue Fläche, sondern auch eine größere
+        Maßstreuung, weil die Schnittkräfte das Werkstück wegdrücken. Steht am
+        Bund eine enge Toleranz, wird geschlichtet &ndash; wegen des Maßes, nicht
+        wegen der Rauheit. Auf der Welle LF5 ist das nicht der Fall.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Erst den größten Eckenradius wählen, den die
+      Kontur zulässt. Dann den Vorschub dazu rechnen. Nie umgekehrt &ndash;
+      sonst verschenkt man Zeit für nichts.
+    </div>
+
+    <p class="fussnote"><strong>Woher die Angaben stammen:</strong> Formel und
+      Tabelle „Erreichbare Rautiefe in Abhängigkeit des Eckenradius und des
+      Vorschubs", Vorschubbereiche der Drehverfahren und die Hauptnutzungszeit
+      beim Drehen &ndash; Tabellenbuch Metall. Die Zahl der Umdrehungen ist aus
+      Weg und Vorschub hergeleitet.</p>
+
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+      Maßgebend sind Norm und Tabellenbuch.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script src="../../assets/zeichnen.js"></script>
+<script src="../../assets/drehteil.js"></script>
+<script>
+"use strict";
+
+var R_SCHLICHT = 0.4;        /* Eckenradius des Schlichtwerkzeugs, Teil 1 */
+var R_GROSS = 0.8;           /* der größere Eckenradius, Teil 2 */
+var L_SITZ = 39.3;           /* Länge des Ø25, aus der Zeichnung */
+
+var FORDERUNGEN = [
+  {name:"Ø20 links und Ø25 – die beiden Lagersitze", rz:4},
+  {name:"Ø24 – der Absatz", rz:6},
+  {name:"Bund Ø30 – allgemeine Rautiefe der Zeichnung", rz:10}
+];
+
+function el(id){ return document.getElementById(id); }
+function wert(id){
+  var e = el(id);
+  return e ? parseFloat(String(e.value).replace(",", ".")) : NaN;
+}
+function zahl(x, n){ return x.toFixed(n === undefined ? 2 : n).replace(".", ","); }
+
+/* f = Wurzel(8 * r_eps * Rth), Rth in Mikrometern. */
+function vorschub(rz, r){ return Math.sqrt(8 * r * rz / 1000); }
+/* Rth in Mikrometern aus f und r_eps in Millimetern. */
+function rautiefe(f, r){ return f * f / (8 * r) * 1000; }
+
+function urteilen(id, ok, offen){
+  var u = el(id);
+  if(offen){ u.textContent = "–"; u.className = "urteil"; return 0; }
+  u.textContent = ok ? "richtig" : "nein";
+  u.className = "urteil " + (ok ? "ja" : "nein");
+  return ok ? 1 : 0;
+}
+
+function bilanz(id, richtig, gesamt, offen){
+  el(id).textContent = offen === gesamt
+    ? "Noch nichts eingetragen."
+    : richtig + " von " + gesamt + " richtig"
+      + (offen ? ", " + offen + " noch offen." : ".");
+}
+
+/* Die Welle mit den Rautiefen im Bild - sie sind der Gegenstand der Übung. */
+(function zeichnung(){
+  var g = wellenGroesse({s:5.8, rauheiten:true});
+  var svg = bild("bildWelle", g.breite, g.hoehe,
+    "Die Welle LF5 mit den geforderten Rautiefen",
+    "Rz 4 an den beiden Lagersitzen, Rz 6 am Ø24, sonst Rz 10.");
+  zeichneWelle(svg, {x:g.x, y:g.y, s:5.8, rauheiten:true});
+}());
+
+/* ---------- Teil 1 ---------- */
+
+(function teil1(){
+  var aus = "", l = "";
+  FORDERUNGEN.forEach(function(f, i){
+    aus += '<tr><td>' + f.name + '<br><small>Rz ' + f.rz + '</small></td>'
+      + '<td><input type="number" id="f' + i + '" step="0.01"'
+      + ' inputmode="decimal" autocomplete="off"></td>'
+      + '<td class="urteil" id="uf' + i + '">–</td></tr>';
+    var v = vorschub(f.rz, R_SCHLICHT);
+    l += '<p><strong>Rz ' + f.rz + ':</strong> '
+      + 'f = √(8 · ' + zahl(R_SCHLICHT, 1) + ' · ' + zahl(f.rz / 1000, 4)
+      + ') = <strong>' + zahl(v) + ' mm</strong></p>';
+  });
+  el("liste1").innerHTML = aus;
+  el("loesung1").innerHTML = l;
+}());
+
+el("btn1").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  FORDERUNGEN.forEach(function(f, i){
+    var v = wert("f" + i);
+    var leer = !isFinite(v); if(leer) offen++;
+    r += urteilen("uf" + i,
+      Math.abs(v - vorschub(f.rz, R_SCHLICHT)) <= 0.011, leer);
+  });
+  bilanz("bilanz1", r, FORDERUNGEN.length, offen);
+});
+
+/* ---------- Teil 2 ---------- */
+
+var F_KLEIN = vorschub(4, R_SCHLICHT);
+var F_GROSS = vorschub(4, R_GROSS);
+var U_KLEIN = Math.ceil(L_SITZ / F_KLEIN);
+var U_GROSS = Math.ceil(L_SITZ / F_GROSS);
+
+(function teil2(){
+  el("loesung2").innerHTML =
+    '<p><strong>Vorschub mit r<sub>ε</sub> = 0,8 mm:</strong> '
+    + 'f = √(8 · 0,8 · 0,004) = <strong>' + zahl(F_GROSS) + ' mm</strong></p>'
+    + '<p><strong>Umdrehungen für 39,3 mm:</strong><br>'
+    + 'mit r<sub>ε</sub> = 0,4 mm: 39,3 / ' + zahl(F_KLEIN) + ' = <strong>'
+      + U_KLEIN + '</strong><br>'
+    + 'mit r<sub>ε</sub> = 0,8 mm: 39,3 / ' + zahl(F_GROSS) + ' = <strong>'
+      + U_GROSS + '</strong></p>';
+}());
+
+el("btn2").addEventListener("click", function(){
+  var r = 0, offen = 0;
+
+  var f = wert("gF");
+  var leerF = !isFinite(f); if(leerF) offen++;
+  r += urteilen("ugF", Math.abs(f - F_GROSS) <= 0.011, leerF);
+
+  /* Beim Abzaehlen der Umdrehungen ist eine Umdrehung Spielraum in Ordnung -
+     je nachdem, ob man rundet oder aufrundet. */
+  var u4 = wert("gU4");
+  var leer4 = !isFinite(u4); if(leer4) offen++;
+  r += urteilen("ugU4", Math.abs(u4 - U_KLEIN) <= 1, leer4);
+
+  var u8 = wert("gU8");
+  var leer8 = !isFinite(u8); if(leer8) offen++;
+  r += urteilen("ugU8", Math.abs(u8 - U_GROSS) <= 1, leer8);
+
+  bilanz("bilanz2", r, 3, offen);
+});
+
+/* ---------- Teil 3 ---------- */
+
+(function teil3(){
+  el("loesung3").innerHTML =
+    '<p>r<sub>ε</sub> &le; 1,0 &minus; 0,1 = <strong>0,9 mm</strong>. '
+    + 'Die nächstkleinere genormte Größe ist <strong>0,8 mm</strong>.</p>'
+    + '<p>Der kleinste Schlichtvorschub im Tabellenbuch ist '
+    + '<strong>0,1 mm</strong>. Damit ergibt sich '
+    + 'R<sub>th</sub> = 0,1² / (8 · 0,8) = '
+    + zahl(rautiefe(0.1, R_GROSS) / 1000, 5) + ' mm = <strong>'
+    + zahl(rautiefe(0.1, R_GROSS), 1) + ' µm</strong>.</p>';
+}());
+
+el("btn3").addEventListener("click", function(){
+  var r = 0, offen = 0;
+
+  var max = wert("hMax");
+  var leerMax = !isFinite(max); if(leerMax) offen++;
+  r += urteilen("uhMax", Math.abs(max - 0.9) < 0.01, leerMax);
+
+  var norm = el("hNorm").value;
+  if(!norm) offen++;
+  r += urteilen("uhNorm", norm === "0.8", !norm);
+
+  var fmin = wert("hFmin");
+  var leerF = !isFinite(fmin); if(leerF) offen++;
+  r += urteilen("uhFmin", Math.abs(fmin - 0.1) < 0.005, leerF);
+
+  var rz = wert("hRz");
+  var leerRz = !isFinite(rz); if(leerRz) offen++;
+  r += urteilen("uhRz",
+    Math.abs(rz - rautiefe(0.1, R_GROSS)) <= rautiefe(0.1, R_GROSS) * 0.06,
+    leerRz);
+
+  bilanz("bilanz3", r, 4, offen);
+});
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

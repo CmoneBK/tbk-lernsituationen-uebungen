@@ -33,9 +33,34 @@ const KEINE_ZEICHNUNG = new Set([
      gibt es keine Normdarstellung, und der Verzug ist uebertrieben
      gezeichnet. Beide bleiben deshalb farbig - auch in der Normdarstellung. */
   'svgZonen', 'svgVerzug',
+  /* Das Rillenprofil in der Lektion zum Drehprozess: Werkstoff blau,
+     die Bahnen der Werkzeugecke als Boegen. Ein Prinzipbild - es
+     zeigt, warum die Rautiefe am Quadrat des Vorschubs haengt, und
+     stellt kein Bauteil dar. */
+  'bildRillen',
 ]);
 
-const NOCH_OFFEN = new Set([]);
+/* Aufgedeckt am 16.09.2026, als die Pruefung gelernt hat, die Reiter aus der
+   Seite zu lesen statt aus einer festen Liste. Diese Bilder standen in Reitern,
+   die nie geprueft wurden. Sie sehen aus wie technische Zeichnungen, halten die
+   Regeln aber noch nicht ein - jedes einzeln nachzuarbeiten ist eine eigene
+   Aufgabe. Bis dahin meldet sich die Pruefung bei jedem Lauf. */
+const NOCH_OFFEN = new Set([
+  /* Lektion Fuegeverfahren im Ueberblick */
+  'svgUeF', 'svgUeK', 'svgUeS', 'svg-kraft', 'svg-form', 'svg-stoff',
+  'svg-sonder',
+  /* Lektion Schweissen */
+  'svg-verfahren', 'svgNaht', 'fertigungstechnik/naehte/bild0',
+  /* Lektion Messen und Pruefen */
+  'svgKette', 'svgZehner',
+  /* Die Nahtbilder der Schweiss-Lektion tragen keine eigene id;
+     angesprochen werden sie deshalb ueber ihren vollen Namen. */
+  'fertigungstechnik/naehte/bild1', 'fertigungstechnik/naehte/bild2',
+  'fertigungstechnik/naehte/bild3', 'fertigungstechnik/naehte/bild4',
+  'fertigungstechnik/naehte/bild5',
+  /* Lektion Schraubverbindungen */
+  'svgMomente',
+]);
 
 /* Wo der Unterschied der beiden Linienbreiten die Frage selbst ist, wird er
    ueberzeichnet - aber im Verhaeltnis 2:1. */
@@ -644,7 +669,11 @@ async function main() {
   }
 
   console.log('\nZeichnungen in den Lektionen');
-  const REITER = ['grundlagen', 'aufbau', 'zeichnung', 'funktion', 'fortgeschritten'];
+  /* Frueher stand hier eine feste Liste von Reiternamen. Eine Lektion mit
+     eigenen Namen fiel damit stillschweigend durch die Pruefung - deshalb
+     werden die Reiter jetzt aus der Seite gelesen. */
+  const REITER_ERSATZ = ['grundlagen', 'aufbau', 'zeichnung', 'funktion',
+    'fortgeschritten'];
   /* Die Werkzeuge liegen im Nachbar-Repo. Fehlt es, bleibt der Rest dieser
      Pruefung trotzdem gueltig. */
   const werkzeuge = teilweise(TOOLS, 'Werkzeuge')
@@ -655,17 +684,25 @@ async function main() {
     const { d, w, laut } = laden(q, TOOLS, '', 'https://t-bk.de/werkzeuge/tools/' + datei);
     await warte(900);
     if (laut.length) p(datei + ': laedt ohne Fehler', false, laut[0]);
-    for (const r of REITER) {
+    const eigene = [...d.querySelectorAll('.tabs button[data-tab]')]
+      .map((b) => b.getAttribute('data-tab'));
+    for (const r of (eigene.length ? eigene : REITER_ERSATZ)) {
       if (!d.getElementById('p-' + r)) continue;
       w.reiterSetzen(r);
-      [...d.querySelectorAll('#p-' + r + ' svg')].forEach((svg) => {
-        if (KEINE_ZEICHNUNG.has(svg.id)) return;
-        if (NOCH_OFFEN.has(svg.id)) {
-          console.log('  offen  ' + svg.id + ': sieht aus wie eine Zeichnung, '
+      [...d.querySelectorAll('#p-' + r + ' svg')].forEach((svg, i) => {
+        /* Manche Bilder tragen ihre Kennung am umgebenden figure, nicht am
+           svg selbst - sonst stuende hier ein leerer Name, und keine Ausnahme
+           wuerde greifen. */
+        const rahmen = svg.closest('figure');
+        const kennung = svg.id || (rahmen && rahmen.id) || ('bild' + i);
+        const voll = datei.split('-')[0] + '/' + r + '/' + kennung;
+        if (KEINE_ZEICHNUNG.has(kennung) || KEINE_ZEICHNUNG.has(voll)) return;
+        if (NOCH_OFFEN.has(kennung) || NOCH_OFFEN.has(voll)) {
+          console.log('  offen  ' + voll + ': sieht aus wie eine Zeichnung, '
             + 'ist aber noch keine');
           return;
         }
-        pruefe(svg, datei.split('-')[0] + '/' + r + '/' + svg.id, datei);
+        pruefe(svg, voll, datei);
       });
     }
   }

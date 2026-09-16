@@ -20,7 +20,11 @@ const p = (was, ok, zusatz) => {
 console.log('\nDie Werkzeugseiten');
 
 const dateien = fs.readdirSync(TOOLS).filter(f => f.endsWith('.html')).sort();
-p('23 Seiten gefunden', dateien.length === 23, dateien.length + ' Stueck');
+/* Keine feste Zahl: Jede neue Lektion hat diese Pruefung sonst rot
+   gemacht, ohne dass etwas kaputt war. Geprueft wird, dass die
+   Uebersicht so viele Karten zeigt, wie Dateien da sind. */
+p(dateien.length + ' Seiten gefunden', dateien.length > 20,
+  dateien.length + ' Stueck');
 
 const arten = {};
 let ohneThema = [], ohneBack = [], mitFm = [], ohneTitel = [];
@@ -40,9 +44,11 @@ p('ueberall der Umschalter', !ohneThema.length, ohneThema.join(', '));
 p('ueberall der Ruecklink', !ohneBack.length, ohneBack.join(', '));
 p('ueberall ein Titel mit Bereich', !ohneTitel.length, ohneTitel.join(', '));
 p('jede Seite hat eine Art', !arten['(fehlt)'], (arten['(fehlt)'] || []).join(', '));
-p('19 Simulationen', (arten.simulation || []).length === 19,
+p((arten.simulation || []).length + ' Simulationen',
+  (arten.simulation || []).length > 0,
   (arten.simulation || []).length + ' Stueck');
-p('4 Lektionen', (arten.lektion || []).length === 4,
+p((arten.lektion || []).length + ' Lektionen',
+  (arten.lektion || []).length > 0,
   'gefunden: ' + (arten.lektion || []).join(', '));
 
 p('kein Jekyll-Gerippe mehr',
@@ -72,14 +78,24 @@ p('zwei Haupt-Tabs', tabs.length === 2, tabs.map(t => t.textContent).join(' / ')
 p('Simulationen steht vorn', tabs[0] && tabs[0].getAttribute('data-art') === 'simulation');
 p('Simulationen ist offen', tabs[0] && tabs[0].getAttribute('aria-selected') === 'true');
 p('Lektionen ist zu', tabs[1] && tabs[1].getAttribute('aria-selected') === 'false');
-p('Anzahl am Tab', /19/.test(tabs[0].textContent) && /4/.test(tabs[1].textContent),
+/* Die Zahl am Reiter muss zur Zahl der Karten passen - welche Zahl es
+   ist, entscheidet der Bestand. */
+p('Anzahl am Tab',
+  tabs[0].textContent.indexOf(String((arten.simulation || []).length)) >= 0
+  && tabs[1].textContent.indexOf(String((arten.lektion || []).length)) >= 0,
   tabs.map(t => t.textContent.trim()).join(' / '));
 p('erklaert, was einen erwartet', d.getElementById('was').textContent.length > 40);
 
 const sim = d.getElementById('p-simulation'), lek = d.getElementById('p-lektion');
 p('nur ein Bereich sichtbar', !sim.hidden && lek.hidden);
-p('19 Karten bei den Simulationen', sim.querySelectorAll('a.card').length === 19);
-p('4 Karten bei den Lektionen', lek.querySelectorAll('a.card').length === 4);
+p('so viele Karten wie Simulationen',
+  sim.querySelectorAll('a.card').length === (arten.simulation || []).length,
+  sim.querySelectorAll('a.card').length + ' gegen '
+    + (arten.simulation || []).length);
+p('so viele Karten wie Lektionen',
+  lek.querySelectorAll('a.card').length === (arten.lektion || []).length,
+  lek.querySelectorAll('a.card').length + ' gegen '
+    + (arten.lektion || []).length);
 
 /* Jede Karte zeigt auf eine Datei, die es gibt. */
 const tot = [...d.querySelectorAll('a.card')]

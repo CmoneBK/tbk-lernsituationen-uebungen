@@ -32,6 +32,51 @@
     "inhalt": []
   },
   {
+    "typ": "lernsituationen",
+    "bereich": "Fertigungstechnik",
+    "kategorie": "Zerspanung",
+    "name": "Die Welle LF5 fertigen",
+    "url": "lernsituationen/welle-lf5/index.html",
+    "werkzeuge": [
+      {
+        "datei": "fertigungstechnik-zerspanung-drehprozess-planen.html",
+        "name": "Werkzeug Drehprozess planen"
+      }
+    ],
+    "inhalt": []
+  },
+  {
+    "typ": "uebungen",
+    "bereich": "Fertigungstechnik",
+    "kategorie": "Zerspanung",
+    "name": "Planung eines Drehprozesses",
+    "url": "uebungen/drehprozess/index.html",
+    "werkzeuge": [
+      {
+        "datei": "fertigungstechnik-zerspanung-drehprozess-planen.html",
+        "name": "Werkzeug Drehprozess planen"
+      }
+    ],
+    "inhalt": [
+      {
+        "titel": "Welches Verfahren gehört hierher?",
+        "url": "uebungen/drehprozess/01-welches-verfahren-gehoert-hierher.html"
+      },
+      {
+        "titel": "Vom Werkstoff zur Schnittgeschwindigkeit",
+        "url": "uebungen/drehprozess/02-vom-werkstoff-zur-schnittgeschwindigkeit.html"
+      },
+      {
+        "titel": "Eine Wendeschneidplatte lesen",
+        "url": "uebungen/drehprozess/03-eine-wendeschneidplatte-lesen.html"
+      },
+      {
+        "titel": "Wie fein muss der Vorschub sein?",
+        "url": "uebungen/drehprozess/04-wie-fein-muss-der-vorschub-sein.html"
+      }
+    ]
+  },
+  {
     "typ": "uebungen",
     "bereich": "Fertigungstechnik",
     "kategorie": "Fügeverfahren",

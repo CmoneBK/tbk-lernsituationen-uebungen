@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Welches Verfahren gehört hierher?</title>
+<meta name="description" content="Die Kontur der Welle LF5 zerlegen: Jeder Fläche ihr Drehverfahren zuordnen und die Reihenfolge der Arbeitsvorgänge begründen.">
+<meta name="dauer" content="25 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  table.flaechen td:first-child{font-weight:600; white-space:nowrap}
+  table.flaechen select{width:100%; font:inherit; font-size:13.5px; padding:6px 8px;
+    border-radius:7px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark)}
+  table.flaechen select:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+  td.urteil{font-size:13px; font-weight:600; white-space:nowrap}
+  td.urteil.ja{color:var(--ok)}
+  td.urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+  figure.bild{margin:0 0 18px}
+  figure.bild svg{width:100%; height:auto}
+  figure.bild figcaption{font-size:13px; color:var(--muted); margin-top:6px}
+  ol.ablauf{counter-reset:none}
+  ol.ablauf li{margin:0 0 6px}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Planung eines Drehprozesses</p>
+    <h1>Welches Verfahren gehört hierher?</h1>
+    <p class="lead">Bevor gerechnet wird, muss die Kontur gelesen sein.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Die Lage:</strong> Auf dem Tisch liegt die Fertigungszeichnung
+        der <strong>Welle LF5</strong> aus 42CrMo4. Sie soll aus Rundmaterial
+        Ø32 × 135 mm gedreht werden. Bevor irgendeine Schnittgeschwindigkeit
+        nachgeschlagen wird, ist die erste Frage zu klären: Welche Fläche
+        entsteht durch welches Drehverfahren?</p>
+      <p>Denn daraus folgt alles Weitere &ndash; das Werkzeug, die Spalte in
+        der Schnittdatentabelle und die Reihenfolge im Arbeitsplan.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Die Kontur</h2>
+
+    <figure class="bild" id="bildWelle"></figure>
+
+    <p>Die Welle hat fünf zylindrische Abschnitte, zwei Stirnflächen, zwei
+      Absätze, zwei Nuten, einen Freistich und ein Gewinde. Jedes davon entsteht
+      durch eine bestimmte Bewegung von Werkzeug und Werkstück.</p>
+
+    <details>
+      <summary>Die sechs Drehverfahren, die hier vorkommen</summary>
+      <div class="tabellenrahmen">
+        <table>
+          <thead>
+            <tr><th>Verfahren</th><th>Bewegung</th><th>Erzeugt</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Querplandrehen</td><td>Schneide quer zur Achse</td>
+              <td>Stirnflächen und Absätze</td></tr>
+            <tr><td>Längsrunddrehen, Schruppen</td><td>Schneide parallel zur Achse,
+              große Schnitttiefe</td><td>Mantelflächen, grob vorbereitet</td></tr>
+            <tr><td>Längsrunddrehen, Schlichten</td><td>parallel zur Achse,
+              kleiner Vorschub</td><td>Mantelflächen, fertig</td></tr>
+            <tr><td>Einstechdrehen</td><td>Schneide sticht quer ein</td>
+              <td>Nuten und Freistiche</td></tr>
+            <tr><td>Gewindedrehen</td><td>Vorschub = Steigung</td>
+              <td>Gewinde</td></tr>
+            <tr><td>Abstechdrehen</td><td>quer ein, bis das Teil abfällt</td>
+              <td>trennt vom Stangenmaterial</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <h2><span class="nr">2</span>Jeder Fläche ihr Verfahren</h2>
+    <p>Tragt für jede Fläche ein, durch welches Drehverfahren sie entsteht. Wo
+      eine Fläche geschruppt <em>und</em> geschlichtet wird, zählt der Vorgang,
+      der sie <strong>fertigstellt</strong>.</p>
+
+    <div class="tabellenrahmen">
+      <table class="flaechen">
+        <thead>
+          <tr><th>Fläche</th><th>Was die Zeichnung fordert</th>
+            <th>Drehverfahren</th><th>Stimmt?</th></tr>
+        </thead>
+        <tbody id="liste"></tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+      <button type="button" class="knopf leise" id="btnLeeren">Zurücksetzen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: warum welches Verfahren</summary>
+      <div id="loesungen"></div>
+    </details>
+
+    <h2><span class="nr">3</span>Die Reihenfolge</h2>
+    <p>Die Vorgänge stehen hier durcheinander. Tragt die Nummern 1 bis 8 ein
+      &ndash; so, wie sie im Arbeitsplan stehen müssen.</p>
+
+    <div class="tabellenrahmen">
+      <table class="flaechen">
+        <thead>
+          <tr><th>Nr.</th><th>Arbeitsvorgang</th><th>Stimmt?</th></tr>
+        </thead>
+        <tbody id="ablaufListe"></tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btnAblauf">Reihenfolge prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanzAblauf">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: die Reihenfolge und ihre Gründe</summary>
+      <ol class="ablauf" id="ablaufLoesung"></ol>
+    </details>
+
+    <h2><span class="nr">4</span>Übertragen</h2>
+
+    <details>
+      <summary>1. Warum wird zuerst plangedreht und zentriert &ndash; und nicht
+        gleich geschruppt?</summary>
+      <p>Aus zwei Gründen. Erstens braucht jede Längenangabe eine
+        <strong>Bezugsfläche</strong>: Die 128,6 mm und alle Zwischenmaße werden
+        von der linken Stirnfläche aus gemessen. Solange die sägerau ist, ist
+        jedes Längenmaß ungenau.</p>
+      <p>Zweitens braucht die Welle eine <strong>Zentrierbohrung</strong>. Bei
+        135 mm Länge und nur 32 mm Durchmesser biegt sich das Teil unter dem
+        Schnittdruck, wenn es nur im Futter hängt. Die Spitze im Reitstock hält
+        dagegen &ndash; und die braucht einen Sitz, den es erst nach dem
+        Plandrehen gibt.</p>
+    </details>
+
+    <details>
+      <summary>2. Die Nut A liegt 9 mm von der Stirnfläche entfernt, mitten auf
+        dem Ø20. Warum wird sie nicht vor dem Schlichten eingestochen?</summary>
+      <p>Weil das Schlichtwerkzeug danach über sie hinwegfahren müsste. An jeder
+        Nutkante verlässt die Schneide den Werkstoff und trifft ihn gleich
+        wieder &ndash; ein unterbrochener Schnitt im Kleinen. Das ist genau die
+        Belastung, die Hartmetallschneiden ausbrechen lässt.</p>
+      <p>Dasselbe gilt für die Bearbeitungsbedingungen: Ein unterbrochener
+        Schnitt drückt die Schnittgeschwindigkeit nach unten. Wer die Nut
+        zuletzt sticht, darf für die ganze Mantelfläche den günstigeren Wert
+        nehmen.</p>
+    </details>
+
+    <details>
+      <summary>3. Der Bund Ø30 trägt nur Rz 10, der Lagersitz Ø25 dagegen Rz 4.
+        Was heißt das für den Arbeitsplan?</summary>
+      <p>Rz 10 ist die allgemeine Rautiefe der Zeichnung &ndash; was
+        geschruppt ist, reicht dort. Der Bund braucht also
+        <strong>keinen Schlichtgang</strong>.</p>
+      <p>Rz 4 dagegen verlangt einen: Mit Schruppvorschüben von 0,25 bis 0,6 mm
+        ist diese Rautiefe nicht zu erreichen. Der Arbeitsplan bekommt deshalb
+        zwei getrennte Zeilen &ndash; eine fürs Schruppen aller Absätze, eine
+        fürs Schlichten der Flächen mit Rz 4 und Rz 6. Das spart Zeit: Man
+        schlichtet nur, wo es gefordert ist.</p>
+    </details>
+
+    <details>
+      <summary>4. Warum steht der Gewindefreistich DIN 76 – A <em>vor</em> dem
+        Gewindedrehen im Plan?</summary>
+      <p>Das Gewindewerkzeug fährt mit dem Vorschub gleich der Steigung durch
+        das Werkstück. Am Ende des Gewindes muss es <strong>austreten
+        können</strong>, ohne in die Schulter zu laufen. Der Freistich schafft
+        den Platz dafür.</p>
+      <p>Ohne ihn müsste das Werkzeug im Gewinde angehalten und zurückgezogen
+        werden &ndash; bei jedem der Schnitte, an derselben Stelle. Das gibt
+        einen unsauberen Auslauf und eine Kerbe, an der die Welle später
+        bricht.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Erst die Bezugsflächen, dann das Volumen, dann
+      die Oberfläche, dann die Einzelheiten, zuletzt das Abstechen. Wer davon
+      abweicht, braucht einen Grund &ndash; und zwar einen, der im Hinweisfeld
+      des Arbeitsplans steht.
+    </div>
+
+    <p class="fussnote"><strong>Woher die Angaben stammen:</strong> Übersicht der
+      Drehverfahren mit Werkzeugangaben und Schnittgrößen sowie die
+      Arbeitsplanung beim Drehen &ndash; Tabellenbuch Metall. Die Welle LF5 ist
+      die Fertigungszeichnung aus dem Unterricht.</p>
+
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+      Maßgebend sind Norm und Tabellenbuch.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script src="../../assets/zeichnen.js"></script>
+<script src="../../assets/drehteil.js"></script>
+<script>
+"use strict";
+
+var VERFAHREN = ["Querplandrehen", "Längsrunddrehen, Schruppen",
+  "Längsrunddrehen, Schlichten", "Einstechdrehen", "Gewindedrehen",
+  "Abstechdrehen"];
+
+/* Die Flächen der Welle in der Reihenfolge, in der sie auf der Zeichnung
+   von links nach rechts stehen. "fordert" ist das, was in der Zeichnung
+   dazu steht - daraus folgt die Antwort. */
+var FLAECHEN = [
+  {name:"Linke Stirnfläche", fordert:"Rz 10, Zentrierbohrung ISO 6411 – A2×4,25",
+   soll:"Querplandrehen",
+   grund:"Eine Stirnfläche steht senkrecht zur Achse. Die Schneide läuft quer, "
+     + "von außen nach innen - Querplandrehen. Danach wird zentriert."},
+  {name:"Ø20 links", fordert:"Rz 4",
+   soll:"Längsrunddrehen, Schlichten",
+   grund:"Eine zylindrische Mantelfläche entsteht beim Längsrunddrehen. Rz 4 "
+     + "ist mit Schruppvorschüben nicht zu erreichen, also wird sie "
+     + "geschlichtet. Geschruppt wurde sie vorher - fertig macht sie das "
+     + "Schlichten."},
+  {name:"Nut A bei 9 mm", fordert:"Breite 1,3 mm, Einzelheit A (4:1)",
+   soll:"Einstechdrehen",
+   grund:"Eine 1,3 mm breite Nut entsteht durch ein Werkzeug, das quer "
+     + "einsticht. Die Nutbreite ist die Schneidenbreite - deshalb braucht es "
+     + "für 1,3 mm ein Werkzeug mit genau dieser Breite."},
+  {name:"Absatz bei 22,3 mm", fordert:"Freistich DIN 509 – E 0,6 × 0,3",
+   soll:"Querplandrehen",
+   grund:"Auch ein Absatz steht senkrecht zur Achse - dieselbe Bewegung wie "
+     + "bei der Stirnfläche. Der Freistich selbst wird eingestochen."},
+  {name:"Ø24", fordert:"Rz 6",
+   soll:"Längsrunddrehen, Schlichten",
+   grund:"Mantelfläche mit Rz 6 - auch das verlangt einen Schlichtgang, wenn "
+     + "auch mit etwas größerem Vorschub als Rz 4."},
+  {name:"Bund Ø30", fordert:"Rz 10 (allgemein), R1 am Übergang",
+   soll:"Längsrunddrehen, Schruppen",
+   grund:"Rz 10 ist die allgemeine Rautiefe. Was geschruppt ist, reicht hier - "
+     + "ein Schlichtgang wäre verschenkte Zeit."},
+  {name:"Ø25 Lagersitz", fordert:"Rz 4",
+   soll:"Längsrunddrehen, Schlichten",
+   grund:"Der längste Abschnitt und der zweite mit Rz 4. Ohne Schlichten ist "
+     + "diese Rautiefe nicht zu machen."},
+  {name:"Nut B bei 83,6 mm", fordert:"Breite 1,3 mm, Einzelheit B (4:1)",
+   soll:"Einstechdrehen",
+   grund:"Wie Nut A: quer einstechen, Breite gleich Schneidenbreite."},
+  {name:"Freistich DIN 76 – A", fordert:"vor dem Gewinde, bei 91,6 mm",
+   soll:"Einstechdrehen",
+   grund:"Der Gewindefreistich wird eingestochen, damit das Gewindewerkzeug "
+     + "auslaufen kann. Er gehört deshalb vor das Gewindedrehen."},
+  {name:"Gewinde M20×1 – 6g", fordert:"Länge 33,5 mm, Steigung 1 mm",
+   soll:"Gewindedrehen",
+   grund:"Der Vorschub ist hier keine Wahl, sondern die Steigung: 1 mm je "
+     + "Umdrehung. Die volle Tiefe entsteht in mehreren Zustellungen."},
+  {name:"Rechte Stirnfläche", fordert:"Rz 10, Zentrierbohrung ISO 6411 – A2,5×5,3",
+   soll:"Abstechdrehen",
+   grund:"Sie entsteht beim Trennen vom Stangenmaterial. Danach hält das "
+     + "Werkstück nicht mehr - deshalb ist Abstechen immer der letzte "
+     + "Drehvorgang."}
+];
+
+/* Der Arbeitsablauf. Die Nummer ist die richtige Stelle im Plan. */
+var ABLAUF = [
+  {nr:1, was:"Rohteil prüfen, einspannen und ausrichten",
+   grund:"Ohne geprüftes Halbzeug und feste Einspannung fängt niemand an."},
+  {nr:2, was:"Linke Stirnfläche querplandrehen und zentrieren",
+   grund:"Schafft die Bezugsfläche für alle Längenmaße und den Sitz für die "
+     + "Reitstockspitze."},
+  {nr:3, was:"Alle Absätze durch Längsrunddrehen schruppen",
+   grund:"Erst das Volumen weg, mit großer Schnitttiefe und großem Vorschub. "
+     + "Das Schlichtaufmaß bleibt stehen."},
+  {nr:4, was:"Flächen mit Rz 6 und Rz 4 schlichten",
+   grund:"Jetzt die Oberfläche. Der Bund Ø30 bleibt aus - Rz 10 ist schon "
+     + "erreicht."},
+  {nr:5, was:"Freistiche und Nuten A und B einstechen",
+   grund:"Nach dem Schlichten: Ein Schlichtwerkzeug, das über eine Nut läuft, "
+     + "schlägt auf."},
+  {nr:6, was:"Gewinde M20×1 drehen",
+   grund:"Nach dem Freistich, damit das Werkzeug auslaufen kann. Mehrere "
+     + "Zustellungen und zwei bis vier Leerdurchläufe."},
+  {nr:7, was:"Maße prüfen",
+   grund:"Solange das Teil noch eingespannt ist, lässt sich nachbessern. "
+     + "Danach nicht mehr."},
+  {nr:8, was:"Werkstück abstechen",
+   grund:"Der letzte Drehvorgang. Danach fällt das Teil ab."}
+];
+
+function el(id){ return document.getElementById(id); }
+
+/* Die Zeichnung: einmal mit Maßen, damit alles Genannte im Bild zu finden
+   ist. */
+(function zeichnung(){
+  /* Mit Maßen, ohne Benennungen: Beide Ebenen zusammen drängeln sich - die
+     Hinweislinien laufen in die Maßhilfslinien. Welche Fläche gemeint ist,
+     sagt die Tabelle darunter. */
+  var o = {s:6.2, masse:true};
+  var g = wellenGroesse(o);
+  var svg = bild("bildWelle", g.breite, g.hoehe,
+    "Fertigungszeichnung der Welle LF5 mit Maßen",
+    "Welle LF5 aus 42CrMo4, Rohteil Ø32 × 135 mm. Die Nuten A und B sind "
+    + "1,3 mm breit; die Einzelheiten dazu stehen auf der Zeichnung im "
+    + "Maßstab 4:1.");
+  zeichneWelle(svg, {x:g.x, y:g.y, s:o.s, masse:true});
+}());
+
+/* ---------- Teil 2: jeder Fläche ihr Verfahren ---------- */
+
+(function listeBauen(){
+  var aus = "";
+  FLAECHEN.forEach(function(f, i){
+    var opt = '<option value="">bitte wählen</option>';
+    VERFAHREN.forEach(function(v){
+      opt += '<option value="' + v + '">' + v + '</option>';
+    });
+    aus += '<tr><td>' + f.name + '</td><td>' + f.fordert + '</td>'
+      + '<td><select id="v' + i + '" data-druck="ankreuzen">' + opt + '</select></td>'
+      + '<td class="urteil" id="u' + i + '">&ndash;</td></tr>';
+  });
+  el("liste").innerHTML = aus;
+
+  var l = "";
+  FLAECHEN.forEach(function(f){
+    l += "<p><strong>" + f.name + " &rarr; " + f.soll + ".</strong> "
+      + f.grund + "</p>";
+  });
+  el("loesungen").innerHTML = l;
+}());
+
+el("btnPruefen").addEventListener("click", function(){
+  var richtig = 0, offen = 0;
+  FLAECHEN.forEach(function(f, i){
+    var gewaehlt = el("v" + i).value, u = el("u" + i);
+    if(!gewaehlt){ u.textContent = "–"; u.className = "urteil"; offen++; return; }
+    var ok = gewaehlt === f.soll;
+    if(ok) richtig++;
+    u.textContent = ok ? "richtig" : "nein";
+    u.className = "urteil " + (ok ? "ja" : "nein");
+  });
+  el("bilanz").textContent = offen === FLAECHEN.length
+    ? "Noch nichts eingetragen."
+    : richtig + " von " + FLAECHEN.length + " richtig"
+      + (offen ? ", " + offen + " noch offen." : ".");
+});
+
+el("btnLeeren").addEventListener("click", function(){
+  FLAECHEN.forEach(function(f, i){
+    el("v" + i).value = "";
+    el("u" + i).textContent = "–";
+    el("u" + i).className = "urteil";
+  });
+  el("bilanz").textContent = "Noch nichts eingetragen.";
+});
+
+/* ---------- Teil 3: die Reihenfolge ---------- */
+
+/* Gemischt, aber immer gleich - eine Übung soll auf Papier und am Bildschirm
+   dieselbe sein. */
+var GEMISCHT = [5, 2, 8, 1, 6, 3, 7, 4];
+
+(function ablaufBauen(){
+  var aus = "";
+  GEMISCHT.forEach(function(nr, i){
+    var v = ABLAUF[nr - 1];
+    var opt = '<option value="">–</option>';
+    for(var n = 1; n <= ABLAUF.length; n++){
+      opt += '<option value="' + n + '">' + n + '</option>';
+    }
+    aus += '<tr><td style="width:5.5em"><select id="a' + i + '"'
+      + ' data-druck="ankreuzen">' + opt + '</select></td>'
+      + '<td>' + v.was + '</td>'
+      + '<td class="urteil" id="au' + i + '">&ndash;</td></tr>';
+  });
+  el("ablaufListe").innerHTML = aus;
+
+  var l = "";
+  ABLAUF.forEach(function(v){
+    l += "<li><strong>" + v.was + "</strong> &ndash; " + v.grund + "</li>";
+  });
+  el("ablaufLoesung").innerHTML = l;
+}());
+
+el("btnAblauf").addEventListener("click", function(){
+  var richtig = 0, offen = 0;
+  GEMISCHT.forEach(function(nr, i){
+    var gewaehlt = el("a" + i).value, u = el("au" + i);
+    if(!gewaehlt){ u.textContent = "–"; u.className = "urteil"; offen++; return; }
+    var ok = Number(gewaehlt) === nr;
+    if(ok) richtig++;
+    u.textContent = ok ? "richtig" : "nein";
+    u.className = "urteil " + (ok ? "ja" : "nein");
+  });
+  el("bilanzAblauf").textContent = offen === GEMISCHT.length
+    ? "Noch nichts eingetragen."
+    : richtig + " von " + GEMISCHT.length + " richtig"
+      + (offen ? ", " + offen + " noch offen." : ".");
+});
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>
