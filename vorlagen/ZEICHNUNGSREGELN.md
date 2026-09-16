@@ -238,6 +238,53 @@ dargestellt." Genau das tut die `radien`-Ebene: eine Hinweislinie an den
 Absatz, daran `DIN 509 – E 0,6 × 0,3`. Die vollständige Darstellung als
 Einzelheit mit r, t₁, t₂ und f ist erlaubt, aber nicht gefordert.
 
+### 6.6 Hinweislinien — Seite 119 unten, DIN ISO 128-22
+
+Eine Hinweislinie besteht aus **drei** Teilen, und alle drei sind Pflicht:
+
+1. eine **schmale Vollinie**, schräg zum Merkmal — **nie gestrichelt**;
+2. am Merkmal eine **ausgefüllte Pfeilspitze**;
+3. am anderen Ende ein Knick in eine waagerechte **Bezugslinie**, auf der
+   der Text sitzt.
+
+Gebaut wird das von `hinweislinie()`. **Gestrichelt ist in einer technischen
+Zeichnung die verdeckte Kante — und sonst nichts.** Die alte Begründung
+„Erklärebene, deshalb gestrichelt" war der Fehler dahinter: Eine
+Freistichbezeichnung, ein Radius, eine Gewindebezeichnung sind
+Zeichnungsinhalt. Farbig bleibt nur `wellenMarkieren()` — das Hervorheben
+einer Fläche im Unterricht.
+
+Die Gruppe trägt `class="hinweis"`. Das ist kein Styling: Die Pfeilspitze
+sitzt auf der Kontur, und `test-zeichnungen.js` würde die danebenliegende
+Mantellinie sonst als halb bemaßtes Maß melden.
+
+### 6.7 Kegel — Tabellenbuch Seite 80
+
+DIN EN ISO 3040: „Das Kegelverhältnis C wird mit einer Bezugslinie zum Kegel
+und einer **parallel zur Kegelachse** ausgerichteten Hilfslinie mit dem
+Symbol spezifiziert." Also das flache Dreieck **in Richtung der Verjüngung**,
+dahinter das Verhältnis — nicht das Wort „Kegel". In den Daten: `kegel: true`
+an der Benennung, und `ab` positiv, damit das Sinnbild **vor** der Zahl steht.
+
+Von derselben Seite: geschlossene Maßketten vermeiden; die Lage der
+Mittellinie wird nicht bemaßt; verdeckte Geometrie möglichst nicht bemaßen.
+
+### 6.8 Schnitte — Tabellenbuch Seiten 73, 75 bis 77
+
+* **Wellen werden in Längsrichtung nicht geschnitten** (Seite 76) — ebenso
+  Schrauben, Stifte und Rippen. Eine Nut in einer Welle zeigt man deshalb mit
+  einem **Teilschnitt**.
+* **Teilschnitt:** Die Bruchlinie ist eine **durchgezogene Freihandlinie**
+  oder eine Zickzacklinie (Seite 75). Umgesetzt in `laengsnutAusbruch()`.
+* **Durchdringungen** (Seite 73): Die Kante, an der die Nutflanke die
+  Mantelfläche schneidet, ist eine reale geometrische Durchdringung und wird
+  mit einer **breiten** Vollinie gezeichnet. Sie gehört in den Teil, der
+  **Ansicht geblieben** ist — im Schnitt sieht man die Schnittfläche.
+  Deshalb deckt der Ausbruch nur den linken Teil der Nut ab.
+* **Schraffur** (Seiten 75/77): parallele schmale Volllinien unter 45°,
+  Grundschraffur ohne Rücksicht auf den Werkstoff, für Beschriftungen
+  unterbrochen.
+
 ---
 
 ## 7. Mittellinien

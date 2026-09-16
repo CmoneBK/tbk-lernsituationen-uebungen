@@ -29,7 +29,8 @@
  * ---------------------
  *   laenge, abschnitte    die Kontur, von der linken Stirnfläche aus in mm
  *   gewinde               Bezeichnung, Lage, Steigung, Kerndurchmesser
- *   nuten                 Sicherungsringnuten, als Einzelheit vergrößert
+ *   nuten                 Sicherungsringnuten, als Einzelheit vergrößert;
+ *                         `d2` und die Toleranzen nach DIN 471 (S. 287)
  *   laengsnuten           Passfedernuten; Breite und Tiefe stehen quer zur
  *                         Achse und werden im Querschnitt bemasst
  *   freistiche            Freistiche nach DIN 509 an den Schultern
@@ -85,10 +86,18 @@ WELLEN.antriebswelle = {
      als schmale Vollinie, der Außendurchmesser als breite - DIN ISO 6410. */
   gewinde: {bezeichnung: "M20×1 – 6g", von: 95.1, bis: 128.6, P: 1,
             d: 20, d3: 20 - 1.2268},
-  /* Sicherungsringnuten, 1,3 mm breit (Einzelheiten A und B, 4:1). */
+  /* Sicherungsringnuten nach DIN 471, Tabellenbuch Seite 287. Die Tabelle
+     gibt je Wellendurchmesser die Nutbreite m (H13), den Nutgrund d2 und
+     die Mindeststegbreite n. Die Tiefe folgt daraus: (d − d2) / 2.
+     Toleranzklasse von d2 nach Durchmesser: 12…22 → h11, 24…80 → h12.
+     Nut B stand hier mit 0,5 mm Tiefe - richtig sind 0,55. */
   nuten: [
-    {marke: "A", bei: 9,    breite: 1.3, tiefe: 0.5, d: 20},
-    {marke: "B", bei: 83.6, breite: 1.3, tiefe: 0.5, d: 25}
+    {marke: "A", bei: 9,    breite: 1.3, tiefe: 0.5,  d: 20,
+     d2: 19,   nMin: 1.5, breiteToleranz: "H13", d2Toleranz: "h11",
+     ring: "Sicherungsring DIN 471 – 20 × 1,2"},
+    {marke: "B", bei: 83.6, breite: 1.3, tiefe: 0.55, d: 25,
+     d2: 23.9, nMin: 1.7, breiteToleranz: "H13", d2Toleranz: "h12",
+     ring: "Sicherungsring DIN 471 – 25 × 1,2"}
   ],
   /* Zwei Freistiche an den beiden Schultern, an denen etwas anliegt:
      bei 22,3 der Absatz Ø20 auf Ø24, bei 52,3 die Bundschulter, an der der
@@ -106,7 +115,9 @@ WELLEN.antriebswelle = {
      t2: 0.2, f: 2.5, schulter: "Bundschulter am Lagersitz Ø25",
      ab: 52, hoch: 76}
   ],
-  rundungen: [{bei: 42.3, r: 1, ab: -14, hoch: 44}],
+  /* Hoeher als der Augenschein verlangt: Darunter liegt die Fahne des
+     Oberflaechenzeichens Rz 6. Nachgemessen, siehe test-beschriftung.js. */
+  rundungen: [{bei: 42.3, r: 1, ab: -14, hoch: 60}],
   /* Der kleinste Innenradius der ganzen Kontur - und damit die Grenze für
      den Eckenradius des Schlichtwerkzeugs: r_eps <= r_w - 0,1 mm.
      Nicht die R1 am Bund, wie man auf den ersten Blick meint: Die beiden
@@ -233,8 +244,12 @@ WELLEN.mitnehmerwelle = {
   ],
   gewinde: {bezeichnung: "M24×2 – 6g", von: 75, bis: 106, P: 2,
             d: 24, d3: 24 - 1.2268 * 2},
+  /* Ø26 steht in der Auswahl auf Seite 287 nicht (17, 20, 25, 30 …).
+     Die Masze sind deshalb nicht aus dem Buch belegt - `ungedeckt` sagt
+     das, und die Einzelheit traegt dann keine Toleranzklassen. */
   nuten: [
-    {marke: "A", bei: 7, breite: 1.3, tiefe: 0.5, d: 26}
+    {marke: "A", bei: 7, breite: 1.3, tiefe: 0.5, d: 26,
+     ungedeckt: "Ø26 fehlt in der Auswahl des Tabellenbuchs (Seite 287)"}
   ],
   /* DIN 509 – E 0,8 × 0,3: die Größe der Reihe 1 für Durchmesser über
      18 bis 80 mm, und Reihe 1 ist zu bevorzugen (Seite 119). Am Absatz
@@ -338,9 +353,13 @@ WELLEN.spannwelle = {
   ],
   gewinde: {bezeichnung: "M16×1,5 – 6g", von: 61.5, bis: 90, P: 1.5,
             d: 16, d3: 16 - 1.2268 * 1.5},
+  /* Ø18 und Ø22 stehen in der Auswahl auf Seite 287 nicht (17, 20, 25 …).
+     Siehe die Mitnehmerwelle: gekennzeichnet statt geraten. */
   nuten: [
-    {marke: "A", bei: 6,  breite: 1.3, tiefe: 0.5, d: 18},
-    {marke: "B", bei: 43, breite: 1.3, tiefe: 0.5, d: 22}
+    {marke: "A", bei: 6,  breite: 1.3, tiefe: 0.5, d: 18,
+     ungedeckt: "Ø18 fehlt in der Auswahl des Tabellenbuchs (Seite 287)"},
+    {marke: "B", bei: 43, breite: 1.3, tiefe: 0.5, d: 22,
+     ungedeckt: "Ø22 fehlt in der Auswahl des Tabellenbuchs (Seite 287)"}
   ],
   freistiche: [],
   /* `ab` und `hoch` setzen die Hinweislinien in die Luecken zwischen den
@@ -568,8 +587,14 @@ WELLEN.abtriebswelle = {
        laeuft nach rechts aus dem Werkstoff heraus - links stuende sie in
        der Angabe "Rz 6,3" des Zapfens. Nachgemessen, nicht geschaetzt. */
     {x: 30,  d: 18, text: "Ø18 H7, 40 tief",     ab: 20,  hoch: 56},
-    {x: 54,  d: 36, text: "Passfedernut 10 × 5", ab: 14,  hoch: 34},
-    {x: 105, d: 36, text: "Kegel 1:10",          ab: -30, hoch: 60},
+    /* Nur die Benennung: b und t1 stehen im Querschnitt, die Laenge in der
+       Ansicht. Wer sie hier wiederholt, bemasst doppelt. */
+    {x: 54,  d: 36, text: "Passfedernut",          ab: 14,  hoch: 34},
+    /* Seite 80: Der Kegel bekommt sein Sinnbild, nicht das Wort. Es zeigt
+       in Richtung der Verjüngung - hier nach rechts, von Ø38 auf Ø34. */
+    /* Nach rechts, damit das Sinnbild VOR der Zahl steht - so zeigt es
+       Seite 80, und so liest man es. */
+    {x: 105, d: 36, text: "1:10", kegel: true,   ab: 30,  hoch: 60},
     {x: 134, d: 20, text: "DIN 76 – A",          ab: 26,  hoch: 96},
     {x: 150, d: 24, text: "M24×3 – 6g",          ab: 16,  hoch: 26,
      wennOhneMasse: true}

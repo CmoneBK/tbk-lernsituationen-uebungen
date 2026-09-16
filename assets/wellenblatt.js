@@ -55,6 +55,7 @@ function wellenblattStil(){
     + "color:var(--muted,#5f5f5a)}"
     + ".wellenblatt .blatt-einzelheit{max-width:330px}"
     + ".wellenblatt .blatt-zweiriss{max-width:620px}"
+    + ".wellenblatt .ungedeckt{font-style:italic;color:var(--muted,#5f5f5a)}"
     + ".wellenblatt table{width:100%;border-collapse:collapse;"
     + "font-size:14px;margin:0}"
     + ".wellenblatt th,.wellenblatt td{text-align:left;vertical-align:top;"
@@ -102,11 +103,21 @@ function wellenblattAngaben(w){
       + blattZahl(f.P, 1) + " mm"]);
   }
 
+  /* Sicherungsringnuten nach DIN 471 (Tabellenbuch Seite 287): Nutbreite m,
+     Nutgrund d2 und die Mindeststegbreite n. Wo das Buch den Durchmesser
+     nicht in seiner Auswahl führt, steht das dabei - geraten wird nicht. */
   (w.nuten || []).forEach(function(n){
-    z.push(["Nut " + n.marke, "Nutgrund Ø" + blattZahl(n.d - 2 * n.tiefe, 1)
-      + " &middot; Breite " + blattZahl(n.breite, 1)
-      + " &middot; Tiefe " + blattZahl(n.tiefe, 1)
-      + " &middot; linke Flanke bei " + blattZahl(n.bei, 1) + " mm"]);
+    var d2 = n.d2 !== undefined ? n.d2 : n.d - 2 * n.tiefe;
+    z.push(["Nut " + n.marke,
+      "Breite " + blattZahl(n.breite, 1)
+      + (n.breiteToleranz ? " " + n.breiteToleranz : "")
+      + " &middot; Nutgrund Ø" + blattZahl(d2, 1)
+      + (n.d2Toleranz ? " " + n.d2Toleranz : "")
+      + (n.nMin ? " &middot; Steg mindestens " + blattZahl(n.nMin, 1) : "")
+      + " &middot; linke Flanke bei " + blattZahl(n.bei, 1) + " mm"
+      + (n.ring ? " &middot; " + n.ring : "")
+      + (n.ungedeckt
+         ? ' <em class="ungedeckt">' + n.ungedeckt + "</em>" : "")]);
   });
 
   (w.laengsnuten || []).forEach(function(n){

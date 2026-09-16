@@ -258,6 +258,8 @@ function wellenErklaerHoehe(w, s, o){
 function zeichneWelle(svg, w, o){
   o = o || {};
   var m = wellenMassstab({x: o.x || 82, y: o.y || 140, s: o.s || 6});
+  /* `svg` wird durchgereicht, weil die Schraffur ihr Muster in die defs
+     des Bildes legen muss - nicht in die Gruppe. */
   var g = svgEl("g", {}, svg);
   var i;
 
@@ -323,16 +325,27 @@ function zeichneWelle(svg, w, o){
   });
 
   /* Die Passfedernut steckt in der oberen Kontur, siehe wellenKontur.
-     Was hier noch fehlt, sind die beiden Kanten, an denen ihre Flanken die
-     Mantelfläche schneiden: Sie liegen tiefer als die Mantellinie und
-     höher als der Nutgrund, und zwar bei der Sehne über der halben
-     Nutbreite. Schmale Vollinie - sichtbare Kante, aber keine Kontur. */
+     Was hier noch fehlt, ist zweierlei.
+
+     Erstens die Durchdringung: die Kante, an der die Nutflanke die
+     Mantelfläche schneidet. Sie liegt bei der Sehne über der halben
+     Nutbreite, also tiefer als die Mantellinie und höher als der Nutgrund.
+     Nach Seite 73 ist das eine reale geometrische Durchdringung - und die
+     wird mit einer BREITEN Vollinie gezeichnet, nicht mit einer schmalen.
+
+     Zweitens der Ausbruch. Eine Welle wird in Längsrichtung nicht
+     geschnitten (Seite 76); die Nut zeigt man deshalb mit einem
+     Teilschnitt, dessen Bruchlinie eine durchgezogene Freihandlinie ist
+     (Seite 75). Ohne ihn sieht die Nut aus wie eine Stufe. */
   (w.laengsnuten || []).forEach(function(n){
+    var a = laengsnutAusbruch(svg, g, m, w, n);
     var rr = n.d / 2, halb = n.breite / 2;
     if(halb >= rr) return;
     var dk = 2 * Math.sqrt(rr * rr - halb * halb);
     if(dk <= n.d - 2 * n.tiefe) return;
-    linie(g, m.x(n.von), m.y(dk, true), m.x(n.bis), m.y(dk, true), SCHMAL);
+    /* Nur ueber dem Teil, der Ansicht geblieben ist - im Schnitt gibt es
+       keine Durchdringungslinie, dort sieht man die Schnittflaeche. */
+    linie(g, m.x(a.bis), m.y(dk, true), m.x(n.bis), m.y(dk, true), BREIT);
   });
 
   /* Mittellinie, zwei bis drei Millimeter über das Teil hinaus. */
@@ -345,6 +358,61 @@ function zeichneWelle(svg, w, o){
   if(o.masse)         wellenMasse(g, m, w, o.masseUnten);
   if(o.markiert)      wellenMarkieren(g, m, w, o.markiert, o.markenfarbe);
   return g;
+}
+
+/* Der Ausbruch an einer Passfedernut - ein flacher Teilschnitt, der zeigt,
+   dass die Nut eine Nut ist und keine Stufe.
+
+   Aufbau: Die Fläche zwischen der Kontur (Mantellinie, Nutflanken,
+   Nutgrund) und einer Freihandlinie darunter wird schraffiert. Die
+   Freihandlinie ist die Bruchlinie des Teilschnitts (Seite 75), die
+   Schraffur die Grundschraffur unter 45 Grad (Seite 77).
+
+   Die Tiefe des Ausbruchs ist Darstellung, kein Maß: Er reicht so weit ins
+   Teil, dass die Schraffur lesbar wird. */
+function laengsnutAusbruch(svg, g, m, w, n){
+  var grund = n.d - 2 * n.tiefe;
+  var tief = Math.max(grund - 10, grund * 0.45);   /* Boden des Ausbruchs */
+  var rand = Math.min(5, (n.bis - n.von) / 4);     /* links daneben */
+  /* Der Ausbruch erfasst nur den linken Teil der Nut. Das ist Absicht:
+     Rechts bleibt Ansicht, und nur dort ist die Durchdringungslinie zu
+     sehen - die Kante, an der die Nutflanke die Mantelflaeche schneidet
+     (Seite 73). Ein Ausbruch ueber die ganze Nut wuerde sie verschlucken. */
+  var bis = n.von + (n.bis - n.von) * 0.45;
+  var xl = m.x(n.von - rand), xr = m.x(bis);
+  var yM = m.y(n.d, true), yG = m.y(grund, true), yT = m.y(tief, true);
+
+  var punkte = [
+    [xl, yM], [m.x(n.von), yM], [m.x(n.von), yG], [xr, yG], [xr, yT],
+    [xl, yT]
+  ];
+  svgEl("polygon", {points: punkte.map(function(p){
+      return p[0].toFixed(1) + "," + p[1].toFixed(1); }).join(" "),
+    fill: schraffur(svg, "ausbruch-" + w.id, 45), stroke: "none"}, g);
+
+  /* Die Bruchlinie: unten quer, links hoch bis zur Mantellinie, rechts
+     hoch bis zum Nutgrund. */
+  svgEl("path", {d: bruchlinieQuer(xl, xr, yT), fill: "none",
+    stroke: "currentColor", "stroke-width": SCHMAL}, g);
+  svgEl("path", {d: bruchlinie(xl, yM, yT - yM), fill: "none",
+    stroke: "currentColor", "stroke-width": SCHMAL}, g);
+  svgEl("path", {d: bruchlinie(xr, yG, yT - yG), fill: "none",
+    stroke: "currentColor", "stroke-width": SCHMAL}, g);
+  return {bis: bis};
+}
+
+/* Eine Bruchkante quer - dieselbe leichte Wellenlinie wie `bruchlinie`,
+   nur waagerecht. */
+function bruchlinieQuer(x1, x2, y){
+  var d = "M" + x1.toFixed(1) + "," + y.toFixed(1);
+  var n = Math.max(4, Math.round((x2 - x1) / 26));
+  for(var i = 1; i <= n; i++){
+    var xx = x1 + (x2 - x1) * i / n;
+    var yy = y + (i % 2 ? 4 : -4);
+    d += " Q" + (xx - (x2 - x1) / (2 * n)).toFixed(1) + "," + yy.toFixed(1)
+       + " " + xx.toFixed(1) + "," + y.toFixed(1);
+  }
+  return d;
 }
 
 /* Durchmessermaß: senkrechte Maßlinie zwischen den beiden Mantellinien,
@@ -410,8 +478,58 @@ function wellenMasse(g, m, w, alleUnten){
   });
 }
 
-/* Benennungen mit Hinweislinie - Erklärebene, deshalb gestrichelt und in
-   einer eigenen Gruppe. Sie gehören nicht zur Zeichnung.
+/* Eine Hinweislinie nach DIN ISO 128-22, so wie das Tabellenbuch sie auf
+   Seite 119 unten zeigt: eine schmale Vollinie, am Merkmal eine
+   ausgefüllte Pfeilspitze, am oberen Ende ein Knick in eine waagerechte
+   Bezugslinie, darüber der Text.
+
+   Gestrichelt war das früher, mit der Begründung, es sei Erklärebene. Das
+   war der Fehler: Eine Freistichbezeichnung ist Zeichnungsinhalt.
+   Gestrichelt ist die verdeckte Kante - und sonst nichts.
+
+   (x0, y0) ist das Merkmal, `ab` und `hoch` der Knick relativ dazu. Zeigt
+   `ab` nach links, läuft auch die Bezugslinie nach links und der Text
+   steht rechtsbündig darüber. */
+function hinweislinie(g0, x0, y0, ab, hoch, text, o){
+  o = o || {};
+  var gr = o.groesse || 11;
+  /* Eigene Gruppe mit der Kennung "hinweis". Sie ist nicht Kosmetik: Die
+     Pfeilspitze einer Hinweislinie sitzt auf der Kontur, und eine Pruefung,
+     die Pfeilspitzen zaehlt, haelt die danebenliegende Mantellinie sonst
+     fuer ein halb bemasztes Mass. Die Zeichnung sagt hier also, was die
+     Spitze bedeutet - ein Hinweis, kein Mass. */
+  var g = svgEl("g", {"class":"hinweis"}, g0);
+  var x1 = x0 + ab, y1 = y0 - hoch;
+  var ri = ab < 0 ? -1 : 1;
+  var laenge = Math.hypot(x0 - x1, y0 - y1) || 1;
+  linie(g, x1, y1, x0, y0, SCHMAL);
+  pfeil(g, x0, y0, (x0 - x1) / laenge, (y0 - y1) / laenge);
+  var breite = o.breite !== undefined ? o.breite
+             : (text ? text.length * gr * 0.56 + 6 : 0);
+  if(o.vorn) breite += o.vorn;
+  linie(g, x1, y1, x1 + ri * breite, y1, SCHMAL);
+  var tx = x1 + ri * 3 + (o.vorn ? ri * o.vorn : 0);
+  if(text) txt(g, tx, y1 - 4, text,
+               {anker: ri < 0 ? "end" : "start", groesse: gr});
+  return {x: x1, y: y1, ri: ri, textX: tx, g: g};
+}
+
+/* Das Kegelsinnbild nach DIN EN ISO 3040 (Tabellenbuch Seite 80): ein
+   flaches Dreieck, das in Richtung der Verjüngung zeigt. Davor oder
+   dahinter steht das Kegelverhältnis, und beides sitzt auf einer Linie
+   parallel zur Kegelachse. */
+function kegelzeichen(g, x, y, h, ri){
+  var l = h * 2.2;
+  svgEl("polygon", {points: [
+    x.toFixed(1) + "," + (y - h / 2).toFixed(1),
+    x.toFixed(1) + "," + (y + h / 2).toFixed(1),
+    (x + ri * l).toFixed(1) + "," + y.toFixed(1)
+  ].join(" "), fill: "none", stroke: "currentColor",
+    "stroke-width": SCHMAL}, g);
+  return g;
+}
+
+/* Benennungen mit Hinweislinie.
    Nicht zusammen mit `masse` verwenden: Die Hinweislinien laufen dann in die
    Maßhilfslinien der oberen Maßkette. Entweder die Zeichnung mit Maßen oder
    das Bild mit Benennungen - zwei Bilder sind besser als ein überfülltes.
@@ -421,16 +539,22 @@ function wellenMasse(g, m, w, alleUnten){
    Die Höhen sind in den Daten gestaffelt: Vier Benennungen auf 130 mm Länge
    stoßen sonst aneinander. */
 function wellenBezeichnungen(g, m, w, mitMasse){
-  var e = svgEl("g", {"class":"erklaer"}, g);
+  var e = svgEl("g", {}, g);
   (w.bezeichnungen || []).forEach(function(k){
     /* Eine Gewindebezeichnung ist ein Maß, kein Hinweis. Steht sie schon
        als Durchmessermaß im Bild, darf sie nicht ein zweites Mal als
        Benennung daneben stehen - doppelt bemaßt ist nicht bemaßt. */
     if(mitMasse && k.wennOhneMasse) return;
-    var y0 = m.y(k.d, true), y1 = y0 - k.hoch;
-    linie(e, m.x(k.x), y0, m.x(k.x) + k.ab, y1, SCHMAL, {strich:"4 3"});
-    txt(e, m.x(k.x) + k.ab, y1 - 5, k.text,
-        {anker: k.ab < 0 ? "end" : "start", groesse: 11});
+    /* Ein Kegel wird nach DIN EN ISO 3040 mit seinem Sinnbild und dem
+       Verhältnis angegeben - Seite 80. Das Sinnbild steht vor der Zahl und
+       zeigt in Richtung der Verjüngung. */
+    var kegel = k.kegel ? 1 : 0;
+    var h = hinweislinie(e, m.x(k.x), m.y(k.d, true), k.ab, k.hoch, k.text,
+                         {vorn: kegel ? 20 : 0});
+    if(kegel){
+      kegelzeichen(e, h.x + h.ri * 4, h.y - 5, 7,
+                   k.kegel === "links" ? -1 : 1);
+    }
   });
 }
 
@@ -497,12 +621,9 @@ function absatzDurchmesser(w, mm){
 /* Die Radienangaben zeichnen - Erklärebene wie die Benennungen, deshalb
    gestrichelte Hinweislinie. */
 function wellenRadien(g, m, w){
-  var e = svgEl("g", {"class":"erklaer"}, g);
+  var e = svgEl("g", {}, g);
   wellenRadienListe(w).forEach(function(k){
-    var y0 = m.y(k.d, true), y1 = y0 - k.hoch;
-    linie(e, m.x(k.x), y0, m.x(k.x) + k.ab, y1, SCHMAL, {strich:"4 3"});
-    txt(e, m.x(k.x) + k.ab, y1 - 5, k.text,
-        {anker: k.ab < 0 ? "end" : "start", groesse: 11});
+    hinweislinie(e, m.x(k.x), m.y(k.d, true), k.ab, k.hoch, k.text);
   });
 }
 
@@ -562,13 +683,16 @@ function oberflaechenzeichen(g, x, y, text, o){
    der Fläche endet (Fall 2) - gebraucht wird das dort, wo sonst eine
    Maßhilfslinie darunterliegt. */
 function wellenRauheiten(g, m, w){
-  var e = svgEl("g", {"class":"erklaer"}, g);
+  var e = svgEl("g", {}, g);
   (w.rauheiten || []).forEach(function(r){
     var y0 = m.y(r.d, true), x0 = m.x(r.x);
     if(r.hoch){
       var y1 = y0 - r.hoch;
-      linie(e, x0, y0, x0, y1, SCHMAL);
-      pfeil(e, x0, y0, 0, 1);
+      /* Hinweislinie mit Pfeilspitze auf der Flaeche (Seite 112, Fall 2).
+         Eigene Gruppe, siehe `hinweislinie`. */
+      var hg = svgEl("g", {"class":"hinweis"}, e);
+      linie(hg, x0, y0, x0, y1, SCHMAL);
+      pfeil(hg, x0, y0, 0, 1);
       oberflaechenzeichen(e, x0, y1, r.text, {art: r.art || "abtrag"});
     }else{
       oberflaechenzeichen(e, x0, y0, r.text, {art: r.art || "abtrag"});
@@ -592,9 +716,9 @@ function wellenRauheiten(g, m, w){
 function wellenZentrierbohrungen(g, m, w){
   var z = w.zentrierbohrungen;
   if(!z) return null;
-  var e = svgEl("g", {"class":"erklaer"}, g);
+  var e = svgEl("g", {}, g);
   var gd = wellenGroesstDurchmesser(w);
-  var unten = m.y(gd, false) + 18;
+  var unten = m.y(gd, false) + 22;
 
   [["links", 0, -1], ["rechts", w.laenge, 1]].forEach(function(s){
     var text = z[s[0]];
@@ -603,15 +727,15 @@ function wellenZentrierbohrungen(g, m, w){
     /* Hinweislinie von der Stirnfläche auf der Achse nach unten-außen in
        den freien Rand; dort liegt weder ein Durchmessermaß noch die
        Maßkette. */
-    var x1 = x0 + ri * 14;
-    linie(e, x0, m.achse, x1, unten, SCHMAL);
-    pfeil(e, x0, m.achse, -ri, -1);
-    if(z.art === "erforderlich" || z.art === "nicht"){
-      zentriersymbol(e, x1 + ri * 8, unten, ri, z.art === "nicht");
-      x1 += ri * 18;
+    /* Hinweislinie wie ueberall: schmale Vollinie, Pfeilspitze auf der
+       Stirnflaeche, Knick in die waagerechte Bezugslinie. Die Spitze zeigt
+       vom Text zum Merkmal - also nach oben und nach innen. */
+    var sym = (z.art === "erforderlich" || z.art === "nicht") ? 20 : 0;
+    var h = hinweislinie(e, x0, m.achse, ri * 16, m.achse - unten, text,
+                         {vorn: sym});
+    if(sym){
+      zentriersymbol(e, h.x + h.ri * 8, h.y - 5, -ri, z.art === "nicht");
     }
-    txt(e, x1 + ri * 4, unten + 4, text,
-        {anker: ri < 0 ? "end" : "start", groesse: 11});
   });
   return e;
 }
@@ -703,7 +827,11 @@ function zeichneNutEinzelheit(svg, w, o){
       stroke:"currentColor", "stroke-width":SCHMAL}, g);
   });
 
-  mass(g, x0, x0 + b, y0 + t + 34, o.text || zahlKomma(n.breite),
+  /* Nutbreite mit ihrer Toleranzklasse, soweit das Buch sie fuer diesen
+     Durchmesser hergibt (DIN 471, Seite 287: m ist H13). */
+  mass(g, x0, x0 + b, y0 + t + 34,
+       o.text || (zahlKomma(n.breite)
+                  + (n.breiteToleranz ? " " + n.breiteToleranz : "")),
        [y0 + t, y0 + t]);
   /* Die Tiefe daneben. Eine Sicherungsringnut wird nach beiden Zahlen
      gefertigt - Breite allein sagt nichts über den Nutgrund. */
