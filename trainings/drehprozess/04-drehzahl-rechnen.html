@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Drehzahl rechnen</title>
+<meta name="description" content="Von der Schnittgeschwindigkeit zur Drehzahl: n = vc/(π·d), der mittlere Durchmesser beim Plandrehen und die Anzahl der Schnitte beim Schruppen.">
+<meta name="dauer" content="10 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .aufgabe{
+    background:var(--bg); border:1px solid var(--border-stark); border-radius:10px;
+    padding:14px 16px; margin:0 0 16px; font-size:16px; line-height:1.7;
+  }
+  .aufgabe strong{font-size:17px}
+  .zaehler{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:13px; color:var(--muted); margin:0 0 10px}
+  .rechenweg{
+    background:var(--bg); border:1px solid var(--border); border-radius:10px;
+    padding:12px 16px; margin:12px 0 0; font-size:14.5px; line-height:2;
+    font-variant-numeric:tabular-nums;
+  }
+  .rechenweg b{font-weight:700}
+  .rechenweg .schritt{display:block; color:var(--muted); font-size:12.5px; line-height:1.5}
+  .rechenweg .buch{
+    display:block; margin:6px 0 2px; padding:7px 10px; font-size:12.5px;
+    line-height:1.5; border-left:3px solid var(--ok); border-radius:0 8px 8px 0;
+    background:rgba(22,163,74,.10);
+  }
+  .art{
+    display:inline-block; margin:0 0 8px; padding:3px 10px; border-radius:999px;
+    background:var(--bg); border:1px solid var(--border);
+    font-size:12.5px; font-weight:600; color:var(--muted);
+  }
+  .formel{
+    display:block; margin:10px 0; padding:10px 14px; border-radius:10px;
+    background:var(--bg); border:1px solid var(--border);
+    font-size:17px; text-align:center; font-variant-numeric:tabular-nums;
+  }
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Drehprozess</p>
+    <h1>Drehzahl rechnen</h1>
+    <p class="lead">Die Maschine kennt keine Schnittgeschwindigkeit.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Worum es geht:</strong> Aus dem Tabellenbuch kommt eine
+        Schnittgeschwindigkeit in Metern je Minute. An der Maschine wird eine
+        Drehzahl in Umdrehungen je Minute eingestellt. Dazwischen steht eine
+        Formel &ndash; und zwei Stolperstellen: die Einheiten und die Frage,
+        welcher Durchmesser gemeint ist.</p>
+      <p>Drei Rundenarten wechseln sich ab: Drehzahl beim Längsrunddrehen,
+        Drehzahl beim Querplandrehen, und wie viele Schnitte das Schruppen
+        braucht.</p>
+      <p>Es zählt alles, was <strong>bis 1 % daneben</strong> liegt; die Anzahl
+        der Schnitte muss stimmen.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Aufgaben</h2>
+
+    <div class="box">
+      <div class="zaehler">
+        <span id="stand">Aufgabe 1</span>
+        <span id="punkte"></span>
+      </div>
+
+      <p class="art" id="art">&ndash;</p>
+      <p class="aufgabe" id="aufgabe">&ndash;</p>
+
+      <div class="felder" id="felder"></div>
+
+      <p style="margin-top:16px">
+        <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+        <button type="button" class="knopf leise" id="btnWeg">Rechenweg zeigen</button>
+        <button type="button" class="knopf leise" id="btnWeiter">Nächste Aufgabe</button>
+      </p>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+      <div class="rechenweg" id="weg" hidden></div>
+    </div>
+
+    <h2><span class="nr">2</span>Woher die Zahlen kommen</h2>
+
+    <details>
+      <summary>1. Die Formel und die Einheiten</summary>
+      <p>Bei einer Umdrehung legt ein Punkt am Umfang den Weg π · d zurück. Bei
+        n Umdrehungen je Minute ist das π · d · n je Minute &ndash; und genau
+        das ist die Schnittgeschwindigkeit:</p>
+      <span class="formel">v<sub>c</sub> = π · d · n &nbsp;&rarr;&nbsp;
+        n = v<sub>c</sub> / (π · d)</span>
+      <p>Die Stolperstelle sind die Einheiten. v<sub>c</sub> steht in
+        <strong>m/min</strong>, der Durchmesser in <strong>mm</strong>. Wer
+        beides so einsetzt, bekommt die Drehzahl um den Faktor 1000 zu klein.
+        Also erst umrechnen:</p>
+      <span class="formel">200 m/min = 200 000 mm/min</span>
+      <p>Dann steht oben und unten Millimeter, und übrig bleibt 1/min.</p>
+    </details>
+
+    <details>
+      <summary>2. Abrunden, nicht aufrunden</summary>
+      <p>Die berechnete Drehzahl wird <strong>ganzzahlig abgerundet</strong>.
+        Das ist keine Schönheit, sondern Vorsicht: Der Richtwert aus dem Buch
+        ist eine Obergrenze für vernünftigen Verschleiß. Wer aufrundet, liegt
+        darüber.</p>
+      <p>Hat die Maschine feste Drehzahlstufen, wird auf die
+        <strong>nächstkleinere</strong> Stufe gegangen &ndash; aus demselben
+        Grund.</p>
+    </details>
+
+    <details>
+      <summary>3. Beim Plandrehen ändert sich der Durchmesser</summary>
+      <p>Beim Querplandrehen wandert die Schneide von außen nach innen. Der
+        Durchmesser, an dem sie schneidet, wird dabei immer kleiner &ndash; und
+        mit ihm die Schnittgeschwindigkeit, wenn die Drehzahl gleich bleibt.</p>
+      <p>Eine Maschine mit konstanter Schnittgeschwindigkeit regelt die Drehzahl
+        laufend nach. Wo das nicht geht, wird mit dem <strong>mittleren
+        Durchmesser</strong> gerechnet:</p>
+      <span class="formel">d<sub>m</sub> = (d<sub>a</sub> + d<sub>e</sub>) / 2</span>
+      <p>d<sub>a</sub> ist der Außendurchmesser, d<sub>e</sub> der
+        Enddurchmesser. Wird bis zur Mitte plangedreht, ist d<sub>e</sub> = 0
+        und d<sub>m</sub> die Hälfte des Außendurchmessers.</p>
+    </details>
+
+    <details>
+      <summary>4. Wie oft muss man drüber?</summary>
+      <p>Beim Schruppen nimmt jeder Schnitt die Schnitttiefe a<sub>p</sub> weg
+        &ndash; und zwar vom <em>Radius</em>. Der Durchmesser wird also je
+        Schnitt um 2 · a<sub>p</sub> kleiner:</p>
+      <span class="formel">i &ge; (d<sub>a</sub> &minus; d<sub>e</sub>) /
+        (2 · a<sub>p</sub>)</span>
+      <p>Die Anzahl der Schnitte wird immer <strong>aufgerundet</strong>: Ein
+        halber Schnitt lässt den Rest stehen.</p>
+      <div class="merksatz">
+        <strong>Häufigster Fehler:</strong> die 2 im Nenner vergessen. Dann
+        kommt die doppelte Schnittzahl heraus &ndash; und im Arbeitsplan steht
+        eine Bearbeitungszeit, die niemand braucht.
+      </div>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Drehzahl abrunden, Schnitte aufrunden. Beides
+      geht in Richtung Sicherheit.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>Woher die Schnittgeschwindigkeit kommt, übt das Training
+      <em>Startwert ablesen</em>.</p>
+    <p class="fussnote"><strong>Woher die Zahlen stammen:</strong> Formeln für
+      Drehzahl und Schnittzahl aus dem Abschnitt „Fertigungsplanung beim
+      Drehen", Schnittgeschwindigkeiten aus „Schnittdaten beim Drehen"
+      &ndash; beides Tabellenbuch.</p>
+
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+      Maßgebend sind Norm und Tabellenbuch.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Durchmesser, wie sie im Unterricht vorkommen - die Welle LF5 und ein paar
+   runde Nachbarn. */
+var DURCHMESSER = [16, 20, 24, 25, 30, 32, 40, 45, 50, 60, 63, 80];
+/* Schnittgeschwindigkeiten aus dem Bereich, den die Tabelle fuer Stahl
+   hergibt. Gerechnet wird, nicht nachgeschlagen - deshalb genuegen runde
+   Werte. */
+var TEMPO = [80, 100, 110, 130, 150, 160, 180, 200, 220, 250, 280, 300];
+var SCHNITTTIEFEN = [1.5, 2, 2.5, 3, 4];
+var TOLERANZ = 0.01;
+
+function el(id){ return document.getElementById(id); }
+function zahl(x, n){ return x.toFixed(n === undefined ? 1 : n).replace(".", ","); }
+function waehle(liste){ return liste[Math.floor(Math.random() * liste.length)]; }
+function wert(id){
+  var e = el(id);
+  return e ? parseFloat(String(e.value).replace(",", ".")) : NaN;
+}
+
+/* Die Drehzahl wird ganzzahlig abgerundet - so steht es im Tabellenbuch. */
+function drehzahl(vc, d){ return Math.floor(vc * 1000 / (Math.PI * d)); }
+
+/* ---------- Der Durchlauf ---------- */
+
+var aufgabe = null;
+var nr = 0, richtig = 0, versuche = 0;
+var gemeldet = false;
+
+function feld(id, beschriftung, schritt){
+  return '<label class="feld">' + beschriftung
+    + '<input type="number" id="' + id + '" step="' + (schritt || "1")
+    + '" inputmode="decimal" autocomplete="off"></label>';
+}
+
+function neueAufgabe(){
+  nr++;
+  var art = waehle(["laengs", "plan", "schnitte"]);
+  aufgabe = {art:art};
+
+  if(art === "laengs"){
+    var d = waehle(DURCHMESSER), vc = waehle(TEMPO);
+    aufgabe.d = d; aufgabe.vc = vc; aufgabe.soll = drehzahl(vc, d);
+    el("art").textContent = "Längsrunddrehen";
+    el("aufgabe").innerHTML = "Ein Werkstück mit dem Durchmesser <strong>"
+      + d + " mm</strong> wird längsrundgedreht. Aus dem Tabellenbuch kommt "
+      + "v<sub>c</sub> = <strong>" + vc + " m/min</strong>. Welche Drehzahl "
+      + "wird eingestellt?";
+    el("felder").innerHTML = feld("aN", "n in 1/min", "1");
+
+  }else if(art === "plan"){
+    var da = waehle([30, 32, 40, 45, 50, 60, 63, 80]);
+    var bisMitte = Math.random() < 0.5;
+    var de = bisMitte ? 0 : waehle([16, 20, 24, 25]);
+    if(de >= da) de = 0;
+    var vcp = waehle(TEMPO);
+    var dm = (da + de) / 2;
+    aufgabe.da = da; aufgabe.de = de; aufgabe.vc = vcp; aufgabe.dm = dm;
+    aufgabe.soll = drehzahl(vcp, dm);
+    el("art").textContent = "Querplandrehen";
+    el("aufgabe").innerHTML = "Eine Stirnfläche wird von <strong>Ø" + da
+      + " mm</strong> " + (de === 0 ? "bis zur Mitte" : "bis <strong>Ø" + de
+      + " mm</strong>") + " plangedreht, mit v<sub>c</sub> = <strong>" + vcp
+      + " m/min</strong>. Die Maschine läuft mit fester Drehzahl. Wie groß "
+      + "sind mittlerer Durchmesser und Drehzahl?";
+    el("felder").innerHTML =
+      feld("aDm", "d<sub>m</sub> in mm", "0.1") + feld("aN", "n in 1/min", "1");
+
+  }else{
+    var da2 = waehle([30, 32, 40, 45, 50, 60]);
+    var de2 = waehle([16, 20, 24, 25, 30]);
+    if(de2 >= da2) de2 = da2 - 10;
+    var ap = waehle(SCHNITTTIEFEN);
+    aufgabe.da = da2; aufgabe.de = de2; aufgabe.ap = ap;
+    aufgabe.soll = Math.ceil((da2 - de2) / (2 * ap));
+    el("art").textContent = "Anzahl der Schnitte";
+    el("aufgabe").innerHTML = "Von <strong>Ø" + da2 + " mm</strong> soll auf "
+      + "<strong>Ø" + de2 + " mm</strong> geschruppt werden, mit einer "
+      + "Schnitttiefe a<sub>p</sub> = <strong>" + zahl(ap, 1)
+      + " mm</strong>. Wie viele Schnitte sind nötig?";
+    el("felder").innerHTML = feld("aI", "Anzahl der Schnitte", "1");
+  }
+
+  el("stand").textContent = "Aufgabe " + nr;
+  gemeldet = false;
+  el("rueck").hidden = true;
+  el("weg").hidden = true;
+  var erstes = el("felder").querySelector("input");
+  if(erstes) erstes.focus();
+}
+
+function punkteZeigen(){
+  el("punkte").textContent = versuche ? richtig + " von " + versuche + " richtig" : "";
+}
+
+function buch(text){
+  return "<span class=\"buch\"><b>Nachschlagen:</b> " + text + "</span>";
+}
+
+function wegBauen(){
+  var a = aufgabe;
+
+  if(a.art === "schnitte"){
+    var roh = (a.da - a.de) / (2 * a.ap);
+    return ""
+      + "<span class=\"schritt\">Je Schnitt geht 2 · a<sub>p</sub> vom "
+        + "Durchmesser weg</span>"
+      + "i &ge; (d<sub>a</sub> &minus; d<sub>e</sub>) / (2 · a<sub>p</sub>)<br>"
+      + "i &ge; (" + a.da + " &minus; " + a.de + ") / (2 · " + zahl(a.ap, 1)
+        + ") = " + zahl(roh, 2)
+      + "<span class=\"schritt\">Aufrunden - ein halber Schnitt lässt den "
+        + "Rest stehen</span>"
+      + "i = <b>" + a.soll + " Schnitte</b>"
+      + buch("Die Formel steht bei der Arbeitsplanung zum Drehen, gleich "
+          + "neben dem Beispiel des Gewindebolzens.");
+  }
+
+  var d = a.art === "plan" ? a.dm : a.d;
+  var kopf = "";
+  if(a.art === "plan"){
+    kopf = "<span class=\"schritt\">Der Durchmesser wandert - also der "
+      + "mittlere</span>"
+      + "d<sub>m</sub> = (d<sub>a</sub> + d<sub>e</sub>) / 2 = (" + a.da
+      + " + " + a.de + ") / 2 = <b>" + zahl(a.dm, 1) + " mm</b>"
+      + buch("Beim Querplandrehen rechnet das Tabellenbuch mit d<sub>m</sub>, "
+          + "beim Längsrunddrehen mit d.");
+  }
+  return kopf
+    + "<span class=\"schritt\">Erst die Einheiten</span>"
+    + "v<sub>c</sub> = " + a.vc + " m/min = <b>" + (a.vc * 1000)
+      + " mm/min</b>"
+    + "<span class=\"schritt\">Dann die Drehzahl</span>"
+    + "n = v<sub>c</sub> / (π · d) = " + (a.vc * 1000) + " / (π · "
+      + zahl(d, 1) + ") = " + zahl(a.vc * 1000 / (Math.PI * d), 1)
+    + "<span class=\"schritt\">Abrunden</span>"
+    + "n = <b>" + a.soll + " 1/min</b>"
+    + buch("Die berechnete Drehzahl wird ganzzahlig abgerundet - der "
+        + "Richtwert ist eine Obergrenze.");
+}
+
+function nichtsEingetragen(){
+  var r = el("rueck");
+  r.className = "rueckmeldung fast";
+  r.innerHTML = "<strong>Noch nichts eingetragen.</strong> Ausfüllen "
+    + "&ndash; oder den Rechenweg zeigen lassen.";
+  r.hidden = false;
+}
+
+el("btnPruefen").addEventListener("click", function(){
+  if(!aufgabe) return;
+  var a = aufgabe, r = el("rueck"), ok, text;
+
+  if(a.art === "schnitte"){
+    var i = wert("aI");
+    if(!isFinite(i)){ nichtsEingetragen(); return; }
+    ok = i === a.soll;
+    text = "Nötig sind <strong>" + a.soll + " Schnitte</strong> "
+      + (ok ? "&ndash; getroffen." : "&ndash; du hattest " + i + ".");
+  }else{
+    var n = wert("aN");
+    var okDm = true, dmText = "";
+    if(a.art === "plan"){
+      var dm = wert("aDm");
+      okDm = isFinite(dm) && Math.abs(dm - a.dm) < 0.05;
+      dmText = "d<sub>m</sub> = <strong>" + zahl(a.dm, 1) + " mm</strong> "
+        + (okDm ? "&ndash; getroffen. " : "&ndash; du hattest "
+            + (isFinite(dm) ? zahl(dm, 1) : "nichts") + ". ");
+      if(!isFinite(n) && !isFinite(dm)){ nichtsEingetragen(); return; }
+    }else if(!isFinite(n)){ nichtsEingetragen(); return; }
+    var okN = isFinite(n) && Math.abs(n - a.soll) <= Math.max(1, a.soll * TOLERANZ);
+    ok = okN && okDm;
+    text = dmText + "n = <strong>" + a.soll + " 1/min</strong> "
+      + (okN ? "&ndash; getroffen." : "&ndash; du hattest "
+          + (isFinite(n) ? zahl(n, 0) : "nichts") + ".");
+  }
+
+  versuche++;
+  if(ok) richtig++;
+  rundeMelden(ok);
+  r.className = "rueckmeldung " + (ok ? "ja" : "nein");
+  r.innerHTML = "<strong>" + (ok ? "Richtig." : "Noch nicht.") + "</strong> " + text;
+  r.hidden = false;
+  if(!ok){
+    el("weg").innerHTML = wegBauen();
+    el("weg").hidden = false;
+  }
+  punkteZeigen();
+});
+
+el("btnWeg").addEventListener("click", function(){
+  if(!aufgabe) return;
+  el("weg").innerHTML = wegBauen();
+  el("weg").hidden = false;
+});
+
+el("btnWeiter").addEventListener("click", neueAufgabe);
+
+/* Wettkampf (assets/wettkampf.js): Wer denselben Code hat, bekommt dieselbe
+   Aufgabenfolge. */
+window.TBK_WETTKAMPF = {
+  runden: 10,
+  neu: function(){
+    nr = 0; richtig = 0; versuche = 0;
+    punkteZeigen();
+    neueAufgabe();
+  }
+};
+
+function rundeMelden(ok){
+  if(gemeldet) return;
+  gemeldet = true;
+  document.dispatchEvent(new CustomEvent("tbk-runde", {detail:{richtig: !!ok}}));
+}
+
+neueAufgabe();
+punkteZeigen();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/wettkampf.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

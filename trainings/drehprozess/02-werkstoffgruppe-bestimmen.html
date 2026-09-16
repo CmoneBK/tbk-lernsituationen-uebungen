@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Werkstoffgruppe bestimmen</title>
+<meta name="description" content="P, M, K, N, S oder H: die Hauptanwendungsgruppe nach DIN ISO 513 aus der Werkstoffbezeichnung ableiten – der erste Schritt jeder Fertigungsplanung.">
+<meta name="dauer" content="8 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .aufgabe{
+    background:var(--bg); border:1px solid var(--border-stark); border-radius:10px;
+    padding:14px 16px; margin:0 0 16px; font-size:16px; line-height:1.7;
+  }
+  .aufgabe strong{font-size:17px}
+  .zaehler{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:13px; color:var(--muted); margin:0 0 10px}
+  .rechenweg{
+    background:var(--bg); border:1px solid var(--border); border-radius:10px;
+    padding:12px 16px; margin:12px 0 0; font-size:14.5px; line-height:1.9;
+  }
+  .rechenweg b{font-weight:700}
+  .rechenweg .schritt{display:block; color:var(--muted); font-size:12.5px; line-height:1.5}
+  .rechenweg .buch{
+    display:block; margin:6px 0 2px; padding:7px 10px; font-size:12.5px;
+    line-height:1.5; border-left:3px solid var(--ok); border-radius:0 8px 8px 0;
+    background:rgba(22,163,74,.10);
+  }
+  .art{
+    display:inline-block; margin:0 0 8px; padding:3px 10px; border-radius:999px;
+    background:var(--bg); border:1px solid var(--border);
+    font-size:12.5px; font-weight:600; color:var(--muted);
+  }
+  /* Die sechs Gruppen tragen feste Kennfarben. Die Tabelle im Erklärteil
+     zeigt sie - farbig, weil die Farbe der Merkanker ist. */
+  table.gruppen{border-collapse:collapse; width:100%; margin:6px 0 0;
+    font-size:14.5px}
+  table.gruppen th, table.gruppen td{
+    border:1px solid var(--border); padding:7px 10px; text-align:left;
+    vertical-align:top}
+  table.gruppen th{background:var(--bg); font-weight:600}
+  .kenn{display:inline-flex; align-items:center; justify-content:center;
+    width:26px; height:26px; border-radius:6px; color:#fff; font-weight:700}
+  .kenn.P{background:#1d4ed8} .kenn.M{background:#ca8a04}
+  .kenn.K{background:#b91c1c} .kenn.N{background:#15803d}
+  .kenn.S{background:#78350f} .kenn.H{background:#52525b}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Drehprozess</p>
+    <h1>Werkstoffgruppe bestimmen</h1>
+    <p class="lead">Sechs Buchstaben, sechs Farben &ndash; und der erste Schritt jeder Planung.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Worum es geht:</strong> Schneidstoffe werden nicht danach
+        sortiert, woraus sie bestehen, sondern danach, <em>was sie schneiden
+        sollen</em>. Die Einteilung nach DIN ISO 513 kennt sechs
+        Hauptanwendungsgruppen. Sie steht auf jeder Wendeschneidplatte, sie
+        ordnet die Schnittdatentabelle, und ohne sie geht kein Schritt weiter.</p>
+      <p>Drei Rundenarten wechseln sich ab: vom Werkstoff zur Gruppe, von der
+        Gruppe zum Werkstoff, und die Kennfarben.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Aufgaben</h2>
+
+    <div class="box">
+      <div class="zaehler">
+        <span id="stand">Aufgabe 1</span>
+        <span id="punkte"></span>
+      </div>
+
+      <p class="art" id="art">&ndash;</p>
+      <p class="aufgabe" id="aufgabe">&ndash;</p>
+
+      <div class="felder" id="felder"></div>
+
+      <p style="margin-top:16px">
+        <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+        <button type="button" class="knopf leise" id="btnWeg">Begründung zeigen</button>
+        <button type="button" class="knopf leise" id="btnWeiter">Nächste Aufgabe</button>
+      </p>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+      <div class="rechenweg" id="weg" hidden></div>
+    </div>
+
+    <h2><span class="nr">2</span>Woher die Zahlen kommen</h2>
+
+    <details>
+      <summary>1. Die sechs Gruppen</summary>
+      <table class="gruppen">
+        <tr><th>Kennung</th><th>Werkstoff</th><th>Gilt für</th></tr>
+        <tr><td><span class="kenn P">P</span> blau</td><td>Stahl</td>
+          <td>alle Arten von Stahl und Stahlguss &ndash; <strong>außer</strong>
+            nichtrostendem Stahl</td></tr>
+        <tr><td><span class="kenn M">M</span> gelb</td><td>Nichtrostender Stahl</td>
+          <td>austenitisch, ferritisch und martensitisch</td></tr>
+        <tr><td><span class="kenn K">K</span> rot</td><td>Gusseisen</td>
+          <td>Lamellengrafit, Kugelgrafit, Temperguss</td></tr>
+        <tr><td><span class="kenn N">N</span> grün</td>
+          <td>Nichteisenmetalle und Kunststoffe</td>
+          <td>Aluminium- und Kupferlegierungen, Kunststoffe</td></tr>
+        <tr><td><span class="kenn S">S</span> braun</td>
+          <td>Warmfeste Speziallegierungen und Titan</td>
+          <td>auf Basis von Eisen, Nickel, Cobalt; Titanlegierungen</td></tr>
+        <tr><td><span class="kenn H">H</span> grau</td><td>Harte Werkstoffe</td>
+          <td>gehärteter Stahl, gehärtete Gusseisenwerkstoffe</td></tr>
+      </table>
+    </details>
+
+    <details>
+      <summary>2. Die Ausnahme, die alles entscheidet</summary>
+      <p>P heißt <em>Stahl</em> &ndash; aber nicht jeder Stahl ist P. Der
+        nichtrostende bekommt eine eigene Gruppe, weil er sich beim Zerspanen
+        ganz anders verhält: Er verfestigt unter der Schneide und klebt.</p>
+      <p>Zu erkennen ist er an der Bezeichnung: Sie beginnt mit
+        <strong>X</strong> und enthält <strong>Cr</strong> mit mindestens 10,5 %
+        &ndash; X5CrNi18-10 zum Beispiel. Das X steht für „hochlegiert", die
+        erste Zahl ist der Kohlenstoffgehalt in Hundertsteln.</p>
+      <div class="merksatz">
+        <strong>Häufigster Fehler:</strong> 42CrMo4 für nichtrostend halten,
+        weil Cr darin vorkommt. Es fehlt das X, und 1 % Chrom rostet fröhlich
+        weiter. 42CrMo4 ist ein legierter Vergütungsstahl &ndash; Gruppe P.
+      </div>
+    </details>
+
+    <details>
+      <summary>3. Woran man Gusseisen erkennt</summary>
+      <p>Gusseisen heißt heute <strong>EN-GJ…</strong>: G für Guss, J für Eisen
+        (fonte/iron), dann die Grafitform. <strong>EN-GJL</strong> ist
+        Lamellengrafit, <strong>EN-GJS</strong> Kugelgrafit,
+        <strong>EN-GJM</strong> Temperguss. Alle drei sind Gruppe K.</p>
+      <p>Nicht zu verwechseln mit <strong>Stahlguss</strong> (GE240 und
+        Verwandte): Der ist gegossener <em>Stahl</em> und gehört zu P.</p>
+    </details>
+
+    <details>
+      <summary>4. Wozu die Gruppe gebraucht wird</summary>
+      <p>Zweimal im Ablauf:</p>
+      <ul>
+        <li>Die <strong>Schnittdatentabelle</strong> ist nach Gruppen geordnet.
+          Ohne Gruppe findet man die Zeile nicht.</li>
+        <li>Die <strong>Wendeschneidplatte</strong> trägt die Gruppe in ihrer
+          Bezeichnung &ndash; P20 zum Beispiel. Die Zahl dahinter sagt, wo
+          zwischen Verschleißfestigkeit und Zähigkeit die Sorte liegt: kleine
+          Zahl hart und verschleißfest, große Zahl zäh.</li>
+      </ul>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> P ist Stahl, außer er rostet nicht &ndash; dann
+      M. Gusseisen ist K, alles Bunte und Weiche ist N. S und H sind die
+      Sonderfälle.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>Mit der Gruppe in der Hand geht es weiter zur Zeile: Das übt das Training
+      <em>Startwert ablesen</em>.</p>
+    <p class="fussnote"><strong>Woher die Zahlen stammen:</strong> Einteilung
+      der Schneidstoffe nach DIN ISO 513 und Schritt 1 der Fertigungsplanung
+      beim Drehen, Tabellenbuch. Die Werkstoffbezeichnungen folgen
+      DIN EN 10027-1.</p>
+
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+      Maßgebend sind Norm und Tabellenbuch.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Die Gruppen nach DIN ISO 513, wie sie in Schritt 1 der Fertigungsplanung
+   stehen. Die Zuordnung eines Werkstoffs folgt aus der Regel, nicht aus einer
+   Liste im Buch - deshalb steht neben jedem Werkstoff, woran man es sieht. */
+var GRUPPEN = {
+  P: {farbe:"blau",  was:"Stahl",
+      regel:"alle Arten von Stahl und Stahlguss außer nichtrostendem Stahl"},
+  M: {farbe:"gelb",  was:"Nichtrostender Stahl",
+      regel:"austenitisch, ferritisch und martensitisch"},
+  K: {farbe:"rot",   was:"Gusseisen",
+      regel:"Lamellengrafit, Kugelgrafit, Temperguss"},
+  N: {farbe:"grün",  was:"Nichteisenmetalle und Kunststoffe",
+      regel:"Aluminium- und Kupferlegierungen, Kunststoffe"},
+  S: {farbe:"braun", was:"Warmfeste Speziallegierungen und Titan",
+      regel:"auf Basis von Eisen, Nickel, Cobalt; Titanlegierungen"},
+  H: {farbe:"grau",  was:"Harte Werkstoffe",
+      regel:"gehärteter Stahl und gehärtete Gusseisenwerkstoffe"}
+};
+var KENNUNGEN = ["P", "M", "K", "N", "S", "H"];
+
+var WERKSTOFFE = [
+  {name:"S235JR",        g:"P", hinweis:"Unlegierter Baustahl - S für Stahlbau, 235 die Streckgrenze."},
+  {name:"E335",          g:"P", hinweis:"Unlegierter Baustahl für den Maschinenbau."},
+  {name:"C45E",          g:"P", hinweis:"Unlegierter Vergütungsstahl, 0,45 % Kohlenstoff."},
+  {name:"42CrMo4",       g:"P", hinweis:"Legierter Vergütungsstahl. Chrom ja - aber kein X davor, also nicht nichtrostend."},
+  {name:"16MnCr5",       g:"P", hinweis:"Legierter Einsatzstahl, wird randschichtgehärtet - im ungehärteten Zustand P."},
+  {name:"11SMnPb30",     g:"P", hinweis:"Automatenstahl, mit Schwefel und Blei zum besseren Spanbruch."},
+  {name:"GE240",         g:"P", hinweis:"Stahlguss - gegossener Stahl, kein Gusseisen."},
+  {name:"X5CrNi18-10",   g:"M", hinweis:"X für hochlegiert, 18 % Chrom, 10 % Nickel - der austenitische Klassiker."},
+  {name:"X2CrNiMo17-12-2", g:"M", hinweis:"Nichtrostend mit Molybdän, austenitisch."},
+  {name:"X20Cr13",       g:"M", hinweis:"Nichtrostend, martensitisch - härtbar, aber immer noch M."},
+  {name:"EN-GJL-250",    g:"K", hinweis:"Gusseisen mit Lamellengrafit, 250 N/mm² Zugfestigkeit."},
+  {name:"EN-GJS-400-15", g:"K", hinweis:"Gusseisen mit Kugelgrafit - zäher als Lamellengrafit, aber immer noch K."},
+  {name:"EN-GJMB-350-10", g:"K", hinweis:"Schwarzer Temperguss."},
+  {name:"EN AW-6060",    g:"N", hinweis:"Aluminium-Knetlegierung."},
+  {name:"CuZn39Pb3",     g:"N", hinweis:"Messing mit Blei - Kupferlegierung, also N."},
+  {name:"PA6",           g:"N", hinweis:"Polyamid, ein Thermoplast."},
+  {name:"TiAl6V4",       g:"S", hinweis:"Titanlegierung - eigene Gruppe, weil sie schlecht Wärme leitet."},
+  {name:"NiCr20TiAl",    g:"S", hinweis:"Warmfeste Nickelbasislegierung."},
+  {name:"42CrMo4 gehärtet, 58 HRC", g:"H", hinweis:"Gehärtet ist derselbe Stahl ein anderer Fall: H statt P."},
+  {name:"Hartguss",      g:"H", hinweis:"Gehärteter Gusseisenwerkstoff."}
+];
+
+function el(id){ return document.getElementById(id); }
+function waehle(liste){ return liste[Math.floor(Math.random() * liste.length)]; }
+
+/* ---------- Der Durchlauf ---------- */
+
+var aufgabe = null;
+var nr = 0, richtig = 0, versuche = 0;
+var gemeldet = false;
+
+function auswahlfeld(id, beschriftung, werte){
+  var s = '<label class="feld">' + beschriftung + '<select id="' + id + '">'
+    + '<option value="">bitte wählen</option>';
+  for(var i = 0; i < werte.length; i++){
+    s += '<option value="' + werte[i] + '">' + werte[i] + '</option>';
+  }
+  return s + '</select></label>';
+}
+
+/* Drei falsche Antworten dazu, gemischt. */
+function mitAblenkern(richtigeAntwort, vorrat){
+  var aus = [richtigeAntwort], i = 0;
+  var rest = vorrat.filter(function(x){ return x !== richtigeAntwort; });
+  while(aus.length < 4 && rest.length){
+    i = Math.floor(Math.random() * rest.length);
+    aus.push(rest.splice(i, 1)[0]);
+  }
+  for(i = aus.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = aus[i]; aus[i] = aus[j]; aus[j] = t;
+  }
+  return aus;
+}
+
+function neueAufgabe(){
+  nr++;
+  var art = waehle(["zurGruppe", "zumWerkstoff", "farbe"]);
+  aufgabe = {art:art};
+
+  if(art === "zurGruppe"){
+    var w = waehle(WERKSTOFFE);
+    aufgabe.w = w; aufgabe.soll = w.g;
+    el("art").textContent = "Vom Werkstoff zur Gruppe";
+    el("aufgabe").innerHTML = "Auf der Zeichnung steht der Werkstoff "
+      + "<strong>" + w.name + "</strong>. Welche Hauptanwendungsgruppe gilt?";
+    el("felder").innerHTML = auswahlfeld("aG", "Hauptanwendungsgruppe", KENNUNGEN);
+
+  }else if(art === "zumWerkstoff"){
+    var g = waehle(KENNUNGEN);
+    var passend = WERKSTOFFE.filter(function(x){ return x.g === g; });
+    var falsch = WERKSTOFFE.filter(function(x){ return x.g !== g; });
+    var soll = waehle(passend);
+    aufgabe.g = g; aufgabe.soll = soll.name; aufgabe.w = soll;
+    var liste = [soll.name];
+    while(liste.length < 4 && falsch.length){
+      var k = falsch.splice(Math.floor(Math.random() * falsch.length), 1)[0];
+      liste.push(k.name);
+    }
+    for(var i = liste.length - 1; i > 0; i--){
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = liste[i]; liste[i] = liste[j]; liste[j] = t;
+    }
+    el("art").textContent = "Von der Gruppe zum Werkstoff";
+    el("aufgabe").innerHTML = "Ein Werkzeug ist für die Gruppe <strong>" + g
+      + "</strong> (" + GRUPPEN[g].was + ") gedacht. Welcher dieser Werkstoffe "
+      + "gehört dazu?";
+    el("felder").innerHTML = auswahlfeld("aG", "Werkstoff", liste);
+
+  }else{
+    var g2 = waehle(KENNUNGEN);
+    var hin = Math.random() < 0.5;
+    aufgabe.g = g2; aufgabe.hin = hin;
+    if(hin){
+      aufgabe.soll = GRUPPEN[g2].farbe;
+      el("art").textContent = "Die Kennfarbe";
+      el("aufgabe").innerHTML = "Welche Kennfarbe trägt die Gruppe <strong>"
+        + g2 + "</strong>?";
+      el("felder").innerHTML = auswahlfeld("aG", "Kennfarbe",
+        mitAblenkern(GRUPPEN[g2].farbe,
+          KENNUNGEN.map(function(k){ return GRUPPEN[k].farbe; })));
+    }else{
+      aufgabe.soll = g2;
+      el("art").textContent = "Die Kennfarbe";
+      el("aufgabe").innerHTML = "Ein Schneidstoff ist <strong>"
+        + GRUPPEN[g2].farbe + "</strong> gekennzeichnet. Welche Gruppe ist das?";
+      el("felder").innerHTML = auswahlfeld("aG", "Hauptanwendungsgruppe",
+        mitAblenkern(g2, KENNUNGEN));
+    }
+  }
+
+  el("stand").textContent = "Aufgabe " + nr;
+  gemeldet = false;
+  el("rueck").hidden = true;
+  el("weg").hidden = true;
+}
+
+function punkteZeigen(){
+  el("punkte").textContent = versuche ? richtig + " von " + versuche + " richtig" : "";
+}
+
+function buch(text){
+  return "<span class=\"buch\"><b>Nachschlagen:</b> " + text + "</span>";
+}
+
+function wegBauen(){
+  var a = aufgabe;
+  if(a.art === "farbe"){
+    return "<span class=\"schritt\">Die sechs Kennfarben</span>"
+      + "P blau, M gelb, K rot, N grün, S braun, H grau.<br>"
+      + "Gruppe <b>" + a.g + "</b> ist <b>" + GRUPPEN[a.g].farbe + "</b> - "
+      + GRUPPEN[a.g].was + "."
+      + buch("Die Farben stehen in der Tabelle der Schneidstoffe nach "
+          + "DIN ISO 513, links neben dem Kennbuchstaben.");
+  }
+  var g = a.art === "zurGruppe" ? a.w.g : a.g;
+  return "<span class=\"schritt\">" + a.w.name + "</span>"
+    + a.w.hinweis
+    + "<span class=\"schritt\">Die Regel</span>"
+    + "Gruppe <b>" + g + "</b>: " + GRUPPEN[g].regel + "."
+    + buch("Schritt 1 der Fertigungsplanung nennt zu jeder Gruppe genau diese "
+        + "Aufzählung - danach wird zugeordnet, nicht nach Gefühl.");
+}
+
+el("btnPruefen").addEventListener("click", function(){
+  if(!aufgabe) return;
+  var r = el("rueck"), gewaehlt = el("aG").value;
+  if(!gewaehlt){
+    r.className = "rueckmeldung fast";
+    r.innerHTML = "<strong>Noch nichts gewählt.</strong> Auswählen "
+      + "&ndash; oder die Begründung zeigen lassen.";
+    r.hidden = false;
+    return;
+  }
+  var ok = gewaehlt === aufgabe.soll;
+  versuche++;
+  if(ok) richtig++;
+  rundeMelden(ok);
+  r.className = "rueckmeldung " + (ok ? "ja" : "nein");
+  r.innerHTML = "<strong>" + (ok ? "Richtig." : "Noch nicht.") + "</strong> "
+    + "Richtig ist <strong>" + aufgabe.soll + "</strong>"
+    + (ok ? "." : " &ndash; du hattest " + gewaehlt + ".");
+  r.hidden = false;
+  if(!ok){
+    el("weg").innerHTML = wegBauen();
+    el("weg").hidden = false;
+  }
+  punkteZeigen();
+});
+
+el("btnWeg").addEventListener("click", function(){
+  if(!aufgabe) return;
+  el("weg").innerHTML = wegBauen();
+  el("weg").hidden = false;
+});
+
+el("btnWeiter").addEventListener("click", neueAufgabe);
+
+window.TBK_WETTKAMPF = {
+  runden: 10,
+  neu: function(){
+    nr = 0; richtig = 0; versuche = 0;
+    punkteZeigen();
+    neueAufgabe();
+  }
+};
+
+function rundeMelden(ok){
+  if(gemeldet) return;
+  gemeldet = true;
+  document.dispatchEvent(new CustomEvent("tbk-runde", {detail:{richtig: !!ok}}));
+}
+
+neueAufgabe();
+punkteZeigen();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/wettkampf.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

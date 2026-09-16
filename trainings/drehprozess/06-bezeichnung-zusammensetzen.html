@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Die Bezeichnung zusammensetzen</title>
+<meta name="description" content="Die Bezeichnung einer Wendeschneidplatte nach DIN ISO 1832 lesen und bilden: Plattengeometrie, Freiwinkel, Eckenradius, Schneidrichtung.">
+<meta name="dauer" content="10 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .aufgabe{
+    background:var(--bg); border:1px solid var(--border-stark); border-radius:10px;
+    padding:14px 16px; margin:0 0 16px; font-size:16px; line-height:1.7;
+  }
+  .aufgabe strong{font-size:17px}
+  .zaehler{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:13px; color:var(--muted); margin:0 0 10px}
+  .rechenweg{
+    background:var(--bg); border:1px solid var(--border); border-radius:10px;
+    padding:12px 16px; margin:12px 0 0; font-size:14.5px; line-height:1.9;
+  }
+  .rechenweg b{font-weight:700}
+  .rechenweg .schritt{display:block; color:var(--muted); font-size:12.5px; line-height:1.5}
+  .rechenweg .buch{
+    display:block; margin:6px 0 2px; padding:7px 10px; font-size:12.5px;
+    line-height:1.5; border-left:3px solid var(--ok); border-radius:0 8px 8px 0;
+    background:rgba(22,163,74,.10);
+  }
+  .art{
+    display:inline-block; margin:0 0 8px; padding:3px 10px; border-radius:999px;
+    background:var(--bg); border:1px solid var(--border);
+    font-size:12.5px; font-weight:600; color:var(--muted);
+  }
+  /* Die Bezeichnung selbst: Stelle für Stelle, damit man die Position sieht,
+     nach der gefragt ist. */
+  .bez{display:flex; flex-wrap:wrap; gap:5px; margin:0 0 14px;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  .bez span{
+    display:inline-flex; flex-direction:column; align-items:center;
+    min-width:34px; padding:6px 7px; border-radius:8px;
+    background:var(--bg); border:1px solid var(--border);
+    font-size:17px; font-weight:700;
+  }
+  .bez span small{font-size:10px; font-weight:400; color:var(--muted);
+    font-family:inherit; margin-top:3px}
+  .bez span.her{background:rgba(180,83,9,.16); border-color:#b45309}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Drehprozess</p>
+    <h1>Die Bezeichnung zusammensetzen</h1>
+    <p class="lead">Zehn Stellen, und jede sagt etwas.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Worum es geht:</strong> Eine Wendeschneidplatte wird nicht mit
+        Worten bestellt, sondern mit einer Kette aus Buchstaben und Zahlen. Jede
+        Stelle hat ihre feste Bedeutung &ndash; wer den Schlüssel kennt, liest
+        aus <em>DCMT 11 T3 04</em> Form, Freiwinkel, Größe und Eckenradius ab,
+        ohne ein Bild gesehen zu haben.</p>
+      <p>Drei Rundenarten wechseln sich ab: eine Stelle deuten, zu einer
+        Anforderung den Kennbuchstaben finden, und aus der ganzen Bezeichnung
+        eine Zahl herausholen.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Aufgaben</h2>
+
+    <div class="box">
+      <div class="zaehler">
+        <span id="stand">Aufgabe 1</span>
+        <span id="punkte"></span>
+      </div>
+
+      <p class="art" id="art">&ndash;</p>
+      <div class="bez" id="bez" hidden></div>
+      <p class="aufgabe" id="aufgabe">&ndash;</p>
+
+      <div class="felder" id="felder"></div>
+
+      <p style="margin-top:16px">
+        <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+        <button type="button" class="knopf leise" id="btnWeg">Erklärung zeigen</button>
+        <button type="button" class="knopf leise" id="btnWeiter">Nächste Aufgabe</button>
+      </p>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+      <div class="rechenweg" id="weg" hidden></div>
+    </div>
+
+    <h2><span class="nr">2</span>Der Schlüssel</h2>
+
+    <details>
+      <summary>1. Die zehn Stellen</summary>
+      <ol>
+        <li><strong>Plattengeometrie</strong> &ndash; die Form und damit der
+          Eckenwinkel ε</li>
+        <li><strong>Normal-Freiwinkel</strong> α<sub>n</sub> an der Platte</li>
+        <li><strong>Toleranzklasse</strong></li>
+        <li><strong>Befestigung und Spanbrecher</strong></li>
+        <li><strong>Plattengröße</strong> l in mm</li>
+        <li><strong>Plattendicke</strong> s</li>
+        <li><strong>Ausführung der Schneidenecke</strong> &ndash; hier steckt
+          der Eckenradius</li>
+        <li><strong>Ausführung der Schneide</strong></li>
+        <li><strong>Schneidrichtung</strong></li>
+        <li><strong>Schneidstoff</strong></li>
+      </ol>
+      <p>Die Stellen 1 bis 4 sind Buchstaben, 5 bis 7 Zahlen, 8 und 9 wieder
+        Buchstaben. Deshalb lässt sich eine Bezeichnung auch ohne Trennzeichen
+        lesen.</p>
+    </details>
+
+    <details>
+      <summary>2. Stelle 1: die Form bestimmt den Eckenwinkel</summary>
+      <p>Gleichseitig und gleichwinklig sind <strong>S</strong> (Quadrat, 90°),
+        <strong>T</strong> (Dreieck, 60°), <strong>P</strong> (Fünfeck),
+        <strong>H</strong> (Sechseck), <strong>O</strong> (Achteck) und
+        <strong>R</strong> (rund &ndash; ohne Ecke).</p>
+      <p>Die rautenförmigen sind die interessanten, weil ihr Eckenwinkel die
+        Anwendung entscheidet: <strong>C</strong> 80°, <strong>W</strong> 80°
+        (trigon), <strong>M</strong> 86°, <strong>E</strong> 75°,
+        <strong>D</strong> 55°, <strong>V</strong> 35°.</p>
+      <div class="merksatz">
+        <strong>Die Regel dahinter:</strong> Großer Eckenwinkel heißt stabile
+        Ecke &ndash; gut zum Schruppen. Kleiner Eckenwinkel heißt spitz und
+        zugänglich &ndash; nötig für Konturen und enge Winkel, aber
+        empfindlich. Deshalb C und W zum Schruppen, D und V zum Schlichten.
+      </div>
+    </details>
+
+    <details>
+      <summary>3. Stelle 2: der Freiwinkel</summary>
+      <p>Der Buchstabe steht für den Normal-Freiwinkel an der Platte:
+        <strong>N</strong> = 0° (negative Grundform), <strong>A</strong> = 3°,
+        <strong>B</strong> = 5°, <strong>C</strong> = 7°, <strong>P</strong> =
+        11°, <strong>D</strong> = 15°, <strong>E</strong> = 20°,
+        <strong>F</strong> = 25°, <strong>G</strong> = 30°.</p>
+      <p>N ist der häufigste Fall beim Schruppen: Eine Platte ohne Freiwinkel
+        lässt sich beidseitig verwenden &ndash; doppelt so viele Schneiden.
+        Positive Grundformen schneiden leichter und brauchen weniger Kraft.</p>
+    </details>
+
+    <details>
+      <summary>4. Stelle 7: der Eckenradius</summary>
+      <p>Die <strong>Kennzahl mal 0,1</strong> ergibt den Eckenradius
+        r<sub>ε</sub> in Millimetern. Aus 04 wird also 0,4 mm, aus 08 werden
+        0,8 mm, aus 12 werden 1,2 mm.</p>
+      <p>Das ist die Stelle, die über die Rautiefe entscheidet: R<sub>th</sub> =
+        f²/(8·r<sub>ε</sub>). Wer beim Schlichten eine glatte Fläche braucht,
+        sucht hier.</p>
+    </details>
+
+    <details>
+      <summary>5. Stelle 9: rechts, links oder beides</summary>
+      <p><strong>R</strong> rechtsschneidend, <strong>L</strong>
+        linksschneidend, <strong>N</strong> beidseitig. Rechtsschneidend
+        arbeitet von rechts nach links, also vom Reitstock zum Futter &ndash;
+        der Normalfall beim Längsrunddrehen.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Erste Stelle Form und Eckenwinkel, zweite
+      Freiwinkel, siebte mal 0,1 der Eckenradius. Mit diesen dreien kommt man
+      durch fast jede Aufgabe.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>Was der Eckenradius für die Oberfläche bedeutet, übt das Training
+      <em>Vorschub und Rautiefe</em>.</p>
+    <p class="fussnote"><strong>Woher die Zahlen stammen:</strong> Bezeichnung
+      von Wendeschneidplatten nach DIN ISO 1832 (2017-06), Tabellenbuch. Die
+      vollständigen Toleranz- und Befestigungstabellen stehen dort &ndash; hier
+      geht es um die Systematik.</p>
+
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+      Maßgebend sind Norm und Tabellenbuch.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Der Schlüssel nach DIN ISO 1832, soweit er im Unterricht gebraucht wird. */
+var FORMEN = [
+  {k:"S", text:"Quadrat, Eckenwinkel 90°",      eps:"90°"},
+  {k:"T", text:"Dreieck, Eckenwinkel 60°",      eps:"60°"},
+  {k:"C", text:"Raute, Eckenwinkel 80°",        eps:"80°"},
+  {k:"W", text:"Trigon, Eckenwinkel 80°",       eps:"80°"},
+  {k:"M", text:"Raute, Eckenwinkel 86°",        eps:"86°"},
+  {k:"E", text:"Raute, Eckenwinkel 75°",        eps:"75°"},
+  {k:"D", text:"Raute, Eckenwinkel 55°",        eps:"55°"},
+  {k:"V", text:"Raute, Eckenwinkel 35°",        eps:"35°"},
+  {k:"R", text:"rund, ohne Eckenwinkel",        eps:"rund"},
+  {k:"P", text:"Fünfeck",                       eps:"108°"},
+  {k:"H", text:"Sechseck",                      eps:"120°"},
+  {k:"O", text:"Achteck",                       eps:"135°"}
+];
+var FREIWINKEL = [
+  {k:"N", text:"0° – negative Grundform",  grad:"0°"},
+  {k:"A", text:"3°",  grad:"3°"},
+  {k:"B", text:"5°",  grad:"5°"},
+  {k:"C", text:"7°",  grad:"7°"},
+  {k:"P", text:"11°", grad:"11°"},
+  {k:"D", text:"15°", grad:"15°"},
+  {k:"E", text:"20°", grad:"20°"},
+  {k:"F", text:"25°", grad:"25°"},
+  {k:"G", text:"30°", grad:"30°"}
+];
+var SCHNEIDE = [
+  {k:"F", text:"scharf"},
+  {k:"E", text:"gerundet"},
+  {k:"T", text:"gefast"},
+  {k:"S", text:"gefast und gerundet"},
+  {k:"K", text:"doppelgefast"},
+  {k:"P", text:"doppelgefast und gerundet"}
+];
+var RICHTUNG = [
+  {k:"R", text:"rechtsschneidend"},
+  {k:"L", text:"linksschneidend"},
+  {k:"N", text:"rechts- und linksschneidend"}
+];
+var TOLERANZ = ["A", "C", "E", "F", "G", "H", "J", "K", "M"];
+var BEFESTIGUNG = ["N", "G", "M", "T", "W", "A", "R"];
+var ECKEN = [
+  {z:"02", r:0.2}, {z:"04", r:0.4}, {z:"08", r:0.8}, {z:"12", r:1.2},
+  {z:"16", r:1.6}
+];
+var GROESSEN = ["09", "11", "12", "16", "19"];
+var DICKEN = ["02", "03", "04", "T3"];
+var SCHNEIDSTOFFE = ["P10", "P20", "P25", "M15", "K10"];
+
+function el(id){ return document.getElementById(id); }
+function waehle(liste){ return liste[Math.floor(Math.random() * liste.length)]; }
+function zahl(x, n){ return x.toFixed(n === undefined ? 1 : n).replace(".", ","); }
+
+/* Eine vollständige Bezeichnung würfeln. */
+function neueBezeichnung(){
+  return {
+    form: waehle(FORMEN.filter(function(f){ return f.k !== "R"; })),
+    frei: waehle(FREIWINKEL),
+    tol: waehle(TOLERANZ),
+    bef: waehle(BEFESTIGUNG),
+    groesse: waehle(GROESSEN),
+    dicke: waehle(DICKEN),
+    ecke: waehle(ECKEN),
+    schneide: waehle(SCHNEIDE),
+    richtung: waehle(RICHTUNG),
+    stoff: waehle(SCHNEIDSTOFFE)
+  };
+}
+
+/* Die zehn Stellen als Liste, mit Beschriftung darunter. */
+function stellen(b){
+  return [
+    {wert:b.form.k,    name:"Form"},
+    {wert:b.frei.k,    name:"Freiwinkel"},
+    {wert:b.tol,       name:"Toleranz"},
+    {wert:b.bef,       name:"Befestigung"},
+    {wert:b.groesse,   name:"Größe"},
+    {wert:b.dicke,     name:"Dicke"},
+    {wert:b.ecke.z,    name:"Ecke"},
+    {wert:b.schneide.k, name:"Schneide"},
+    {wert:b.richtung.k, name:"Richtung"},
+    {wert:b.stoff,     name:"Schneidstoff"}
+  ];
+}
+
+function bezZeigen(b, hervor){
+  var s = stellen(b), aus = "";
+  for(var i = 0; i < s.length; i++){
+    aus += '<span class="' + (i === hervor ? "her" : "") + '">' + s[i].wert
+      + '<small>' + (i + 1) + '</small></span>';
+  }
+  el("bez").innerHTML = aus;
+  el("bez").hidden = false;
+}
+
+/* ---------- Der Durchlauf ---------- */
+
+var aufgabe = null;
+var nr = 0, richtig = 0, versuche = 0;
+var gemeldet = false;
+
+function auswahlfeld(id, beschriftung, werte){
+  var s = '<label class="feld">' + beschriftung + '<select id="' + id + '">'
+    + '<option value="">bitte wählen</option>';
+  for(var i = 0; i < werte.length; i++){
+    s += '<option value="' + werte[i] + '">' + werte[i] + '</option>';
+  }
+  return s + '</select></label>';
+}
+
+/* Eine Auswahlliste, in der die richtige Antwort garantiert steht. Ohne
+   diesen Umweg hing es am Mischen, ob sie dabei ist. */
+function optionenMit(soll, vorrat, anzahl){
+  var rest = mischen(vorrat.filter(function(x){ return x !== soll; }));
+  return mischen([soll].concat(rest.slice(0, Math.max(0, anzahl - 1))));
+}
+
+function mischen(liste){
+  var a = liste.slice();
+  for(var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+function neueAufgabe(){
+  nr++;
+  var art = waehle(["deuten", "finden", "ecke"]);
+  var b = neueBezeichnung();
+  aufgabe = {art:art, b:b};
+  el("bez").hidden = true;
+
+  if(art === "deuten"){
+    /* Gefragt wird nach Stelle 1, 2, 8 oder 9 - den vier, deren Bedeutung
+       sich ohne die großen Tabellen erschließt. */
+    var stelle = waehle([0, 1, 7, 8]);
+    var soll, vorrat;
+    if(stelle === 0){ soll = b.form.text;
+      vorrat = FORMEN.map(function(x){ return x.text; }); }
+    else if(stelle === 1){ soll = b.frei.text;
+      vorrat = FREIWINKEL.map(function(x){ return x.text; }); }
+    else if(stelle === 7){ soll = b.schneide.text;
+      vorrat = SCHNEIDE.map(function(x){ return x.text; }); }
+    else { soll = b.richtung.text;
+      vorrat = RICHTUNG.map(function(x){ return x.text; }); }
+    aufgabe.stelle = stelle; aufgabe.soll = soll;
+    bezZeigen(b, stelle);
+    el("art").textContent = "Eine Stelle deuten";
+    el("aufgabe").innerHTML = "An <strong>Stelle " + (stelle + 1)
+      + "</strong> steht <strong>" + stellen(b)[stelle].wert
+      + "</strong>. Was bedeutet das?";
+    el("felder").innerHTML = auswahlfeld("aA", "Bedeutung",
+      optionenMit(soll, vorrat, 5));
+
+  }else if(art === "finden"){
+    var was = waehle(["form", "frei", "richtung"]);
+    var frage, sollK, liste;
+    if(was === "form"){
+      frage = "Gesucht ist eine Platte mit dem <strong>Eckenwinkel "
+        + b.form.eps + "</strong>. Welcher Kennbuchstabe steht an Stelle 1?";
+      sollK = b.form.k;
+      liste = FORMEN.map(function(x){ return x.k; });
+    }else if(was === "frei"){
+      frage = "Gesucht ist eine Platte mit dem <strong>Normal-Freiwinkel "
+        + b.frei.grad + "</strong>. Welcher Kennbuchstabe steht an Stelle 2?";
+      sollK = b.frei.k;
+      liste = FREIWINKEL.map(function(x){ return x.k; });
+    }else{
+      frage = "Die Platte soll <strong>" + b.richtung.text
+        + "</strong> sein. Welcher Kennbuchstabe steht an Stelle 9?";
+      sollK = b.richtung.k;
+      liste = RICHTUNG.map(function(x){ return x.k; });
+    }
+    aufgabe.was = was; aufgabe.soll = sollK;
+    el("art").textContent = "Den Kennbuchstaben finden";
+    el("aufgabe").innerHTML = frage;
+    el("felder").innerHTML = auswahlfeld("aA", "Kennbuchstabe",
+      optionenMit(sollK, liste, 6));
+
+  }else{
+    aufgabe.soll = b.ecke.r;
+    bezZeigen(b, 6);
+    el("art").textContent = "Den Eckenradius herauslesen";
+    el("aufgabe").innerHTML = "Wie groß ist der Eckenradius r<sub>ε</sub> "
+      + "dieser Platte?";
+    el("felder").innerHTML = '<label class="feld">r<sub>ε</sub> in mm'
+      + '<input type="number" id="aA" step="0.1" inputmode="decimal"'
+      + ' autocomplete="off"></label>';
+  }
+
+  el("stand").textContent = "Aufgabe " + nr;
+  gemeldet = false;
+  el("rueck").hidden = true;
+  el("weg").hidden = true;
+}
+
+function punkteZeigen(){
+  el("punkte").textContent = versuche ? richtig + " von " + versuche + " richtig" : "";
+}
+
+function buch(text){
+  return "<span class=\"buch\"><b>Nachschlagen:</b> " + text + "</span>";
+}
+
+function wegBauen(){
+  var a = aufgabe, b = a.b;
+
+  if(a.art === "ecke"){
+    return "<span class=\"schritt\">Stelle 7: die Schneidenecke</span>"
+      + "Die Kennzahl <b>" + b.ecke.z + "</b> mal 0,1 ergibt den Eckenradius:"
+      + "<br>" + b.ecke.z + " · 0,1 = <b>" + zahl(b.ecke.r, 1) + " mm</b>"
+      + buch("Im Tabellenbuch steht es als Regel: „Kennzahl multipliziert mit "
+          + "Faktor 0,1 = Eckenradius r<sub>ε</sub>“.");
+  }
+
+  if(a.art === "finden"){
+    if(a.was === "form"){
+      return "<span class=\"schritt\">Stelle 1: die Plattengeometrie</span>"
+        + "Der Eckenwinkel " + b.form.eps + " gehört zur Form <b>" + b.form.k
+        + "</b> - " + b.form.text + "."
+        + buch("Die Formen stehen mit Skizze und Winkel in der ersten Zeile "
+            + "der Bezeichnungstabelle.");
+    }
+    if(a.was === "frei"){
+      return "<span class=\"schritt\">Stelle 2: der Normal-Freiwinkel</span>"
+        + b.frei.grad + " ist der Kennbuchstabe <b>" + b.frei.k + "</b>."
+        + (b.frei.k === "N" ? " N ist die negative Grundform - beidseitig "
+            + "verwendbar, also doppelt so viele Schneiden." : "")
+        + buch("Die Zuordnung steht als kleine Tabelle unter den Formen: "
+            + "positive Grundformen A bis P, negative Grundform N.");
+    }
+    return "<span class=\"schritt\">Stelle 9: die Schneidrichtung</span>"
+      + b.richtung.text + " ist <b>" + b.richtung.k + "</b>."
+      + buch("R rechtsschneidend, L linksschneidend, N beidseitig.");
+  }
+
+  var s = stellen(b)[a.stelle];
+  var titel = ["die Plattengeometrie", "der Normal-Freiwinkel", "", "", "", "",
+               "", "die Ausführung der Schneide", "die Schneidrichtung"][a.stelle];
+  return "<span class=\"schritt\">Stelle " + (a.stelle + 1) + ": " + titel
+    + "</span>"
+    + "<b>" + s.wert + "</b> bedeutet <b>" + a.soll + "</b>."
+    + buch("Die Bedeutung jeder Stelle steht in der Übersicht über der "
+        + "Bezeichnungstabelle, die Buchstaben in den Abschnitten darunter.");
+}
+
+el("btnPruefen").addEventListener("click", function(){
+  if(!aufgabe) return;
+  var r = el("rueck"), ok, gezeigt;
+
+  if(aufgabe.art === "ecke"){
+    var v = parseFloat(String(el("aA").value).replace(",", "."));
+    if(!isFinite(v)){
+      r.className = "rueckmeldung fast";
+      r.innerHTML = "<strong>Noch nichts eingetragen.</strong> Ausfüllen "
+        + "&ndash; oder die Erklärung zeigen lassen.";
+      r.hidden = false;
+      return;
+    }
+    ok = Math.abs(v - aufgabe.soll) < 0.01;
+    gezeigt = zahl(v, 1);
+    r.innerHTML = "<strong>" + (ok ? "Richtig." : "Noch nicht.") + "</strong> "
+      + "r<sub>ε</sub> = <strong>" + zahl(aufgabe.soll, 1) + " mm</strong>"
+      + (ok ? "." : " &ndash; du hattest " + gezeigt + ".");
+  }else{
+    var gewaehlt = el("aA").value;
+    if(!gewaehlt){
+      r.className = "rueckmeldung fast";
+      r.innerHTML = "<strong>Noch nichts gewählt.</strong> Auswählen "
+        + "&ndash; oder die Erklärung zeigen lassen.";
+      r.hidden = false;
+      return;
+    }
+    ok = gewaehlt === aufgabe.soll;
+    r.innerHTML = "<strong>" + (ok ? "Richtig." : "Noch nicht.") + "</strong> "
+      + "Richtig ist <strong>" + aufgabe.soll + "</strong>"
+      + (ok ? "." : " &ndash; du hattest " + gewaehlt + ".");
+  }
+
+  versuche++;
+  if(ok) richtig++;
+  rundeMelden(ok);
+  r.className = "rueckmeldung " + (ok ? "ja" : "nein");
+  r.hidden = false;
+  if(!ok){
+    el("weg").innerHTML = wegBauen();
+    el("weg").hidden = false;
+  }
+  punkteZeigen();
+});
+
+el("btnWeg").addEventListener("click", function(){
+  if(!aufgabe) return;
+  el("weg").innerHTML = wegBauen();
+  el("weg").hidden = false;
+});
+
+el("btnWeiter").addEventListener("click", neueAufgabe);
+
+window.TBK_WETTKAMPF = {
+  runden: 10,
+  neu: function(){
+    nr = 0; richtig = 0; versuche = 0;
+    punkteZeigen();
+    neueAufgabe();
+  }
+};
+
+function rundeMelden(ok){
+  if(gemeldet) return;
+  gemeldet = true;
+  document.dispatchEvent(new CustomEvent("tbk-runde", {detail:{richtig: !!ok}}));
+}
+
+neueAufgabe();
+punkteZeigen();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/wettkampf.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

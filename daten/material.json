@@ -115,8 +115,28 @@
     ],
     "inhalt": [
       {
+        "titel": "Verfahren erkennen",
+        "url": "trainings/drehprozess/01-verfahren-erkennen.html"
+      },
+      {
+        "titel": "Werkstoffgruppe bestimmen",
+        "url": "trainings/drehprozess/02-werkstoffgruppe-bestimmen.html"
+      },
+      {
         "titel": "Startwert ablesen",
         "url": "trainings/drehprozess/03-startwert-ablesen.html"
+      },
+      {
+        "titel": "Drehzahl rechnen",
+        "url": "trainings/drehprozess/04-drehzahl-rechnen.html"
+      },
+      {
+        "titel": "Vorschub und Rautiefe",
+        "url": "trainings/drehprozess/05-vorschub-und-rautiefe.html"
+      },
+      {
+        "titel": "Die Bezeichnung zusammensetzen",
+        "url": "trainings/drehprozess/06-bezeichnung-zusammensetzen.html"
       }
     ]
   },

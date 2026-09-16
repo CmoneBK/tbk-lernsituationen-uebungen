@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vorschub und Rautiefe</title>
+<meta name="description" content="Rth = f²/(8·rε) in beide Richtungen: welcher Vorschub eine geforderte Rautiefe schafft, welche Rautiefe ein Vorschub hinterlässt, und wann der Eckenradius nicht mehr reicht.">
+<meta name="dauer" content="10 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .aufgabe{
+    background:var(--bg); border:1px solid var(--border-stark); border-radius:10px;
+    padding:14px 16px; margin:0 0 16px; font-size:16px; line-height:1.7;
+  }
+  .aufgabe strong{font-size:17px}
+  .zaehler{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:13px; color:var(--muted); margin:0 0 10px}
+  .rechenweg{
+    background:var(--bg); border:1px solid var(--border); border-radius:10px;
+    padding:12px 16px; margin:12px 0 0; font-size:14.5px; line-height:2;
+    font-variant-numeric:tabular-nums;
+  }
+  .rechenweg b{font-weight:700}
+  .rechenweg .schritt{display:block; color:var(--muted); font-size:12.5px; line-height:1.5}
+  .rechenweg .buch{
+    display:block; margin:6px 0 2px; padding:7px 10px; font-size:12.5px;
+    line-height:1.5; border-left:3px solid var(--ok); border-radius:0 8px 8px 0;
+    background:rgba(22,163,74,.10);
+  }
+  .art{
+    display:inline-block; margin:0 0 8px; padding:3px 10px; border-radius:999px;
+    background:var(--bg); border:1px solid var(--border);
+    font-size:12.5px; font-weight:600; color:var(--muted);
+  }
+  .formel{
+    display:block; margin:10px 0; padding:10px 14px; border-radius:10px;
+    background:var(--bg); border:1px solid var(--border);
+    font-size:17px; text-align:center; font-variant-numeric:tabular-nums;
+  }
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Drehprozess</p>
+    <h1>Vorschub und Rautiefe</h1>
+    <p class="lead">Was das Werkzeug stehen lässt, steht schon vorher fest.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Worum es geht:</strong> Beim Schlichten hinterlässt die runde
+        Werkzeugecke eine Rillenspur. Wie tief die Rillen werden, hängt an zwei
+        Größen: dem <strong>Vorschub f</strong> und dem
+        <strong>Eckenradius r<sub>ε</sub></strong> des Werkzeugs. Beide kennt
+        man &ndash; also lässt sich die Rautiefe vorher ausrechnen, statt sie
+        hinterher zu messen.</p>
+      <p>Drei Rundenarten wechseln sich ab: den Vorschub zu einer geforderten
+        Rautiefe finden, aus einem Vorschub die Rautiefe vorhersagen, und
+        entscheiden, ob ein Werkzeug die Forderung überhaupt schafft.</p>
+      <p>Beim Vorschub zählt alles, was <strong>bis 0,01 mm</strong> daneben
+        liegt; bei der Rautiefe <strong>5 %</strong>.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Aufgaben</h2>
+
+    <div class="box">
+      <div class="zaehler">
+        <span id="stand">Aufgabe 1</span>
+        <span id="punkte"></span>
+      </div>
+
+      <p class="art" id="art">&ndash;</p>
+      <p class="aufgabe" id="aufgabe">&ndash;</p>
+
+      <div class="felder" id="felder"></div>
+
+      <p style="margin-top:16px">
+        <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+        <button type="button" class="knopf leise" id="btnWeg">Rechenweg zeigen</button>
+        <button type="button" class="knopf leise" id="btnWeiter">Nächste Aufgabe</button>
+      </p>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+      <div class="rechenweg" id="weg" hidden></div>
+    </div>
+
+    <h2><span class="nr">2</span>Woher die Zahlen kommen</h2>
+
+    <details>
+      <summary>1. Woher die Rillen kommen</summary>
+      <p>Die Werkzeugecke ist nicht spitz, sondern rund &ndash; sonst würde sie
+        sofort ausbrechen. Bei jeder Umdrehung wandert sie um den Vorschub f
+        weiter. Zwischen zwei Bahnen bleibt deshalb ein kleiner Grat stehen:
+        der Teil, den der Radius nicht erreicht hat.</p>
+      <p>Aus der Geometrie von Kreis und Sehne folgt:</p>
+      <span class="formel">R<sub>th</sub> = f² / (8 · r<sub>ε</sub>)</span>
+      <p>R<sub>th</sub> ist die <em>theoretische</em> Rautiefe. Gemessen wird
+        meist etwas mehr, weil Werkstoff und Schneide nicht ideal sind. Für die
+        Planung wird R<sub>th</sub> &asymp; R<sub>z</sub> gesetzt.</p>
+    </details>
+
+    <details>
+      <summary>2. Die Formel umgestellt</summary>
+      <p>Gefragt ist meist der Vorschub: Die Zeichnung fordert eine Rautiefe,
+        das Werkzeug hat seinen Eckenradius, gesucht ist f.</p>
+      <span class="formel">f = √(8 · r<sub>ε</sub> · R<sub>th</sub>)</span>
+      <p>Aufpassen bei den Einheiten: R<sub>th</sub> steht in
+        <strong>Mikrometern</strong>, r<sub>ε</sub> und f in
+        <strong>Millimetern</strong>. Also erst umrechnen &ndash; 6,3 µm sind
+        0,0063 mm.</p>
+      <div class="merksatz">
+        <strong>Das Quadrat ist die eigentliche Nachricht:</strong> Doppelter
+        Vorschub heißt vierfache Rautiefe. Wer die Bearbeitungszeit halbieren
+        will, verliert zwei Qualitätsstufen.
+      </div>
+    </details>
+
+    <details>
+      <summary>3. Nachschlagen statt rechnen</summary>
+      <p>Im Tabellenbuch steht die Rechnung schon fertig: eine kleine Tabelle
+        mit Rautiefen von 1,6 bis 16 µm in den Zeilen und Eckenradien von 0,2
+        bis 0,8 mm in den Spalten. Darin steht der Vorschub.</p>
+      <p>Das ist der schnellere Weg &ndash; und der, der in der Klausur zählt,
+        wenn nach einem Richtwert gefragt ist. Gerechnet wird, wo die geforderte
+        Rautiefe nicht in der Tabelle steht.</p>
+    </details>
+
+    <details>
+      <summary>4. Wann der Radius nicht mehr reicht</summary>
+      <p>Der Eckenradius lässt sich nicht beliebig klein wählen. Je kleiner er
+        ist, desto empfindlicher wird die Schneide. Und es gibt eine harte
+        Grenze: Der Radius muss in die <strong>kleinste Innenrundung</strong>
+        der Kontur passen.</p>
+      <span class="formel">r<sub>ε</sub> &le; r<sub>w</sub> &minus; 0,1 mm</span>
+      <p>r<sub>w</sub> ist der kleinste Werkstückradius. Eine Kontur mit R1
+        verträgt also höchstens r<sub>ε</sub> = 0,9 mm &ndash; in der Praxis
+        die nächstkleinere Normgröße, also 0,8 mm.</p>
+      <p>Umgekehrt gilt: Wird die geforderte Rautiefe mit dem größten möglichen
+        Radius und einem sinnvollen Vorschub nicht erreicht, muss ein anderes
+        Verfahren her &ndash; schleifen zum Beispiel.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Großer Eckenradius und kleiner Vorschub geben
+      eine glatte Fläche. Beides hat seine Grenze: der Radius an der Kontur,
+      der Vorschub an der Zeit.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>Welches Werkzeug welchen Eckenradius mitbringt, steht in seiner
+      Bezeichnung &ndash; das übt das Training
+      <em>Die Bezeichnung zusammensetzen</em>.</p>
+    <p class="fussnote"><strong>Woher die Zahlen stammen:</strong> Formel und
+      Tabelle „Erreichbare Rautiefe in Abhängigkeit des Eckenradius und des
+      Vorschubs" sowie die Vorschubbereiche der Drehverfahren &ndash; beides
+      Tabellenbuch.</p>
+
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+      Maßgebend sind Norm und Tabellenbuch.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Die Tabelle des Tabellenbuchs: Rautiefe in Mikrometern gegen Eckenradius
+   in Millimetern, darin der Vorschub in Millimetern. Sie dient hier als
+   Gegenprobe zur Rechnung - stimmen beide ueberein, hat man richtig
+   nachgeschlagen. */
+var TABELLE = {
+  "0.2": {"1.6":0.05, "4":0.08, "6.3":0.10, "10":0.13, "16":0.16},
+  "0.4": {"1.6":0.07, "4":0.11, "6.3":0.14, "10":0.18, "16":0.23},
+  "0.6": {"1.6":0.08, "4":0.14, "6.3":0.17, "10":0.22, "16":0.28},
+  "0.8": {"1.6":0.10, "4":0.16, "6.3":0.20, "10":0.25, "16":0.32}
+};
+var RADIEN = [0.2, 0.4, 0.6, 0.8];
+var RAUTIEFEN = [1.6, 4, 6.3, 10, 16];
+/* Vorschuebe, die beim Schlichten vorkommen (Tabellenbuch: 0,1 bis 0,25 mm). */
+var VORSCHUEBE = [0.10, 0.12, 0.14, 0.16, 0.18, 0.20, 0.22, 0.25];
+
+function el(id){ return document.getElementById(id); }
+function zahl(x, n){ return x.toFixed(n === undefined ? 1 : n).replace(".", ","); }
+function waehle(liste){ return liste[Math.floor(Math.random() * liste.length)]; }
+function wert(id){
+  var e = el(id);
+  return e ? parseFloat(String(e.value).replace(",", ".")) : NaN;
+}
+
+/* Rth in Mikrometern aus f und r_eps in Millimetern. */
+function rautiefe(f, r){ return f * f / (8 * r) * 1000; }
+/* f in Millimetern aus Rth in Mikrometern. */
+function vorschub(rth, r){ return Math.sqrt(8 * r * rth / 1000); }
+
+/* ---------- Der Durchlauf ---------- */
+
+var aufgabe = null;
+var nr = 0, richtig = 0, versuche = 0;
+var gemeldet = false;
+
+function feld(id, beschriftung, schritt){
+  return '<label class="feld">' + beschriftung
+    + '<input type="number" id="' + id + '" step="' + (schritt || "0.01")
+    + '" inputmode="decimal" autocomplete="off"></label>';
+}
+
+function neueAufgabe(){
+  nr++;
+  var art = waehle(["zumVorschub", "zurRautiefe", "reichtDas"]);
+  aufgabe = {art:art};
+
+  if(art === "zumVorschub"){
+    var rz = waehle(RAUTIEFEN), r = waehle(RADIEN);
+    aufgabe.rz = rz; aufgabe.r = r;
+    aufgabe.soll = vorschub(rz, r);
+    aufgabe.tabelle = TABELLE[String(r)][String(rz)];
+    el("art").textContent = "Welcher Vorschub?";
+    el("aufgabe").innerHTML = "Die Zeichnung fordert an einer Fläche "
+      + "<strong>Rz " + zahl(rz, rz % 1 ? 1 : 0) + "</strong>. Das "
+      + "Schlichtwerkzeug hat einen Eckenradius r<sub>ε</sub> = <strong>"
+      + zahl(r, 1) + " mm</strong>. Mit welchem Vorschub wird geschlichtet?";
+    el("felder").innerHTML = feld("aF", "f in mm", "0.01");
+
+  }else if(art === "zurRautiefe"){
+    var f = waehle(VORSCHUEBE), r2 = waehle(RADIEN);
+    aufgabe.f = f; aufgabe.r = r2;
+    aufgabe.soll = rautiefe(f, r2);
+    el("art").textContent = "Welche Rautiefe?";
+    el("aufgabe").innerHTML = "Geschlichtet wird mit f = <strong>"
+      + zahl(f, 2) + " mm</strong>, der Eckenradius ist r<sub>ε</sub> = "
+      + "<strong>" + zahl(r2, 1) + " mm</strong>. Welche Rautiefe bleibt "
+      + "theoretisch stehen?";
+    el("felder").innerHTML = feld("aRz", "R<sub>th</sub> in µm", "0.1");
+
+  }else{
+    /* Die Kontur gibt den groessten moeglichen Eckenradius vor. Passt der
+       geforderten Rautiefe dann noch ein sinnvoller Vorschub? */
+    var rw = waehle([0.5, 0.6, 0.8, 1.0, 1.5, 2.0]);
+    var rzS = waehle(RAUTIEFEN);
+    /* 0,5 - 0,1 ergibt in Gleitkomma 0,39999...; ohne die kleine Zugabe
+       fiele der Radius 0,4 durch das Raster. */
+    var moeglich = RADIEN.filter(function(x){ return x <= rw - 0.1 + 1e-9; });
+    var groesster = moeglich.length ? moeglich[moeglich.length - 1] : null;
+    aufgabe.rw = rw; aufgabe.rz = rzS; aufgabe.rmax = groesster;
+    aufgabe.soll = groesster ? vorschub(rzS, groesster) : 0;
+    el("art").textContent = "Reicht der Radius?";
+    el("aufgabe").innerHTML = "Die kleinste Innenrundung der Kontur ist "
+      + "<strong>R" + zahl(rw, 1) + "</strong>. Gefordert ist <strong>Rz "
+      + zahl(rzS, rzS % 1 ? 1 : 0) + "</strong>. Welchen Eckenradius darf das "
+      + "Werkzeug höchstens haben, und welcher Vorschub folgt daraus?";
+    el("felder").innerHTML =
+      feld("aR", "größter r<sub>ε</sub> in mm", "0.1")
+      + feld("aF", "f in mm", "0.01");
+  }
+
+  el("stand").textContent = "Aufgabe " + nr;
+  gemeldet = false;
+  el("rueck").hidden = true;
+  el("weg").hidden = true;
+  var erstes = el("felder").querySelector("input");
+  if(erstes) erstes.focus();
+}
+
+function punkteZeigen(){
+  el("punkte").textContent = versuche ? richtig + " von " + versuche + " richtig" : "";
+}
+
+function buch(text){
+  return "<span class=\"buch\"><b>Nachschlagen:</b> " + text + "</span>";
+}
+
+function wegBauen(){
+  var a = aufgabe;
+
+  if(a.art === "zurRautiefe"){
+    return ""
+      + "<span class=\"schritt\">Einsetzen, f in Millimetern</span>"
+      + "R<sub>th</sub> = f² / (8 · r<sub>ε</sub>) = " + zahl(a.f, 2)
+        + "² / (8 · " + zahl(a.r, 1) + ") = " + zahl(a.f * a.f / (8 * a.r), 5)
+        + " mm"
+      + "<span class=\"schritt\">In Mikrometer</span>"
+      + "R<sub>th</sub> = <b>" + zahl(a.soll, 1) + " µm</b>"
+      + buch("In der Tabelle steht der umgekehrte Weg: Zeile Rautiefe, "
+          + "Spalte Eckenradius, darin der Vorschub. Hier liegt der Wert "
+          + "zwischen zwei Zeilen - also rechnen.");
+  }
+
+  if(a.art === "reichtDas"){
+    if(!a.rmax){
+      return "Bei R" + zahl(a.rw, 1) + " bleibt kein genormter Eckenradius "
+        + "übrig - selbst 0,2 mm ist zu groß. Diese Rundung lässt sich nicht "
+        + "drehen.";
+    }
+    return ""
+      + "<span class=\"schritt\">Der Radius muss in die Rundung passen</span>"
+      + "r<sub>ε</sub> &le; r<sub>w</sub> &minus; 0,1 mm = " + zahl(a.rw, 1)
+        + " &minus; 0,1 = " + zahl(a.rw - 0.1, 1) + " mm"
+      + "<span class=\"schritt\">Die nächstkleinere Normgröße</span>"
+      + "r<sub>ε</sub> = <b>" + zahl(a.rmax, 1) + " mm</b>"
+      + buch("Die Eckenradien der Wendeschneidplatten stehen in der "
+          + "Bezeichnungstabelle: Kennzahl mal 0,1 ergibt r<sub>ε</sub>.")
+      + "<span class=\"schritt\">Und daraus der Vorschub</span>"
+      + "f = √(8 · " + zahl(a.rmax, 1) + " · " + zahl(a.rz / 1000, 4)
+        + ") = <b>" + zahl(a.soll, 2) + " mm</b>";
+  }
+
+  return ""
+    + "<span class=\"schritt\">Formel umstellen</span>"
+    + "R<sub>th</sub> = f² / (8 · r<sub>ε</sub>) &nbsp;&rarr;&nbsp; "
+      + "f = √(8 · r<sub>ε</sub> · R<sub>th</sub>)"
+    + "<span class=\"schritt\">Rautiefe in Millimeter</span>"
+    + "R<sub>th</sub> = " + zahl(a.rz, a.rz % 1 ? 1 : 0) + " µm = "
+      + zahl(a.rz / 1000, 4) + " mm"
+    + "<span class=\"schritt\">Einsetzen</span>"
+    + "f = √(8 · " + zahl(a.r, 1) + " · " + zahl(a.rz / 1000, 4) + ") = <b>"
+      + zahl(a.soll, 2) + " mm</b>"
+    + buch("In der Tabelle steht für Rz " + zahl(a.rz, a.rz % 1 ? 1 : 0)
+        + " und r<sub>ε</sub> = " + zahl(a.r, 1) + " mm der Wert "
+        + zahl(a.tabelle, 2) + " mm - gerundet dasselbe.");
+}
+
+function nichtsEingetragen(){
+  var r = el("rueck");
+  r.className = "rueckmeldung fast";
+  r.innerHTML = "<strong>Noch nichts eingetragen.</strong> Ausfüllen "
+    + "&ndash; oder den Rechenweg zeigen lassen.";
+  r.hidden = false;
+}
+
+el("btnPruefen").addEventListener("click", function(){
+  if(!aufgabe) return;
+  var a = aufgabe, r = el("rueck"), ok, text;
+
+  if(a.art === "zurRautiefe"){
+    var rz = wert("aRz");
+    if(!isFinite(rz)){ nichtsEingetragen(); return; }
+    ok = Math.abs(rz - a.soll) <= a.soll * 0.05;
+    text = "R<sub>th</sub> = <strong>" + zahl(a.soll, 1) + " µm</strong> "
+      + (ok ? "&ndash; getroffen." : "&ndash; du hattest " + zahl(rz, 1) + ".");
+  }else if(a.art === "zumVorschub"){
+    var f = wert("aF");
+    if(!isFinite(f)){ nichtsEingetragen(); return; }
+    ok = Math.abs(f - a.soll) <= 0.011;
+    text = "f = <strong>" + zahl(a.soll, 2) + " mm</strong> "
+      + (ok ? "&ndash; getroffen." : "&ndash; du hattest " + zahl(f, 2) + ".")
+      + " In der Tabelle steht " + zahl(a.tabelle, 2) + " mm.";
+  }else{
+    var rr = wert("aR"), ff = wert("aF");
+    if(!isFinite(rr) && !isFinite(ff)){ nichtsEingetragen(); return; }
+    var okR = isFinite(rr) && Math.abs(rr - a.rmax) < 0.01;
+    var okF = isFinite(ff) && Math.abs(ff - a.soll) <= 0.011;
+    ok = okR && okF;
+    text = "r<sub>ε</sub> = <strong>" + zahl(a.rmax, 1) + " mm</strong> "
+      + (okR ? "&ndash; getroffen. " : "&ndash; du hattest "
+          + (isFinite(rr) ? zahl(rr, 1) : "nichts") + ". ")
+      + "f = <strong>" + zahl(a.soll, 2) + " mm</strong> "
+      + (okF ? "&ndash; getroffen." : "&ndash; du hattest "
+          + (isFinite(ff) ? zahl(ff, 2) : "nichts") + ".");
+  }
+
+  versuche++;
+  if(ok) richtig++;
+  rundeMelden(ok);
+  r.className = "rueckmeldung " + (ok ? "ja" : "nein");
+  r.innerHTML = "<strong>" + (ok ? "Richtig." : "Noch nicht.") + "</strong> " + text;
+  r.hidden = false;
+  if(!ok){
+    el("weg").innerHTML = wegBauen();
+    el("weg").hidden = false;
+  }
+  punkteZeigen();
+});
+
+el("btnWeg").addEventListener("click", function(){
+  if(!aufgabe) return;
+  el("weg").innerHTML = wegBauen();
+  el("weg").hidden = false;
+});
+
+el("btnWeiter").addEventListener("click", neueAufgabe);
+
+window.TBK_WETTKAMPF = {
+  runden: 10,
+  neu: function(){
+    nr = 0; richtig = 0; versuche = 0;
+    punkteZeigen();
+    neueAufgabe();
+  }
+};
+
+function rundeMelden(ok){
+  if(gemeldet) return;
+  gemeldet = true;
+  document.dispatchEvent(new CustomEvent("tbk-runde", {detail:{richtig: !!ok}}));
+}
+
+neueAufgabe();
+punkteZeigen();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/wettkampf.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

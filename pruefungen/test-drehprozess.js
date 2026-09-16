@@ -184,6 +184,127 @@ console.log('\nStartwert ablesen: durchspielen');
     d.getElementById('rueck').textContent.trim().slice(0, 80));
 }
 
+console.log('\nDrehzahl rechnen: die Formeln');
+{
+  const x = seite('04-drehzahl-rechnen.html');
+  const dx = x.document;
+  /* Die Drehzahl muss abgerundet werden - das ist die Regel des Buchs, und
+     sie entscheidet ueber jede zweite Antwort. */
+  let schief = 0;
+  for (let vc = 80; vc <= 300; vc += 10) {
+    for (const d of [16, 20, 25, 30, 40, 63]) {
+      const soll = Math.floor(vc * 1000 / (Math.PI * d));
+      if (x.eval('drehzahl(' + vc + ',' + d + ')') !== soll) schief++;
+    }
+  }
+  p('die Drehzahl wird immer abgerundet', schief === 0, schief + ' Abweichungen');
+
+  const nicht = [];
+  for (let i = 0; i < 30; i++) {
+    const a = x.eval('aufgabe');
+    if (a.art === 'schnitte') {
+      dx.getElementById('aI').value = String(a.soll);
+    } else {
+      if (a.art === 'plan') dx.getElementById('aDm').value = String(a.dm);
+      dx.getElementById('aN').value = String(a.soll);
+    }
+    dx.getElementById('btnPruefen').click();
+    if (!/Richtig\./.test(dx.getElementById('rueck').textContent)) nicht.push(a.art);
+    dx.getElementById('btnWeiter').click();
+  }
+  p('30 Aufgaben mit der eigenen Rechnung geloest', nicht.length === 0,
+    nicht.slice(0, 4).join(', '));
+}
+
+console.log('\nVorschub und Rautiefe: gegen die Tabelle');
+{
+  const x = seite('05-vorschub-und-rautiefe.html');
+  const dx = x.document;
+  const tab = x.eval('TABELLE');
+  /* Die Rechnung muss die Tabelle des Buchs treffen - sonst uebt das
+     Training gegen die Quelle, mit der geprueft wird. */
+  const weit = [];
+  Object.keys(tab).forEach((r) => {
+    Object.keys(tab[r]).forEach((rz) => {
+      const gerechnet = x.eval('vorschub(' + rz + ',' + r + ')');
+      if (Math.abs(gerechnet - tab[r][rz]) > 0.011) {
+        weit.push('r=' + r + ' Rz=' + rz + ': ' + gerechnet.toFixed(3)
+          + ' gegen ' + tab[r][rz]);
+      }
+    });
+  });
+  p('20 Tabellenwerte decken sich mit der Rechnung', weit.length === 0,
+    weit.slice(0, 4).join(' | '));
+  p('die Formel geht in beide Richtungen',
+    Math.abs(x.eval('rautiefe(vorschub(6.3, 0.4), 0.4)') - 6.3) < 0.001);
+
+  const nicht = [];
+  for (let i = 0; i < 30; i++) {
+    const a = x.eval('aufgabe');
+    if (a.art === 'zurRautiefe') dx.getElementById('aRz').value = String(a.soll);
+    else if (a.art === 'zumVorschub') dx.getElementById('aF').value = String(a.soll);
+    else {
+      dx.getElementById('aR').value = String(a.rmax);
+      dx.getElementById('aF').value = String(a.soll);
+    }
+    dx.getElementById('btnPruefen').click();
+    if (!/Richtig\./.test(dx.getElementById('rueck').textContent)) nicht.push(a.art);
+    dx.getElementById('btnWeiter').click();
+  }
+  p('30 Aufgaben mit der eigenen Rechnung geloest', nicht.length === 0,
+    nicht.slice(0, 4).join(', '));
+}
+
+console.log('\nDie Trainings mit einer Auswahl');
+[['01-verfahren-erkennen.html', 'aV'],
+ ['02-werkstoffgruppe-bestimmen.html', 'aG'],
+ ['06-bezeichnung-zusammensetzen.html', 'aA']].forEach((paar) => {
+  const datei = paar[0], feld = paar[1];
+  const x = seite(datei);
+  const dx = x.document;
+  const nicht = [];
+  let leer = 0, kurz = 0;
+  for (let i = 0; i < 30; i++) {
+    const a = x.eval('aufgabe');
+    const e = dx.getElementById(feld);
+    if (!e) { leer++; dx.getElementById('btnWeiter').click(); continue; }
+    e.value = String(a.soll);
+    /* Steht die richtige Antwort ueberhaupt zur Wahl? Bei einem select
+       bleibt der Wert sonst leer. */
+    if (e.tagName === 'SELECT' && e.value !== String(a.soll)) leer++;
+    dx.getElementById('btnPruefen').click();
+    if (!/Richtig\./.test(dx.getElementById('rueck').textContent)) {
+      nicht.push(a.art + ': '
+        + dx.getElementById('rueck').textContent.trim().slice(0, 70));
+    }
+    dx.getElementById('btnWeg').click();
+    if (dx.getElementById('weg').textContent.trim().length < 30) kurz++;
+    dx.getElementById('btnWeiter').click();
+  }
+  p(datei + ': 30 Aufgaben geloest', nicht.length === 0 && leer === 0,
+    (leer ? leer + ' ohne waehlbare Antwort. ' : '') + nicht.slice(0, 2).join(' | '));
+  p(datei + ': jede Begruendung ist da', kurz === 0, kurz + ' zu kurz');
+});
+
+console.log('\nDas Paket');
+{
+  const dateien = fs.readdirSync(path.join(BASIS, 'trainings/drehprozess'))
+    .filter((f) => /^\d\d-.*\.html$/.test(f)).sort();
+  p('sechs Trainings liegen im Paket', dateien.length === 6, dateien.join(', '));
+  const info = JSON.parse(fs.readFileSync(
+    path.join(BASIS, 'trainings/drehprozess/info.json'), 'utf8'));
+  const fehlend = info.reihenfolge.filter((f) => dateien.indexOf(f) < 0);
+  p('die Reihenfolge nennt nur Dateien, die es gibt', fehlend.length === 0,
+    fehlend.join(', '));
+  const ungenannt = dateien.filter((f) => info.reihenfolge.indexOf(f) < 0);
+  p('und laesst keine aus', ungenannt.length === 0, ungenannt.join(', '));
+  /* Jedes Training macht beim Wettkampf mit - das Nachschlagen auf Zeit ist
+     der Grund, warum es dieses Paket gibt. */
+  const ohne = dateien.filter((f) => !fs.readFileSync(
+    path.join(BASIS, 'trainings/drehprozess', f), 'utf8').includes('TBK_WETTKAMPF'));
+  p('alle sechs machen beim Wettkampf mit', ohne.length === 0, ohne.join(', '));
+}
+
 console.log('\nDie Verdrahtung');
 {
   const text = fs.readFileSync(
