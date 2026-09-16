@@ -56,6 +56,9 @@
         gedreht werden, als Einzelteil. Der Meister legt Ihnen das Rohteil auf
         den Tisch &ndash; ein Stück <strong>Rundmaterial Ø32 × 135 mm aus
         42CrMo4</strong>, gezogen und blank.</p>
+      <p>Zwei Flächen sind toleriert: der Lagersitz <strong>Ø25 k6</strong>
+        und der Zapfen links <strong>Ø20 f7</strong>. Dort zählt nicht das
+        Nennmaß, sondern ein Bereich von wenigen Tausendstel Millimetern.</p>
       <p>Bis zum Ende der Woche soll ein vollständiger <strong>Arbeitsplan</strong>
         und eine <strong>Werkzeugliste</strong> vorliegen. Beides geht an die
         Arbeitsvorbereitung; danach wird gedreht.</p>
@@ -94,6 +97,9 @@
         Freistiche DIN 509 – E 0,6 × 0,3 an den Schultern, ein Gewindefreistich
         DIN 76 – A vor dem Gewinde M20×1 – 6g, Zentrierbohrungen an beiden
         Stirnflächen und die Rundung R1 am Übergang zum Bund.</p>
+      <p>Toleriert sind zwei Flächen: der <strong>Lagersitz Ø25 k6</strong> und
+        der <strong>Zapfen Ø20 f7</strong>. Alle übrigen Maße gelten nach
+        Allgemeintoleranz.</p>
     </details>
 
     <details>
@@ -252,7 +258,70 @@
         einspart.</p>
     </details>
 
-    <h2><span class="nr">6</span>Aufmaße und Sicherheit</h2>
+    <h2><span class="nr">6</span>Die Passungen</h2>
+    <p>Zwei Flächen der Welle tragen ein <strong>ISO-Kurzzeichen</strong>:
+      der Lagersitz <strong>Ø25 k6</strong> und der Zapfen links
+      <strong>Ø20 f7</strong>. Damit ist nicht ein Maß gefordert, sondern ein
+      Bereich &ndash; und der ist schmaler, als er aussieht.</p>
+    <p>Schlagt die Grenzabmaße nach (System Einheitsbohrung, Nennmaßbereich
+      über 18 bis 30 mm) und rechnet daraus die Grenzmaße und das
+      <strong>Mittenmaß</strong>.</p>
+
+    <span class="formel">Höchstmaß = N + es &nbsp;·&nbsp;
+      Mindestmaß = N + ei &nbsp;·&nbsp;
+      Mittenmaß = (Höchstmaß + Mindestmaß) / 2</span>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Gesucht</th><th>Eintrag in mm</th>
+          <th>Stimmt?</th></tr></thead>
+        <tbody id="passungen"></tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn6">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz6">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: und worauf der Schlichtgang zielt</summary>
+      <div id="loesung6"></div>
+      <div class="merksatz">
+        <strong>Beim Schlichten wird auf die Mitte der Toleranz gezielt,
+        nicht auf ein Grenzmaß.</strong>
+      </div>
+      <p>Der Grund: Alles, was beim Drehen schiefgeht, geht in <em>eine</em>
+        Richtung. Die Schneide verschleißt, und der Durchmesser wächst über
+        die Schicht. Das Werkstück ist warm und schrumpft beim Abkühlen. Die
+        Messunsicherheit kommt oben und unten dazu. Und nacharbeiten lässt
+        sich eine Welle nur nach unten &ndash; zu klein ist Ausschuss.</p>
+      <p>Von der Mitte aus hat jeder dieser Fehler noch die halbe Toleranz
+        Platz. Vom Grenzmaß aus hat er keinen.</p>
+      <p>Beim <strong>k6</strong> am Lagersitz liegt die ganze Toleranzzone
+        über dem Nennmaß &ndash; wer auf 25,000 dreht, ist schon unter dem
+        Mindestmaß. Das ist der häufigste Fehler an dieser Stelle: das
+        Nennmaß für das Zielmaß halten.</p>
+      <p class="fussnote">Warum überhaupt k6 am Lagersitz? Der Innenring
+        eines Wälzlagers, das Umfangslast trägt, braucht eine Übergangs- oder
+        Übermaßpassung, sonst wandert er. Die Tabelle der Wälzlagerpassungen
+        nennt dafür j, k oder m bei mittlerer Belastung, und für Wellen
+        üblicherweise den Grundtoleranzgrad IT6. Am Zapfen sitzt dagegen eine
+        Buchse, die sich von Hand aufschieben lassen soll &ndash; dafür
+        Spielpassung f7.</p>
+    </details>
+
+    <p>Bohrung und Welle nebeneinander, mit der Passungsart dazu:</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-iso-toleranzen-und-passungen.html">Werkzeug ISO-Toleranzen und Passungen öffnen</a>
+    </p>
+    <p>Und zum Ablesen üben, womit die beiden Maße geprüft werden:</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-messmittel-buegelmessschraube.html">Werkzeug Bügelmessschraube öffnen</a>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-messmittel-messschieber.html">Werkzeug Messschieber öffnen</a>
+    </p>
+
+    <h2><span class="nr">7</span>Aufmaße und Sicherheit</h2>
     <p>Das Hinweisfeld des Arbeitsplans ist kein Beiwerk. Dort steht, was
       zwischen den Zeilen passieren muss &ndash; und was schiefgehen kann.</p>
 
@@ -331,7 +400,7 @@
         Danach lässt sich nichts mehr nachbessern, ohne neu auszurichten.</p>
     </details>
 
-    <h2><span class="nr">7</span>Die Werkzeugliste</h2>
+    <h2><span class="nr">8</span>Die Werkzeugliste</h2>
     <p>Tragt ein, welches Werkzeug für welchen Vorgang gebraucht wird. Die
       Normbezeichnungen stehen in der Lösung &ndash; versucht es erst selbst.</p>
 
@@ -358,9 +427,14 @@
         deshalb die Beschreibung.</p>
     </details>
 
-    <h2><span class="nr">8</span>Der Arbeitsplan</h2>
+    <h2><span class="nr">9</span>Der Arbeitsplan</h2>
     <p>Das Handlungsprodukt. Die Vorgänge und ihre Reihenfolge stehen schon
       &ndash; tragt Werkzeug, Schnittgrößen und Hinweise ein.</p>
+    <p>Drei der elf Zeilen sind <strong>Prüfvorgänge</strong>. Sie stehen
+      dort, wo noch etwas zu retten ist: solange das Aufmaß noch da ist,
+      solange nachgeschlichtet werden kann, und solange das Teil gespannt
+      ist. Ein Prüfschritt ohne <strong>Prüfmittel und Prüfmaß</strong> ist
+      keiner.</p>
     <p class="fussnote" data-druck="weg">Die Eingaben werden mit ausgegeben:
       Über „Herunterladen" entsteht daraus ein ausgefüllter Arbeitsplan als PDF
       oder Word-Datei.</p>
@@ -386,7 +460,74 @@
       </div>
     </details>
 
-    <h2><span class="nr">9</span>Zurückschauen</h2>
+    <h2><span class="nr">10</span>Wie lange dauert das?</h2>
+    <p>Drehzahl und Vorschub stehen fest &ndash; damit lässt sich die
+      <strong>Hauptnutzungszeit</strong> rechnen, also die Zeit, in der die
+      Schneide wirklich schneidet. Neu ist nur der <strong>Vorschubweg
+      L</strong>: Er ist länger als die Fläche, weil das Werkzeug anläuft
+      und überläuft. Angesetzt wird
+      l<sub>a</sub> = l<sub>u</sub> = 2 mm.</p>
+
+    <span class="formel">t<sub>h</sub> = L · i / (n · f)</span>
+
+    <p>Rechnet für die drei längsten Vorgänge den Vorschubweg und die Zeit.
+      Drehzahl und Vorschub stehen daneben &ndash; sie stammen aus Teil 4
+      und Teil 5.</p>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Vorgang</th><th>n, f</th><th>L in mm</th>
+          <th>t<sub>h</sub> in s</th><th>Stimmt?</th></tr></thead>
+        <tbody id="zeiten"></tbody>
+      </table>
+    </div>
+
+    <p>Und die Summe der drei:</p>
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Gesucht</th><th>Eintrag</th><th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>Summe der drei Hauptnutzungszeiten in s</td>
+            <td><input type="number" id="zSumme" step="1" inputmode="decimal"
+              autocomplete="off"></td>
+            <td class="urteil" id="uzSumme">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn10">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz10">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: die drei Rechnungen</summary>
+      <div id="loesung10"></div>
+      <p>Auffällig ist das Verhältnis: Das <strong>Plandrehen</strong> der
+        Stirnfläche dauert wenige Sekunden, der <strong>Schlichtgang</strong>
+        am Lagersitz ein Vielfaches davon. Das liegt nicht an der Länge,
+        sondern am Vorschub: 0,11 mm gegen 0,15 mm, und der Weg ist doppelt
+        so lang.</p>
+      <div class="merksatz">
+        <strong>Merksatz:</strong> Zeit holt man beim Schlichten über den
+        <em>größeren Eckenradius</em>, nicht über den größeren Vorschub. Der
+        Vorschub steht im Quadrat in der Rautiefe &ndash; verdoppelt man ihn,
+        ist man halb so lange dabei und hat die vierfache Rautiefe.
+      </div>
+      <p class="fussnote">Die Hauptnutzungszeit ist nicht die ganze Zeit am
+        Teil. Dazu kommen Neben- und Rüstzeiten: spannen, messen, Werkzeug
+        wechseln, ausrichten. Bei einem Einzelstück wie diesem sind sie ein
+        Vielfaches der Hauptnutzungszeit &ndash; deshalb lohnt hier kein
+        Optimieren am Vorschub, wohl aber eine durchdachte Reihenfolge, die
+        Werkzeugwechsel spart.</p>
+    </details>
+
+    <p>Alle sechs Fälle des Vorschubweges mit Bild:</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-hauptnutzungszeit-beim-drehen.html">Werkzeug Hauptnutzungszeit beim Drehen öffnen</a>
+    </p>
+
+    <h2><span class="nr">11</span>Zurückschauen</h2>
 
     <details>
       <summary>1. An welcher Stelle hätte ein Fehler das Werkstück gekostet?</summary>
@@ -445,7 +586,7 @@
         gedacht hat, steht dort.</p>
     </details>
 
-    <h2><span class="nr">10</span>Material</h2>
+    <h2><span class="nr">12</span>Material</h2>
 
     <h3>Im Tabellenbuch</h3>
     <ul>
@@ -458,7 +599,11 @@
       <li>Fertigungsplanung beim Drehen &ndash; Bearbeitungsbedingungen,
         Grundform, Plattengeometrie, Klemmhalter, Optimierung</li>
       <li>Schnittdaten beim Drehen &ndash; Richtwerte für HM-Werkzeuge</li>
-      <li>Hauptnutzungszeit beim Drehen</li>
+      <li>Hauptnutzungszeit beim Drehen &ndash; Vorschubweg, Drehzahl,
+        Schnittzahl</li>
+      <li>ISO-System für Grenzmaße und Passungen &ndash; Grundtoleranzen und
+        das System Einheitsbohrung</li>
+      <li>Toleranzen für den Einbau von Wälzlagern</li>
     </ul>
 
     <h3>Zum Üben</h3>
@@ -691,7 +836,65 @@ el("btn5").addEventListener("click", function(){
   bilanz("bilanz5", r, 4, offen);
 });
 
-/* ---------- Teil 7: die Werkzeugliste ---------- */
+/* ---------- Teil 6: die Passungen ---------- */
+
+/* Die Grenzabmaße stehen bei der Welle (assets/wellen.js), damit Zeichnung
+   und Rechnung dieselbe Quelle haben. Hier wird daraus gerechnet. */
+var PASSUNGEN = WELLE.toleranzen.map(function(t){
+  var hoechst = t.nennmass + t.es / 1000;
+  var mindest = t.nennmass + t.ei / 1000;
+  return {id: t.klasse, nennmass: t.nennmass, klasse: t.klasse,
+          es: t.es, ei: t.ei, hoechst: hoechst, mindest: mindest,
+          weite: (t.es - t.ei) / 1000,
+          mitte: (hoechst + mindest) / 2};
+});
+
+(function teil6(){
+  var aus = "", l = "";
+  PASSUNGEN.forEach(function(p){
+    var kopf = "\u00d8" + p.nennmass + " " + p.klasse;
+    [["h", "H\u00f6chstma\u00df"], ["m", "Mindestma\u00df"],
+     ["z", "<strong>Mittenma\u00df</strong>"]].forEach(function(f){
+      aus += '<tr><td>' + kopf + ': ' + f[1] + '</td>'
+        + '<td><input type="number" id="p_' + p.id + '_' + f[0] + '"'
+        + ' step="0.001" inputmode="decimal" autocomplete="off"></td>'
+        + '<td class="urteil" id="up_' + p.id + '_' + f[0] + '">\u2013</td></tr>';
+    });
+    l += '<p><strong>' + kopf + '</strong> \u2013 Nennma\u00dfbereich \u00fcber 18 bis '
+      + '30 mm:<br>'
+      + (p.klasse[0] === p.klasse[0].toUpperCase() ? "ES" : "es") + ' = '
+      + p.es + ' \u00b5m, &nbsp;'
+      + (p.klasse[0] === p.klasse[0].toUpperCase() ? "EI" : "ei") + ' = '
+      + p.ei + ' \u00b5m<br>'
+      + 'H\u00f6chstma\u00df = ' + p.nennmass + ' + (' + zahl(p.es / 1000, 3)
+      + ') = <strong>' + zahl(p.hoechst, 3) + ' mm</strong><br>'
+      + 'Mindestma\u00df = ' + p.nennmass + ' + (' + zahl(p.ei / 1000, 3)
+      + ') = <strong>' + zahl(p.mindest, 3) + ' mm</strong><br>'
+      + 'Toleranz T = ' + zahl(p.weite * 1000, 0) + ' \u00b5m<br>'
+      + 'Mittenma\u00df = (' + zahl(p.hoechst, 3) + ' + ' + zahl(p.mindest, 3)
+      + ') / 2 = <strong>' + zahl(p.mitte, 4) + ' mm</strong></p>';
+  });
+  el("passungen").innerHTML = aus;
+  el("loesung6").innerHTML = l;
+}());
+
+el("btn6").addEventListener("click", function(){
+  var r = 0, offen = 0, gesamt = 0;
+  PASSUNGEN.forEach(function(p){
+    [["h", p.hoechst], ["m", p.mindest], ["z", p.mitte]].forEach(function(f){
+      gesamt++;
+      var v = wert("p_" + p.id + "_" + f[0]);
+      var leer = !isFinite(v); if(leer) offen++;
+      /* Ein Tausendstel Spielraum: Wer das Mittenmass auf drei Stellen
+         rundet, soll nicht danebenliegen. */
+      r += urteilen("up_" + p.id + "_" + f[0],
+        Math.abs(v - f[1]) <= 0.0011, leer);
+    });
+  });
+  bilanz("bilanz6", r, gesamt, offen);
+});
+
+/* ---------- Teil 8: die Werkzeugliste ---------- */
 
 var WERKZEUGE = [
   {nr:"T1", was:"Plandrehmeißel, rechts",
@@ -729,7 +932,7 @@ var WERKZEUGE = [
      + "Bügelmessschraube, das Gewinde mit dem Lehrring."}
 ];
 
-(function teil7(){
+(function teil8(){
   el("werkzeugliste").innerHTML = WERKZEUGE.map(function(w){
     return '<tr><td class="nr">' + w.nr + '</td>'
       + '<td><input type="text" autocomplete="off"></td>'
@@ -741,7 +944,7 @@ var WERKZEUGE = [
   }).join("");
 }());
 
-/* ---------- Teil 8: der Arbeitsplan ---------- */
+/* ---------- Teil 9: der Arbeitsplan ---------- */
 
 var PLAN = [
   {nr:10, vorgang:"Rohteil prüfen, einspannen und ausrichten",
@@ -762,41 +965,63 @@ var PLAN = [
    hinweis:"Auf Ø26, Ø25 und Ø21 schruppen - 1 mm Schlichtaufmaß auf den "
      + "Durchmesser. Bund Ø30 gleich auf Maß, letzter Schnitt mit f = 0,25 mm "
      + "für Rz 10. Lange Spiralspäne: Vorschub eher erhöhen."},
-  {nr:40, vorgang:"Kontur schlichten: Ø25, Ø24, Ø20",
+  {nr:40, vorgang:"Prüfen: Schlichtaufmaß an Ø26, Ø25 und Ø21",
+   wz:"Messschieber",
+   schnitt:"–",
+   hinweis:"Prüfmaß: je 1 mm über Fertigmaß auf den Durchmesser. Fehlt das "
+     + "Aufmaß, hat der Schlichtgang nichts mehr wegzunehmen - und das "
+     + "merkt man sonst erst, wenn das Maß zu klein ist."},
+  {nr:50, vorgang:"Kontur schlichten: Ø25 k6, Ø24, Ø20 f7",
    wz:"T3, Bügelmessschraube, Rauheitsvergleichsmuster",
    schnitt:"v<sub>c</sub> = 150 m/min, n = " + 0 + " 1/min, f = 0,11 mm, "
      + "a<sub>p</sub> = 0,5 mm, i = 1",
-   hinweis:"r<sub>ε</sub> = 0,4 mm ergibt Rz 4 - größer darf die Ecke nicht "
-     + "sein, sonst passt sie nicht in die Freistiche (r = 0,6 mm). Bund Ø30 "
-     + "bleibt aus. Kühlschmierstoff zugeben - das Maß stimmt nur kalt."},
-  {nr:50, vorgang:"Freistiche und Nuten A und B einstechen",
+   hinweis:"Auf die <strong>Mitte der Toleranz</strong> zielen: Ø25 k6 auf "
+     + "25,0085 mm, Ø20 f7 auf 19,9695 mm. r<sub>ε</sub> = 0,4 mm ergibt "
+     + "Rz 4 - größer darf die Ecke nicht sein, sonst passt sie nicht in die "
+     + "Freistiche (r = 0,6 mm). Bund Ø30 bleibt aus. Kühlschmierstoff "
+     + "zugeben - das Maß stimmt nur kalt."},
+  {nr:60, vorgang:"Prüfen: Ø25 k6 und Ø20 f7",
+   wz:"Bügelmessschraube 0–25 und 25–50 mm",
+   schnitt:"–",
+   hinweis:"Prüfmaße: 25,002 … 25,015 mm und 19,959 … 19,980 mm. "
+     + "Zielmaße sind die Mittenmaße. Warm gemessen ist zu groß - abkühlen "
+     + "lassen oder den Fehler mitrechnen."},
+  {nr:70, vorgang:"Freistiche und Nuten A und B einstechen",
    wz:"T4, Messschieber",
    schnitt:"v<sub>c</sub> = 105 m/min, n = " + 0 + " 1/min, f = 0,08 mm",
    hinweis:"Nutbreite 1,3 mm = Schneidenbreite. Freistiche DIN 509 – E "
      + "0,6 × 0,3 an beiden Schultern, DIN 76 – A vor dem Gewinde."},
-  {nr:60, vorgang:"Gewinde M20×1 – 6g drehen",
+  {nr:80, vorgang:"Gewinde M20×1 – 6g drehen",
    wz:"T5, Gewindelehrring",
    schnitt:"n = " + 0 + " 1/min, f = P = 1 mm, i = 6 Zustellungen + 3 "
      + "Leerdurchläufe",
    hinweis:"Gewindeaußendurchmesser ein bis zwei Zehntel kleiner drehen - "
      + "beim Schneiden wird Werkstoff nach außen verdrängt."},
-  {nr:70, vorgang:"Maße und Gewinde prüfen",
-   wz:"Messschieber, Bügelmessschraube, Gewindelehrring",
+  {nr:90, vorgang:"Prüfen: Gewinde, Nutbreiten, Längen",
+   wz:"Gewindelehrring M20×1 – 6g, Messschieber",
    schnitt:"–",
-   hinweis:"Solange eingespannt prüfen. Danach lässt sich nichts mehr "
-     + "nachbessern, ohne neu auszurichten."},
-  {nr:80, vorgang:"Werkstück abstechen",
+   hinweis:"Solange eingespannt prüfen. Der Lehrring muss sich von Hand "
+     + "aufschrauben lassen. Danach lässt sich nichts mehr nachbessern, ohne "
+     + "neu auszurichten."},
+  {nr:100, vorgang:"Werkstück abstechen",
    wz:"T6",
    schnitt:"v<sub>c</sub> = 105 m/min, n = " + 0 + " 1/min, f = 0,08 mm",
    hinweis:"Auf Länge 128,6 mm abstechen. Auffangvorrichtung bereitlegen - "
-     + "das Teil fällt. Butzen anschließend entgraten."}
+     + "das Teil fällt und ist heiß."},
+  {nr:110, vorgang:"Umspannen: Butzen entgraten, links zentrieren",
+   wz:"Zentrierbohrer ISO 6411 – A2×4,25, Messschieber",
+   schnitt:"–",
+   hinweis:"Die Zeichnung fordert Zentrierbohrungen an <em>beiden</em> "
+     + "Stirnflächen. Die linke entsteht erst nach dem Abstechen - ein "
+     + "eigener Arbeitsgang in einer zweiten Aufspannung. Gesamtlänge "
+     + "128,6 mm dabei nachprüfen."}
 ];
 
 /* Die Drehzahlen erst hier einsetzen, damit sie aus derselben Rechnung
    kommen wie in Teil 4 - eine Zahl, eine Quelle. */
 (function drehzahlenEinsetzen(){
-  var zu = {20:["plan"], 30:["schrupp"], 40:["schlicht"], 50:["stech"],
-            60:["gewinde"], 80:["abstech"]};
+  var zu = {20:["plan"], 30:["schrupp"], 50:["schlicht"], 70:["stech"],
+            80:["gewinde"], 100:["abstech"]};
   PLAN.forEach(function(z){
     var k = zu[z.nr];
     if(!k) return;
@@ -806,7 +1031,7 @@ var PLAN = [
   });
 }());
 
-(function teil8(){
+(function teil9(){
   el("arbeitsplan").innerHTML = PLAN.map(function(z){
     return '<tr><td class="nr">' + z.nr + '</td>'
       + '<td class="vorgang">' + z.vorgang + '</td>'
@@ -819,6 +1044,92 @@ var PLAN = [
       + '</td><td>' + z.schnitt + '</td><td>' + z.hinweis + '</td></tr>';
   }).join("");
 }());
+
+/* ---------- Teil 10: die Hauptnutzungszeit ---------- */
+
+/* An- und Ueberlauf. Das Tabellenbuch nennt 1 bis 2 mm; genommen wird der
+   obere Wert, dann liegt die Rechnung auf der sicheren Seite. */
+var LA = 2;
+
+/* Die Laenge des Lagersitzes kommt aus der Kontur, nicht aus dem Text -
+   sonst stehen zwei Zahlen fuer dieselbe Strecke. */
+var L_SITZ = (function(){
+  var a = WELLE.abschnitte.filter(function(x){ return x.d === 25; })[0];
+  return a.bis - a.von;
+}());
+
+var ZEITEN = [
+  {id:"zplan", name:"Rechte Stirnfl\u00e4che querplandrehen", vorgang:"plan",
+   f:0.15, i:1, L: WELLE.rohteil.d / 2 + LA,
+   weg:"L = d/2 + l<sub>a</sub> = " + WELLE.rohteil.d + "/2 + " + LA,
+   grund:"Vollzylinder: Die Schneide l\u00e4uft von au\u00dfen bis zur Mitte, also "
+     + "den halben Durchmesser weit. Gerechnet wird mit d<sub>m</sub> = 16 mm."},
+  {id:"zschlicht", name:"\u00d825 k6 schlichten", vorgang:"schlicht",
+   f:0.11, i:1, L: L_SITZ + LA,
+   weg:"L = l + l<sub>a</sub> = " + zahl(L_SITZ, 1) + " + " + LA,
+   grund:"L\u00e4ngsrunddrehen mit Ansatz: Das Werkzeug l\u00e4uft an, aber es l\u00e4uft "
+     + "nicht \u00fcber - am Ende steht der Bund."},
+  {id:"zabstech", name:"Werkst\u00fcck abstechen", vorgang:"abstech",
+   f:0.08, i:1, L: WELLE.rohteil.d / 2 + LA,
+   weg:"L = l + l<sub>a</sub> = " + (WELLE.rohteil.d / 2) + " + " + LA,
+   grund:"Die Abstechtiefe ist der halbe Rohteildurchmesser: 32/2 = 16 mm."}
+];
+
+function zeitDrehzahl(z){
+  var v = VORGAENGE.filter(function(x){ return x.id === z.vorgang; })[0];
+  return stufe(drehzahl(v.vc, v.d));
+}
+function zeitSekunden(z){
+  return z.L * z.i / (zeitDrehzahl(z) * z.f) * 60;
+}
+
+(function teil10(){
+  var aus = "", l = "", summe = 0;
+  ZEITEN.forEach(function(z){
+    var n = zeitDrehzahl(z), t = zeitSekunden(z);
+    summe += t;
+    aus += '<tr><td>' + z.name + '</td>'
+      + '<td>n = ' + n + ' 1/min<br>f = ' + zahl(z.f, 2) + ' mm</td>'
+      + '<td><input type="number" id="' + z.id + '_L" step="0.1"'
+      + ' inputmode="decimal" autocomplete="off"></td>'
+      + '<td><input type="number" id="' + z.id + '_t" step="0.1"'
+      + ' inputmode="decimal" autocomplete="off"></td>'
+      + '<td class="urteil" id="u' + z.id + '">\u2013</td></tr>';
+    l += '<p><strong>' + z.name + '</strong><br>'
+      + z.weg + ' = <strong>' + zahl(z.L, 1) + ' mm</strong><br>'
+      + '<em>' + z.grund + '</em><br>'
+      + 't<sub>h</sub> = ' + zahl(z.L, 1) + ' \u00b7 ' + z.i + ' / (' + n
+      + ' \u00b7 ' + zahl(z.f, 2) + ') = ' + zahl(t / 60, 3) + ' min = '
+      + '<strong>' + zahl(t, 1) + ' s</strong></p>';
+  });
+  el("zeiten").innerHTML = aus;
+  el("loesung10").innerHTML = l
+    + '<p><strong>Summe: ' + zahl(summe, 1) + ' s</strong> \u2013 knapp eine '
+    + 'halbe Minute, in der die Schneide schneidet.</p>';
+}());
+
+el("btn10").addEventListener("click", function(){
+  var r = 0, offen = 0, summe = 0;
+  ZEITEN.forEach(function(z){
+    var t = zeitSekunden(z);
+    summe += t;
+    var vL = wert(z.id + "_L"), vT = wert(z.id + "_t");
+    var leer = !isFinite(vL) && !isFinite(vT);
+    if(leer){ offen += 2; urteilen("u" + z.id, false, true); return; }
+    if(!isFinite(vL)) offen++;
+    if(!isFinite(vT)) offen++;
+    var okL = isFinite(vL) && Math.abs(vL - z.L) <= 0.51;
+    var okT = isFinite(vT) && Math.abs(vT - t) <= 1.01;
+    if(okL) r++;
+    if(okT) r++;
+    urteilen("u" + z.id, okL && okT, false);
+  });
+  var s = wert("zSumme");
+  var leerS = !isFinite(s); if(leerS) offen++;
+  r += urteilen("uzSumme", Math.abs(s - summe) <= 2.01, leerS);
+  bilanz("bilanz10", r, ZEITEN.length * 2 + 1, offen);
+});
+
 </script>
 
 <script src="../../assets/back-nav.js"></script>
@@ -829,5 +1140,6 @@ var PLAN = [
 <script src="../../assets/baukasten.js"></script>
 <script src="../../assets/pdf.js"></script>
 <script src="../../assets/export.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
 </body>
 </html>

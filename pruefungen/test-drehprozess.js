@@ -532,16 +532,28 @@ console.log('\nDie Lernsituation');
   });
   const w = dom.window, d = w.document;
 
-  p('der Arbeitsplan hat acht Vorgaenge',
-    d.querySelectorAll('#arbeitsplan tr').length === 8,
-    String(d.querySelectorAll('#arbeitsplan tr').length));
+  const zeilen = d.querySelectorAll('#arbeitsplan tr').length;
+  p('der Arbeitsplan hat elf Vorgaenge', zeilen === 11, String(zeilen));
   p('und drei Felder je Zeile zum Ausfuellen',
-    d.querySelectorAll('#arbeitsplan textarea').length === 24,
+    d.querySelectorAll('#arbeitsplan textarea').length === zeilen * 3,
     String(d.querySelectorAll('#arbeitsplan textarea').length));
   p('die Werkzeugliste steht bereit',
     d.querySelectorAll('#werkzeugliste tr').length >= 6);
   p('die Musterloesung des Arbeitsplans ist vollstaendig',
-    d.querySelectorAll('#planLoesung tr').length === 8);
+    d.querySelectorAll('#planLoesung tr').length === zeilen);
+
+  /* Pruefschritte sind eigene Vorgangszeilen, nicht Randnotizen - und
+     ohne Pruefmittel in der Werkzeugspalte waeren sie keine. */
+  const planZeilen = w.eval('PLAN');
+  const pruefzeilen = planZeilen.filter((z) => /^Pr\u00fcfen:/.test(z.vorgang));
+  p('mindestens drei Vorgaenge sind Pruefschritte', pruefzeilen.length >= 3,
+    pruefzeilen.map((z) => z.nr).join(', '));
+  const ohneMittel = pruefzeilen.filter(
+    (z) => !/Messschieber|B\u00fcgelmessschraube|Lehrring/.test(z.wz));
+  p('jeder nennt sein Pruefmittel', ohneMittel.length === 0,
+    ohneMittel.map((z) => z.nr).join(', '));
+  p('und die Passungszeile nennt die Toleranzmitte',
+    planZeilen.some((z) => /Mitte der Toleranz/.test(z.hinweis)));
 
   /* Keine Drehzahl darf als Platzhalter stehen bleiben. */
   const plan = d.getElementById('planLoesung').textContent;
@@ -588,6 +600,53 @@ console.log('\nDie Lernsituation');
   p('die engste Innenrundung ist der Freistich, nicht die R1',
     w.eval('R_ENG') === 0.6 && w.eval('R_ECKE') === 0.4,
     'R_ENG=' + w.eval('R_ENG') + ' R_ECKE=' + w.eval('R_ECKE'));
+
+  /* Teil 6: die Passungen. Gerechnet wird gegen die Grenzabmasse, die bei
+     der Welle stehen - eine Quelle fuer Zeichnung und Rechnung. */
+  const passungen = w.eval('PASSUNGEN');
+  p('die Welle traegt zwei Passungen', passungen.length === 2,
+    passungen.map((x) => x.nennmass + ' ' + x.klasse).join(', '));
+  passungen.forEach((x) => {
+    d.getElementById('p_' + x.id + '_h').value = x.hoechst.toFixed(3);
+    d.getElementById('p_' + x.id + '_m').value = x.mindest.toFixed(3);
+    d.getElementById('p_' + x.id + '_z').value = x.mitte.toFixed(4);
+  });
+  d.getElementById('btn6').click();
+  p('die Grenzmasse und das Mittenmass werden erkannt',
+    /6 von 6 richtig/.test(d.getElementById('bilanz6').textContent),
+    d.getElementById('bilanz6').textContent);
+
+  /* Das Mittenmass muss wirklich in der Mitte liegen - und bei k6 ueber
+     dem Nennmass, sonst ginge der haeufigste Fehler durch. */
+  const k6 = passungen.filter((x) => x.klasse === 'k6')[0];
+  p('das Mittenmass des k6 liegt ueber dem Nennmass',
+    k6 && k6.mitte > k6.nennmass, k6 ? String(k6.mitte) : 'kein k6');
+  const f7 = passungen.filter((x) => x.klasse === 'f7')[0];
+  p('und das des f7 darunter',
+    f7 && f7.mitte < f7.nennmass, f7 ? String(f7.mitte) : 'kein f7');
+
+  /* Teil 10: die Hauptnutzungszeit. Die Drehzahlen sind dieselben Stufen
+     wie in Teil 4 - sonst rechnete die Lernsituation zweimal anders. */
+  const zeiten = w.eval('ZEITEN');
+  let summe = 0;
+  zeiten.forEach((z) => {
+    const t = w.eval('zeitSekunden(ZEITEN.filter(function(x){'
+      + ' return x.id === "' + z.id + '"; })[0])');
+    summe += t;
+    d.getElementById(z.id + '_L').value = z.L.toFixed(1);
+    d.getElementById(z.id + '_t').value = t.toFixed(1);
+  });
+  d.getElementById('zSumme').value = summe.toFixed(1);
+  d.getElementById('btn10').click();
+  p('Vorschubwege und Zeiten werden erkannt',
+    /7 von 7 richtig/.test(d.getElementById('bilanz10').textContent),
+    d.getElementById('bilanz10').textContent);
+  p('die Drehzahlen der Zeitrechnung sind Maschinenstufen',
+    zeiten.every((z) => w.eval('STUFEN').indexOf(
+      w.eval('zeitDrehzahl(ZEITEN.filter(function(x){ return x.id === "'
+        + z.id + '"; })[0])')) >= 0));
+  p('der Schlichtgang dauert am laengsten',
+    summe > 30 && summe < 40, 'Summe ' + summe.toFixed(1) + ' s');
   w.close();
 }
 

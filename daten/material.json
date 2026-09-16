@@ -17,6 +17,22 @@
       {
         "datei": "fertigungstechnik-beurteilung-bedingungen-fuer-die-fertigung.html",
         "name": "Werkzeug Bedingungen für die Fertigung beurteilen"
+      },
+      {
+        "datei": "fertigungstechnik-iso-toleranzen-und-passungen.html",
+        "name": "Werkzeug ISO-Toleranzen und Passungen"
+      },
+      {
+        "datei": "fertigungstechnik-hauptnutzungszeit-beim-drehen.html",
+        "name": "Werkzeug Hauptnutzungszeit beim Drehen"
+      },
+      {
+        "datei": "fertigungstechnik-messmittel-buegelmessschraube.html",
+        "name": "Werkzeug Bügelmessschraube"
+      },
+      {
+        "datei": "fertigungstechnik-messmittel-messschieber.html",
+        "name": "Werkzeug Messschieber"
       }
     ],
     "inhalt": []

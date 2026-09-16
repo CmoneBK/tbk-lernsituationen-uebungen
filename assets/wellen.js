@@ -95,6 +95,16 @@ WELLEN.antriebswelle = {
   zentrierbohrungen: {links: "ISO 6411 – A2×4,25", rechts: "ISO 6411 – A2,5×5,3"},
   rohteil: {d: 32, laenge: 135},
 
+  /* Die beiden Funktionsflächen tragen ISO-Toleranzen. Grenzabmaße in
+     Mikrometern, Nennmaßbereich über 18 bis 30 mm, System Einheitsbohrung.
+     k6 am Lagersitz: Der Innenring eines Wälzlagers mit Umfangslast braucht
+     eine Übergangs- oder Übermaßpassung. f7 am Zapfen: Dort sitzt eine
+     Buchse, die sich von Hand aufschieben lassen soll. */
+  toleranzen: [
+    {flaeche: "mantel_25", nennmass: 25, klasse: "k6", es: 15,  ei: 2},
+    {flaeche: "mantel_20", nennmass: 20, klasse: "f7", es: -20, ei: -41}
+  ],
+
   flaechen: [
     {id: "stirn_links", name: "linke Stirnfläche", bei: 0, art: "stirn",
      verfahren: "abstechdrehen"},
@@ -133,10 +143,10 @@ WELLEN.antriebswelle = {
       {von: 83.6, bis: 128.6, text: "45",   an: [25, 20]}
     ],
     durchmesser: [
-      {d: 20, text: "Ø20", seite: "links",  versatz: 26, vonMm: 0},
+      {d: 20, text: "Ø20 f7", seite: "links",  versatz: 26, vonMm: 0},
       {d: 24, text: "Ø24", seite: "links",  versatz: 52, vonMm: 22.3},
       {d: 30, text: "Ø30", seite: "mitte",  versatz: 47.3, ab: -34},
-      {d: 25, text: "Ø25", seite: "rechts", versatz: 34, vonMm: 91.6, ab: -30}
+      {d: 25, text: "Ø25 k6", seite: "rechts", versatz: 34, vonMm: 91.6, ab: -30}
     ]
   },
   bezeichnungen: [

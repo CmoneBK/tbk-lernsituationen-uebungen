@@ -1,6 +1,6 @@
 {
   "titel": "Fertigungstechnik: Zerspanung - Die Antriebswelle fertigen",
-  "lead": "Ein Einzelteil aus 42CrMo4, vom Auftrag bis zum Arbeitsplan: Kontur lesen, Werkstoff nachschlagen, Schnittdaten und Drehzahlen bestimmen, Werkzeuge auswählen, Vorschübe rechnen, Aufmaße und Sicherheitsmaßnahmen festhalten.",
+  "lead": "Ein Einzelteil aus 42CrMo4, vom Auftrag bis zum Arbeitsplan: Kontur lesen, Werkstoff nachschlagen, Schnittdaten und Drehzahlen bestimmen, Werkzeuge auswählen, Vorschübe rechnen, Passungen auf Toleranzmitte schlichten, Prüfschritte und Hauptnutzungszeit festhalten.",
   "werkzeuge": [
     {
       "datei": "fertigungstechnik-zerspanung-drehprozess-planen.html",
@@ -13,6 +13,22 @@
     {
       "datei": "fertigungstechnik-beurteilung-bedingungen-fuer-die-fertigung.html",
       "name": "Werkzeug Bedingungen für die Fertigung beurteilen"
+    },
+    {
+      "datei": "fertigungstechnik-iso-toleranzen-und-passungen.html",
+      "name": "Werkzeug ISO-Toleranzen und Passungen"
+    },
+    {
+      "datei": "fertigungstechnik-hauptnutzungszeit-beim-drehen.html",
+      "name": "Werkzeug Hauptnutzungszeit beim Drehen"
+    },
+    {
+      "datei": "fertigungstechnik-messmittel-buegelmessschraube.html",
+      "name": "Werkzeug Bügelmessschraube"
+    },
+    {
+      "datei": "fertigungstechnik-messmittel-messschieber.html",
+      "name": "Werkzeug Messschieber"
     }
   ]
 }
