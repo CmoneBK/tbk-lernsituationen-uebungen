@@ -1350,6 +1350,162 @@ console.log('\nDie beiden Stirnflaechen');
   }
 }
 
+console.log('\nDie zweite Lernsituation: die Abtriebswelle');
+{
+  const voll = path.join(BASIS, 'lernsituationen/abtriebswelle/index.html');
+  p('die Lernsituation liegt im Repo', fs.existsSync(voll));
+
+  const dom = new JSDOM(mitAssets(fs.readFileSync(voll, 'utf8')), {
+    runScripts: 'dangerously',
+    url: 'https://t-bk.de/unterrichtsmaterial/lernsituationen/abtriebswelle/',
+    beforeParse(w) { w.Element.prototype.scrollIntoView = function () {}; },
+  });
+  const w = dom.window, d = w.document;
+  const setz = (id, wert) => { d.getElementById(id).value = String(wert); };
+
+  /* Die Welle: Gruppe M, Kegel, Bohrung, Laengsnut. */
+  p('sie zeigt die Abtriebswelle', w.WELLE.id === 'abtriebswelle', w.WELLE.id);
+  p('die Welle hat einen kegeligen Abschnitt',
+    w.WELLE.abschnitte.some((a) => a.dBis !== undefined));
+  p('eine Innenbohrung', (w.WELLE.bohrungen || []).length === 1);
+  p('und eine Laengsnut', (w.WELLE.laengsnuten || []).length === 1);
+
+  /* Teil 3: der Werkstoff. Die Falle ist die Gruppe - M, nicht P. */
+  setz('wRm', 600); setz('wG', 'M'); setz('wZ', 'b');
+  d.getElementById('btn3').click();
+  p('Werkstoff, Gruppe und Zeile werden erkannt',
+    /3 von 3 richtig/.test(d.getElementById('bilanz3').textContent),
+    d.getElementById('bilanz3').textContent);
+  p('die Zeile ist eine der Gruppe M',
+    /nichtrostend/.test(d.getElementById('wZ')
+      .querySelector('option[value="b"]').textContent));
+
+  /* Teil 4: die Bedingungen. Derselbe Schlichtvorgang muss schlechter
+     ausfallen, wenn die Nut vorher gefraest waere - das ist der Grund
+     fuer die Reihenfolge. */
+  const faelle = w.eval('FAELLE');
+  p('fuenf Faelle werden beurteilt', faelle.length === 5);
+  faelle.forEach((f) => {
+    setz('b_' + f.id, w.eval('urteil(FAELLE.filter(function(x){'
+      + ' return x.id === "' + f.id + '"; })[0])'));
+  });
+  d.getElementById('btn4').click();
+  p('die Bedingungen werden erkannt',
+    /5 von 5 richtig/.test(d.getElementById('bilanz4').textContent),
+    d.getElementById('bilanz4').textContent);
+  const ohneNut = w.eval('urteil(FAELLE.filter(function(x){'
+    + ' return x.id === "schlicht"; })[0])');
+  const mitNut = w.eval('urteil(FAELLE.filter(function(x){'
+    + ' return x.id === "schlichtNut"; })[0])');
+  p('die vorgezogene Nut verschlechtert den Schlichtgang',
+    w.eval('GRIFF')[mitNut] < w.eval('GRIFF')[ohneNut],
+    ohneNut + ' -> ' + mitNut);
+
+  /* Teil 5: Schnittdaten. Jede Zahl muss aus der M-Zeile des Buches
+     stammen, und jede Drehzahl eine Stufe der Maschine sein. */
+  const zeile = ALLES.zerspanung_drehen.schnittdaten_drehen.M
+    .nichtrostend_austenitisch.find((z) => z.rm === '<=680');
+  const paare = {plan: 'querplandrehen', schruppen: 'laengsrund_schruppen',
+    schlichten: 'laengsrund_schlichten', stechen: 'abstechen_einstechen',
+    gewinde: 'gewindedrehen'};
+  const zellen = w.eval('ZELLE');
+  const schief = Object.keys(zellen).filter((k) => JSON.stringify(zellen[k])
+    !== JSON.stringify(zeile[paare[k]]));
+  p('die fuenf Zellen stimmen mit dem Buch', schief.length === 0,
+    schief.join(', '));
+
+  const vorgaenge = w.eval('VORGAENGE');
+  const stufen = w.eval('STUFEN');
+  vorgaenge.forEach((v) => {
+    const vc = w.eval('vcVon(VORGAENGE.filter(function(x){'
+      + ' return x.id === "' + v.id + '"; })[0])');
+    setz('vc_' + v.id, vc);
+    setz('n_' + v.id, w.eval('stufe(drehzahl(' + vc + ', ' + v.d + '))'));
+  });
+  d.getElementById('btn5').click();
+  p('alle Schnittdaten werden erkannt',
+    new RegExp(vorgaenge.length * 2 + ' von ' + vorgaenge.length * 2
+      + ' richtig').test(d.getElementById('bilanz5').textContent),
+    d.getElementById('bilanz5').textContent);
+
+  /* Teil 6: der Kern. Rz 4 laesst sich nicht drehen. */
+  const eng = w.eval('R_ENG'), ecke = w.eval('R_ECKE');
+  const noetig = w.eval('F_NOETIG'), fmin = w.eval('F_MIN');
+  p('die engste Innenrundung ist die R0,3', eng === 0.3, String(eng));
+  p('und laesst nur den kleinsten Eckenradius zu', ecke === 0.2, String(ecke));
+  p('der Vorschub fuer Rz 4 liegt unter dem Schlichtbereich',
+    noetig < fmin, noetig.toFixed(3) + ' gegen ' + fmin);
+  p('mit dem kleinsten Vorschub kaeme rund Rz 6,3 heraus',
+    Math.abs(w.eval('RZ_MOEGLICH') - 6.25) < 0.1,
+    w.eval('RZ_MOEGLICH').toFixed(2));
+  setz('gRw', eng); setz('gR', String(ecke));
+  setz('gF', noetig.toFixed(2)); setz('gFmin', fmin);
+  setz('gGeht', 'nein'); setz('gRz', w.eval('RZ_MOEGLICH').toFixed(2));
+  d.getElementById('btn6').click();
+  p('die Grenze wird richtig bestimmt',
+    /6 von 6 richtig/.test(d.getElementById('bilanz6').textContent),
+    d.getElementById('bilanz6').textContent);
+  p('und die Loesung nennt die Rueckfrage an die Konstruktion',
+    /R0,6/.test(d.getElementById('loesung6').textContent)
+    || /Rundung vergr/.test(d.body.textContent));
+
+  /* Teil 7: eine Welle und eine Bohrung - Gross- und Kleinbuchstabe. */
+  const passungen = w.eval('PASSUNGEN');
+  p('eine Passung ist eine Bohrung, eine eine Welle',
+    passungen.some((x) => x.bohrung) && passungen.some((x) => !x.bohrung),
+    passungen.map((x) => x.klasse).join(', '));
+  passungen.forEach((x) => {
+    setz('p_' + x.id + '_h', x.hoechst.toFixed(3));
+    setz('p_' + x.id + '_m', x.mindest.toFixed(3));
+    setz('p_' + x.id + '_z', x.mitte.toFixed(4));
+  });
+  d.getElementById('btn7').click();
+  p('die Passungen werden erkannt',
+    /6 von 6 richtig/.test(d.getElementById('bilanz7').textContent),
+    d.getElementById('bilanz7').textContent);
+
+  /* Teil 10: der Arbeitsplan. Die Nut steht zuletzt, und keine Drehzahl
+     blieb als Platzhalter stehen. */
+  const plan = w.eval('PLAN');
+  p('der Arbeitsplan hat dreizehn Vorgaenge', plan.length === 13,
+    String(plan.length));
+  p('keine Drehzahl blieb bei null stehen',
+    !/n = 0 1\/min/.test(d.getElementById('planLoesung').textContent));
+  const genannt = [...d.getElementById('planLoesung').textContent
+    .matchAll(/n = (\d+) 1\/min/g)].map((m) => Number(m[1]));
+  const fremd = genannt.filter((n) => stufen.indexOf(n) < 0);
+  p(genannt.length + ' Drehzahlen sind Stufen der Maschine',
+    fremd.length === 0, fremd.join(', '));
+  p('die Passfedernut steht als letzter Vorgang',
+    /Passfedernut/.test(plan[plan.length - 1].vorgang),
+    plan[plan.length - 1].vorgang);
+  const pruefzeilen = plan.filter((z) => /^Pr\u00fcfen:/.test(z.vorgang));
+  p('mindestens drei Vorgaenge sind Pruefschritte', pruefzeilen.length >= 3,
+    pruefzeilen.map((z) => z.nr).join(', '));
+
+  /* Teil 11: die Zeit. Das Schruppen dauert laenger als alles andere. */
+  const zeiten = w.eval('ZEITEN');
+  let summe = 0;
+  zeiten.forEach((z) => {
+    const t = w.eval('zeitSekunden(ZEITEN.filter(function(x){'
+      + ' return x.id === "' + z.id + '"; })[0])');
+    summe += t;
+    setz(z.id + '_L', z.L.toFixed(1));
+    setz(z.id + '_t', t.toFixed(1));
+  });
+  setz('zSumme', summe.toFixed(1));
+  d.getElementById('btn11').click();
+  p('Vorschubwege und Zeiten werden erkannt',
+    /7 von 7 richtig/.test(d.getElementById('bilanz11').textContent),
+    d.getElementById('bilanz11').textContent);
+  const schrupp = w.eval('zeitSekunden(ZEITEN.filter(function(x){'
+    + ' return x.id === "zschrupp"; })[0])');
+  p('das Schruppen dauert laenger als der Rest zusammen',
+    schrupp > summe - schrupp, schrupp.toFixed(1) + ' von '
+    + summe.toFixed(1) + ' s');
+  w.close();
+}
+
 console.log('\nDie Lektion im Werkzeug-Repo');
 {
   const { TOOLS, teilweise } = require('./orte');

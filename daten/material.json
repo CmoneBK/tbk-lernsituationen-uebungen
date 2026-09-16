@@ -3,6 +3,44 @@
     "typ": "lernsituationen",
     "bereich": "Fertigungstechnik",
     "kategorie": "Zerspanung",
+    "name": "Die Abtriebswelle fertigen",
+    "url": "lernsituationen/abtriebswelle/index.html",
+    "werkzeuge": [
+      {
+        "datei": "fertigungstechnik-zerspanung-drehprozess-planen.html",
+        "name": "Lektion Drehprozess planen"
+      },
+      {
+        "datei": "fertigungstechnik-beurteilung-bedingungen-fuer-die-fertigung.html",
+        "name": "Werkzeug Bedingungen für die Fertigung beurteilen"
+      },
+      {
+        "datei": "fertigungstechnik-vorschub-rautiefe-beim-schlichten.html",
+        "name": "Werkzeug Vorschub und Rautiefe beim Schlichten"
+      },
+      {
+        "datei": "fertigungstechnik-iso-toleranzen-und-passungen.html",
+        "name": "Werkzeug ISO-Toleranzen und Passungen"
+      },
+      {
+        "datei": "fertigungstechnik-hauptnutzungszeit-beim-drehen.html",
+        "name": "Werkzeug Hauptnutzungszeit beim Drehen"
+      },
+      {
+        "datei": "fertigungstechnik-messmittel-buegelmessschraube.html",
+        "name": "Werkzeug Bügelmessschraube"
+      },
+      {
+        "datei": "fertigungstechnik-messmittel-messschieber.html",
+        "name": "Werkzeug Messschieber"
+      }
+    ],
+    "inhalt": []
+  },
+  {
+    "typ": "lernsituationen",
+    "bereich": "Fertigungstechnik",
+    "kategorie": "Zerspanung",
     "name": "Die Antriebswelle fertigen",
     "url": "lernsituationen/antriebswelle/index.html",
     "werkzeuge": [

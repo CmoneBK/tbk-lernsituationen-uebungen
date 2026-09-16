@@ -471,7 +471,7 @@ WELLEN.abtriebswelle = {
     {x: 150, d: 24, text: "M24×3 – 6g",          ab: 16,  hoch: 26}
   ],
   rauheiten: [
-    {x: 14,  d: 28, text: "Rz 6,3"},
+    {x: 14,  d: 28, text: "Rz 6,3", hoch: 46},
     {x: 74,  d: 36, text: "Rz 4"},
     {x: 120, d: 35, text: "Rz 6,3"}
   ]

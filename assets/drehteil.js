@@ -328,7 +328,10 @@ function wellenBezeichnungen(g, m, w){
 function wellenRauheiten(g, m, w){
   var e = svgEl("g", {"class":"erklaer"}, g);
   (w.rauheiten || []).forEach(function(r){
-    var y0 = m.y(r.d, true), y1 = y0 - 16;
+    /* `hoch` schiebt die Angabe weiter nach oben. Gebraucht wird das dort,
+       wo sonst eine Maßhilfslinie darunterliegt - Text auf Geometrie ist
+       der haeufigste Lesefehler einer Zeichnung. */
+    var y0 = m.y(r.d, true), y1 = y0 - (r.hoch || 16);
     linie(e, m.x(r.x), y0, m.x(r.x), y1, SCHMAL);
     txt(e, m.x(r.x), y1 - 4, r.text, {groesse: 11});
   });

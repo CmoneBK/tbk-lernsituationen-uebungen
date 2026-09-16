@@ -1,0 +1,34 @@
+{
+  "titel": "Fertigungstechnik: Zerspanung - Die Abtriebswelle fertigen",
+  "lead": "Ein Teil, bei dem sich die Regeln gegenseitig im Weg stehen: nichtrostender Stahl der Gruppe M, Gesenkschmiedeteil mit Zunderhaut, Kegel, Innenbohrung, Passfedernut – und eine Rautiefe, die sich mit dem zulässigen Eckenradius nicht mehr drehen lässt. Am Ende steht ein Arbeitsplan mit einer begründeten Rückfrage an die Konstruktion.",
+  "werkzeuge": [
+    {
+      "datei": "fertigungstechnik-zerspanung-drehprozess-planen.html",
+      "name": "Lektion Drehprozess planen"
+    },
+    {
+      "datei": "fertigungstechnik-beurteilung-bedingungen-fuer-die-fertigung.html",
+      "name": "Werkzeug Bedingungen für die Fertigung beurteilen"
+    },
+    {
+      "datei": "fertigungstechnik-vorschub-rautiefe-beim-schlichten.html",
+      "name": "Werkzeug Vorschub und Rautiefe beim Schlichten"
+    },
+    {
+      "datei": "fertigungstechnik-iso-toleranzen-und-passungen.html",
+      "name": "Werkzeug ISO-Toleranzen und Passungen"
+    },
+    {
+      "datei": "fertigungstechnik-hauptnutzungszeit-beim-drehen.html",
+      "name": "Werkzeug Hauptnutzungszeit beim Drehen"
+    },
+    {
+      "datei": "fertigungstechnik-messmittel-buegelmessschraube.html",
+      "name": "Werkzeug Bügelmessschraube"
+    },
+    {
+      "datei": "fertigungstechnik-messmittel-messschieber.html",
+      "name": "Werkzeug Messschieber"
+    }
+  ]
+}

@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Die Abtriebswelle fertigen</title>
+<meta name="description" content="Ein Teil, das an die Grenzen geht: nichtrostender Stahl der Gruppe M, Schmiedehaut, Kegel, Innenbohrung und eine Rautiefe, die sich mit dem zulässigen Eckenradius nicht mehr drehen lässt.">
+<meta name="dauer" content="120 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Lernsituation zusätzlich braucht. Sonst: assets/uebung.css */
+  table.werte td:first-child{font-weight:600}
+  table.werte input, table.werte select, table.plan input, table.plan textarea{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:6px 8px; border-radius:7px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  table.plan textarea{min-height:3.4em; resize:vertical; line-height:1.5}
+  td.urteil{font-size:13px; font-weight:600; white-space:nowrap}
+  td.urteil.ja{color:var(--ok)}
+  td.urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+  .formel{
+    display:block; margin:10px 0; padding:10px 14px; border-radius:10px;
+    background:var(--bg); border:1px solid var(--border);
+    font-size:17px; text-align:center; font-variant-numeric:tabular-nums;
+  }
+  figure.bild{margin:0 0 18px}
+  figure.bild svg{width:100%; height:auto}
+  figure.bild figcaption{font-size:13px; color:var(--muted); margin-top:6px}
+  /* Der Arbeitsplan ist das Handlungsprodukt - er darf breit sein. */
+  table.plan{font-size:13.5px}
+  table.plan td.nr{font-weight:700; text-align:center; width:3em}
+  table.plan td.vorgang{min-width:11em}
+  .stufen{display:flex; flex-wrap:wrap; gap:6px; margin:6px 0 0}
+  .stufen span{padding:4px 10px; border-radius:999px; background:var(--bg);
+    border:1px solid var(--border); font-variant-numeric:tabular-nums;
+    font-size:14px}
+  .kurz{
+    display:inline-block; padding:2px 10px; border-radius:6px;
+    background:var(--bg); border:1px solid var(--border-stark);
+    font-variant-numeric:tabular-nums; font-weight:700;
+  }
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Lernsituation &middot; Planung eines Drehprozesses</p>
+    <h1>Die Abtriebswelle fertigen</h1>
+    <p class="lead">Ein Teil, bei dem sich die Regeln gegenseitig im Weg stehen.</p>
+  </header>
+
+  <main class="wrap">
+
+    <h2><span class="nr">1</span>Der Auftrag</h2>
+
+    <div class="box auftrag">
+      <p><strong>Die Lage:</strong> Die Instandhaltung braucht eine
+        <strong>Abtriebswelle</strong> für eine Pumpe in der
+        Lebensmittelproduktion. Das Teil läuft feucht und wird regelmäßig
+        gereinigt &ndash; deshalb steht auf der Zeichnung
+        <strong>X5CrNi18-10</strong>.</p>
+      <p>Das Rohteil ist kein Stangenabschnitt, sondern ein
+        <strong>Gesenkschmiedeteil Ø46 × 172 mm mit Zunderhaut</strong>. Es
+        lag noch im Lager; ein gezogener Stab wäre erst in sechs Wochen
+        lieferbar, und die Pumpe steht.</p>
+      <p>Die Welle trägt einen <strong>Lagersitz Ø36 k6</strong>, eine
+        <strong>Passfedernut</strong>, einen <strong>Kegel 1:10</strong>, eine
+        <strong>Bohrung Ø18 H7</strong> und ein Gewinde
+        <strong>M24×3</strong>.</p>
+      <p>Gefordert sind <strong>Arbeitsplan</strong> und
+        <strong>Werkzeugliste</strong>. Und &ndash; das steht nicht im Auftrag,
+        ergibt sich aber beim Planen &ndash; eine begründete
+        <strong>Rückfrage an die Konstruktion</strong>.</p>
+      <p><strong>Das Tabellenbuch gehört aufgeschlagen daneben.</strong></p>
+    </div>
+
+    <details>
+      <summary>Was diese Welle von der Antriebswelle unterscheidet</summary>
+      <p>Bei der Antriebswelle ging jede Entscheidung glatt auf: Werkstoff
+        nachschlagen, Zeile finden, Startwert ablesen, rechnen. Hier nicht.
+        Fünf Dinge kommen zusammen, und jedes für sich ist noch
+        lehrbuchmäßig:</p>
+      <ul>
+        <li>Der Werkstoff ist <strong>nicht Gruppe P</strong>.</li>
+        <li>Das Rohteil hat <strong>Zunderhaut</strong> &ndash; der erste
+          Schnitt läuft durch wechselnde Tiefe.</li>
+        <li>Die <strong>Passfedernut</strong> macht jeden Schnitt über den
+          Lagersitz zu einem unterbrochenen &ndash; <em>wenn</em> sie zur
+          falschen Zeit gefräst wird.</li>
+        <li>Die <strong>engste Innenrundung</strong> ist eine R0,3. Der
+          Eckenradius, der da hineinpasst, ist so klein, dass der Vorschub
+          für die geforderte Rautiefe unter den zulässigen Bereich rutscht.</li>
+        <li>Die <strong>Bohrstange</strong> kragt aus.</li>
+      </ul>
+      <p>Am Ende steht kein Plan, der alles erfüllt, sondern einer mit einer
+        begründeten Rückfrage.</p>
+    </details>
+
+    <h2><span class="nr">2</span>Die Kontur lesen</h2>
+
+    <figure class="bild" id="bildWelle"></figure>
+
+    <p>Fünf Abschnitte, aber drei davon sind keine glatten Zylinder.</p>
+
+    <div class="tabellenrahmen">
+      <table>
+        <thead><tr><th>Abschnitt</th><th>von … bis</th><th>Ø</th>
+          <th>Rautiefe</th></tr></thead>
+        <tbody id="abschnitte"></tbody>
+      </table>
+    </div>
+
+    <details>
+      <summary>Die Einzelheiten und was sie für die Fertigung bedeuten</summary>
+      <div id="einzelheiten"></div>
+    </details>
+
+    <details>
+      <summary>Welches Verfahren erzeugt welche Fläche?</summary>
+      <ul id="verfahrenListe"></ul>
+      <p class="fussnote">Die Passfedernut ist der Ausreißer: Sie wird
+        <strong>gefräst</strong>, nicht gedreht. Das Teil verlässt dafür die
+        Drehmaschine &ndash; und die Frage, wann das geschieht, ist keine
+        Kleinigkeit. Dazu Teil 4.</p>
+    </details>
+
+    <h2><span class="nr">3</span>Der Werkstoff</h2>
+    <p>X5CrNi18-10. Schlagt ihn nach: Zugfestigkeit, Hauptanwendungsgruppe,
+      Zeile der Schnittdatentabelle.</p>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Gesucht</th><th>Eintrag</th><th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>R<sub>m</sub> gemittelt, in N/mm²</td>
+            <td><input type="number" id="wRm" step="10" inputmode="decimal"
+              autocomplete="off"></td>
+            <td class="urteil" id="uwRm">–</td></tr>
+          <tr><td>Hauptanwendungsgruppe nach DIN ISO 513</td>
+            <td><select id="wG" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="P">P</option><option value="M">M</option>
+              <option value="K">K</option><option value="N">N</option>
+              <option value="S">S</option><option value="H">H</option>
+            </select></td>
+            <td class="urteil" id="uwG">–</td></tr>
+          <tr><td>Zeile der Schnittdatentabelle</td>
+            <td><select id="wZ" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="a">Vergütungsstahl, legiert, R&#8202;m &gt; 750</option>
+              <option value="b">nichtrostend, austenitisch, R&#8202;m &le; 680</option>
+              <option value="c">nichtrostend, austenitisch, R&#8202;m &gt; 680</option>
+              <option value="d">nichtrostend, ferritisch, R&#8202;m &le; 700</option>
+            </select></td>
+            <td class="urteil" id="uwZ">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn3">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz3">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: das X entscheidet alles</summary>
+      <p><strong>X5CrNi18-10</strong>, Werkstoffnummer <strong>1.4301</strong>.
+        Für Stäbe steht dort R<sub>m</sub> = 500 bis 700 N/mm², gemittelt
+        <strong>600 N/mm²</strong>.</p>
+      <p>Das <strong>X</strong> vor der Bezeichnung heißt: hochlegiert, die
+        Zahlen danach sind Prozente ohne Faktor. <strong>18 % Chrom</strong>
+        und 10 % Nickel &ndash; ab etwa 10,5 % Chrom ist ein Stahl
+        nichtrostend, und damit gehört er in die Hauptanwendungsgruppe
+        <strong>M</strong>, nicht in P.</p>
+      <div class="merksatz">
+        <strong>Der teuerste Fehler dieser Lernsituation:</strong> in der
+        P-Zeile nachschlagen. Dort stünden für das Schruppen 110 bis 220
+        m/min &ndash; in der M-Zeile sind es 90 bis 130. Wer die falsche
+        Zeile nimmt, fährt mit fast dem Doppelten, und die Schneide hält
+        keine zehn Minuten.
+      </div>
+      <p>Der Grund liegt im Werkstoff: Austenitischer Stahl ist
+        <strong>zäh</strong>, er <strong>verfestigt kalt</strong> und leitet
+        die Wärme schlecht ab. Der Span geht nicht von selbst weg, und die
+        Wärme bleibt an der Schneide.</p>
+      <p class="fussnote">Bei R<sub>m</sub> = 600 N/mm² gilt die Zeile
+        „R<sub>m</sub> ≤ 680&ldquo;. Wäre der Stab kaltverfestigt geliefert,
+        läge er darüber &ndash; und die Schnittgeschwindigkeiten fielen noch
+        einmal um ein Drittel.</p>
+    </details>
+
+    <h2><span class="nr">4</span>Die Bedingungen &ndash; und die Reihenfolge</h2>
+    <p>Die Bearbeitungsbedingungen entscheiden, ob aus der Zelle der unterer
+      Grenzwert, der Startwert oder der obere genommen wird. Zeile ist der
+      <strong>Schneideneingriff</strong>, Spalte die
+      <strong>Stabilität</strong>.</p>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Vorgang</th><th>Bedingungen</th>
+          <th>Stimmt?</th></tr></thead>
+        <tbody id="bedingungen"></tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn4">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz4">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung und die Entscheidung, die dahintersteckt</summary>
+      <div id="loesung4"></div>
+      <div class="merksatz">
+        <strong>Die Passfedernut wird nach dem Schlichten gefräst, nicht
+        davor.</strong> Wer sie vorzieht, macht aus einem glatten Schnitt
+        einen unterbrochenen &ndash; und rutscht damit in die dritte Zeile
+        der Tabelle. Bei sonst gleichen Umständen kostet das den Sprung von
+        „normal&ldquo; auf „ungünstig&ldquo;, also vom Startwert auf den
+        unteren Grenzwert.
+      </div>
+      <p>Anders gesagt: Dieselbe Maschine, dasselbe Werkzeug, derselbe
+        Werkstoff &ndash; und trotzdem ein Drittel weniger
+        Schnittgeschwindigkeit, nur weil zwei Arbeitsgänge vertauscht
+        wurden.</p>
+      <p>Die <strong>Zunderhaut</strong> dagegen lässt sich nicht
+        wegplanen. Sie ist beim Schruppen da, und das Rohteil bringt sie mit.
+        Was sich planen lässt, ist der Umgang damit: kräftig genug zustellen,
+        damit die Schneide <em>unter</em> der Haut arbeitet, statt in ihr zu
+        schaben.</p>
+    </details>
+
+    <h2><span class="nr">5</span>Schnittdaten und Drehzahlen</h2>
+    <p>Jetzt stehen Zeile und Bedingungen fest. Für jeden Vorgang: Wert
+      ablesen, Drehzahl rechnen, auf die nächstkleinere Stufe runden.</p>
+
+    <span class="formel">n = v<sub>c</sub> / (π · d)</span>
+
+    <p>Die Maschine hat diese Drehzahlstufen:</p>
+    <div class="stufen" id="stufen"></div>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Arbeitsvorgang</th><th>v<sub>c</sub> in m/min</th>
+          <th>Stufe in 1/min</th><th>Stimmt?</th></tr></thead>
+        <tbody id="schnittdaten"></tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn5">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz5">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: die Rechnungen im Einzelnen</summary>
+      <div id="loesung5"></div>
+      <p><strong>Beim Innendrehen</strong> steht ein Zwischenfeld der Tabelle:
+        glatter Schnitt, aber geringe Stabilität &ndash; „normal bis
+        ungünstig&ldquo;. Das Buch sagt, man wähle einen Wert dazwischen.
+        Genommen wird hier der <strong>untere</strong>: Eine Bohrstange, die
+        über zwei Durchmesser weit auskragt, schwingt, und Schwingungen
+        kosten mehr als die paar Meter je Minute.</p>
+      <p><strong>Beim Gewindedrehen</strong> steht im Arbeitsplan die
+        Drehzahl, nicht v<sub>c</sub> &ndash; der Vorschub ist an sie
+        gekoppelt (f = P = 3 mm).</p>
+    </details>
+
+    <h2><span class="nr">6</span>Die Grenze</h2>
+    <p>Der Lagersitz Ø36 fordert <strong>Rz 4</strong>. Rechnet nach, was
+      dafür nötig wäre &ndash; und ob es geht.</p>
+
+    <span class="formel">r<sub>ε</sub> &le; r<sub>w</sub> &minus; 0,1 mm
+      &nbsp;&nbsp;·&nbsp;&nbsp;
+      f = √(8 · r<sub>ε</sub> · R<sub>th</sub>)</span>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Gesucht</th><th>Eintrag</th><th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>Engste Innenrundung r<sub>w</sub> der Kontur in mm</td>
+            <td><input type="number" id="gRw" step="0.1" inputmode="decimal"
+              autocomplete="off"></td>
+            <td class="urteil" id="ugRw">–</td></tr>
+          <tr><td>Größter genormter Eckenradius r<sub>ε</sub> in mm</td>
+            <td><select id="gR" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="0.2">0,2</option><option value="0.4">0,4</option>
+              <option value="0.6">0,6</option><option value="0.8">0,8</option>
+              <option value="1.2">1,2</option>
+            </select></td>
+            <td class="urteil" id="ugR">–</td></tr>
+          <tr><td>Rechnerischer Vorschub für Rz 4, in mm</td>
+            <td><input type="number" id="gF" step="0.01" inputmode="decimal"
+              autocomplete="off"></td>
+            <td class="urteil" id="ugF">–</td></tr>
+          <tr><td>Kleinster Schlichtvorschub laut Tabellenbuch, in mm</td>
+            <td><input type="number" id="gFmin" step="0.01" inputmode="decimal"
+              autocomplete="off"></td>
+            <td class="urteil" id="ugFmin">–</td></tr>
+          <tr><td>Lässt sich Rz 4 so drehen?</td>
+            <td><select id="gGeht" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="ja">ja</option>
+              <option value="nein">nein</option>
+            </select></td>
+            <td class="urteil" id="ugGeht">–</td></tr>
+          <tr><td>Rautiefe, die mit dem kleinsten Vorschub herauskäme, in µm</td>
+            <td><input type="number" id="gRz" step="0.1" inputmode="decimal"
+              autocomplete="off"></td>
+            <td class="urteil" id="ugRz">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn6">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz6">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: die Zeichnung fordert etwas, das so nicht geht</summary>
+      <div id="loesung6"></div>
+      <div class="merksatz">
+        <strong>Das ist kein Rechenfehler, sondern ein Befund.</strong> Die
+        Kombination aus R0,3 und Rz 4 ist mit den Vorschüben, die das
+        Tabellenbuch fürs Schlichten vorsieht, nicht zu erreichen. Wer
+        trotzdem 0,08 mm fährt, bekommt keine feinere Fläche: Unter einer
+        gewissen Spandicke schneidet die Schneide nicht mehr, sie drückt.
+      </div>
+      <p><strong>Drei Wege führen weiter</strong> &ndash; und alle drei
+        gehören in die Rückfrage an die Konstruktion:</p>
+      <ol>
+        <li><strong>Die Rundung vergrößern.</strong> Aus R0,3 wird R0,6, dann
+          ist r<sub>ε</sub> = 0,4 mm zulässig und f = 0,11 mm &ndash; das
+          liegt im Bereich. Das ist der billigste Weg, wenn die Rundung nicht
+          aus einem Grund so klein ist.</li>
+        <li><strong>Schleifen.</strong> Der Lagersitz wird gedreht mit
+          Aufmaß und danach geschliffen. Rz 4 ist dort kein Problem &ndash;
+          aber es kostet eine zweite Maschine, eine zweite Aufspannung und
+          Zeit.</li>
+        <li><strong>Die Rautiefe prüfen lassen.</strong> Rz 4 an einem
+          Lagersitz ist nicht selbstverständlich. Wenn dort ein Wälzlager
+          sitzt, genügt oft Rz 6,3 &ndash; und das ist mit f = 0,10 mm
+          gerade noch zu drehen.</li>
+      </ol>
+      <p class="fussnote">Was <em>nicht</em> weiterhilft: einen größeren
+        Eckenradius nehmen und hoffen. Er passt nicht in die R0,3, und das
+        Werkzeug bleibt an der eigenen Kontur hängen.</p>
+    </details>
+
+    <h2><span class="nr">7</span>Die Passungen</h2>
+    <p>Zwei Maße tragen ein ISO-Kurzzeichen: der Lagersitz
+      <span class="kurz">Ø36 k6</span> und die Bohrung
+      <span class="kurz">Ø18 H7</span>. Das eine ist eine Welle, das andere
+      eine Bohrung &ndash; achtet auf den Buchstaben.</p>
+
+    <span class="formel">Mittenmaß = (Höchstmaß + Mindestmaß) / 2</span>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Gesucht</th><th>Eintrag in mm</th>
+          <th>Stimmt?</th></tr></thead>
+        <tbody id="passungen"></tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn7">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz7">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: und was bei einer Bohrung anders ist</summary>
+      <div id="loesung7"></div>
+      <p>Auch hier wird auf die <strong>Toleranzmitte</strong> geschlichtet.
+        Die Begründung ist dieselbe wie bei jeder Welle: Verschleiß, Wärme
+        und Messunsicherheit ziehen alle in dieselbe Richtung, und von der
+        Mitte aus bleibt nach beiden Seiten die halbe Toleranz.</p>
+      <p>Ein Unterschied steckt in der <strong>Nacharbeit</strong>: Eine
+        Welle, die zu groß ist, lässt sich nachdrehen. Eine Bohrung, die zu
+        <em>klein</em> ist, lässt sich aufbohren. Jeweils die andere Richtung
+        ist Ausschuss.</p>
+      <p class="fussnote">Die Bohrung ist mit 40 mm Tiefe bei Ø18 mehr als
+        doppelt so tief wie weit. Die Bohrstange kragt entsprechend aus, und
+        die Maßhaltigkeit leidet unter dem Schwingen &ndash; auch deshalb die
+        niedrige Schnittgeschwindigkeit aus Teil 5.</p>
+    </details>
+
+    <h2><span class="nr">8</span>Aufmaße, Spannen, Sicherheit</h2>
+    <p>Was zwischen den Zeilen passieren muss, steht im Hinweisfeld.</p>
+
+    <details>
+      <summary>1. Schlichtaufmaß und Zunderhaut</summary>
+      <p>Das Schlichtaufmaß beträgt wie immer <strong>1 mm auf den
+        Durchmesser</strong>. Neu ist die Frage, wie tief der
+        <em>erste</em> Schnitt geht.</p>
+      <p>Die Zunderhaut ist hart und ungleichmäßig dick. Wer mit kleiner
+        Schnitttiefe hineinfährt, lässt die Schneide <strong>in der Haut
+        schaben</strong> &ndash; genau dort, wo sie am schnellsten
+        stumpf wird. Richtig ist das Gegenteil: <strong>kräftig
+        zustellen</strong>, damit die Schneidkante unter der Haut im
+        gesunden Werkstoff läuft.</p>
+      <p>Bei Ø46 auf Ø37 sind 4,5 mm auf den Radius wegzunehmen. Mit
+        a<sub>p</sub> = 3 mm sind das zwei Schnitte &ndash; der erste unter
+        der Haut, der zweite im sauberen Werkstoff.</p>
+    </details>
+
+    <details>
+      <summary>2. Spannen: 165 mm auf Ø28</summary>
+      <p>Das Verhältnis von Länge zu kleinstem Durchmesser ist etwa
+        <strong>6:1</strong>. Damit gehört die Reitstockspitze dazu, und der
+        Schnittdruck beim Schruppen ist nicht mehr egal.</p>
+      <p>Dazu kommt: X5CrNi18-10 ist zäh. Die Schnittkräfte liegen höher als
+        bei unlegiertem Stahl, und das Teil weicht unter ihnen aus. Wer das
+        nicht bedenkt, dreht in der Mitte einen größeren Durchmesser als an
+        den Enden &ndash; und misst es erst hinterher.</p>
+    </details>
+
+    <details>
+      <summary>3. Späne und Kühlung</summary>
+      <p>Austenitischer Stahl macht <strong>lange, zähe Fließspäne</strong>,
+        die sich um das Werkstück wickeln und nicht von selbst brechen. Das
+        Tabellenbuch nennt als Gegenmittel: Vorschub erhöhen oder eine Platte
+        mit wirksamem Spanbrecher wählen.</p>
+      <p>Die <strong>Kühlung</strong> ist hier nicht Komfort, sondern
+        Bedingung: Der Werkstoff leitet die Wärme schlecht ab, sie bleibt an
+        der Schneide. Ohne reichlich Kühlschmierstoff ist die
+        Schnittgeschwindigkeit aus Teil 5 nicht zu halten.</p>
+      <p>Und: <strong>Kaltverfestigung.</strong> Wo die Schneide einmal
+        gedrückt statt geschnitten hat, ist der Werkstoff härter als vorher.
+        Der nächste Schnitt findet dort eine andere Härte vor. Deshalb nie
+        im Schnitt stehen bleiben und nie mit zu kleinem Vorschub
+        „nachpolieren&ldquo;.</p>
+    </details>
+
+    <details>
+      <summary>4. Sicherheit</summary>
+      <ul>
+        <li><strong>Schutzbrille</strong> &ndash; Zunder platzt ab und
+          fliegt.</li>
+        <li><strong>Fließspäne nur mit dem Haken</strong>, nie mit der Hand.
+          Sie sind heiß, scharf und lang.</li>
+        <li><strong>Futterschlüssel abziehen</strong>, bevor eingeschaltet
+          wird.</li>
+        <li><strong>Beim Abstechen auffangen</strong> &ndash; Ø46 sind
+          schwer.</li>
+        <li><strong>Messen nur im Stillstand</strong> und mit weggefahrenem
+          Werkzeug.</li>
+      </ul>
+    </details>
+
+    <h2><span class="nr">9</span>Die Werkzeugliste</h2>
+    <p>Tragt ein, welches Werkzeug für welchen Vorgang gebraucht wird. Die
+      Normbezeichnungen stehen in der Lösung &ndash; versucht es erst
+      selbst.</p>
+
+    <div class="tabellenrahmen">
+      <table class="plan">
+        <thead><tr><th>Nr.</th><th>Werkzeug</th><th>Normbezeichnung</th></tr></thead>
+        <tbody id="werkzeugliste"></tbody>
+      </table>
+    </div>
+
+    <details>
+      <summary>Lösung: die Werkzeugliste, ausgefüllt</summary>
+      <div class="tabellenrahmen">
+        <table>
+          <thead><tr><th>Nr.</th><th>Werkzeug</th><th>Normbezeichnung</th>
+            <th>Warum diese</th></tr></thead>
+          <tbody id="wzLoesung"></tbody>
+        </table>
+      </div>
+      <p class="fussnote">Auffällig ist die Schneidstoffkennzahl: Zum
+        Schruppen durch die Zunderhaut steht eine <strong>zähe</strong> Sorte
+        (M30), zum Schlichten eine <strong>harte</strong> (M15). Das ist
+        dieselbe Logik wie bei P, nur eine Gruppe weiter: hohe Kennzahl =
+        zäh, verträgt Stöße; niedrige = hart, hält der Wärme stand.</p>
+    </details>
+
+    <h2><span class="nr">10</span>Der Arbeitsplan</h2>
+    <p>Das Handlungsprodukt. Die Vorgänge und ihre Reihenfolge stehen schon
+      &ndash; tragt Werkzeug, Schnittgrößen und Hinweise ein.</p>
+    <p>Beachtet die beiden Stellen, an denen das Teil die Drehmaschine
+      verlässt: zum <strong>Fräsen der Passfedernut</strong> und zum
+      <strong>Umspannen</strong>. Beides gehört in den Plan.</p>
+    <p class="fussnote" data-druck="weg">Die Eingaben werden mit ausgegeben:
+      Über „Herunterladen&ldquo; entsteht daraus ein ausgefüllter Arbeitsplan
+      als PDF oder Word-Datei.</p>
+
+    <div class="tabellenrahmen">
+      <table class="plan">
+        <thead><tr><th>Nr.</th><th>Arbeitsvorgang</th>
+          <th>Werkzeug, Prüfmittel</th><th>Schnittgrößen</th>
+          <th>Hinweise</th></tr></thead>
+        <tbody id="arbeitsplan"></tbody>
+      </table>
+    </div>
+
+    <details>
+      <summary>Lösung: der Arbeitsplan, ausgefüllt</summary>
+      <div class="tabellenrahmen">
+        <table>
+          <thead><tr><th>Nr.</th><th>Arbeitsvorgang</th>
+            <th>Werkzeug, Prüfmittel</th><th>Schnittgrößen</th>
+            <th>Hinweise</th></tr></thead>
+          <tbody id="planLoesung"></tbody>
+        </table>
+      </div>
+    </details>
+
+    <h2><span class="nr">11</span>Wie lange dauert das?</h2>
+    <p>Für die drei längsten Vorgänge: Vorschubweg und Zeit. Angesetzt wird
+      l<sub>a</sub> = l<sub>u</sub> = 2 mm.</p>
+
+    <span class="formel">t<sub>h</sub> = L · i / (n · f)</span>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Vorgang</th><th>n, f, i</th><th>L in mm</th>
+          <th>t<sub>h</sub> in s</th><th>Stimmt?</th></tr></thead>
+        <tbody id="zeiten"></tbody>
+      </table>
+    </div>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Gesucht</th><th>Eintrag</th><th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>Summe der drei Hauptnutzungszeiten in s</td>
+            <td><input type="number" id="zSumme" step="1" inputmode="decimal"
+              autocomplete="off"></td>
+            <td class="urteil" id="uzSumme">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn11">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz11">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: die drei Rechnungen</summary>
+      <div id="loesung11"></div>
+      <p>Das <strong>Schruppen</strong> dauert länger als alles andere
+        zusammen. Das liegt nicht am Vorschub, sondern an der niedrigen
+        Drehzahl: Ø46 und 90 m/min ergeben 500 1/min &ndash; ein Viertel
+        dessen, was am fertigen Lagersitz möglich ist.</p>
+      <div class="merksatz">
+        <strong>Hier lohnt das Nachdenken über das Rohteil.</strong> Ein
+        gezogener Stab ohne Zunderhaut ließe den Startwert statt des unteren
+        Grenzwerts zu &ndash; 110 statt 90 m/min. Das Gesenkschmiedeteil war
+        die richtige Entscheidung, weil die Pumpe steht; aber es kostet
+        Zeit, und das gehört in die Kalkulation.
+      </div>
+    </details>
+
+    <h2><span class="nr">12</span>Zurückschauen</h2>
+
+    <details>
+      <summary>1. Was wäre passiert, wenn niemand die Rautiefe nachgerechnet
+        hätte?</summary>
+      <p>Der Lagersitz wäre mit f = 0,10 mm geschlichtet worden &ndash; das
+        ist der kleinste Wert, den die Maschine sinnvoll fährt. Herausgekommen
+        wäre <strong>Rz 6,3 statt Rz 4</strong>.</p>
+      <p>Aufgefallen wäre es in der Endkontrolle, an einem fertigen Teil.
+        Dann steht die Frage trotzdem im Raum &ndash; nur ist jetzt Werkstoff,
+        Maschinenzeit und eine Woche Lieferzeit verbraucht.</p>
+      <p>Das ist der eigentliche Wert der Arbeitsplanung: Sie findet den
+        Widerspruch, <em>bevor</em> gespant wird.</p>
+    </details>
+
+    <details>
+      <summary>2. Die Passfedernut vor dem Schlichten &ndash; wie schlimm
+        wäre das wirklich?</summary>
+      <p>In Zahlen: Der Schlichtvorgang rutscht von „normal&ldquo; auf
+        „ungünstig&ldquo;, also von 230 auf 200 m/min. Das sind 13 % weniger
+        &ndash; nicht dramatisch.</p>
+      <p>Schlimmer ist, was die Tabelle nicht sagt. Bei jedem Umlauf verlässt
+        die Schneide zweimal den Werkstoff und trifft ihn zweimal wieder. Das
+        ist eine Wechselbelastung, und Hartmetall verträgt Druck viel besser
+        als Stöße. Die Schneide bricht nicht durch Verschleiß aus, sondern
+        durch <strong>Ausbrüche an der Schneidkante</strong> &ndash; und das
+        passiert plötzlich, mitten im Schlichtgang, an einer Passfläche.</p>
+      <p>Deshalb: Nut zuletzt. Und wenn es sich nicht vermeiden lässt, eine
+        zähere Sorte und einen kleineren Vorschub.</p>
+    </details>
+
+    <details>
+      <summary>3. Warum steht die Bohrung so früh im Plan?</summary>
+      <p>Weil sie von links kommt und die linke Stirnfläche später nicht mehr
+        zugänglich ist &ndash; nach dem Umspannen liegt dort das Futter.</p>
+      <p>Und weil eine Bohrung, die schräg läuft, den ganzen Zapfen unbrauchbar
+        macht. Solange der Ø28 noch Aufmaß hat, ließe sich eine kleine
+        Abweichung durch Nachdrehen ausgleichen. Danach nicht mehr.</p>
+    </details>
+
+    <details>
+      <summary>4. Die Werkstatt schlägt vor, statt X5CrNi18-10 einen
+        vergüteten 42CrMo4 zu nehmen &ndash; „lässt sich viel besser
+        drehen&ldquo;. Was sagt ihr?</summary>
+      <p>Dass das stimmt &ndash; und trotzdem nicht geht.</p>
+      <p>Die Welle läuft in einer Pumpe der Lebensmittelproduktion, feucht
+        und regelmäßig gereinigt. Ein Vergütungsstahl rostet dort innerhalb
+        von Tagen. Der Werkstoff steht nicht wegen der Festigkeit auf der
+        Zeichnung, sondern wegen der <strong>Korrosionsbeständigkeit</strong>
+        und der Lebensmitteltauglichkeit.</p>
+      <p>Das ist die Grenze der Fertigungsplanung: Sie darf den Ablauf ändern,
+        die Werkzeuge, die Schnittdaten und auf Rückfrage auch eine Rundung.
+        Den Werkstoff ändert sie nicht &ndash; der gehört zur Funktion des
+        Teils.</p>
+    </details>
+
+    <details>
+      <summary>5. Was nehmt ihr aus dieser Lernsituation mit?</summary>
+      <p><strong>Dass eine Zeichnung nicht automatisch fertigbar ist.</strong>
+        Jede einzelne Angabe war normgerecht: die R0,3, die Rz 4, der
+        Werkstoff, die Passung. Erst zusammen ergeben sie einen Widerspruch
+        &ndash; und der zeigt sich nur, wenn jemand die Kette wirklich
+        durchrechnet.</p>
+      <p>Und: <strong>dass die Reihenfolge eine Schnittgröße ist.</strong>
+        Sie steht in keiner Tabelle, aber sie entscheidet, welche Zeile der
+        Bedingungstabelle gilt.</p>
+    </details>
+
+    <h2><span class="nr">13</span>Material</h2>
+
+    <h3>Im Tabellenbuch</h3>
+    <ul>
+      <li>Nichtrostende Stähle &ndash; R<sub>m</sub> nach Lieferform und
+        Dicke</li>
+      <li>Schneidstoffe nach DIN ISO 513 &ndash; die Hauptanwendungsgruppe M</li>
+      <li>Bezeichnung von Wendeschneidplatten nach DIN ISO 1832</li>
+      <li>Fertigungsplanung beim Drehen &ndash; Bearbeitungsbedingungen,
+        Plattengeometrie, erreichbare Rautiefe</li>
+      <li>Schnittdaten beim Drehen &ndash; Richtwerte für HM-Werkzeuge</li>
+      <li>Hauptnutzungszeit beim Drehen</li>
+      <li>ISO-System für Grenzmaße und Passungen</li>
+      <li>Passfedern nach DIN 6885-1</li>
+    </ul>
+
+    <h3>Zum Vergleich</h3>
+    <p>Die Lernsituation <em>Die Antriebswelle fertigen</em> geht denselben
+      Weg an einem Teil, bei dem alles aufgeht. Wer beide nebeneinanderlegt,
+      sieht, woran es hier hakt.</p>
+
+    <h3>Zum Nachrechnen</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-beurteilung-bedingungen-fuer-die-fertigung.html">Werkzeug Bedingungen für die Fertigung beurteilen öffnen</a>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-vorschub-rautiefe-beim-schlichten.html">Werkzeug Vorschub und Rautiefe öffnen</a>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-iso-toleranzen-und-passungen.html">Werkzeug ISO-Toleranzen und Passungen öffnen</a>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-hauptnutzungszeit-beim-drehen.html">Werkzeug Hauptnutzungszeit öffnen</a>
+    </p>
+
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+      Maßgebend sind Norm und Tabellenbuch. Die Drehzahlstufen der Maschine sind
+      eine Annahme des Szenarios.</p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script src="../../assets/zeichnen.js"></script>
+<script src="../../assets/wellen.js"></script>
+<script src="../../assets/drehteil.js"></script>
+<script>var WELLE = WELLEN.abtriebswelle;</script>
+<script>
+"use strict";
+
+/* Die Drehzahlstufen der Werkstattmaschine - eine Annahme des Szenarios,
+   dieselbe wie bei der Antriebswelle. */
+var STUFEN = [45, 63, 90, 125, 180, 250, 355, 500, 710, 1000, 1400, 2000];
+
+/* Die Zeile "M / nichtrostend, austenitisch / Rm <= 680":
+   [unterer Grenzwert, Startwert, oberer Grenzwert] in m/min. */
+var ZELLE = {
+  plan:      [140, 170, 200],
+  schruppen: [90, 110, 130],
+  schlichten:[200, 230, 260],
+  stechen:   [110, 130, 150],
+  gewinde:   [110, 120, 130]
+};
+
+/* Die engste Innenrundung ist die R0,3 am ersten Absatz. Daraus folgt der
+   groesste genormte Eckenradius: 0,3 - 0,1 = 0,2 mm. */
+var R_ENG = 0.3;
+var R_ECKE = 0.2;
+var F_MIN = 0.1;      /* kleinster Schlichtvorschub laut Tabellenbuch */
+var AUFMASS = 1.0;    /* Schlichtaufmaß auf den Durchmesser, in mm */
+var LA = 2;           /* An- und Überlauf */
+
+function el(id){ return document.getElementById(id); }
+function wert(id){
+  var e = el(id);
+  return e ? parseFloat(String(e.value).replace(",", ".")) : NaN;
+}
+function zahl(x, n){ return x.toFixed(n === undefined ? 2 : n).replace(".", ","); }
+
+function drehzahl(vc, d){ return Math.floor(vc * 1000 / (Math.PI * d)); }
+/* Die nächstkleinere Stufe - aufwärts wäre über dem Richtwert. */
+function stufe(n){
+  var aus = STUFEN[0];
+  for(var i = 0; i < STUFEN.length; i++) if(STUFEN[i] <= n) aus = STUFEN[i];
+  return aus;
+}
+function vorschub(rz, r){ return Math.sqrt(8 * r * rz / 1000); }
+function rautiefe(f, r){ return f * f / (8 * r) * 1000; }
+
+function urteilen(id, ok, offen){
+  var u = el(id);
+  if(offen){ u.textContent = "–"; u.className = "urteil"; return 0; }
+  u.textContent = ok ? "richtig" : "nein";
+  u.className = "urteil " + (ok ? "ja" : "nein");
+  return ok ? 1 : 0;
+}
+function bilanz(id, richtig, gesamt, offen){
+  el(id).textContent = offen === gesamt
+    ? "Noch nichts eingetragen."
+    : richtig + " von " + gesamt + " richtig"
+      + (offen ? ", " + offen + " noch offen." : ".");
+}
+
+/* ---------- Teil 2: Zeichnung, Abschnitte, Einzelheiten ---------- */
+
+(function kopf(){
+  var g = wellenGroesse(WELLE, {s:5.6, masse:true, rauheiten:true});
+  var svg = bild("bildWelle", g.breite, g.hoehe,
+    "Fertigungszeichnung der Abtriebswelle mit Maßen und Rautiefen",
+    "Abtriebswelle aus X5CrNi18-10. Rohteil: Gesenkschmiedeteil Ø46 × 172 mm "
+    + "mit Zunderhaut. Die Bohrung Ø18 H7 ist als verdeckte Kante "
+    + "gestrichelt.");
+  zeichneWelle(svg, WELLE, {x:g.x, y:g.y, s:5.6, masse:true, rauheiten:true});
+
+  el("stufen").innerHTML = STUFEN.map(function(n){
+    return "<span>" + n + "</span>"; }).join("");
+
+  var rz = {28:"Rz 6,3", 36:"Rz 4", 42:"Rz 10", 24:"Rz 10"};
+  el("abschnitte").innerHTML = WELLE.abschnitte.map(function(a){
+    var d = a.dBis === undefined ? "Ø" + a.d
+      : "Ø" + a.d + " → Ø" + a.dBis;
+    return "<tr><td>" + a.name + "</td><td>" + zahl(a.von, 0) + " … "
+      + zahl(a.bis, 0) + " mm</td><td>" + d + "</td><td>"
+      + (a.dBis !== undefined ? "Rz 6,3" : (rz[a.d] || "Rz 10"))
+      + "</td></tr>";
+  }).join("");
+
+  el("einzelheiten").innerHTML =
+    '<p><strong>Kegel 1:10</strong> über 40 mm, von Ø38 auf Ø34. Das '
+    + 'Verhältnis 1:10 heißt: auf zehn Millimeter Länge ändert sich der '
+    + 'Durchmesser um einen Millimeter. Der Vorschub läuft schräg zur Achse; '
+    + 'der Eckenradius wirkt dabei genauso wie am Zylinder.</p>'
+    + '<p><strong>Passfedernut 10 × 5</strong> nach DIN 6885-1. Für Ø 30 bis '
+    + '38 mm stehen dort b = 10 mm Breite und t<sub>1</sub> = 5 mm Tiefe in '
+    + 'der Welle. Sie wird <strong>gefräst</strong> &ndash; das Teil verlässt '
+    + 'dafür die Drehmaschine.</p>'
+    + '<p><strong>Bohrung Ø18 H7</strong>, 40 mm tief, von links. Mehr als '
+    + 'doppelt so tief wie weit: Die Bohrstange kragt aus und schwingt.</p>'
+    + '<p><strong>Gewinde M24×3 – 6g</strong>. Die Steigung 3 mm ist der '
+    + 'Vorschub; die volle Tiefe entsteht in dreizehn Zustellungen plus zwei '
+    + 'bis vier Leerdurchläufen.</p>'
+    + '<p><strong>Gewindefreistich DIN 76 – A</strong> vor dem Gewinde, damit '
+    + 'das Werkzeug auslaufen kann.</p>'
+    + '<p><strong>Rundungen</strong> R0,3 am ersten Absatz, R1,6 am Bund, '
+    + 'R0,8 am Kegelabsatz. Die kleinste von ihnen entscheidet über den '
+    + 'Eckenradius &ndash; dazu Teil 6.</p>';
+
+  var NAMEN = {abstechdrehen:"Abstechdrehen", querplandrehen:"Querplandrehen",
+    laengsrunddrehen:"Längsrunddrehen", einstechdrehen:"Einstechdrehen",
+    gewindedrehen:"Gewindedrehen", kegeldrehen:"Kegeldrehen (Längsdrehen mit "
+      + "schräger Vorschubrichtung)", innendrehen:"Bohren und Innendrehen",
+    fraesen:"Fräsen – kein Drehverfahren"};
+  el("verfahrenListe").innerHTML = WELLE.flaechen.map(function(f){
+    return "<li><strong>" + f.name + "</strong> &ndash; "
+      + (NAMEN[f.verfahren] || f.verfahren) + "</li>";
+  }).join("");
+}());
+
+/* ---------- Teil 3: der Werkstoff ---------- */
+
+el("btn3").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  var rm = wert("wRm");
+  var leer = !isFinite(rm); if(leer) offen++;
+  r += urteilen("uwRm", Math.abs(rm - 600) < 25, leer);
+  var g = el("wG").value; if(!g) offen++;
+  r += urteilen("uwG", g === "M", !g);
+  var z = el("wZ").value; if(!z) offen++;
+  r += urteilen("uwZ", z === "b", !z);
+  bilanz("bilanz3", r, 3, offen);
+});
+
+/* ---------- Teil 4: die Bedingungen ---------- */
+
+/* Die Tabelle aus Schritt 2 der Fertigungsplanung. Zeile = Eingriff,
+   Spalte = Stabilitaet. */
+var BEWERTUNG = {
+  glatt:       {"++":"günstig", "+":"normal", "-":"normal bis ungünstig"},
+  haut:        {"++":"günstig bis normal", "+":"normal", "-":"ungünstig"},
+  unterbrochen:{"++":"normal", "+":"ungünstig", "-":"sehr ungünstig"}
+};
+/* Welcher der drei Werte der Zelle daraus folgt. */
+var GRIFF = {"günstig":2, "günstig bis normal":2, "normal":1,
+  "normal bis ungünstig":0, "ungünstig":0, "sehr ungünstig":0};
+
+var FAELLE = [
+  {id:"plan", was:"Stirnfläche querplandrehen (erster Schnitt, Zunderhaut)",
+   eingriff:"haut", stabil:"-",
+   grund:"Der erste Schnitt geht durch die Schmiedehaut: wechselnde "
+     + "Schnitttiefe. Das Teil ist noch nicht gestützt, nur im Futter - "
+     + "geringe Stabilität."},
+  {id:"schrupp", was:"Kontur schruppen (Zunderhaut, lang ausgespannt)",
+   eingriff:"haut", stabil:"-",
+   grund:"Immer noch Zunderhaut, und jetzt kommt die Auskraglänge dazu: "
+     + "165 mm auf Ø28 sind rund 6:1."},
+  {id:"schlicht", was:"Lagersitz schlichten (Nut noch nicht gefräst)",
+   eingriff:"glatt", stabil:"+",
+   grund:"Vorbearbeitete Oberfläche, gleichmäßiger Schnitt. Mit "
+     + "Reitstockspitze gestützt - mittlere Stabilität."},
+  {id:"schlichtNut", was:"Lagersitz schlichten, wenn die Nut vorher gefräst wäre",
+   eingriff:"unterbrochen", stabil:"+",
+   grund:"Die Schneide verlässt bei jedem Umlauf zweimal den Werkstoff. Das "
+     + "ist die dritte Zeile der Tabelle - und derselbe Vorgang rutscht von "
+     + "„normal“ auf „ungünstig“."},
+  {id:"innen", was:"Bohrung Ø18 H7 innendrehen",
+   eingriff:"glatt", stabil:"-",
+   grund:"Glatter Schnitt, aber die Bohrstange kragt über zwei Durchmesser "
+     + "aus - geringe Stabilität. Ein Zwischenfeld der Tabelle."}
+];
+
+function urteil(f){ return BEWERTUNG[f.eingriff][f.stabil]; }
+
+(function teil4(){
+  var aus = "", l = "";
+  var WAHL = ["günstig", "günstig bis normal", "normal",
+    "normal bis ungünstig", "ungünstig", "sehr ungünstig"];
+  FAELLE.forEach(function(f){
+    aus += '<tr><td>' + f.was + '</td>'
+      + '<td><select id="b_' + f.id + '" data-druck="ankreuzen">'
+      + '<option value="">bitte wählen</option>'
+      + WAHL.map(function(w){
+          return '<option value="' + w + '">' + w + '</option>'; }).join("")
+      + '</select></td>'
+      + '<td class="urteil" id="ub_' + f.id + '">–</td></tr>';
+    l += '<p><strong>' + f.was + '</strong><br>' + f.grund
+      + '<br>Bedingungen: <strong>' + urteil(f) + '</strong> &rarr; '
+      + (GRIFF[urteil(f)] === 2 ? "oberer Grenzwert"
+        : GRIFF[urteil(f)] === 1 ? "Startwert" : "unterer Grenzwert")
+      + '</p>';
+  });
+  el("bedingungen").innerHTML = aus;
+  el("loesung4").innerHTML = l;
+}());
+
+el("btn4").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  FAELLE.forEach(function(f){
+    var v = el("b_" + f.id).value;
+    if(!v) offen++;
+    r += urteilen("ub_" + f.id, v === urteil(f), !v);
+  });
+  bilanz("bilanz4", r, FAELLE.length, offen);
+});
+
+/* ---------- Teil 5: Schnittdaten und Drehzahlen ---------- */
+
+var VORGAENGE = [
+  {id:"plan", name:"Querplandrehen der Stirnfläche (d<sub>m</sub> = 23 mm)",
+   zelle:"plan", griff:0, d:23,
+   hinweis:"Zunderhaut und geringe Stabilität - unterer Grenzwert. Der "
+     + "Durchmesser wandert von Ø46 bis zur Mitte, gerechnet wird mit "
+     + "d<sub>m</sub> = 23 mm."},
+  {id:"schrupp", name:"Längsrunddrehen, Schruppen (Ø46)",
+   zelle:"schruppen", griff:0, d:46,
+   hinweis:"Zunderhaut und Auskraglänge - unterer Grenzwert. Für den "
+     + "größten Durchmesser gerechnet."},
+  {id:"schlicht", name:"Längsrunddrehen, Schlichten am Ø36",
+   zelle:"schlichten", griff:1, d:36,
+   hinweis:"Glatter Schnitt, mit Spitze gestützt - Startwert."},
+  {id:"kegel", name:"Kegel schlichten (d<sub>m</sub> = 36 mm)",
+   zelle:"schlichten", griff:1, d:36,
+   hinweis:"Derselbe Fall wie am Zylinder. Der mittlere Durchmesser des "
+     + "Kegels ist (38 + 34) / 2 = 36 mm."},
+  {id:"innen", name:"Innendrehen der Bohrung Ø18 H7",
+   zelle:"schlichten", griff:0, d:18,
+   hinweis:"Zwischenfeld „normal bis ungünstig“: Das Buch lässt einen Wert "
+     + "dazwischen zu. Genommen wird der untere - eine auskragende "
+     + "Bohrstange schwingt."},
+  {id:"stech", name:"Einstechen des Gewindefreistichs (Ø34)",
+   zelle:"stechen", griff:1, d:34, hinweis:""},
+  {id:"gewinde", name:"Gewindedrehen M24×3",
+   zelle:"gewinde", griff:1, d:24,
+   hinweis:"Im Arbeitsplan steht hier die Drehzahl, nicht v<sub>c</sub>."},
+  {id:"abstech", name:"Abstechdrehen (Ø46)",
+   zelle:"stechen", griff:1, d:46, hinweis:""}
+];
+
+function vcVon(v){ return ZELLE[v.zelle][v.griff]; }
+
+(function teil5(){
+  var aus = "", l = "";
+  VORGAENGE.forEach(function(v){
+    aus += '<tr><td>' + v.name + '</td>'
+      + '<td><input type="number" id="vc_' + v.id + '" step="5"'
+      + ' inputmode="decimal" autocomplete="off"></td>'
+      + '<td><input type="number" id="n_' + v.id + '" step="1"'
+      + ' inputmode="decimal" autocomplete="off"></td>'
+      + '<td class="urteil" id="u_' + v.id + '">–</td></tr>';
+    var vc = vcVon(v), n = drehzahl(vc, v.d);
+    l += '<p><strong>' + v.name + ':</strong> In der Zelle stehen '
+      + ZELLE[v.zelle].join(' – ') + ' m/min, gewählt <strong>' + vc
+      + ' m/min</strong><br>n = ' + (vc * 1000) + ' / (π · ' + v.d + ') = '
+      + zahl(n, 0) + ' &rarr; Stufe <strong>' + stufe(n) + ' 1/min</strong>'
+      + (v.hinweis ? '<br><em>' + v.hinweis + '</em>' : '') + '</p>';
+  });
+  el("schnittdaten").innerHTML = aus;
+  el("loesung5").innerHTML = l;
+}());
+
+el("btn5").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  VORGAENGE.forEach(function(v){
+    var vc = wert("vc_" + v.id), n = wert("n_" + v.id);
+    var leer = !isFinite(vc) && !isFinite(n);
+    if(leer){ offen += 2; urteilen("u_" + v.id, false, true); return; }
+    if(!isFinite(vc)) offen++;
+    if(!isFinite(n)) offen++;
+    var okVc = isFinite(vc) && Math.abs(vc - vcVon(v)) < 1;
+    var okN = isFinite(n) && n === stufe(drehzahl(vcVon(v), v.d));
+    if(okVc) r++;
+    if(okN) r++;
+    urteilen("u_" + v.id, okVc && okN, false);
+  });
+  bilanz("bilanz5", r, VORGAENGE.length * 2, offen);
+});
+
+/* ---------- Teil 6: die Grenze ---------- */
+
+var F_NOETIG = vorschub(4, R_ECKE);      /* fuer Rz 4 */
+var RZ_MOEGLICH = rautiefe(F_MIN, R_ECKE);
+
+(function teil6(){
+  el("loesung6").innerHTML =
+    '<p><strong>Die engste Innenrundung</strong> ist die <strong>R0,3</strong> '
+    + 'am Absatz Ø28 auf Ø36. Nicht die R1,6 am Bund und nicht die R0,8 am '
+    + 'Kegelabsatz &ndash; maßgeblich ist immer die kleinste.</p>'
+    + '<p>r<sub>ε</sub> ≤ 0,3 − 0,1 = <strong>0,2 mm</strong>. Genormt ist '
+    + 'das die kleinste Größe, die es gibt.</p>'
+    + '<p><strong>Der Vorschub für Rz 4:</strong><br>'
+    + 'f = √(8 · 0,2 · 0,004) = <strong>' + zahl(F_NOETIG, 3) + ' mm</strong></p>'
+    + '<p><strong>Und hier hakt es.</strong> Das Tabellenbuch nennt für das '
+    + 'Schlichten einen Vorschubbereich von <strong>0,1 bis 0,25 mm</strong>. '
+    + zahl(F_NOETIG, 3) + ' mm liegt <em>darunter</em>.</p>'
+    + '<p>Mit dem kleinsten zulässigen Vorschub käme heraus:<br>'
+    + 'R<sub>th</sub> = 0,1² / (8 · 0,2) = <strong>'
+    + zahl(RZ_MOEGLICH, 2) + ' µm</strong> &ndash; also etwa Rz 6,3, nicht '
+    + 'Rz 4.</p>';
+}());
+
+el("btn6").addEventListener("click", function(){
+  var r = 0, offen = 0;
+
+  var rw = wert("gRw");
+  var leerRw = !isFinite(rw); if(leerRw) offen++;
+  r += urteilen("ugRw", Math.abs(rw - R_ENG) < 0.01, leerRw);
+
+  var re = el("gR").value; if(!re) offen++;
+  r += urteilen("ugR", re === "0.2", !re);
+
+  var f = wert("gF");
+  var leerF = !isFinite(f); if(leerF) offen++;
+  r += urteilen("ugF", Math.abs(f - F_NOETIG) <= 0.006, leerF);
+
+  var fmin = wert("gFmin");
+  var leerFmin = !isFinite(fmin); if(leerFmin) offen++;
+  r += urteilen("ugFmin", Math.abs(fmin - F_MIN) < 0.005, leerFmin);
+
+  var geht = el("gGeht").value; if(!geht) offen++;
+  r += urteilen("ugGeht", geht === "nein", !geht);
+
+  var rz = wert("gRz");
+  var leerRz = !isFinite(rz); if(leerRz) offen++;
+  r += urteilen("ugRz",
+    Math.abs(rz - RZ_MOEGLICH) <= RZ_MOEGLICH * 0.06, leerRz);
+
+  bilanz("bilanz6", r, 6, offen);
+});
+
+/* ---------- Teil 7: die Passungen ---------- */
+
+var PASSUNGEN = WELLE.toleranzen.map(function(t){
+  var hoechst = t.nennmass + t.es / 1000;
+  var mindest = t.nennmass + t.ei / 1000;
+  return {id: t.klasse, nennmass: t.nennmass, klasse: t.klasse,
+          es: t.es, ei: t.ei, hoechst: hoechst, mindest: mindest,
+          weite: (t.es - t.ei) / 1000,
+          mitte: (hoechst + mindest) / 2,
+          bohrung: t.klasse[0] === t.klasse[0].toUpperCase()};
+});
+
+(function teil7(){
+  var aus = "", l = "";
+  PASSUNGEN.forEach(function(p){
+    var kopf = "Ø" + p.nennmass + " " + p.klasse;
+    [["h", "Höchstmaß"], ["m", "Mindestmaß"],
+     ["z", "<strong>Mittenmaß</strong>"]].forEach(function(f){
+      aus += '<tr><td>' + kopf + ': ' + f[1] + '</td>'
+        + '<td><input type="number" id="p_' + p.id + '_' + f[0] + '"'
+        + ' step="0.001" inputmode="decimal" autocomplete="off"></td>'
+        + '<td class="urteil" id="up_' + p.id + '_' + f[0] + '">–</td></tr>';
+    });
+    l += '<p><strong>' + kopf + '</strong> &ndash; '
+      + (p.bohrung ? "Bohrung (Großbuchstabe)" : "Welle (Kleinbuchstabe)")
+      + '<br>' + (p.bohrung ? "ES" : "es") + ' = ' + p.es + ' µm, &nbsp;'
+      + (p.bohrung ? "EI" : "ei") + ' = ' + p.ei + ' µm<br>'
+      + 'Höchstmaß = <strong>' + zahl(p.hoechst, 3) + ' mm</strong>, '
+      + 'Mindestmaß = <strong>' + zahl(p.mindest, 3) + ' mm</strong><br>'
+      + 'Toleranz T = ' + zahl(p.weite * 1000, 0) + ' µm, '
+      + 'Mittenmaß = <strong>' + zahl(p.mitte, 4) + ' mm</strong></p>';
+  });
+  el("passungen").innerHTML = aus;
+  el("loesung7").innerHTML = l;
+}());
+
+el("btn7").addEventListener("click", function(){
+  var r = 0, offen = 0, gesamt = 0;
+  PASSUNGEN.forEach(function(p){
+    [["h", p.hoechst], ["m", p.mindest], ["z", p.mitte]].forEach(function(f){
+      gesamt++;
+      var v = wert("p_" + p.id + "_" + f[0]);
+      var leer = !isFinite(v); if(leer) offen++;
+      r += urteilen("up_" + p.id + "_" + f[0],
+        Math.abs(v - f[1]) <= 0.0011, leer);
+    });
+  });
+  bilanz("bilanz7", r, gesamt, offen);
+});
+
+/* ---------- Teil 9: die Werkzeugliste ---------- */
+
+var WERKZEUGE = [
+  {nr:"T1", was:"Plan- und Schruppdrehmeißel, rechts",
+   norm:"Platte CNMG 12 04 08 – M30<br>Halter DIN 4984 – PCLNR 2525 M 12",
+   warum:"C-Platte mit 80° Eckenwinkel und negativer Grundform: stabile "
+     + "Ecke, beidseitig verwendbar. M30 ist die zähe Sorte der Gruppe M - "
+     + "sie muss die Zunderhaut vertragen."},
+  {nr:"T2", was:"Schlichtdrehmeißel, rechts",
+   norm:"Platte DCGT 11 T3 02 – M15<br>Halter DIN 4984 – SDJCR 2020 K 11",
+   warum:"D-Platte mit 55°: spitz genug für Absätze und Kegel. Die 02 an "
+     + "Stelle 7 ist r<sub>ε</sub> = 0,2 mm - mehr passt nicht in die R0,3. "
+     + "G an Stelle 4 heißt geschliffen und scharf; austenitischer Stahl "
+     + "will eine scharfe Schneide, keine gefaste."},
+  {nr:"T3", was:"Bohrer und Bohrstange für Ø18 H7",
+   norm:"Wendeplattenbohrer Ø17, danach Bohrstange S16R – SDUCR 07",
+   warum:"Erst auf Ø17 vorbohren, dann auf Maß ausdrehen. Die Bohrstange "
+     + "hat 16 mm Schaft bei 40 mm Auskraglänge - mehr geht in Ø18 nicht."},
+  {nr:"T4", was:"Gewindedrehmeißel, metrisch 60°, rechts",
+   norm:"Gewindeplatte 16 ER 3.0 ISO – M25",
+   warum:"60° beim metrischen Gewinde, 3.0 ist die Steigung, für die das "
+     + "Profil geschliffen ist."},
+  {nr:"T5", was:"Einstech- und Abstechdrehmeißel, Schneidenbreite 3 mm",
+   norm:"Stechplatte 3 mm breit, Stechtiefe mindestens 24 mm",
+   warum:"Die Stechtiefe muss den halben Rohteildurchmesser erreichen: "
+     + "46 / 2 = 23 mm, plus Reserve."},
+  {nr:"T6", was:"Scheibenfräser oder Schaftfräser Ø10 für die Passfedernut",
+   norm:"Schaftfräser Ø10, Nutbreite 10 mm N9",
+   warum:"Die Fräserbreite ist die Nutbreite. Gefräst wird auf der "
+     + "Fräsmaschine - das Teil verlässt dafür die Drehbank."},
+  {nr:"P1", was:"Prüfmittel",
+   norm:"Messschieber, Bügelmessschraube 25–50 mm, Innenmessgerät 18–35 mm, "
+     + "Gewindelehrring M24×3 – 6g, Kegellehre 1:10, "
+     + "Rauheitsvergleichsmuster",
+   warum:"Längen mit dem Messschieber, der Lagersitz mit der "
+     + "Bügelmessschraube, die Bohrung mit dem Innenmessgerät, das Gewinde "
+     + "mit dem Lehrring, der Kegel mit der Lehre und Tuschierfarbe."}
+];
+
+(function teil9(){
+  el("werkzeugliste").innerHTML = WERKZEUGE.map(function(w){
+    return '<tr><td class="nr">' + w.nr + '</td>'
+      + '<td><input type="text" autocomplete="off"></td>'
+      + '<td><input type="text" autocomplete="off"></td></tr>';
+  }).join("");
+  el("wzLoesung").innerHTML = WERKZEUGE.map(function(w){
+    return '<tr><td>' + w.nr + '</td><td>' + w.was + '</td><td>' + w.norm
+      + '</td><td>' + w.warum + '</td></tr>';
+  }).join("");
+}());
+
+/* ---------- Teil 10: der Arbeitsplan ---------- */
+
+var PLAN = [
+  {nr:10, vorgang:"Rohteil prüfen, einspannen und ausrichten",
+   wz:"Messschieber",
+   schnitt:"–",
+   hinweis:"Gesenkschmiedeteil Ø46 × 172 mm, X5CrNi18-10. Im "
+     + "Dreibackenfutter spannen, Ausspannlänge so kurz wie möglich. Auf "
+     + "Grat und Versatz der Schmiedeform achten."},
+  {nr:20, vorgang:"Rechte Stirnfläche querplandrehen, zentrieren",
+   wz:"T1, Zentrierbohrer ISO 6411 – A3,15×6,7",
+   schnitt:"v<sub>c</sub> = 140 m/min, n = 0 1/min, f = 0,2 mm, "
+     + "a<sub>p</sub> = 2 mm",
+   hinweis:"Erster Schnitt durch die Zunderhaut - kräftig zustellen, nicht "
+     + "in der Haut schaben. d<sub>m</sub> = 23 mm. Danach "
+     + "Reitstockspitze ansetzen."},
+  {nr:30, vorgang:"Kontur schruppen: Ø37, Ø43, Ø39, Ø25",
+   wz:"T1, Messschieber",
+   schnitt:"v<sub>c</sub> = 90 m/min, n = 0 1/min, f = 0,4 mm, "
+     + "a<sub>p</sub> = 3 mm, i = 2",
+   hinweis:"1 mm Schlichtaufmaß auf den Durchmesser. Kühlschmierstoff "
+     + "reichlich - der Werkstoff leitet die Wärme schlecht ab. Lange "
+     + "Fließspäne: Vorschub eher erhöhen."},
+  {nr:40, vorgang:"Prüfen: Schlichtaufmaß",
+   wz:"Messschieber",
+   schnitt:"–",
+   hinweis:"Prüfmaß: je 1 mm über Fertigmaß. Fehlt das Aufmaß, hat der "
+     + "Schlichtgang nichts mehr wegzunehmen."},
+  {nr:50, vorgang:"Bohren Ø17 und Innendrehen auf Ø18 H7, 40 tief",
+   wz:"T3, Innenmessgerät",
+   schnitt:"v<sub>c</sub> = 200 m/min, n = 0 1/min, f = 0,1 mm",
+   hinweis:"Zielmaß 18,009 mm (Toleranzmitte). Bohrstange kragt aus - "
+     + "kleine Schnitttiefe, auf Rattern achten. Vor dem Umspannen, "
+     + "solange die linke Stirnfläche zugänglich ist."},
+  {nr:60, vorgang:"Kontur schlichten: Ø28, Ø36 k6, Ø42, Kegel 1:10",
+   wz:"T2, Bügelmessschraube, Kegellehre, Rauheitsvergleichsmuster",
+   schnitt:"v<sub>c</sub> = 230 m/min, n = 0 1/min, f = 0,10 mm, "
+     + "a<sub>p</sub> = 0,5 mm, i = 1",
+   hinweis:"Zielmaß Ø36 k6: 36,010 mm (Toleranzmitte). r<sub>ε</sub> = "
+     + "0,2 mm - mehr passt nicht in die R0,3. <strong>Rz 4 ist damit nicht "
+     + "erreichbar</strong> (siehe Teil 6); erreicht werden rund 6,3 µm. "
+     + "Rückfrage an die Konstruktion läuft."},
+  {nr:70, vorgang:"Prüfen: Ø36 k6, Ø18 H7, Kegel, Rautiefe",
+   wz:"Bügelmessschraube 25–50 mm, Innenmessgerät, Kegellehre",
+   schnitt:"–",
+   hinweis:"Prüfmaße: 36,002 … 36,018 mm und 18,000 … 18,018 mm. Kegel mit "
+     + "Tuschierfarbe auf Tragbild prüfen. Abweichung der Rautiefe "
+     + "dokumentieren."},
+  {nr:80, vorgang:"Gewindefreistich DIN 76 – A einstechen",
+   wz:"T5, Messschieber",
+   schnitt:"v<sub>c</sub> = 130 m/min, n = 0 1/min, f = 0,08 mm",
+   hinweis:"Vor dem Gewinde, damit das Gewindewerkzeug auslaufen kann."},
+  {nr:90, vorgang:"Gewinde M24×3 – 6g drehen",
+   wz:"T4, Gewindelehrring",
+   schnitt:"n = 0 1/min, f = P = 3 mm, i = 13 Zustellungen + 3 "
+     + "Leerdurchläufe",
+   hinweis:"Gewindeaußendurchmesser ein bis zwei Zehntel kleiner drehen. "
+     + "Bei 3 mm Steigung sind die Späne kräftig - Spanabfuhr beobachten."},
+  {nr:100, vorgang:"Prüfen: Gewinde und alle Längen",
+   wz:"Gewindelehrring M24×3 – 6g, Messschieber",
+   schnitt:"–",
+   hinweis:"Solange eingespannt prüfen. Der Lehrring muss sich von Hand "
+     + "aufschrauben lassen."},
+  {nr:110, vorgang:"Werkstück abstechen",
+   wz:"T5",
+   schnitt:"v<sub>c</sub> = 130 m/min, n = 0 1/min, f = 0,08 mm",
+   hinweis:"Auf Länge 165 mm abstechen. Ø46 sind schwer - Auffangvorrichtung "
+     + "bereitlegen."},
+  {nr:120, vorgang:"Umspannen: linke Stirnfläche planen, Butzen entgraten",
+   wz:"T1, Messschieber",
+   schnitt:"v<sub>c</sub> = 170 m/min, n = 0 1/min, f = 0,15 mm",
+   hinweis:"Zweite Aufspannung. Gesamtlänge 165 mm nachprüfen. Auf den "
+     + "fertigen Lagersitz nur mit weichen Backen spannen."},
+  {nr:130, vorgang:"Passfedernut 10 × 5 fräsen (Fräsmaschine)",
+   wz:"T6, Messschieber, Nutenlehre",
+   schnitt:"kein Drehvorgang",
+   hinweis:"<strong>Zuletzt, nicht vorher.</strong> Wer die Nut vor dem "
+     + "Schlichten fräst, macht aus dem glatten Schnitt einen "
+     + "unterbrochenen - und riskiert Ausbrüche an der Schlichtschneide, "
+     + "mitten auf der Passfläche. Nutbreite 10 N9, Tiefe t<sub>1</sub> = "
+     + "5 mm."}
+];
+
+/* Die Drehzahlen erst hier einsetzen, damit sie aus derselben Rechnung
+   kommen wie in Teil 5 - eine Zahl, eine Quelle. */
+(function drehzahlenEinsetzen(){
+  var zu = {20:"plan", 30:"schrupp", 50:"innen", 60:"schlicht", 80:"stech",
+            90:"gewinde", 110:"abstech", 120:"plan"};
+  PLAN.forEach(function(z){
+    var k = zu[z.nr];
+    if(!k) return;
+    var v = VORGAENGE.filter(function(x){ return x.id === k; })[0];
+    z.schnitt = z.schnitt.replace("n = 0 1/min",
+      "n = " + stufe(drehzahl(vcVon(v), v.d)) + " 1/min");
+  });
+  /* Vorgang 120 dreht am Ø46 plan, nicht am halben Durchmesser. */
+  var letzt = PLAN.filter(function(z){ return z.nr === 120; })[0];
+  letzt.schnitt = "v<sub>c</sub> = 170 m/min, n = "
+    + stufe(drehzahl(170, 23)) + " 1/min, f = 0,15 mm";
+}());
+
+(function teil10(){
+  el("arbeitsplan").innerHTML = PLAN.map(function(z){
+    return '<tr><td class="nr">' + z.nr + '</td>'
+      + '<td class="vorgang">' + z.vorgang + '</td>'
+      + '<td><textarea autocomplete="off"></textarea></td>'
+      + '<td><textarea autocomplete="off"></textarea></td>'
+      + '<td><textarea autocomplete="off"></textarea></td></tr>';
+  }).join("");
+  el("planLoesung").innerHTML = PLAN.map(function(z){
+    return '<tr><td>' + z.nr + '</td><td>' + z.vorgang + '</td><td>' + z.wz
+      + '</td><td>' + z.schnitt + '</td><td>' + z.hinweis + '</td></tr>';
+  }).join("");
+}());
+
+/* ---------- Teil 11: die Hauptnutzungszeit ---------- */
+
+var ZEITEN = [
+  {id:"zschrupp", name:"Kontur schruppen", vorgang:"schrupp",
+   f:0.4, i:2, L: 130 + LA,
+   weg:"L = l + l<sub>a</sub> = 130 + " + LA,
+   grund:"Von der rechten Stirnfläche bis zum Bund sind 130 mm zu "
+     + "überfahren; am Bund steht ein Ansatz, also kein Überlauf. Zwei "
+     + "Schnitte: von Ø46 auf Ø37 sind 4,5 mm auf den Radius, bei "
+     + "a<sub>p</sub> = 3 mm also i = 2."},
+  {id:"zschlicht", name:"Lagersitz Ø36 k6 schlichten", vorgang:"schlicht",
+   f:0.10, i:1, L: 48 + LA,
+   weg:"L = l + l<sub>a</sub> = 48 + " + LA,
+   grund:"Der Lagersitz ist 48 mm lang (von 30 bis 78 mm). Am Ende steht "
+     + "der Bund."},
+  {id:"zgewinde", name:"Gewinde M24×3 drehen", vorgang:"gewinde",
+   f:3, i:16, L: 31 + LA,
+   weg:"L = l + l<sub>a</sub> = 31 + " + LA,
+   grund:"Die Gewindelänge ist 31 mm. i = 13 Zustellungen plus drei "
+     + "Leerdurchläufe - jeder davon fährt den ganzen Weg."}
+];
+
+function zeitDrehzahl(z){
+  var v = VORGAENGE.filter(function(x){ return x.id === z.vorgang; })[0];
+  return stufe(drehzahl(vcVon(v), v.d));
+}
+function zeitSekunden(z){
+  return z.L * z.i / (zeitDrehzahl(z) * z.f) * 60;
+}
+
+(function teil11(){
+  var aus = "", l = "", summe = 0;
+  ZEITEN.forEach(function(z){
+    var n = zeitDrehzahl(z), t = zeitSekunden(z);
+    summe += t;
+    aus += '<tr><td>' + z.name + '</td>'
+      + '<td>n = ' + n + ' 1/min<br>f = ' + zahl(z.f, 2) + ' mm<br>i = '
+        + z.i + '</td>'
+      + '<td><input type="number" id="' + z.id + '_L" step="0.1"'
+      + ' inputmode="decimal" autocomplete="off"></td>'
+      + '<td><input type="number" id="' + z.id + '_t" step="0.1"'
+      + ' inputmode="decimal" autocomplete="off"></td>'
+      + '<td class="urteil" id="u' + z.id + '">–</td></tr>';
+    l += '<p><strong>' + z.name + '</strong><br>'
+      + z.weg + ' = <strong>' + zahl(z.L, 1) + ' mm</strong><br>'
+      + '<em>' + z.grund + '</em><br>'
+      + 't<sub>h</sub> = ' + zahl(z.L, 1) + ' · ' + z.i + ' / (' + n
+      + ' · ' + zahl(z.f, 2) + ') = ' + zahl(t / 60, 3) + ' min = '
+      + '<strong>' + zahl(t, 1) + ' s</strong></p>';
+  });
+  el("zeiten").innerHTML = aus;
+  el("loesung11").innerHTML = l
+    + '<p><strong>Summe: ' + zahl(summe, 1) + ' s</strong> = '
+    + zahl(summe / 60, 2) + ' min</p>';
+}());
+
+el("btn11").addEventListener("click", function(){
+  var r = 0, offen = 0, summe = 0;
+  ZEITEN.forEach(function(z){
+    var t = zeitSekunden(z);
+    summe += t;
+    var vL = wert(z.id + "_L"), vT = wert(z.id + "_t");
+    var leer = !isFinite(vL) && !isFinite(vT);
+    if(leer){ offen += 2; urteilen("u" + z.id, false, true); return; }
+    if(!isFinite(vL)) offen++;
+    if(!isFinite(vT)) offen++;
+    var okL = isFinite(vL) && Math.abs(vL - z.L) <= 0.51;
+    var okT = isFinite(vT) && Math.abs(vT - t) <= Math.max(1.01, t * 0.02);
+    if(okL) r++;
+    if(okT) r++;
+    urteilen("u" + z.id, okL && okT, false);
+  });
+  var s = wert("zSumme");
+  var leerS = !isFinite(s); if(leerS) offen++;
+  r += urteilen("uzSumme", Math.abs(s - summe) <= Math.max(2.01, summe * 0.02),
+    leerS);
+  bilanz("bilanz11", r, ZEITEN.length * 2 + 1, offen);
+});
+</script>
+
+<script src="../../assets/back-nav.js"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+</body>
+</html>
