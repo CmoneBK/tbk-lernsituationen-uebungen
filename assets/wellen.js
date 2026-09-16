@@ -30,7 +30,8 @@
  *   laenge, abschnitte    die Kontur, von der linken Stirnfläche aus in mm
  *   gewinde               Bezeichnung, Lage, Steigung, Kerndurchmesser
  *   nuten                 Sicherungsringnuten, als Einzelheit vergrößert
- *   gewindefreistich      Lage des Auslaufs vor dem Gewinde
+ *   freistiche            Freistiche nach DIN 509 an den Schultern
+ *   gewindefreistich      Auslauf vor dem Gewinde nach DIN 76-1
  *   rundungen             Innenrundungen an den Absätzen
  *   kleinsterInnenradius  die engste davon - Grenze für den Eckenradius
  *   flaechen              woran im Unterricht etwas zu entscheiden ist
@@ -80,9 +81,20 @@ WELLEN.antriebswelle = {
     {marke: "A", bei: 9,    breite: 1.3, tiefe: 0.5, d: 20},
     {marke: "B", bei: 83.6, breite: 1.3, tiefe: 0.5, d: 25}
   ],
+  /* Zwei Freistiche an den beiden Schultern, an denen etwas anliegt:
+     bei 22,3 der Absatz Ø20 auf Ø24, bei 52,3 die Bundschulter, an der der
+     Lagersitz Ø25 anläuft. Bei 91,6 sitzt kein zweiter DIN-509-Freistich -
+     dort ist der Gewindefreistich, und an einem Übergang liegt nur einer.
+
+     E 0,6 × 0,3 ist eine Größe der Reihe 2 (DIN 509, Seite 119), gültig für
+     Durchmesser über 18 bis 80 mm. Die Reihe 1 wäre 0,8 × 0,3 und ist laut
+     Fußnote zu bevorzugen - die Zeichnung gibt aber 0,6 vor, und genau das
+     entscheidet über den Eckenradius. */
   freistiche: [
-    {norm: "DIN 509 – E 0,6 × 0,3", bei: 22.3, r: 0.6, tiefe: 0.3, breite: 2.0},
-    {norm: "DIN 509 – E 0,6 × 0,3", bei: 91.6, r: 0.6, tiefe: 0.3, breite: 2.0}
+    {norm: "DIN 509 – E 0,6 × 0,3", bei: 22.3, r: 0.6, tiefe: 0.3,
+     t2: 0.2, f: 2.5, schulter: "Ø20 auf Ø24"},
+    {norm: "DIN 509 – E 0,6 × 0,3", bei: 52.3, r: 0.6, tiefe: 0.3,
+     t2: 0.2, f: 2.5, schulter: "Bundschulter am Lagersitz Ø25"}
   ],
   rundungen: [{bei: 42.3, r: 1}],
   /* Der kleinste Innenradius der ganzen Kontur - und damit die Grenze für
@@ -92,7 +104,15 @@ WELLEN.antriebswelle = {
      Werkzeug, das nicht in die eigene Kontur passt. */
   kleinsterInnenradius: 0.6,
   woher: "Freistiche DIN 509 – E 0,6 × 0,3 an beiden Schultern",
-  gewindefreistich: {norm: "DIN 76 – A", von: 91.6, bis: 95.1},
+  /* Der Gewindefreistich hat mit r = 0,4 mm eine noch engere Rundung.
+     Er bindet hier trotzdem nicht: Dort läuft der Gewindemeißel aus,
+     nicht der Schlichtmeißel - der Gewindezapfen trägt Rz 10 und wird
+     gar nicht geschlichtet. */
+  /* DIN 76-1, Seite 120, Form A für Außengewinde: Bei P = 1 mm sind
+     r = 0,4 mm, d_g = d − 1,6 = 18,4 mm, g1 = 2,1 bis g2 = 3,5 mm.
+     Gewählt ist die Höchstlänge 3,5 mm. */
+  gewindefreistich: {norm: "DIN 76 – A", von: 91.6, bis: 95.1,
+                     r: 0.4, dg: 18.4, P: 1},
   zentrierbohrungen: {links: "ISO 6411 – A2×4,25", rechts: "ISO 6411 – A2,5×5,3"},
   rohteil: {d: 32, laenge: 135},
 
@@ -186,18 +206,27 @@ WELLEN.mitnehmerwelle = {
     {von: 56, bis: 68,  d: 36, name: "Bund"},
     {von: 68, bis: 106, d: 24, name: "Gewindezapfen"}
   ],
-  gewinde: {bezeichnung: "M24×2 – 6g", von: 72, bis: 106, P: 2,
+  gewinde: {bezeichnung: "M24×2 – 6g", von: 75, bis: 106, P: 2,
             d: 24, d3: 24 - 1.2268 * 2},
   nuten: [
     {marke: "A", bei: 7, breite: 1.3, tiefe: 0.5, d: 26}
   ],
-  freistiche: [],
-  /* Keine Freistiche nach DIN 509: Die Absätze sind verrundet, die
-     Gegenstücke gefast. Die engste Rundung ist damit die R0,8. */
-  rundungen: [{bei: 18, r: 0.8}, {bei: 56, r: 1.6}],
+  /* DIN 509 – E 0,8 × 0,3: die Größe der Reihe 1 für Durchmesser über
+     18 bis 80 mm, und Reihe 1 ist zu bevorzugen (Seite 119). Am Absatz
+     Ø26 auf Ø32 läuft der Schlichtmeißel in ihn aus - sein Radius ist
+     damit die Grenze für den Eckenradius. */
+  freistiche: [
+    {norm: "DIN 509 – E 0,8 × 0,3", bei: 18, r: 0.8, tiefe: 0.3,
+     t2: 0.2, f: 2.5, schulter: "Ø26 auf Ø32"}
+  ],
+  rundungen: [{bei: 56, r: 1.6}],
   kleinsterInnenradius: 0.8,
-  woher: "Rundung R0,8 am Absatz Ø26 auf Ø32",
-  gewindefreistich: {norm: "DIN 76 – A", von: 68, bis: 72},
+  woher: "Freistich DIN 509 – E 0,8 × 0,3 am Absatz Ø26 auf Ø32",
+  /* DIN 76-1: Bei P = 2 mm sind r = 1,0 mm, d_g = d − 3 = 21 mm und
+     g1 = 4,5 bis g2 = 7 mm. Gewählt ist 7 mm - vier Millimeter, wie hier
+     vorher standen, wären unter der Mindestlänge. */
+  gewindefreistich: {norm: "DIN 76 – A", von: 68, bis: 75,
+                     r: 1.0, dg: 21, P: 2},
   zentrierbohrungen: {links: "ISO 6411 – A2,5×5,3", rechts: "ISO 6411 – A3,15×6,7"},
   rohteil: {d: 38, laenge: 112},
 
@@ -208,15 +237,15 @@ WELLEN.mitnehmerwelle = {
      art: "mantel", verfahren: "laengsrunddrehen", rz: 6.3},
     {id: "nut_a",       name: "Nut A", bei: 7, art: "nut",
      verfahren: "einstechdrehen"},
-    {id: "schulter_18", name: "Schulter bei 18", bei: 18, art: "schulter",
-     verfahren: "querplandrehen"},
+    {id: "schulter_18", name: "Schulter bei 18 mit Freistich", bei: 18,
+     art: "schulter", verfahren: "querplandrehen"},
     {id: "mantel_32",   name: "Lagersitz Ø32", von: 18, bis: 56, d: 32,
      art: "mantel", verfahren: "laengsrunddrehen", rz: 4},
     {id: "bund_36",     name: "Bund Ø36", von: 56, bis: 68, d: 36,
      art: "mantel", verfahren: "laengsrunddrehen", rz: 10},
-    {id: "freistich",   name: "Freistich DIN 76 – A", bei: 70, art: "nut",
-     verfahren: "einstechdrehen"},
-    {id: "gewinde",     name: "Gewinde M24×2", von: 72, bis: 106, d: 24,
+    {id: "freistich",   name: "Gewindefreistich DIN 76 – A", bei: 71.5,
+     art: "nut", verfahren: "einstechdrehen"},
+    {id: "gewinde",     name: "Gewinde M24×2", von: 75, bis: 106, d: 24,
      art: "gewinde", verfahren: "gewindedrehen"},
     {id: "stirn_rechts", name: "rechte Stirnfläche", bei: 106, art: "stirn",
      verfahren: "querplandrehen"}
@@ -230,7 +259,7 @@ WELLEN.mitnehmerwelle = {
       {von: 0, bis: 106, text: "106", an: [26, 24]}
     ],
     oben: [
-      {von: 72, bis: 106, text: "34", an: [24, 24]},
+      {von: 75, bis: 106, text: "31", an: [24, 24]},
       {von: 68, bis: 106, text: "38", an: [36, 24]},
       {von: 56, bis: 106, text: "50", an: [36, 24]}
     ],
@@ -242,7 +271,7 @@ WELLEN.mitnehmerwelle = {
   },
   bezeichnungen: [
     {x: 7.65, d: 26, text: "Nut A",      ab: -30, hoch: 46},
-    {x: 70,   d: 22, text: "DIN 76 – A", ab: -12, hoch: 46},
+    {x: 71.5, d: 22, text: "DIN 76 – A", ab: -12, hoch: 46},
     {x: 90,   d: 24, text: "M24×2 – 6g", ab: 20,  hoch: 26}
   ],
   rauheiten: [
@@ -284,7 +313,10 @@ WELLEN.spannwelle = {
   rundungen: [{bei: 14, r: 1}, {bei: 48, r: 1.6}],
   kleinsterInnenradius: 1,
   woher: "Rundung R1 am Absatz Ø18 auf Ø22",
-  gewindefreistich: {norm: "DIN 76 – A", von: 58, bis: 61.5},
+  /* DIN 76-1: Bei P = 1,5 mm sind r = 0,8 mm, d_g = d − 2,3 = 13,7 mm
+     und g1 = 3,2 bis g2 = 5,2 mm. Die 3,5 mm liegen im Bereich. */
+  gewindefreistich: {norm: "DIN 76 – A", von: 58, bis: 61.5,
+                     r: 0.8, dg: 13.7, P: 1.5},
   zentrierbohrungen: {links: "ISO 6411 – A2×4,25", rechts: "ISO 6411 – A2,5×5,3"},
   rohteil: {d: 28, laenge: 96},
 
@@ -390,7 +422,7 @@ WELLEN.abtriebswelle = {
     {von: 90, bis: 130, d: 38, dBis: 34, name: "Kegel 1:10"},
     {von: 130, bis: 165, d: 24, name: "Gewindezapfen"}
   ],
-  gewinde: {bezeichnung: "M24×3 – 6g", von: 134, bis: 165, P: 3,
+  gewinde: {bezeichnung: "M24×3 – 6g", von: 138, bis: 165, P: 3,
             d: 24, d3: 24 - 1.2268 * 3},
   nuten: [],
   /* Passfedernut nach DIN 6885-1: Für Ø 30 bis 38 mm sind das b = 10 mm
@@ -408,7 +440,11 @@ WELLEN.abtriebswelle = {
      vorsieht. */
   kleinsterInnenradius: 0.3,
   woher: "Rundung R0,3 am Absatz Ø28 auf Ø36",
-  gewindefreistich: {norm: "DIN 76 – A", von: 130, bis: 134},
+  /* DIN 76-1: Bei P = 3 mm sind r = 1,6 mm, d_g = d − 4,4 = 19,6 mm
+     und g1 = 6,7 bis g2 = 10,5 mm. Gewählt sind 8 mm - vier, wie hier
+     vorher standen, wären deutlich unter der Mindestlänge. */
+  gewindefreistich: {norm: "DIN 76 – A", von: 130, bis: 138,
+                     r: 1.6, dg: 19.6, P: 3},
   zentrierbohrungen: {links: "–", rechts: "ISO 6411 – A3,15×6,7"},
   rohteil: {d: 46, laenge: 172,
             art: "Gesenkschmiedeteil mit Zunderhaut"},
@@ -435,9 +471,9 @@ WELLEN.abtriebswelle = {
      art: "mantel", verfahren: "laengsrunddrehen", rz: 10},
     {id: "kegel",      name: "Kegel 1:10", von: 90, bis: 130, d: 38,
      dBis: 34, art: "kegel", verfahren: "kegeldrehen", rz: 6.3},
-    {id: "freistich",  name: "Freistich DIN 76 – A", bei: 132, art: "nut",
-     verfahren: "einstechdrehen"},
-    {id: "gewinde",    name: "Gewinde M24×3", von: 134, bis: 165, d: 24,
+    {id: "freistich",  name: "Gewindefreistich DIN 76 – A", bei: 134,
+     art: "nut", verfahren: "einstechdrehen"},
+    {id: "gewinde",    name: "Gewinde M24×3", von: 138, bis: 165, d: 24,
      art: "gewinde", verfahren: "gewindedrehen"},
     {id: "stirn_rechts", name: "rechte Stirnfläche", bei: 165, art: "stirn",
      verfahren: "querplandrehen"}
@@ -451,7 +487,7 @@ WELLEN.abtriebswelle = {
       {von: 0, bis: 165, text: "165", an: [28, 24]}
     ],
     oben: [
-      {von: 134, bis: 165, text: "31", an: [24, 24]},
+      {von: 138, bis: 165, text: "27", an: [24, 24]},
       {von: 90,  bis: 130, text: "40", an: [42, 34]},
       {von: 38,  bis: 70,  text: "32", an: [36, 36]}
     ],
@@ -467,7 +503,7 @@ WELLEN.abtriebswelle = {
     {x: 20,  d: 18, text: "Ø18 H7, 40 tief",     ab: -18, hoch: 56},
     {x: 54,  d: 36, text: "Passfedernut 10 × 5", ab: 14,  hoch: 34},
     {x: 105, d: 36, text: "Kegel 1:10",          ab: -30, hoch: 60},
-    {x: 132, d: 21, text: "DIN 76 – A",          ab: 26,  hoch: 96},
+    {x: 134, d: 20, text: "DIN 76 – A",          ab: 26,  hoch: 96},
     {x: 150, d: 24, text: "M24×3 – 6g",          ab: 16,  hoch: 26}
   ],
   rauheiten: [

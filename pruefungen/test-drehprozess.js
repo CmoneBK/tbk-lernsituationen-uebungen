@@ -1118,6 +1118,104 @@ console.log('\nDie Uebung zu den Pruefschritten');
   w.close();
 }
 
+console.log('\nDie Freistiche - gegen DIN 509 und DIN 76-1');
+{
+  const SCHLUSS = '<' + '/script>';
+  const quellen = ['zeichnen.js', 'wellen.js', 'drehteil.js'].map((f) =>
+    '<script>' + fs.readFileSync(path.join(BASIS, 'assets', f), 'utf8')
+      .split(SCHLUSS).join('<\\/script>') + SCHLUSS).join('');
+  const wellen = new JSDOM('<!doctype html>' + quellen,
+    { runScripts: 'dangerously' }).window.WELLEN;
+
+  if (!ALLES.freistiche_din_509 || !ALLES.gewindeauslauf_din_76) {
+    p('die Normdaten liegen vor', false, 'freistiche_din_509 fehlt');
+  } else {
+    const din509 = ALLES.freistiche_din_509;
+    const din76 = ALLES.gewindeauslauf_din_76.freistich.stufen;
+
+    /* Der Gewindefreistich: Laenge zwischen g1 und g2, Durchmesser und
+       Rundung nach Steigung. */
+    Object.keys(wellen).forEach((name) => {
+      const w = wellen[name];
+      const gf = w.gewindefreistich;
+      if (!gf || !w.gewinde) return;
+      const stufe = din76.filter((s) => Math.abs(s.P - w.gewinde.P) < 1e-9)[0];
+      p(name + ': die Steigung steht in DIN 76-1', !!stufe,
+        'P = ' + w.gewinde.P);
+      if (!stufe) return;
+
+      const laenge = gf.bis - gf.von;
+      p(name + ': der Gewindefreistich ist lang genug',
+        laenge >= stufe.g1_min - 1e-9 && laenge <= stufe.g2_max + 1e-9,
+        laenge + ' mm, erlaubt ' + stufe.g1_min + ' bis ' + stufe.g2_max);
+
+      /* "d - 1,6" aus der Tabelle in eine Zahl. */
+      const abzug = Number(stufe.dg.replace('d - ', '').replace(',', '.'));
+      p(name + ': der Durchmesser im Freistich stimmt',
+        Math.abs(gf.dg - (w.gewinde.d - abzug)) < 0.01,
+        gf.dg + ' gegen ' + (w.gewinde.d - abzug));
+      p(name + ': und die Rundung darin',
+        Math.abs(gf.r - stufe.r) < 1e-9, gf.r + ' gegen ' + stufe.r);
+    });
+
+    /* Die Freistiche nach DIN 509: Radius und Einstichtiefe muessen als
+       Paar in der Tabelle stehen, und der Durchmesser, an dem der
+       Freistich sitzt, im zugeordneten Bereich liegen. */
+    const zeilen = din509.E_und_F;
+    Object.keys(wellen).forEach((name) => {
+      const w = wellen[name];
+      (w.freistiche || []).forEach((f) => {
+        const zeile = zeilen.filter((z) =>
+          Math.abs((z.r_reihe1 || z.r_reihe2) - f.r) < 1e-9
+          && Math.abs(z.t1 - f.tiefe) < 1e-9)[0];
+        p(name + ': ' + f.norm + ' steht so in DIN 509', !!zeile,
+          'r = ' + f.r + ', t1 = ' + f.tiefe);
+        if (!zeile) return;
+
+        /* Der Durchmesser, in dem der Freistich sitzt: der kleinere der
+           beiden Abschnitte am Uebergang. */
+        const d = Math.min.apply(null, w.abschnitte
+          .filter((a) => a.von === f.bei || a.bis === f.bei)
+          .map((a) => a.d));
+        const bereich = zeile.d1_ueblich || zeile.d1_wechselfest || '';
+        const m = bereich.match(/>([0-9,]+)(?: bis ([0-9,]+))?/);
+        if (!m) return;
+        const von = Number(m[1].replace(',', '.'));
+        const bis = m[2] ? Number(m[2].replace(',', '.')) : Infinity;
+        p(name + ': und passt zum Durchmesser ' + d,
+          d > von - 1e-9 && d <= bis + 1e-9, 'erlaubt ' + bereich);
+
+        /* Und er sitzt an einem echten Uebergang, nicht im Nichts. */
+        p(name + ': der Freistich sitzt an einer Schulter',
+          w.abschnitte.some((a) => a.bis === f.bei),
+          'bei ' + f.bei + ' mm');
+      });
+    });
+
+    /* Kein Uebergang traegt zwei Freistiche - das war ein Fehler in den
+       Daten der Antriebswelle. */
+    Object.keys(wellen).forEach((name) => {
+      const w = wellen[name];
+      const stellen = (w.freistiche || []).map((f) => f.bei);
+      if (w.gewindefreistich) stellen.push(w.gewindefreistich.von);
+      p(name + ': kein Uebergang traegt zwei Freistiche',
+        new Set(stellen).size === stellen.length, stellen.join(', '));
+    });
+
+    /* Und die engste Innenrundung ist wirklich die engste - egal ob sie
+       aus einem Freistich oder einer freien Rundung kommt. */
+    Object.keys(wellen).forEach((name) => {
+      const w = wellen[name];
+      const radien = (w.freistiche || []).map((f) => f.r)
+        .concat((w.rundungen || []).map((r) => r.r));
+      if (!radien.length) return;
+      p(name + ': der kleinste Innenradius ist der kleinste',
+        Math.abs(Math.min.apply(null, radien) - w.kleinsterInnenradius) < 1e-9,
+        radien.join(', ') + ' gegen ' + w.kleinsterInnenradius);
+    });
+  }
+}
+
 console.log('\nDie engste Innenrundung - jede Welle ihre eigene');
 {
   /* Die Kette, um die es geht: Die engste Innenrundung der Kontur begrenzt
@@ -1445,9 +1543,13 @@ console.log('\nDie zweite Lernsituation: die Abtriebswelle');
   p('die Grenze wird richtig bestimmt',
     /6 von 6 richtig/.test(d.getElementById('bilanz6').textContent),
     d.getElementById('bilanz6').textContent);
-  p('und die Loesung nennt die Rueckfrage an die Konstruktion',
-    /R0,6/.test(d.getElementById('loesung6').textContent)
-    || /Rundung vergr/.test(d.body.textContent));
+  /* Ein Befund ohne Ausweg waere nur eine Sackgasse. Die Lernsituation
+     muss einen nennen, und zwar einen belegten: einen genormten Freistich
+     mit dem Vorschub, der dann im Schlichtbereich liegt. */
+  const text6 = d.body.textContent;
+  p('und die Loesung nennt einen belegten Ausweg',
+    /DIN 509/.test(text6) && /0,14 mm/.test(text6));
+  p('sowie Schleifen als Alternative', /[Ss]chleifen/.test(text6));
 
   /* Teil 7: eine Welle und eine Bohrung - Gross- und Kleinbuchstabe. */
   const passungen = w.eval('PASSUNGEN');

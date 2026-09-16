@@ -89,9 +89,11 @@
         <li>Die <strong>Passfedernut</strong> macht jeden Schnitt über den
           Lagersitz zu einem unterbrochenen &ndash; <em>wenn</em> sie zur
           falschen Zeit gefräst wird.</li>
-        <li>Die <strong>engste Innenrundung</strong> ist eine R0,3. Der
-          Eckenradius, der da hineinpasst, ist so klein, dass der Vorschub
-          für die geforderte Rautiefe unter den zulässigen Bereich rutscht.</li>
+        <li>Die <strong>engste Innenrundung</strong> ist eine R0,3 &ndash;
+          kleiner als jeder Freistich, den DIN 509 für diesen Durchmesser
+          vorsieht. Der Eckenradius, der da hineinpasst, ist so klein, dass
+          der Vorschub für die geforderte Rautiefe unter den zulässigen
+          Bereich rutscht.</li>
         <li>Die <strong>Bohrstange</strong> kragt aus.</li>
       </ul>
       <p>Am Ende steht kein Plan, der alles erfüllt, sondern einer mit einer
@@ -333,9 +335,13 @@
       <p><strong>Drei Wege führen weiter</strong> &ndash; und alle drei
         gehören in die Rückfrage an die Konstruktion:</p>
       <ol>
-        <li><strong>Die Rundung vergrößern.</strong> Aus R0,3 wird R0,6, dann
-          ist r<sub>ε</sub> = 0,4 mm zulässig und f = 0,11 mm &ndash; das
-          liegt im Bereich. Das ist der billigste Weg, wenn die Rundung nicht
+        <li><strong>Einen genormten Freistich vorsehen.</strong> Die R0,3 ist
+          nicht nur eng, sie ist <em>kleiner als alles, was DIN 509 für diesen
+          Durchmesser anbietet</em>: Für über 18 bis 80 mm sind das 0,6 × 0,3
+          (Reihe 2) und 0,8 × 0,3 (Reihe 1). Mit einem
+          <strong>Freistich DIN 509 &ndash; E 0,8 × 0,3</strong> wäre
+          r<sub>ε</sub> = 0,6 mm zulässig und f = 0,14 mm &ndash; mitten im
+          Schlichtbereich. Das ist der billigste Weg, wenn die Rundung nicht
           aus einem Grund so klein ist.</li>
         <li><strong>Schleifen.</strong> Der Lagersitz wird gedreht mit
           Aufmaß und danach geschliffen. Rz 4 ist dort kein Problem &ndash;
@@ -764,7 +770,9 @@ function bilanz(id, richtig, gesamt, offen){
     + 'Vorschub; die volle Tiefe entsteht in dreizehn Zustellungen plus zwei '
     + 'bis vier Leerdurchläufen.</p>'
     + '<p><strong>Gewindefreistich DIN 76 – A</strong> vor dem Gewinde, damit '
-    + 'das Werkzeug auslaufen kann.</p>'
+    + 'das Werkzeug auslaufen kann. Seine Länge ist kein freier Wert: Bei '
+    + 'P = 3 mm nennt DIN 76-1 mindestens 6,7 mm, höchstens 10,5 mm. Hier '
+    + 'sind es 8 mm - und sie verschieben den Gewindeanfang auf 138 mm.</p>'
     + '<p><strong>Rundungen</strong> R0,3 am ersten Absatz, R1,6 am Bund, '
     + 'R0,8 am Kegelabsatz. Die kleinste von ihnen entscheidet über den '
     + 'Eckenradius &ndash; dazu Teil 6.</p>';
@@ -1208,6 +1216,11 @@ var PLAN = [
 
 /* ---------- Teil 11: die Hauptnutzungszeit ---------- */
 
+/* Die Gewindelänge kommt aus der Kontur, nicht aus dem Text - der
+   Gewindefreistich hat nach DIN 76-1 eine Mindestlänge, und die
+   verschiebt den Gewindeanfang. */
+var L_GEWINDE = WELLE.gewinde.bis - WELLE.gewinde.von;
+
 var ZEITEN = [
   {id:"zschrupp", name:"Kontur schruppen", vorgang:"schrupp",
    f:0.4, i:2, L: 130 + LA,
@@ -1222,10 +1235,11 @@ var ZEITEN = [
    grund:"Der Lagersitz ist 48 mm lang (von 30 bis 78 mm). Am Ende steht "
      + "der Bund."},
   {id:"zgewinde", name:"Gewinde M24×3 drehen", vorgang:"gewinde",
-   f:3, i:16, L: 31 + LA,
-   weg:"L = l + l<sub>a</sub> = 31 + " + LA,
-   grund:"Die Gewindelänge ist 31 mm. i = 13 Zustellungen plus drei "
-     + "Leerdurchläufe - jeder davon fährt den ganzen Weg."}
+   f:3, i:16, L: L_GEWINDE + LA,
+   weg:"L = l + l<sub>a</sub> = " + zahl(L_GEWINDE, 0) + " + " + LA,
+   grund:"Die Gewindelänge ist " + zahl(L_GEWINDE, 0) + " mm. i = 13 "
+     + "Zustellungen plus drei Leerdurchläufe - jeder davon fährt den "
+     + "ganzen Weg."}
 ];
 
 function zeitDrehzahl(z){

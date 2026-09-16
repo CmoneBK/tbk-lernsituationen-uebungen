@@ -117,8 +117,12 @@ function wellenKontur(w){
 
     if(w.gewindefreistich && x === w.gewindefreistich.von){
       /* Vor dem Gewinde geht der Durchmesser unter den Kerndurchmesser,
-         damit das Werkzeug auslaufen kann. */
-      var rf = w.gewinde.d3 / 2 - 0.2;
+         damit das Werkzeug auslaufen kann. Wie weit, steht in DIN 76-1 als
+         d_g je Steigung; nur wenn die Welle den Wert nicht mitbringt, wird
+         er aus dem Kerndurchmesser geschaetzt. */
+      var rf = w.gewindefreistich.dg !== undefined
+        ? w.gewindefreistich.dg / 2
+        : w.gewinde.d3 / 2 - 0.2;
       bis(x, r);
       bis(x, rf);
       bis(w.gewindefreistich.bis, rf);
