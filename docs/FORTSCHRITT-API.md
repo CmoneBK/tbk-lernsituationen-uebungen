@@ -375,5 +375,24 @@ Attrappe, die sich an diesen Vertrag hält:
 * Die Seitenkennung hängt nicht am Auslieferungspfad: `/unterrichtsmaterial/`
   und `/tbk-lernsituationen-uebungen/` ergeben dieselbe.
 
-**Was noch aussteht:** ein Live-Durchlauf gegen den echten Endpunkt mit
-einem Wegwerf-Code, der danach über `action=loeschen` wieder verschwindet.
+**Live-Durchlauf gegen den echten Endpunkt**, 16.09.2026, mit einem
+Wegwerf-Code, der danach über `action=loeschen` wieder verschwunden ist —
+alles grün:
+
+| Geprüft | Ergebnis |
+| --- | --- |
+| `neu` antwortet als `application/json` | ja |
+| der Code hat sechs Zeichen aus dem vereinbarten Alphabet | ja |
+| `sichern` → `holen` bringt Zeichen für Zeichen dasselbe zurück | ja |
+| `geaendert` kommt mit | ja |
+| `holen` auf eine unbekannte Seite | `ok:true`, `daten:null` — kein Fehler |
+| `holen` ohne `seite` listet die vorhandenen | ja |
+| falsche PIN | `ok:false`, `fehler:"unbekannt"` |
+| unbekannter Code | derselbe Fehlerwert — nicht unterscheidbar |
+| 70 KB Nutzlast | `fehler:"zugross"` |
+| `loeschen`, danach `holen` mit demselben Code | `unbekannt` — wirklich weg |
+
+Das Skript dazu liegt nicht im Repo: Es spricht mit dem laufenden Server
+und legt dabei Daten an. Wer es wiederholen will, findet den Ablauf oben
+in dieser Tabelle; die Attrappe in `test-fortschritt-api.js` fährt
+dieselbe Reihenfolge und gehört in jeden Prüflauf.
