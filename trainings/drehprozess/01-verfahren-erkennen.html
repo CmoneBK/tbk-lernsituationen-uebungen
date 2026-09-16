@@ -195,8 +195,10 @@ var AUSWAHL = ["Querplandrehen", "Längsrunddrehen, Schruppen",
 /* Die Flächen der Welle LF5, wie sie der Zeichenbaustein kennt, mit dem
    Verfahren, das sie erzeugt, und dem Grund dafür. */
 var FLAECHEN = [
-  {id:"stirn_links", verfahren:"querplandrehen",
-   grund:"Eine Stirnfläche steht senkrecht zur Achse - die Schneide läuft quer."},
+  {id:"stirn_links", verfahren:"abstechdrehen",
+   grund:"Sie entsteht beim Trennen vom Stangenmaterial. Das Futter sitzt "
+     + "links, also fällt hier die letzte Fläche an - Abstechen ist immer "
+     + "der letzte Drehvorgang."},
   {id:"mantel_20", verfahren:"schlichten",
    grund:"Eine zylindrische Mantelfläche, und mit Rz 4 eine, die geschlichtet "
      + "werden muss. Geschruppt wurde sie vorher."},
@@ -220,9 +222,10 @@ var FLAECHEN = [
      + "Gewindewerkzeug auslaufen kann."},
   {id:"gewinde", verfahren:"gewindedrehen",
    grund:"M20×1 - der Vorschub ist die Steigung, also 1 mm je Umdrehung."},
-  {id:"stirn_rechts", verfahren:"abstechdrehen",
-   grund:"Die rechte Stirnfläche entsteht beim Abstechen vom Stangenmaterial "
-     + "- der letzte Drehvorgang."}
+  {id:"stirn_rechts", verfahren:"querplandrehen",
+   grund:"Das freie Ende rechts wird zuerst bearbeitet: Die Schneide läuft "
+     + "quer zur Achse. Danach wird zentriert, damit die Reitstockspitze "
+     + "einen Sitz hat."}
 ];
 
 /* Werkzeugangaben aus der Übersicht der Drehverfahren. Aus ihnen allein
@@ -260,7 +263,7 @@ var ANGABEN = [
 
 /* Paare für die Frage nach der Reihenfolge, mit dem Grund. */
 var REIHENFOLGE = [
-  {frueher:"Querplandrehen der linken Stirnfläche",
+  {frueher:"Querplandrehen der rechten Stirnfläche",
    spaeter:"Längsrunddrehen, Schruppen",
    grund:"Erst die Stirnfläche, dann der Mantel: Ohne plane Stirnfläche gibt "
      + "es keine Bezugsfläche für die Längenmaße."},
@@ -276,7 +279,7 @@ var REIHENFOLGE = [
   {frueher:"Gewindedrehen", spaeter:"Abstechdrehen",
    grund:"Nach dem Abstechen hält das Werkstück nicht mehr - es ist immer der "
      + "letzte Drehvorgang."},
-  {frueher:"Querplandrehen der linken Stirnfläche",
+  {frueher:"Querplandrehen der rechten Stirnfläche",
    spaeter:"Einstechen der Nut B",
    grund:"Plandrehen und Zentrieren stehen am Anfang, die Nuten kommen nach "
      + "dem Schlichten."}

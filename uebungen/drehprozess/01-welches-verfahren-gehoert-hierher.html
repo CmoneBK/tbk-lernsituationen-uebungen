@@ -168,9 +168,11 @@
       <summary>1. Warum wird zuerst plangedreht und zentriert &ndash; und nicht
         gleich geschruppt?</summary>
       <p>Aus zwei Gründen. Erstens braucht jede Längenangabe eine
-        <strong>Bezugsfläche</strong>: Die 128,6 mm und alle Zwischenmaße werden
-        von der linken Stirnfläche aus gemessen. Solange die sägerau ist, ist
-        jedes Längenmaß ungenau.</p>
+        <strong>Bezugsfläche</strong>: Alle Längenmaße werden beim Einrichten
+        von der zuerst plangedrehten Fläche aus angefahren &ndash; das ist die
+        rechte Stirnfläche am freien Ende. Solange die sägerau ist, ist jedes
+        Längenmaß ungenau. Die linke Stirnfläche gibt es zu diesem Zeitpunkt
+        noch gar nicht &ndash; sie entsteht erst beim Abstechen.</p>
       <p>Zweitens braucht die Welle eine <strong>Zentrierbohrung</strong>. Bei
         135 mm Länge und nur 32 mm Durchmesser biegt sich das Teil unter dem
         Schnittdruck, wenn es nur im Futter hängt. Die Spitze im Reitstock hält
@@ -252,9 +254,11 @@ var VERFAHREN = ["Querplandrehen", "Längsrunddrehen, Schruppen",
    dazu steht - daraus folgt die Antwort. */
 var FLAECHEN = [
   {name:"Linke Stirnfläche", fordert:"Rz 10, Zentrierbohrung ISO 6411 – A2×4,25",
-   soll:"Querplandrehen",
-   grund:"Eine Stirnfläche steht senkrecht zur Achse. Die Schneide läuft quer, "
-     + "von außen nach innen - Querplandrehen. Danach wird zentriert."},
+   soll:"Abstechdrehen",
+   grund:"Sie liegt zum Futter hin und entsteht erst beim Trennen vom "
+     + "Stangenmaterial. Danach hält das Werkstück nicht mehr - deshalb ist "
+     + "Abstechen immer der letzte Drehvorgang. Ihre Zentrierbohrung kommt "
+     + "nach dem Umspannen dazu."},
   {name:"Ø20 links", fordert:"Rz 4",
    soll:"Längsrunddrehen, Schlichten",
    grund:"Eine zylindrische Mantelfläche entsteht beim Längsrunddrehen. Rz 4 "
@@ -294,17 +298,17 @@ var FLAECHEN = [
    grund:"Der Vorschub ist hier keine Wahl, sondern die Steigung: 1 mm je "
      + "Umdrehung. Die volle Tiefe entsteht in mehreren Zustellungen."},
   {name:"Rechte Stirnfläche", fordert:"Rz 10, Zentrierbohrung ISO 6411 – A2,5×5,3",
-   soll:"Abstechdrehen",
-   grund:"Sie entsteht beim Trennen vom Stangenmaterial. Danach hält das "
-     + "Werkstück nicht mehr - deshalb ist Abstechen immer der letzte "
-     + "Drehvorgang."}
+   soll:"Querplandrehen",
+   grund:"Das freie Ende liegt rechts, also wird hier zuerst bearbeitet: Die "
+     + "Schneide läuft quer zur Achse, von außen nach innen. Danach wird "
+     + "zentriert, damit die Reitstockspitze einen Sitz hat."}
 ];
 
 /* Der Arbeitsablauf. Die Nummer ist die richtige Stelle im Plan. */
 var ABLAUF = [
   {nr:1, was:"Rohteil prüfen, einspannen und ausrichten",
    grund:"Ohne geprüftes Halbzeug und feste Einspannung fängt niemand an."},
-  {nr:2, was:"Linke Stirnfläche querplandrehen und zentrieren",
+  {nr:2, was:"Rechte Stirnfläche querplandrehen und zentrieren",
    grund:"Schafft die Bezugsfläche für alle Längenmaße und den Sitz für die "
      + "Reitstockspitze."},
   {nr:3, was:"Alle Absätze durch Längsrunddrehen schruppen",

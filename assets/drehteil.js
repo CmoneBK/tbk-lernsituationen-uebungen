@@ -66,9 +66,15 @@ var WELLE = {
 /* Die Flächen, an denen im Unterricht etwas zu entscheiden ist: Welches
    Drehverfahren gehört hierher? Reihenfolge = Reihenfolge auf dem Werkstück
    von links nach rechts. */
+/* Die Aufspannung entscheidet, welches Verfahren welche Stirnfläche
+   erzeugt: Das Rohteil steckt links im Futter, das freie Ende liegt
+   rechts. Rechts wird also querplangedreht und zentriert, links fällt
+   die Fläche erst beim Abstechen an. Die Kontur belegt es selbst - der
+   Gewindefreistich DIN 76 sitzt am linken Ende des Gewindes, weil der
+   Gewindemeißel von rechts nach links läuft und dort austreten muss. */
 var WELLENFLAECHEN = [
   {id: "stirn_links", name: "linke Stirnfläche", bei: 0, art: "stirn",
-   verfahren: "querplandrehen"},
+   verfahren: "abstechdrehen"},
   {id: "mantel_20",   name: "Ø20 links",  von: 0,    bis: 22.3, d: 20,
    art: "mantel", verfahren: "laengsrunddrehen", rz: 4},
   {id: "nut_a",       name: "Nut A",      bei: 9,    art: "nut",
@@ -88,7 +94,7 @@ var WELLENFLAECHEN = [
   {id: "gewinde",     name: "Gewinde M20×1", von: 95.1, bis: 128.6, d: 20,
    art: "gewinde", verfahren: "gewindedrehen"},
   {id: "stirn_rechts", name: "rechte Stirnfläche", bei: 128.6, art: "stirn",
-   verfahren: "abstechdrehen"}
+   verfahren: "querplandrehen"}
 ];
 
 /* ---------- Zeichnen ---------- */

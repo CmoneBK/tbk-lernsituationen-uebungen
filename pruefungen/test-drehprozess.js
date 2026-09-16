@@ -611,6 +611,73 @@ console.log('\nDer Freistichradius - ueberall derselbe');
     falsch.join(', '));
 }
 
+console.log('\nDie beiden Stirnflaechen');
+{
+  /* Welches Verfahren welche Stirnflaeche erzeugt, entscheidet die
+     Aufspannung, nicht die Leserichtung der Zeichnung: Das Rohteil steckt
+     links im Futter, das freie Ende liegt rechts. Rechts wird also
+     querplangedreht und zentriert, links faellt die Flaeche erst beim
+     Abstechen an. Die Kontur belegt es selbst - der Gewindefreistich
+     DIN 76 sitzt am linken Ende des Gewindes, weil der Gewindemeissel von
+     rechts nach links laeuft und dort austreten muss.
+
+     Vertauscht man die beiden, uebt das Material eine Aufspannung ein, die
+     es nicht gibt - und der Fehler zieht sich durch Uebung, Training und
+     Lektion. */
+  const lies = (f) => fs.readFileSync(path.join(BASIS, f), 'utf8');
+
+  const baustein = lies('assets/drehteil.js');
+  const verfahren = (id) => {
+    const m = baustein.match(
+      new RegExp('id: "' + id + '"[^]*?verfahren: "([a-z]+)"'));
+    return m && m[1];
+  };
+  p('links wird abgestochen', verfahren('stirn_links') === 'abstechdrehen',
+    String(verfahren('stirn_links')));
+  p('rechts wird querplangedreht',
+    verfahren('stirn_rechts') === 'querplandrehen',
+    String(verfahren('stirn_rechts')));
+
+  const tr = lies('trainings/drehprozess/01-verfahren-erkennen.html');
+  p('Training 01 haelt sich daran',
+    /id:"stirn_links", verfahren:"abstechdrehen"/.test(tr)
+    && /id:"stirn_rechts", verfahren:"querplandrehen"/.test(tr));
+
+  const ue = lies('uebungen/drehprozess/01-welches-verfahren-gehoert-hierher.html');
+  const soll = (name) => {
+    const m = ue.match(new RegExp('name:"' + name
+      + ' Stirnfl\u00e4che"[^]*?soll:"([^"]+)"'));
+    return m && m[1];
+  };
+  p('Uebung 01: linke Stirnflaeche abstechen',
+    soll('Linke') === 'Abstechdrehen', String(soll('Linke')));
+  p('Uebung 01: rechte Stirnflaeche querplandrehen',
+    soll('Rechte') === 'Querplandrehen', String(soll('Rechte')));
+
+  /* Und niemand plant mehr, die linke Flaeche zuerst plan zu drehen. */
+  const heikel = [
+    'trainings/drehprozess/01-verfahren-erkennen.html',
+    'uebungen/drehprozess/01-welches-verfahren-gehoert-hierher.html',
+    'lernsituationen/welle-lf5/index.html',
+  ];
+  const falsch = heikel.filter(
+    (f) => /[Ll]inke Stirnfl\u00e4che querplandrehen/.test(lies(f)));
+  p('kein Arbeitsplan dreht die linke Stirnflaeche zuerst plan',
+    falsch.length === 0, falsch.join(', '));
+
+  const lektion = path.join(require('./orte').TOOLS,
+    'fertigungstechnik-zerspanung-drehprozess-planen.html');
+  if (fs.existsSync(lektion)) {
+    const t = fs.readFileSync(lektion, 'utf8');
+    p('die Lektion haelt sich daran',
+      /stirn_links: \["Abstechdrehen"/.test(t)
+      && /stirn_rechts: \["Querplandrehen"/.test(t));
+    p('und ihr Ablauf nennt die rechte Flaeche zuerst',
+      /Rechte Stirnfl\u00e4che querplandrehen/.test(t)
+      && !/Linke Stirnfl\u00e4che querplandrehen/.test(t));
+  }
+}
+
 console.log('\nDie Lektion im Werkzeug-Repo');
 {
   const { TOOLS, teilweise } = require('./orte');
