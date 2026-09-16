@@ -1732,13 +1732,150 @@ console.log('\nDie Lektion im Werkzeug-Repo');
        sonst zeichnet die Lektion eine andere Welle als die Uebungen. */
     [['assets/zeichnen.js', 'zeichnen.js'],
      ['assets/wellen.js', 'wellen.js'],
-     ['assets/drehteil.js', 'drehteil.js']].forEach((paar) => {
+     ['assets/drehteil.js', 'drehteil.js'],
+     ['assets/wellenblatt.js', 'wellenblatt.js']].forEach((paar) => {
       const hier = fs.readFileSync(path.join(BASIS, paar[0]), 'utf8');
       const dort = path.join(TOOLS, 'assets', paar[1]);
       p(paar[1] + ' ist in beiden Repos derselbe',
         fs.existsSync(dort) && fs.readFileSync(dort, 'utf8') === hier);
     });
   }
+}
+
+console.log('\nVollstaendig bemasst - und nicht doppelt');
+{
+  /* Die Forderung des Nutzers, woertlich: „Ich erwarte IMMER VOLLSTÄNDIG
+     normgerechte Bemaßung." Vorausgegangen waren drei Befunde an drei
+     Zeichnungen - jedes Mal fehlten Radien, Freistiche oder Nuten, und an
+     der Antriebswelle war das rechte Bundende bei 52,3 mm ueberhaupt nicht
+     bemasst: Es liess sich aus keinem anderen Mass ableiten.
+
+     Vollstaendig heisst dabei nicht viel, sondern eindeutig. Geprueft wird
+     deshalb in beide Richtungen:
+
+       a) Jede Stelle, an der sich die Kontur aendert, muss ueber eine Kette
+          von Massen mit der Bezugskante 0 verbunden sein. Fehlt ein Glied,
+          kann niemand das Teil herstellen.
+       b) Keine dieser Ketten darf sich schliessen. Ein geschlossener
+          Masszug ist ueberbestimmt - DIN ISO 129-1 verbietet ihn, weil dann
+          offen bleibt, welches Mass gilt.
+
+     Gerechnet wird mit einer Verschmelzungsstruktur ueber die Massketten:
+     Jedes Laengenmass ist eine Kante zwischen zwei Stellen. Liegen beide
+     Enden schon in derselben Gruppe, schliesst sich der Zug. */
+  const SCHLUSS = '<' + '/script>';
+  const quellen = ['zeichnen.js', 'wellen.js', 'drehteil.js'].map((f) =>
+    '<script>' + fs.readFileSync(path.join(BASIS, 'assets', f), 'utf8')
+      .split(SCHLUSS).join('<\\/script>') + SCHLUSS).join('');
+  const fenster = new JSDOM('<!doctype html>' + quellen,
+    { runScripts: 'dangerously' }).window;
+  const wellen = fenster.WELLEN;
+  const rund = (x) => Math.round(x * 1000) / 1000;
+
+  Object.keys(wellen).forEach((name) => {
+    const w = wellen[name];
+    const lang = (w.masse.unten || []).concat(w.masse.oben || []);
+
+    /* --- a) und b): die Massketten --- */
+    const vater = new Map();
+    const finde = (x) => {
+      if (!vater.has(x)) vater.set(x, x);
+      while (vater.get(x) !== x) x = vater.get(x);
+      return x;
+    };
+    const kreise = [];
+    lang.forEach((z) => {
+      const a = finde(rund(z.von)), b = finde(rund(z.bis));
+      if (a === b) { kreise.push(z.text); return; }
+      vater.set(a, b);
+    });
+    p(name + ': kein Masszug schliesst sich', kreise.length === 0,
+      kreise.join(', '));
+
+    /* Jede Stelle, an der die Kontur springt - dazu die Kanten der Nuten
+       und der Anfang des Gewindes. Die rechte Nutflanke folgt aus der
+       Nutbreite, die in der Einzelheit steht; sie zaehlt nicht mit. */
+    const stellen = new Set([0, rund(w.laenge)]);
+    w.abschnitte.forEach((a) => {
+      stellen.add(rund(a.von));
+      stellen.add(rund(a.bis));
+    });
+    (w.nuten || []).forEach((n) => stellen.add(rund(n.bei)));
+    (w.laengsnuten || []).forEach((n) => stellen.add(rund(n.von)));
+    if (w.gewinde) stellen.add(rund(w.gewinde.von));
+    if (w.gewindefreistich) stellen.add(rund(w.gewindefreistich.von));
+
+    const null0 = finde(0);
+    const offen = [...stellen].filter((x) => finde(x) !== null0);
+    p(name + ': jede Stelle der Kontur haengt an einer Masskette',
+      offen.length === 0, 'ohne Mass: ' + offen.join(', ') + ' mm');
+
+    /* --- Die Durchmesser --- */
+    const bemasst = new Set((w.masse.durchmesser || []).map((z) => rund(z.d)));
+    const kegelig = w.abschnitte.some((a) => a.dBis !== undefined);
+    /* Ein Kegel wird nach DIN ISO 3040 aus einem Durchmesser, dem
+       Kegelverhaeltnis und der Laenge bemasst - der zweite Durchmesser
+       waere das dritte Mass zu viel. Dafuer muss das Verhaeltnis im Bild
+       stehen. */
+    const fehlend = [];
+    w.abschnitte.forEach((a) => {
+      if (a.dBis === undefined) {
+        if (!bemasst.has(rund(a.d))) fehlend.push('Ø' + a.d);
+        return;
+      }
+      if (!bemasst.has(rund(a.d)) && !bemasst.has(rund(a.dBis))) {
+        fehlend.push('Kegel ' + a.d + '/' + a.dBis);
+      }
+    });
+    p(name + ': jeder Durchmesser ist bemasst', fehlend.length === 0,
+      fehlend.join(', '));
+    if (kegelig) {
+      const texte = (w.bezeichnungen || []).map((b) => b.text).join(' ');
+      p(name + ': der Kegel nennt sein Verhaeltnis',
+        /\d\s*:\s*\d/.test(texte), texte);
+    }
+
+    /* --- Radien, Freistiche, Nuten --- */
+    const radien = fenster.wellenRadienListe(w);
+    p(name + ': jede Rundung und jeder Freistich steht im Bild',
+      radien.length === (w.rundungen || []).length
+        + (w.freistiche || []).length
+      && radien.every((r) => r.text && r.d !== undefined),
+      radien.map((r) => r.text).join(' · ') || 'keine');
+
+    (w.nuten || []).forEach((n) => {
+      p(name + ': Nut ' + n.marke + ' hat Breite und Tiefe',
+        n.breite > 0 && n.tiefe > 0, n.breite + ' × ' + n.tiefe);
+    });
+    (w.laengsnuten || []).forEach((n) => {
+      p(name + ': die Passfedernut ist nach DIN 6885 bemasst',
+        n.breite > 0 && n.tiefe > 0 && !!n.breiteToleranz && !!n.tiefeToleranz,
+        n.breite + ' ' + n.breiteToleranz + ' / ' + n.tiefe + ' '
+        + n.tiefeToleranz);
+    });
+
+    /* --- Rautiefen: jede Flaeche traegt eine, oder es gilt die allgemeine --- */
+    p(name + ': die allgemeine Rautiefe steht in den Daten',
+      w.allgemeineRautiefe > 0, String(w.allgemeineRautiefe));
+
+    /* --- Und nichts steht zweimal --- */
+    const doppelt = [];
+    const gesehen = new Set();
+    lang.forEach((z) => {
+      const k = rund(z.von) + '-' + rund(z.bis);
+      if (gesehen.has(k)) doppelt.push(z.text);
+      gesehen.add(k);
+    });
+    (w.bezeichnungen || []).forEach((b) => {
+      if (!b.wennOhneMasse
+        && (w.masse.durchmesser || []).some((z) => z.text === b.text)) {
+        doppelt.push(b.text);
+      }
+    });
+    p(name + ': kein Mass steht zweimal', doppelt.length === 0,
+      doppelt.join(', '));
+  });
+  fenster.close();
 }
 
 console.log(fehler ? '\n' + fehler + ' Befunde' : '\nalles gruen');

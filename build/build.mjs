@@ -322,6 +322,8 @@ async function typSammeln(typ) {
       url: posix.join(typ.id, e.name, 'index.html'),
       ordner,
       werkzeuge: info.werkzeuge ?? [],
+      // Die Gesamtzeichnung des Werkstuecks, an dem das Paket arbeitet.
+      zeichnung: info.zeichnung ?? null,
       inhalt,
     });
   }
@@ -501,6 +503,35 @@ function werkzeugeHtml(werkzeuge) {
          `${links}\n      </div>\n`;
 }
 
+/* Die Gesamtzeichnung des Werkstuecks, an dem ein Paket arbeitet.
+ *
+ * Warum sie hierher gehoert: Jede Uebung zeigt nur den Ausschnitt, um den es
+ * ihr geht - die eine die Rautiefen, die naechste die Benennungen. Wer das
+ * ganze Paket durcharbeitet, braucht daneben ein Blatt, auf dem jedes Mass
+ * steht. Die Paketseite ist der einzige Ort, den alle Uebungen gemeinsam
+ * haben.
+ *
+ * Gebaut wird sie im Browser aus assets/wellen.js, nicht hier: So steht
+ * keine Zahl zweimal, und eine geaenderte Kontur zieht die Zeichnung mit.
+ * Das Paket sagt in info.json nur, welche Welle gemeint ist.
+ */
+function zeichnungHtml(z) {
+  if (!z || !z.welle) return '';
+  const bausteine = ['zeichnen.js', 'wellen.js', 'drehteil.js', 'wellenblatt.js']
+    .map((b) => `      <script src="../../assets/${b}"><` + `/script>`)
+    .join('\n');
+  return `      <section class="gesamtzeichnung">\n`
+    + `        <h2>${escHtml(z.titel ?? 'Die Gesamtzeichnung')}</h2>\n`
+    + (z.lead ? `        <p class="zeichnung-lead">${escHtml(z.lead)}</p>\n` : '')
+    + `        <div id="wellenblatt"></div>\n`
+    + `      </section>\n`
+    + `${bausteine}\n`
+    + `      <script>\n`
+    + `      wellenblatt(document.getElementById('wellenblatt'),\n`
+    + `                  WELLEN[${JSON.stringify(z.welle)}]);\n`
+    + `      <` + `/script>\n`;
+}
+
 function paketInhalt(e) {
   const zeilen = [];
   zeilen.push(werkzeugeHtml(e.werkzeuge));
@@ -516,6 +547,7 @@ function paketInhalt(e) {
     );
   }
   zeilen.push('      </ol>');
+  zeilen.push(zeichnungHtml(e.zeichnung));
   return zeilen.filter(Boolean).join('\n');
 }
 

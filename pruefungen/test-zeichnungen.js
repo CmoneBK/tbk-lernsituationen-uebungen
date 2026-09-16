@@ -269,12 +269,28 @@ function pruefe(svg, name, rel) {
       'refX/refY ' + rx + '/' + ry + ', Spitze ' + sp[0] + '/' + sp[1]);
   });
 
-  /* Alle Pfeilspitzen im Bild - als Punkte, egal ob Marker oder Dreieck. */
+  /* Alle Pfeilspitzen im Bild - als Punkte, egal ob Marker oder Dreieck.
+
+     Nicht jedes gefuellte Dreieck ist eine Pfeilspitze: Eine Rippe im
+     Schnittbild ist auch eins, und zwar ein grosses. Gezaehlt wird
+     deshalb nur, was die Groesse einer Pfeilspitze hat - `pfeil()` in
+     assets/zeichnen.js zeichnet sie 9 Punkte lang und gut 3 breit, also
+     keine 10 Punkte von Ecke zu Ecke. Ohne diese Schranke meldete die
+     Pruefung die Rippe des Schraffur-Schnellchecks als halb bemasstes
+     Mass - und nur dann, wenn das Zufallsbild sie gerade zeigte. */
+  const PFEIL_GROESSTE = 14;
   const spitzen = [];
   [...svg.querySelectorAll('polygon')].forEach((e) => {
     if (!zeichnung(e) || (e.getAttribute('fill') || 'none') === 'none') return;
     const pt = dreieckPunkte(e);
     if (!pt) return;
+    let weit = 0;
+    for (let i = 0; i < pt.length; i++) {
+      for (let j = i + 1; j < pt.length; j++) {
+        weit = Math.max(weit, Math.hypot(pt[i][0] - pt[j][0], pt[i][1] - pt[j][1]));
+      }
+    }
+    if (weit > PFEIL_GROESSTE) return;
     const v = versatz(e) || [0, 0];
     const sp = spitzeVon(pt);
     spitzen.push([sp[0] + v[0], sp[1] + v[1]]);

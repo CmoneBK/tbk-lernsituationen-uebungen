@@ -470,6 +470,13 @@
 
     <span class="formel">t<sub>h</sub> = L · i / (n · f)</span>
 
+    <p class="fussnote">Das ist die Formel für <strong>konstante
+      Drehzahl</strong> &ndash; die Maschine im Auftrag ist konventionell und
+      hat feste Stufen. Für eine CNC mit konstanter Schnittgeschwindigkeit
+      steht im Tabellenbuch die Seite daneben; sie kommt auf dieselbe Zeit,
+      hält aber v<sub>c</sub> über den ganzen Schnitt ein. Beide Fälle
+      rechnet das Werkzeug „Hauptnutzungszeit beim Drehen“ durch.</p>
+
     <p>Rechnet für die drei längsten Vorgänge den Vorschubweg und die Zeit.
       Drehzahl und Vorschub stehen daneben &ndash; sie stammen aus Teil 4
       und Teil 5.</p>
@@ -688,11 +695,19 @@ function bilanz(id, richtig, gesamt, offen){
 /* ---------- Teil 1: Zeichnung, Stufen, Abschnitte ---------- */
 
 (function kopf(){
-  var g = wellenGroesse(WELLE, {s:6.2, masse:true, rauheiten:true});
+  /* Vollstaendig bemasst - siehe den Hinweis bei `wellenBezeichnungen`:
+     Mit `masseUnten` steht keine Maßkette mehr ueber dem Teil, und die
+     Benennungen, Freistiche und Rundungen bekommen dort Platz. */
+  var o = {s:6.2, masse:true, masseUnten:true, bezeichnungen:true,
+           rauheiten:true, radien:true};
+  var g = wellenGroesse(WELLE, o);
   var svg = bild("bildWelle", g.breite, g.hoehe,
-    "Fertigungszeichnung der Antriebswelle mit Maßen und Rautiefen",
-    "Antriebswelle aus 42CrMo4. Rohteil: Rundmaterial Ø32 × 135 mm.");
-  zeichneWelle(svg, WELLE, {x:g.x, y:g.y, s:6.2, masse:true, rauheiten:true});
+    "Fertigungszeichnung der Antriebswelle mit allen Maßen",
+    "Antriebswelle aus 42CrMo4. Rohteil: Rundmaterial Ø32 × 135 mm. "
+    + "Die beiden Freistiche DIN 509 – E 0,6 × 0,3 tragen den kleinsten "
+    + "Innenradius der ganzen Kontur.");
+  o.x = g.x; o.y = g.y;
+  zeichneWelle(svg, WELLE, o);
 
   el("stufen").innerHTML = STUFEN.map(function(n){
     return "<span>" + n + "</span>"; }).join("");

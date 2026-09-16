@@ -147,7 +147,8 @@
       engsten?</strong></p>
     <p>Der erste Blick fällt auf die <strong>R1,6</strong> am Übergang zum
       Bund. Sehen Sie noch einmal genauer hin &ndash; die engste Rundung sitzt
-      nicht immer am größten Absatz.</p>
+      nicht immer am größten Absatz. In der Zeichnung oben stehen beide
+      Rundungen; der Gewindefreistich trägt nur seine Normbezeichnung.</p>
 
     <span class="formel">r<sub>ε</sub> &le; r<sub>w</sub> &minus; 0,1 mm</span>
 
@@ -202,6 +203,16 @@
         gar nicht als Radius in der Zeichnung, sondern in der
         Normbezeichnung. Bei <strong>DIN 509 &ndash; E 0,6 × 0,3</strong> ist
         die erste Zahl der Radius.
+        <br>Umgekehrt zählt nicht jede enge Stelle mit. Der
+        <strong>Gewindefreistich DIN 76 &ndash; A</strong> dieser Welle hat
+        bei P = 1,5 mm laut Tabellenbuch r = 0,8 mm, und die beiden
+        Sicherungsringnuten sind noch enger. Beide werden
+        <strong>eingestochen</strong> &ndash; mit einem Werkzeug, das genau
+        diese Form hat. Der Schlichtmeißel fährt dort nicht hinein, also
+        begrenzt ihn diese Form auch nicht. Anders der Freistich nach
+        DIN 509: Er ist dafür da, dass die Zylinderfläche bis an die
+        Schulter fertig bearbeitet wird &ndash; dort läuft das
+        Schlichtwerkzeug hinein.
       </div>
       <p>Mit r<sub>ε</sub> = 0,8 mm und dem kleinsten Schlichtvorschub von
         0,1 mm wäre eine Rautiefe von rund <strong>1,6 µm</strong> erreichbar
@@ -301,7 +312,12 @@ var R_ECKE = 0.8;           /* groesster genormter Eckenradius, den die
 var R_KLEIN = 0.4;           /* die Haelfte davon, Teil 2 */
 var L_SITZ = 34;             /* Länge des Ø22, aus der Zeichnung */
 /* Die engste Innenrundung der Kontur: die R1 am kleinen Absatz zwischen
-   Durchmesser 18 und 22. Nicht die R1,6 am Bund. */
+   Durchmesser 18 und 22. Nicht die R1,6 am Bund.
+
+   Der Gewindefreistich (r = 0,8) und die Sicherungsringnuten sind enger,
+   zaehlen aber nicht: Sie werden eingestochen, das Laengsdrehwerkzeug
+   faehrt nicht hinein. Deshalb fuehrt auch `wellenRadienListe` in
+   assets/drehteil.js nur Rundungen und Freistiche nach DIN 509. */
 var R_ENG = 1.0;
 
 var FORDERUNGEN = [
@@ -339,11 +355,18 @@ function bilanz(id, richtig, gesamt, offen){
 
 /* Die Welle mit den Rautiefen im Bild - sie sind der Gegenstand der Übung. */
 (function zeichnung(){
-  var g = wellenGroesse(WELLE, {s:5.8, rauheiten:true});
+  /* Radien und Benennungen gehoeren mit ins Bild: Teil 3 fragt nach der
+     engsten Innenrundung der Kontur, und die stand bis dahin nur im
+     Loesungstext. Wer sie ablesen soll, muss sie finden koennen. */
+  var o = {s:5.8, rauheiten:true, bezeichnungen:true, radien:true};
+  var g = wellenGroesse(WELLE, o);
   var svg = bild("bildWelle", g.breite, g.hoehe,
-    "Die Spannwelle mit den geforderten Rautiefen",
-    "Rz 4 am Führungssitz Ø22, Rz 6,3 am Ø18, sonst Rz 10.");
-  zeichneWelle(svg, WELLE, {x:g.x, y:g.y, s:5.8, rauheiten:true});
+    "Die Spannwelle mit Rautiefen, Rundungen und Freistich",
+    "Rz 4 am Führungssitz Ø22, Rz 6,3 am Ø18, sonst Rz 10. Die Rundungen "
+    + "R1 und R1,6 sitzen an den beiden Absätzen, der Gewindefreistich "
+    + "DIN 76 – A vor dem Gewinde.");
+  o.x = g.x; o.y = g.y;
+  zeichneWelle(svg, WELLE, o);
 }());
 
 /* ---------- Teil 1 ---------- */

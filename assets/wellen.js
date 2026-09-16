@@ -30,15 +30,21 @@
  *   laenge, abschnitte    die Kontur, von der linken Stirnfläche aus in mm
  *   gewinde               Bezeichnung, Lage, Steigung, Kerndurchmesser
  *   nuten                 Sicherungsringnuten, als Einzelheit vergrößert
+ *   laengsnuten           Passfedernuten; Breite und Tiefe stehen quer zur
+ *                         Achse und werden im Querschnitt bemasst
  *   freistiche            Freistiche nach DIN 509 an den Schultern
  *   gewindefreistich      Auslauf vor dem Gewinde nach DIN 76-1
- *   rundungen             Innenrundungen an den Absätzen
+ *   rundungen             Innenrundungen an den Absätzen; `ab` und
+ *                         `hoch` sind die Lage der Hinweislinie im Bild
  *   kleinsterInnenradius  die engste davon - Grenze für den Eckenradius
  *   flaechen              woran im Unterricht etwas zu entscheiden ist
  *   toleranzen            ISO-Kurzzeichen der Funktionsflächen
  *   masse                 die Maßeintragung, wie sie im Bild stehen soll
- *   bezeichnungen         Benennungen mit Hinweislinie (eigene Ebene)
+ *   bezeichnungen         Benennungen mit Hinweislinie (eigene Ebene);
+ *                         `wennOhneMasse` blendet eine aus, sobald das
+ *                         Bild bemasst ist - sonst stuende sie doppelt
  *   rauheiten             die geforderten Rautiefen im Bild
+ *   allgemeineRautiefe    die Angabe im Schriftfeld, fuer alles Uebrige
  *
  * Gezeichnet wird in Ansicht, nicht im Schnitt: Eine Welle wird im
  * Längsschnitt ohnehin nicht geschnitten dargestellt.
@@ -92,11 +98,12 @@ WELLEN.antriebswelle = {
      entscheidet über den Eckenradius. */
   freistiche: [
     {norm: "DIN 509 – E 0,6 × 0,3", bei: 22.3, r: 0.6, tiefe: 0.3,
-     t2: 0.2, f: 2.5, schulter: "Ø20 auf Ø24"},
+     t2: 0.2, f: 2.5, schulter: "Ø20 auf Ø24", ab: -40, hoch: 76},
     {norm: "DIN 509 – E 0,6 × 0,3", bei: 52.3, r: 0.6, tiefe: 0.3,
-     t2: 0.2, f: 2.5, schulter: "Bundschulter am Lagersitz Ø25"}
+     t2: 0.2, f: 2.5, schulter: "Bundschulter am Lagersitz Ø25",
+     ab: 40, hoch: 76}
   ],
-  rundungen: [{bei: 42.3, r: 1}],
+  rundungen: [{bei: 42.3, r: 1, ab: -14, hoch: 44}],
   /* Der kleinste Innenradius der ganzen Kontur - und damit die Grenze für
      den Eckenradius des Schlichtwerkzeugs: r_eps <= r_w - 0,1 mm.
      Nicht die R1 am Bund, wie man auf den ersten Blick meint: Die beiden
@@ -156,6 +163,9 @@ WELLEN.antriebswelle = {
       {von: 0, bis: 9,     text: "9",     an: [20, 20]},
       {von: 0, bis: 22.3,  text: "22,3",  an: [20, 20]},
       {von: 0, bis: 42.3,  text: "42,3",  an: [20, 24]},
+      /* Ohne dieses Maß bleibt das rechte Bundende offen: 52,3 lässt sich
+         weder von links noch von rechts aus den übrigen Maßen ableiten. */
+      {von: 42.3, bis: 52.3, text: "10", an: [30, 30]},
       {von: 0, bis: 128.6, text: "128,6", an: [20, 20]}
     ],
     oben: [
@@ -167,20 +177,25 @@ WELLEN.antriebswelle = {
       {d: 20, text: "Ø20 f7", seite: "links",  versatz: 26, vonMm: 0},
       {d: 24, text: "Ø24", seite: "links",  versatz: 52, vonMm: 22.3},
       {d: 30, text: "Ø30", seite: "mitte",  versatz: 47.3, ab: -34},
-      {d: 25, text: "Ø25 k6", seite: "rechts", versatz: 34, vonMm: 91.6, ab: -30}
+      {d: 25, text: "Ø25 k6", seite: "rechts", versatz: 34, vonMm: 91.6, ab: -30},
+      /* Der Gewindezapfen: Die Gewindebezeichnung enthält den
+         Außendurchmesser und ist damit sein Maß. */
+      {d: 20, text: "M20×1 – 6g", seite: "rechts", versatz: 78, vonMm: 128.6}
     ]
   },
   bezeichnungen: [
     {x: 9.65,  d: 20, text: "Nut A",           ab: -30, hoch: 46},
     {x: 84.25, d: 25, text: "Nut B",           ab: -46, hoch: 26},
     {x: 93.3,  d: 19, text: "DIN 76 – A",      ab: -12, hoch: 46},
-    {x: 112,   d: 20, text: "M20×1 – 6g",      ab: 20,  hoch: 26}
+    {x: 112,   d: 20, text: "M20×1 – 6g",      ab: 20,  hoch: 26,
+     wennOhneMasse: true}
   ],
   rauheiten: [
     {x: 16, d: 20, text: "Rz 4"},
     {x: 32, d: 24, text: "Rz 6"},
     {x: 70, d: 25, text: "Rz 4"}
-  ]
+  ],
+  allgemeineRautiefe: 10
 };
 
 /* ==================================================================== *
@@ -217,9 +232,9 @@ WELLEN.mitnehmerwelle = {
      damit die Grenze für den Eckenradius. */
   freistiche: [
     {norm: "DIN 509 – E 0,8 × 0,3", bei: 18, r: 0.8, tiefe: 0.3,
-     t2: 0.2, f: 2.5, schulter: "Ø26 auf Ø32"}
+     t2: 0.2, f: 2.5, schulter: "Ø26 auf Ø32", ab: -40, hoch: 72}
   ],
-  rundungen: [{bei: 56, r: 1.6}],
+  rundungen: [{bei: 56, r: 1.6, ab: -14, hoch: 44}],
   kleinsterInnenradius: 0.8,
   woher: "Freistich DIN 509 – E 0,8 × 0,3 am Absatz Ø26 auf Ø32",
   /* DIN 76-1: Bei P = 2 mm sind r = 1,0 mm, d_g = d − 3 = 21 mm und
@@ -260,24 +275,31 @@ WELLEN.mitnehmerwelle = {
     ],
     oben: [
       {von: 75, bis: 106, text: "31", an: [24, 24]},
-      {von: 68, bis: 106, text: "38", an: [36, 24]},
-      {von: 56, bis: 106, text: "50", an: [36, 24]}
+      /* Die 50 von der rechten Stirnflaeche bis zur Bundschulter stand
+         hier einmal zusaetzlich - zusammen mit der 56 von links war der
+         Masszug geschlossen und die Bundschulter doppelt bemasst. Ein
+         geschlossener Masszug ist nach DIN ISO 129-1 keine Bemassung,
+         sondern eine offene Frage. */
+      {von: 68, bis: 106, text: "38", an: [36, 24]}
     ],
     durchmesser: [
       {d: 26, text: "Ø26", seite: "links", versatz: 26, vonMm: 0},
       {d: 32, text: "Ø32", seite: "links", versatz: 52, vonMm: 18},
-      {d: 36, text: "Ø36", seite: "mitte", versatz: 62, ab: -34}
+      {d: 36, text: "Ø36", seite: "mitte", versatz: 62, ab: -34},
+      {d: 24, text: "M24×2 – 6g", seite: "rechts", versatz: 42, vonMm: 106}
     ]
   },
   bezeichnungen: [
     {x: 7.65, d: 26, text: "Nut A",      ab: -30, hoch: 46},
     {x: 71.5, d: 22, text: "DIN 76 – A", ab: -12, hoch: 46},
-    {x: 90,   d: 24, text: "M24×2 – 6g", ab: 20,  hoch: 26}
+    {x: 90,   d: 24, text: "M24×2 – 6g", ab: 20,  hoch: 26,
+     wennOhneMasse: true}
   ],
   rauheiten: [
     {x: 12, d: 26, text: "Rz 6,3"},
     {x: 36, d: 32, text: "Rz 4"}
-  ]
+  ],
+  allgemeineRautiefe: 10
 };
 
 /* ==================================================================== *
@@ -310,7 +332,12 @@ WELLEN.spannwelle = {
     {marke: "B", bei: 43, breite: 1.3, tiefe: 0.5, d: 22}
   ],
   freistiche: [],
-  rundungen: [{bei: 14, r: 1}, {bei: 48, r: 1.6}],
+  /* `ab` und `hoch` setzen die Hinweislinien in die Luecken zwischen den
+     Rautiefen und den Benennungen - nachgemessen, siehe
+     pruefungen/test-beschriftung.js. Beide zeigen nach links: Die
+     Innenecke ist dort offen, rechts steht der groessere Durchmesser. */
+  rundungen: [{bei: 14, r: 1,   ab: -20, hoch: 56},
+              {bei: 48, r: 1.6, ab: -16, hoch: 48}],
   kleinsterInnenradius: 1,
   woher: "Rundung R1 am Absatz Ø18 auf Ø22",
   /* DIN 76-1: Bei P = 1,5 mm sind r = 0,8 mm, d_g = d − 2,3 = 13,7 mm
@@ -368,19 +395,27 @@ WELLEN.spannwelle = {
     durchmesser: [
       {d: 18, text: "Ø18 n6", seite: "links", versatz: 26, vonMm: 0},
       {d: 22, text: "Ø22 g6", seite: "links", versatz: 52, vonMm: 14},
-      {d: 26, text: "Ø26", seite: "mitte", versatz: 53, ab: -34}
+      {d: 26, text: "Ø26", seite: "mitte", versatz: 53, ab: -34},
+      /* Der Gewindezapfen wird über die Gewindebezeichnung bemaßt - sie
+         enthält den Außendurchmesser. Ein zusätzliches "Ø16" wäre
+         dasselbe Maß ein zweites Mal, und das verbietet DIN ISO 129-1. */
+      {d: 16, text: "M16×1,5 – 6g", seite: "rechts", versatz: 46, vonMm: 90}
     ]
   },
   bezeichnungen: [
     {x: 6.65,  d: 18, text: "Nut A",        ab: -30, hoch: 46},
     {x: 43.65, d: 22, text: "Nut B",        ab: -46, hoch: 26},
     {x: 59.7,  d: 15, text: "DIN 76 – A",   ab: -12, hoch: 46},
-    {x: 76,    d: 16, text: "M16×1,5 – 6g", ab: 20,  hoch: 26}
+    {x: 76,    d: 16, text: "M16×1,5 – 6g", ab: 20,  hoch: 26,
+     wennOhneMasse: true}
   ],
   rauheiten: [
     {x: 10, d: 18, text: "Rz 6,3"},
     {x: 30, d: 22, text: "Rz 4"}
-  ]
+  ],
+  /* Die Angabe im Schriftfeld: Sie gilt für jede Fläche ohne eigenes
+     Zeichen - hier der Bund Ø26 und die beiden Stirnflächen. */
+  allgemeineRautiefe: 10
 };
 
 /* ==================================================================== *
@@ -428,12 +463,22 @@ WELLEN.abtriebswelle = {
   /* Passfedernut nach DIN 6885-1: Für Ø 30 bis 38 mm sind das b = 10 mm
      Breite und t1 = 5 mm Tiefe in der Welle. Sie liegt oben und ist nicht
      rotationssymmetrisch - gefräst, nicht gedreht. */
+  /* Toleranzen aus dem Tabellenbuch, Passfedern DIN 6885-1: Die
+     Wellennutbreite bekommt N9 - leichter Sitz, weil die Nabe montierbar
+     bleiben soll; P9 (fester Sitz) wäre für wechselnde Belastung. Die
+     zulässige Abweichung von t1 ist bei d1 von 22 bis 130 mm +0,2 mm,
+     die der Nutlänge bei l bis 36 mm ebenfalls +0,2 mm. */
   laengsnuten: [{von: 38, bis: 70, breite: 10, tiefe: 5, d: 36,
+                 breiteToleranz: "N9", tiefeToleranz: "+0,2",
+                 laengeToleranz: "+0,2", sitz: "leichter Sitz",
+                 hoeheFeder: 8,
                  norm: "Passfeder DIN 6885-1 – A – 10 × 8 × 32"}],
   /* Eine Sacklochbohrung von links, als verdeckte Kante gezeichnet. */
   bohrungen: [{von: 0, bis: 40, d: 18, norm: "Ø18 H7, 40 tief"}],
   freistiche: [],
-  rundungen: [{bei: 30, r: 0.3}, {bei: 78, r: 1.6}, {bei: 90, r: 0.8}],
+  rundungen: [{bei: 30, r: 0.3, ab: -16, hoch: 44},
+              {bei: 78, r: 1.6, ab: -16, hoch: 58},
+              {bei: 90, r: 0.8, ab: 16,  hoch: 26}],
   /* Die R0,3 am ersten Absatz. Sie ist der Grund, warum sich die geforderte
      Rz 4 am Lagersitz nicht drehen lässt: r_eps <= 0,2 mm, und der
      Vorschub dazu läge unter dem, was das Tabellenbuch fürs Schlichten
@@ -482,6 +527,8 @@ WELLEN.abtriebswelle = {
   masse: {
     unten: [
       {von: 0, bis: 30,  text: "30",  an: [28, 28]},
+      /* Die Passfedernut braucht ihre Lage, nicht nur ihre Länge. */
+      {von: 0, bis: 38,  text: "38",  an: [28, 36]},
       {von: 0, bis: 78,  text: "78",  an: [28, 36]},
       {von: 0, bis: 90,  text: "90",  an: [28, 42]},
       {von: 0, bis: 165, text: "165", an: [28, 24]}
@@ -489,26 +536,32 @@ WELLEN.abtriebswelle = {
     oben: [
       {von: 138, bis: 165, text: "27", an: [24, 24]},
       {von: 90,  bis: 130, text: "40", an: [42, 34]},
-      {von: 38,  bis: 70,  text: "32", an: [36, 36]}
+      {von: 38,  bis: 70,  text: "32 +0,2", an: [36, 36]}
     ],
     durchmesser: [
       {d: 28, text: "Ø28",    seite: "links",  versatz: 26, vonMm: 0},
       {d: 36, text: "Ø36 k6", seite: "links",  versatz: 52, vonMm: 30},
       {d: 42, text: "Ø42",    seite: "mitte",  versatz: 84, ab: -40},
       {d: 34, text: "Ø34",    seite: "rechts", versatz: 34, vonMm: 130,
-       ab: -30}
+       ab: -30},
+      {d: 24, text: "M24×3 – 6g", seite: "rechts", versatz: 78, vonMm: 165}
     ]
   },
   bezeichnungen: [
-    {x: 20,  d: 18, text: "Ø18 H7, 40 tief",     ab: -18, hoch: 56},
+    /* Die Hinweislinie beginnt auf der verdeckten Kante der Bohrung und
+       laeuft nach rechts aus dem Werkstoff heraus - links stuende sie in
+       der Angabe "Rz 6,3" des Zapfens. Nachgemessen, nicht geschaetzt. */
+    {x: 30,  d: 18, text: "Ø18 H7, 40 tief",     ab: 20,  hoch: 56},
     {x: 54,  d: 36, text: "Passfedernut 10 × 5", ab: 14,  hoch: 34},
     {x: 105, d: 36, text: "Kegel 1:10",          ab: -30, hoch: 60},
     {x: 134, d: 20, text: "DIN 76 – A",          ab: 26,  hoch: 96},
-    {x: 150, d: 24, text: "M24×3 – 6g",          ab: 16,  hoch: 26}
+    {x: 150, d: 24, text: "M24×3 – 6g",          ab: 16,  hoch: 26,
+     wennOhneMasse: true}
   ],
   rauheiten: [
     {x: 14,  d: 28, text: "Rz 6,3", hoch: 46},
     {x: 74,  d: 36, text: "Rz 4"},
     {x: 120, d: 35, text: "Rz 6,3"}
-  ]
+  ],
+  allgemeineRautiefe: 10
 };

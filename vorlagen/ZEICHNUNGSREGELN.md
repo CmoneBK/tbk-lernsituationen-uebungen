@@ -146,6 +146,38 @@ Umgesetzt in `sechskantAnsicht()` (Lektion Schraubverbindungen).
 * Umgesetzt in `mass()`, `massV()` und `pfeil()` (`assets/zeichnen.js`) sowie
   `masslinie()` und `masslinieSenkrecht()` (Lektion).
 
+### 6.1 Vollständig heißt eindeutig, nicht viel
+
+Jede Zeichnung im Material ist **vollständig bemaßt**. Das ist keine Kür: Eine
+Übung, deren Frage sich aus dem Bild nicht beantworten lässt, übt nichts ein.
+Dazugehören Längen, Durchmesser **mit Toleranzangabe**, Rundungen, Freistiche
+(DIN 509 und DIN 76-1), Nuten, Gewinde und Rautiefen.
+
+Zwei Regeln, die sich widersprechen könnten, und wie sie zusammengehen:
+
+* **Nichts fehlt.** Jede Stelle, an der sich die Kontur ändert, hängt über eine
+  Kette von Maßen an der Bezugskante. Fehlt ein Glied, ist das Teil nicht
+  herstellbar.
+* **Nichts steht doppelt.** Ein Maß, das sich aus zwei anderen ergibt, gehört
+  nicht noch einmal hinein — ein **geschlossener Maßzug** ist nach
+  DIN ISO 129-1 keine Bemaßung, sondern eine offene Frage. Ein Kegel wird nach
+  DIN ISO 3040 aus *einem* Durchmesser, dem Verhältnis und der Länge bemaßt,
+  nicht aus beiden Durchmessern.
+
+Beides prüft `pruefungen/test-drehprozess.js` unter „Vollstaendig bemasst“ mit
+einer Verschmelzungsstruktur über die Maßketten — fehlendes Glied und
+geschlossener Zug fallen im selben Durchlauf auf.
+
+**Was quer zur Achse liegt, braucht einen eigenen Riss.** Breite und Tiefe
+einer Passfedernut sind im Seitenriss nicht einzutragen; dafür gibt es
+`zeichneNutQuerschnitt()`. Sicherungsringnuten sind zu klein für die Ansicht
+und bekommen `zeichneNutEinzelheit()`.
+
+**Maße und Benennungen in ein Bild** gehen nur mit `masseUnten`: Erst wenn
+keine Maßkette mehr über dem Teil steht, ist dort Platz für Hinweislinien.
+Eine Benennung, die dasselbe sagt wie ein Maß — die Gewindebezeichnung etwa —
+trägt `wennOhneMasse: true` und verschwindet, sobald bemaßt wird.
+
 ---
 
 ## 7. Mittellinien

@@ -30,12 +30,19 @@
  * ------------------------------
  *   abschnitte     zylindrisch, und mit `dBis` kegelig
  *   nuten          Sicherungsringnuten, rundum, gespiegelt
+ *   rundungen      Innenrundungen an den Absaetzen, mit `radien` benannt
+ *   freistiche     Freistiche nach DIN 509, ebenfalls ueber `radien`
  *   laengsnuten    Passfedernuten - sie liegen oben und werden nicht
  *                  gespiegelt, denn sie sind nicht rotationssymmetrisch
  *   bohrungen      Innenbohrungen als verdeckte Kanten
  *   gewinde        Außen- und Kerndurchmesser nach DIN ISO 6410
  */
 "use strict";
+
+/* Die Fase, mit der jede Stirnflaeche und jeder Absatz nach unten
+   gebrochen wird - in Millimetern. Sie steht hier und nicht in der Kontur,
+   damit das Zeichnungsblatt sie nennen kann, ohne sie abzuschreiben. */
+var WELLEN_FASE = 0.5;
 
 /* ---------- Zeichnen ---------- */
 
@@ -71,13 +78,14 @@ function abschnittRadius(a, x){
   return (a.d + (a.dBis - a.d) * Math.min(1, Math.max(0, t))) / 2;
 }
 
-/* Die Kontur einer Hälfte, von der Achse aus gemessen, als Punktfolge von
-   links nach rechts. Alles steckt darin: Fasen, Absätze, Kegel, die Nuten
-   und der Gewindefreistich. Die andere Hälfte entsteht durch Spiegeln -
-   eine Welle ist rotationssymmetrisch, und was man zweimal zeichnet, weicht
-   früher oder später voneinander ab. */
-function wellenKontur(w){
-  var a = w.abschnitte, fase = 0.5, p = [], i;
+/* Die Kontur als Punktfolge (x, r) von links nach rechts.
+
+   `oben` sagt, welche Hälfte gemeint ist. Für fast alles ist das egal -
+   eine Welle ist rotationssymmetrisch. Nicht egal ist es bei der
+   Passfedernut: Sie liegt oben und nur oben. Im Seitenriss ersetzt sie
+   dort die oberste Mantellinie, statt unter ihr zu liegen. */
+function wellenKontur(w, oben){
+  var a = w.abschnitte, fase = WELLEN_FASE, p = [], i;
 
   /* Zwei gleiche Punkte hintereinander ergaeben eine Linie der Laenge
      null - unsichtbar, aber sie steht im Bild und wird mitgeprueft. */
@@ -96,12 +104,25 @@ function wellenKontur(w){
   for(i = 0; i < a.length; i++){
     var r = abschnittRadius(a[i], a[i].von);
 
-    w.nuten.forEach(function(n){
-      if(n.bei < a[i].von || n.bei >= a[i].bis) return;
-      bis(n.bei, r);
-      bis(n.bei, r - n.tiefe);
-      bis(n.bei + n.breite, r - n.tiefe);
-      bis(n.bei + n.breite, r);
+    /* Was auf diesem Mantel liegt, der Reihe nach von links: rundum
+       laufende Nuten immer, die Passfedernut nur in der oberen Hälfte.
+       Beide werden zusammen sortiert - sonst springt die Punktfolge
+       zurück, sobald eine Welle beides trägt. */
+    var drauf = w.nuten.map(function(n){
+      return {von: n.bei, bis: n.bei + n.breite, tiefe: n.tiefe};
+    });
+    if(oben){
+      (w.laengsnuten || []).forEach(function(n){
+        drauf.push({von: n.von, bis: n.bis, tiefe: n.tiefe});
+      });
+    }
+    drauf.sort(function(x, y){ return x.von - y.von; });
+    drauf.forEach(function(n){
+      if(n.von < a[i].von || n.von >= a[i].bis) return;
+      bis(n.von, r);
+      bis(n.von, r - n.tiefe);
+      bis(n.bis, r - n.tiefe);
+      bis(n.bis, r);
     });
 
     /* Ein kegeliger Abschnitt endet auf einem anderen Halbmesser als er
@@ -153,20 +174,69 @@ function wellenKontur(w){
 function wellenGroesse(w, o){
   o = o || {};
   var s = o.s || 6;
-  var oben = o.masse ? 100 : 46, unten = o.masse ? 106 : 46;
+  var oben = 46, unten = 46;
   if(o.bezeichnungen) oben = Math.max(oben, 56);
   if(o.rauheiten)     oben = Math.max(oben, 52);
+  if(o.radien)        oben = Math.max(oben, 56);
+
+  /* Die Maßketten sind so hoch, wie die Welle Maße hat - 20 Bildpunkte je
+     Stufe, wie in `wellenMasse`, plus der Überstand der Maßhilfslinien.
+     Vier Maße unten ergeben wieder die 106, die hier früher fest standen. */
+  if(o.masse){
+    unten = 26 + Math.max(0, wellenLaengsmasse(w, o.masseUnten).length - 1)
+          * 20 + 20;
+    if(!o.masseUnten){
+      oben = Math.max(oben, 30
+        + Math.max(0, (w.masse.oben || []).length - 1) * 20 + 30);
+    }
+  }
+
+  /* Die Erklaerebenen haengen an ihrem eigenen Durchmesser, nicht am
+     groessten. Eine Benennung am duennen Zapfen braucht deshalb weniger
+     Platz ueber dem Teil als dieselbe am Bund - gerechnet statt geraten. */
+  oben = Math.max(oben, wellenErklaerHoehe(w, s, o));
   var halb = (o.rohteil ? w.rohteil.d : wellenGroesstDurchmesser(w)) / 2 * s;
+  var links = wellenRand(w, o, "links"), rechts = wellenRand(w, o, "rechts");
   return {
-    breite: (o.rohteil ? w.rohteil.laenge : w.laenge) * s + 2 * (o.rand || 82),
+    breite: (o.rohteil ? w.rohteil.laenge : w.laenge) * s + links + rechts,
     hoehe: 2 * halb + oben + unten,
-    x: o.rand || 82,
+    x: links,
     y: halb + oben
   };
 }
 
-/* Zeichnet die Welle. o = {x, y, s, masse, rauheiten, bezeichnungen,
-   markiert, rohteil}. Gibt die Gruppe zurück. */
+/* Wie breit der Rand einer Seite sein muss. Ein Durchmessermaß steht um
+   `versatz` neben dem Teil; die Maßhilfslinie läuft noch sieben Punkte
+   darüber hinaus, und die hochkant stehende Maßzahl braucht daneben Platz.
+   Ohne diese Rechnung stand die Antriebswelle aus ihrem eigenen Bild. */
+function wellenRand(w, o, seite){
+  var r = o.rand || 82;
+  if(!o.masse || !w.masse) return r;
+  (w.masse.durchmesser || []).forEach(function(z){
+    if(z.seite !== seite) return;
+    r = Math.max(r, z.versatz + 16);
+  });
+  return r;
+}
+
+/* Wie weit die Erklaerebenen ueber den groessten Durchmesser hinausragen. */
+function wellenErklaerHoehe(w, s, o){
+  var gd = wellenGroesstDurchmesser(w), hoch = 0;
+  function messen(liste, grund){
+    (liste || []).forEach(function(k){
+      var h = (gd - (k.d === undefined ? gd : k.d)) / 2 * s
+            + (k.hoch === undefined ? grund : k.hoch) + 20;
+      if(h > hoch) hoch = h;
+    });
+  }
+  if(o.bezeichnungen) messen(w.bezeichnungen, 26);
+  if(o.rauheiten)     messen(w.rauheiten, 16);
+  if(o.radien)        messen(wellenRadienListe(w), RADIUS_HOCH);
+  return hoch;
+}
+
+/* Zeichnet die Welle. o = {x, y, s, masse, masseUnten, rauheiten,
+   bezeichnungen, radien, markiert, rohteil}. Gibt die Gruppe zurück. */
 function zeichneWelle(svg, w, o){
   o = o || {};
   var m = wellenMassstab({x: o.x || 82, y: o.y || 140, s: o.s || 6});
@@ -186,12 +256,14 @@ function zeichneWelle(svg, w, o){
           m.y(w.rohteil.d, false), SCHMAL, {strich:"12 2 2 2"});
   }
 
-  /* Die Kontur, beide Hälften aus derselben Punktfolge. */
-  var k = wellenKontur(w);
+  /* Die Kontur. Jede Hälfte bekommt ihre eigene Punktfolge: Die
+     Passfedernut gehört nur in die obere. */
+  var k = wellenKontur(w, true);
   [true, false].forEach(function(oben){
-    for(i = 0; i < k.length - 1; i++){
-      linie(g, m.x(k[i].x), m.y(k[i].r * 2, oben),
-               m.x(k[i + 1].x), m.y(k[i + 1].r * 2, oben), BREIT);
+    var kk = oben ? k : wellenKontur(w, false);
+    for(i = 0; i < kk.length - 1; i++){
+      linie(g, m.x(kk[i].x), m.y(kk[i].r * 2, oben),
+               m.x(kk[i + 1].x), m.y(kk[i + 1].r * 2, oben), BREIT);
     }
   });
   /* Die beiden Stirnflächen. */
@@ -232,33 +304,26 @@ function zeichneWelle(svg, w, o){
     }
   });
 
-  /* Eine Längsnut (Passfedernut) - sie liegt oben und ist nicht
-     rotationssymmetrisch. Also wird sie nur einmal gezeichnet, nicht
-     gespiegelt: zwei Endbögen und der Nutgrund dazwischen. */
+  /* Die Passfedernut steckt in der oberen Kontur, siehe wellenKontur.
+     Was hier noch fehlt, sind die beiden Kanten, an denen ihre Flanken die
+     Mantelfläche schneiden: Sie liegen tiefer als die Mantellinie und
+     höher als der Nutgrund, und zwar bei der Sehne über der halben
+     Nutbreite. Schmale Vollinie - sichtbare Kante, aber keine Kontur. */
   (w.laengsnuten || []).forEach(function(n){
-    var oben = true;
-    var rOben = m.y(n.d, oben), rGrund = m.y(n.d - 2 * n.tiefe, oben);
-    var halb = n.breite / 2 * m.s;
-    var x1 = m.x(n.von), x2 = m.x(n.bis);
-    /* Der Nutgrund als breite Vollinie - er ist eine sichtbare Kante. */
-    linie(g, x1, rGrund, x2, rGrund, BREIT);
-    /* Die beiden Enden als Halbkreise mit dem Halbmesser der halben
-       Nutbreite; in der Ansicht erscheinen sie als Bogen. */
-    [[x1, 1], [x2, -1]].forEach(function(e){
-      svgEl("path", {d: "M" + e[0].toFixed(1) + "," + rOben.toFixed(1)
-        + " A" + halb.toFixed(1) + "," + Math.abs(rGrund - rOben).toFixed(1)
-        + " 0 0 " + (e[1] > 0 ? 1 : 0) + " "
-        + (e[0] + e[1] * halb).toFixed(1) + "," + rGrund.toFixed(1),
-        fill:"none", stroke:"currentColor", "stroke-width":BREIT}, g);
-    });
+    var rr = n.d / 2, halb = n.breite / 2;
+    if(halb >= rr) return;
+    var dk = 2 * Math.sqrt(rr * rr - halb * halb);
+    if(dk <= n.d - 2 * n.tiefe) return;
+    linie(g, m.x(n.von), m.y(dk, true), m.x(n.bis), m.y(dk, true), SCHMAL);
   });
 
   /* Mittellinie, zwei bis drei Millimeter über das Teil hinaus. */
   achse(g, m.x(-4), m.x(w.laenge + 4), m.achse);
 
-  if(o.bezeichnungen) wellenBezeichnungen(g, m, w);
+  if(o.bezeichnungen) wellenBezeichnungen(g, m, w, o.masse);
   if(o.rauheiten)     wellenRauheiten(g, m, w);
-  if(o.masse)         wellenMasse(g, m, w);
+  if(o.radien)        wellenRadien(g, m, w);
+  if(o.masse)         wellenMasse(g, m, w, o.masseUnten);
   if(o.markiert)      wellenMarkieren(g, m, w, o.markiert, o.markenfarbe);
   return g;
 }
@@ -284,19 +349,35 @@ function massDurchmesser(g, m, o){
   return k;
 }
 
+/* Welche Längenmaße unter dem Teil stehen. Im Regelfall die von links
+   gemessenen; mit `alleUnten` auch die von rechts - dann nach Spannweite
+   geordnet, damit das kurze Maß nah am Teil liegt und die Maßlinien sich
+   nicht kreuzen. */
+function wellenLaengsmasse(w, alleUnten){
+  var u = (w.masse.unten || []).slice();
+  if(!alleUnten) return u;
+  return u.concat(w.masse.oben || []).sort(function(a, b){
+    return (a.bis - a.von) - (b.bis - b.von);
+  });
+}
+
 /* Die Maßeintragung: Längen von links unter dem Teil, Längen von rechts
    darüber, Durchmesser senkrecht - so steht es auf der Originalzeichnung.
    Welche Maße eingetragen werden, sagt die Welle selbst (`masse`); die
-   Staffelung der Maßketten rechnet diese Funktion. */
-function wellenMasse(g, m, w){
+   Staffelung der Maßketten rechnet diese Funktion.
+
+   `alleUnten` räumt die obere Maßkette nach unten. Das kostet Bildhöhe,
+   macht aber die obere Hälfte frei - nur so passen Maße und Benennungen
+   in ein Bild, siehe den Hinweis bei `wellenBezeichnungen`. */
+function wellenMasse(g, m, w, alleUnten){
   var gd = wellenGroesstDurchmesser(w);
   var u = m.y(gd, false), o = m.y(gd, true);
 
-  (w.masse.unten || []).forEach(function(z, i){
+  wellenLaengsmasse(w, alleUnten).forEach(function(z, i){
     mass(g, m.x(z.von), m.x(z.bis), u + 26 + i * 20, z.text,
          [m.y(z.an[0], false), m.y(z.an[1], false)]);
   });
-  (w.masse.oben || []).forEach(function(z, i){
+  if(!alleUnten) (w.masse.oben || []).forEach(function(z, i){
     mass(g, m.x(z.von), m.x(z.bis), o - 30 - i * 20, z.text,
          [m.y(z.an[0], true), m.y(z.an[1], true)]);
   });
@@ -315,11 +396,90 @@ function wellenMasse(g, m, w){
    Nicht zusammen mit `masse` verwenden: Die Hinweislinien laufen dann in die
    Maßhilfslinien der oberen Maßkette. Entweder die Zeichnung mit Maßen oder
    das Bild mit Benennungen - zwei Bilder sind besser als ein überfülltes.
+   Die eine Ausnahme ist `masse` zusammen mit `masseUnten`: Dann steht keine
+   Maßkette mehr über dem Teil, und beides passt nebeneinander. Genau so
+   entsteht die Gesamtzeichnung in der Übersicht des Übungspakets.
    Die Höhen sind in den Daten gestaffelt: Vier Benennungen auf 130 mm Länge
    stoßen sonst aneinander. */
-function wellenBezeichnungen(g, m, w){
+function wellenBezeichnungen(g, m, w, mitMasse){
   var e = svgEl("g", {"class":"erklaer"}, g);
   (w.bezeichnungen || []).forEach(function(k){
+    /* Eine Gewindebezeichnung ist ein Maß, kein Hinweis. Steht sie schon
+       als Durchmessermaß im Bild, darf sie nicht ein zweites Mal als
+       Benennung daneben stehen - doppelt bemaßt ist nicht bemaßt. */
+    if(mitMasse && k.wennOhneMasse) return;
+    var y0 = m.y(k.d, true), y1 = y0 - k.hoch;
+    linie(e, m.x(k.x), y0, m.x(k.x) + k.ab, y1, SCHMAL, {strich:"4 3"});
+    txt(e, m.x(k.x) + k.ab, y1 - 5, k.text,
+        {anker: k.ab < 0 ? "end" : "start", groesse: 11});
+  });
+}
+
+/* Grundabstand einer Radienangabe von ihrer Mantellinie. */
+var RADIUS_HOCH = 34;
+
+/* Rundungen und Freistiche mit ihrer Angabe - aus den Daten, damit im Bild
+   dieselbe Zahl steht wie in der Rechnung.
+
+   Warum das eine eigene Ebene ist: Die engste Innenrundung der Kontur
+   begrenzt den Eckenradius des Schlichtwerkzeugs. Wer sie aus der
+   Zeichnung ablesen soll, muss sie dort auch finden - eine Zeichnung, die
+   nur Rautiefen zeigt, lässt die Frage nicht beantworten.
+
+   Ein Freistich trägt seine Bezeichnung, keine Radienzahl: Bei
+   "DIN 509 - E 0,6 × 0,3" ist die erste Zahl der Radius, bei "DIN 76 - A"
+   steht er in der Tabelle zur Steigung. Nachschlagen gehört zur Aufgabe.
+   Der Gewindefreistich bleibt außen vor - er liegt am Gewinde und wird
+   eingestochen, das Längsdrehwerkzeug fährt nicht hinein. Deshalb zählt er
+   auch bei `kleinsterInnenradius` nicht mit. */
+function wellenRadienListe(w){
+  var liste = [];
+  function eintrag(k, text){
+    liste.push({x: k.bei, d: absatzDurchmesser(w, k.bei), text: text,
+                ab: k.ab === undefined ? 18 * absatzSeite(w, k.bei) : k.ab,
+                hoch: k.hoch === undefined ? RADIUS_HOCH : k.hoch});
+  }
+  (w.rundungen || []).forEach(function(r){
+    eintrag(r, "R" + zahlKomma(r.r));
+  });
+  (w.freistiche || []).forEach(function(f){
+    eintrag(f, f.norm || ("R" + zahlKomma(f.r)));
+  });
+  return liste;
+}
+
+/* Zu welcher Seite die Hinweislinie eines Absatzes zeigt: zur schlankeren.
+   Dort ist über dem Teil Platz, und die Linie kreuzt keine Mantellinie des
+   größeren Durchmessers. -1 heißt nach links, +1 nach rechts. */
+function absatzSeite(w, mm){
+  var links = null, rechts = null;
+  w.abschnitte.forEach(function(a){
+    if(a.bis === mm) links = abschnittRadius(a, mm);
+    if(a.von === mm) rechts = abschnittRadius(a, mm);
+  });
+  if(links === null) return 1;
+  if(rechts === null) return -1;
+  return links <= rechts ? -1 : 1;
+}
+
+/* Der kleinere der beiden Durchmesser an einem Absatz. Dort liegt die
+   Innenecke, in der die Rundung sitzt - und dort setzt die Hinweislinie
+   an, nicht am Bund darüber. */
+function absatzDurchmesser(w, mm){
+  var d = null;
+  w.abschnitte.forEach(function(a){
+    if(mm < a.von || mm > a.bis) return;
+    var dd = abschnittRadius(a, mm) * 2;
+    if(d === null || dd < d) d = dd;
+  });
+  return d === null ? wellenGroesstDurchmesser(w) : d;
+}
+
+/* Die Radienangaben zeichnen - Erklärebene wie die Benennungen, deshalb
+   gestrichelte Hinweislinie. */
+function wellenRadien(g, m, w){
+  var e = svgEl("g", {"class":"erklaer"}, g);
+  wellenRadienListe(w).forEach(function(k){
     var y0 = m.y(k.d, true), y1 = y0 - k.hoch;
     linie(e, m.x(k.x), y0, m.x(k.x) + k.ab, y1, SCHMAL, {strich:"4 3"});
     txt(e, m.x(k.x) + k.ab, y1 - 5, k.text,
@@ -389,8 +549,13 @@ function wellenMarkieren(g, m, w, ids, farbe){
   });
 }
 
-/* Eine Nut im Maßstab 4:1, wie die Einzelheiten A und B auf der Zeichnung.
-   Gezeichnet wird der Ausschnitt mit Bruchkanten links und rechts. */
+/* Eine Nut stark vergrößert, wie die Einzelheiten A und B auf der
+   Zeichnung. Gezeichnet wird der Ausschnitt mit Bruchkanten links und
+   rechts, bemaßt werden Breite und Tiefe.
+
+   `s` ist die Bildpunktzahl je Millimeter. Sie sollte so groß sein, dass
+   die Tiefe mehr als 34 Bildpunkte misst - darunter passen die Maßpfeile
+   nicht zwischen die Maßhilfslinien, und `massV` kennt keinen engen Fall. */
 function zeichneNutEinzelheit(svg, w, o){
   var n = null;
   w.nuten.forEach(function(x){ if(x.marke === (o.marke || "A")) n = x; });
@@ -414,7 +579,83 @@ function zeichneNutEinzelheit(svg, w, o){
 
   mass(g, x0, x0 + b, y0 + t + 34, o.text || zahlKomma(n.breite),
        [y0 + t, y0 + t]);
+  /* Die Tiefe daneben. Eine Sicherungsringnut wird nach beiden Zahlen
+     gefertigt - Breite allein sagt nichts über den Nutgrund. */
+  massV(g, y0, y0 + t, x0 + b + rand + 34, zahlKomma(n.tiefe),
+        [x0 + b + rand, x0 + b]);
   return g;
+}
+
+/* Der Querschnitt durch eine Passfedernut, stark vergrößert.
+
+   Warum es ihn braucht: Breite und Tiefe liegen quer zur Achse. Im
+   Seitenriss ist von der Breite nichts zu sehen und von der Tiefe nur der
+   Nutgrund - beide Maße sind dort nicht einzutragen. Ohne diesen Schnitt
+   bleibt die Nut unbemaßt.
+
+   Bemaßt wird nach DIN 6885-1: b als Nutbreite mit ihrer Passung, t1 als
+   Nuttiefe in der Welle, gemessen von der Mantelfläche. Dass die
+   Mantelfläche an dieser Stelle gar nicht mehr da ist, ist kein Fehler -
+   t1 wird von der gedachten Zylinderfläche aus angetragen; sie steht
+   deshalb als schmale Strichlinie im Bild.
+
+   Geschnitten wird quer, also mit Schraffur - anders als der Längsriss
+   der Welle, den man nicht schneidet. */
+function zeichneNutQuerschnitt(svg, w, o){
+  o = o || {};
+  var n = (w.laengsnuten || [])[0];
+  if(!n) return null;
+  var s = o.s || 8;
+  var g = svgEl("g", {}, svg);
+  var R = n.d / 2 * s;
+  var cx = o.x === undefined ? R + 74 : o.x;
+  var cy = o.y === undefined ? R + 62 : o.y;
+  var halb = n.breite / 2 * s;
+  /* Wo die Nutflanken die Mantelfläche schneiden - die Sehne über der
+     halben Nutbreite. Dort hört der Kreis auf und die Nut fängt an. */
+  var h = Math.sqrt(R * R - halb * halb);
+  var grund = cy - (n.d / 2 - n.tiefe) * s;
+  var oben = cy - R;
+
+  var flaeche = svgEl("path", {d:
+    "M" + (cx + halb).toFixed(1) + "," + (cy - h).toFixed(1)
+    + " A" + R.toFixed(1) + "," + R.toFixed(1) + " 0 1 1 "
+    + (cx - halb).toFixed(1) + "," + (cy - h).toFixed(1)
+    + " L" + (cx - halb).toFixed(1) + "," + grund.toFixed(1)
+    + " L" + (cx + halb).toFixed(1) + "," + grund.toFixed(1) + " Z",
+    /* Die Musterkennung traegt den Namen der Welle: Zwei Querschnitte in
+       einem Dokument haetten sonst dieselbe id, und das ist ungueltig. */
+    fill: schraffur(svg, "nutschnitt-" + w.id, 45),
+    stroke: "currentColor", "stroke-width": BREIT}, g);
+
+  /* Die Mittellinien des Kreises. */
+  achse(g, cx - R - 10, cx + R + 10, cy);
+  /* Dieselbe Strichpunktlinie wie die waagerechte Achse - ein Bild, ein
+     Strichbild. */
+  fbAchseV(g, cy - R - 10, cy + R + 10, cx);
+
+  /* Die gedachte Mantelfläche über der Nut - von ihr aus wird t1
+     angetragen. */
+  linie(g, cx - halb - 6, oben, cx + halb + 6, oben, SCHMAL, {strich:"6 3"});
+
+  mass(g, cx - halb, cx + halb, oben - 44,
+       zahlKomma(n.breite) + (n.breiteToleranz ? " " + n.breiteToleranz : ""),
+       [cy - h, cy - h]);
+  massV(g, oben, grund, cx + R + 44,
+        "t1 = " + zahlKomma(n.tiefe)
+        + (n.tiefeToleranz ? " " + n.tiefeToleranz : ""),
+        [cx + halb + 6, cx + halb]);
+  return g;
+}
+
+/* Wie groß die Zeichenfläche für einen Nutquerschnitt sein muss. */
+function nutQuerschnittGroesse(w, o){
+  o = o || {};
+  var n = (w.laengsnuten || [])[0];
+  if(!n) return null;
+  var s = o.s || 8, R = n.d / 2 * s;
+  return {breite: 2 * R + 258, hoehe: 2 * R + 124,
+          x: R + 74, y: R + 62, s: s};
 }
 
 /* Eine Zahl mit Komma statt Punkt - für Maßzahlen. */

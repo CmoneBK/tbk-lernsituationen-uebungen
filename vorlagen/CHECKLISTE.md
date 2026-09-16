@@ -91,6 +91,25 @@ ist die harmlosere Richtung, aber man sollte es wissen.
 * `viewBox` setzen, keine festen `width`/`height` — sonst bricht es auf dem
   Telefon.
 
+**Ist es eine technische Zeichnung, gilt `vorlagen/ZEICHNUNGSREGELN.md` ohne
+Abzug — und dort besonders Abschnitt 6.1: vollständig bemaßt, aber nirgends
+doppelt.** Kurzfassung für eine Welle:
+
+* Zeichnen mit `masse` + `masseUnten` + `radien` + `bezeichnungen` +
+  `rauheiten`. Ohne `masseUnten` laufen die Hinweislinien in die obere
+  Maßkette; das ist der Grund, warum die Ebenen früher nicht zusammen durften.
+* Rundungen und Freistiche kommen aus `rundungen`/`freistiche` in
+  `assets/wellen.js`. Fehlt dort die Lage (`ab`, `hoch`), setzt der Baustein
+  sie zur schlankeren Seite — nachmessen mit `test-beschriftung.js`.
+* Quer zur Achse liegende Maße brauchen einen eigenen Riss:
+  `zeichneNutQuerschnitt()` für die Passfedernut, `zeichneNutEinzelheit()` für
+  Sicherungsringnuten.
+* `assets/wellenblatt.js` baut das ganze Blatt auf einmal — Ansicht,
+  Einzelheiten und die Tabelle der Angaben, die kein Maß sind. Ein Übungspaket
+  bekommt es über `"zeichnung"` in seiner `info.json`.
+* Gegenprobe: `node pruefungen/test-drehprozess.js`, Abschnitt
+  „Vollstaendig bemasst“.
+
 ## 4. Ausgabe: PDF, Word, Druck
 
 | Kennzeichnung | Wirkung auf Papier |

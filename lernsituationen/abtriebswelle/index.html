@@ -27,6 +27,9 @@
   }
   figure.bild{margin:0 0 18px}
   figure.bild svg{width:100%; height:auto}
+  /* Der Nutquerschnitt ist ein kleines Bild - auf voller Breite waere er
+     groesser als das Werkstueck, zu dem er gehoert. */
+  figure.bild.schmal{max-width:360px}
   figure.bild figcaption{font-size:13px; color:var(--muted); margin-top:6px}
   /* Der Arbeitsplan ist das Handlungsprodukt - er darf breit sein. */
   table.plan{font-size:13.5px}
@@ -103,6 +106,8 @@
     <h2><span class="nr">2</span>Die Kontur lesen</h2>
 
     <figure class="bild" id="bildWelle"></figure>
+
+    <figure class="bild schmal" id="bildNut"></figure>
 
     <p>Fünf Abschnitte, aber drei davon sind keine glatten Zylinder.</p>
 
@@ -523,6 +528,16 @@
 
     <span class="formel">t<sub>h</sub> = L · i / (n · f)</span>
 
+    <p class="fussnote">Gerechnet wird mit <strong>konstanter
+      Drehzahl</strong>: Die Maschine dieses Auftrags hat feste
+      Drehzahlstufen, und genau die habt ihr in Teil 5 gewählt. Das
+      Tabellenbuch führt daneben den CNC-Fall mit konstanter
+      Schnittgeschwindigkeit &ndash; dieselbe Zeit, aber v<sub>c</sub> wird
+      über den ganzen Schnitt gehalten. Beim Querplandrehen und beim
+      Kegeldrehen ist das der Unterschied zwischen „stimmt im Mittel“ und
+      „stimmt überall“. Das Werkzeug „Hauptnutzungszeit beim Drehen“ rechnet
+      beide Fälle.</p>
+
     <div class="tabellenrahmen">
       <table class="werte">
         <thead><tr><th>Vorgang</th><th>n, f, i</th><th>L in mm</th>
@@ -734,13 +749,33 @@ function bilanz(id, richtig, gesamt, offen){
 /* ---------- Teil 2: Zeichnung, Abschnitte, Einzelheiten ---------- */
 
 (function kopf(){
-  var g = wellenGroesse(WELLE, {s:5.6, masse:true, rauheiten:true});
+  /* Vollstaendig bemasst: alle Laengen unter dem Teil (`masseUnten`),
+     darueber Benennungen, Rundungen und Rautiefen. Nur weil keine Maßkette
+     mehr ueber dem Teil steht, passen Maße und Benennungen in ein Bild. */
+  var o = {s:5.6, masse:true, masseUnten:true, bezeichnungen:true,
+           rauheiten:true, radien:true};
+  var g = wellenGroesse(WELLE, o);
   var svg = bild("bildWelle", g.breite, g.hoehe,
-    "Fertigungszeichnung der Abtriebswelle mit Maßen und Rautiefen",
+    "Fertigungszeichnung der Abtriebswelle mit allen Maßen",
     "Abtriebswelle aus X5CrNi18-10. Rohteil: Gesenkschmiedeteil Ø46 × 172 mm "
     + "mit Zunderhaut. Die Bohrung Ø18 H7 ist als verdeckte Kante "
-    + "gestrichelt.");
-  zeichneWelle(svg, WELLE, {x:g.x, y:g.y, s:5.6, masse:true, rauheiten:true});
+    + "gestrichelt; die Passfedernut unterbricht die obere Mantellinie. "
+    + "Breite und Tiefe der Nut stehen im Querschnitt darunter.");
+  o.x = g.x; o.y = g.y;
+  zeichneWelle(svg, WELLE, o);
+
+  /* Breite und Tiefe der Passfedernut liegen quer zur Achse - im
+     Seitenriss sind sie nicht einzutragen. Dafuer der Querschnitt. */
+  var q = nutQuerschnittGroesse(WELLE, {s:8});
+  var n = WELLE.laengsnuten[0];
+  var sq = bild("bildNut", q.breite, q.hoehe,
+    "Querschnitt durch die Passfedernut mit Breite und Tiefe",
+    "<strong>Querschnitt A&ndash;A</strong> durch die Passfedernut. "
+    + n.norm + " &ndash; " + n.sitz + ", Nutlänge "
+    + (n.bis - n.von) + " " + n.laengeToleranz + " mm. Die gestrichelte "
+    + "Linie über der Nut ist die gedachte Mantelfläche: Von ihr aus wird "
+    + "t<sub>1</sub> angetragen.");
+  zeichneNutQuerschnitt(sq, WELLE, {s:8, x:q.x, y:q.y});
 
   el("stufen").innerHTML = STUFEN.map(function(n){
     return "<span>" + n + "</span>"; }).join("");
@@ -762,8 +797,14 @@ function bilanz(id, richtig, gesamt, offen){
     + 'der Eckenradius wirkt dabei genauso wie am Zylinder.</p>'
     + '<p><strong>Passfedernut 10 × 5</strong> nach DIN 6885-1. Für Ø 30 bis '
     + '38 mm stehen dort b = 10 mm Breite und t<sub>1</sub> = 5 mm Tiefe in '
-    + 'der Welle. Sie wird <strong>gefräst</strong> &ndash; das Teil verlässt '
-    + 'dafür die Drehmaschine.</p>'
+    + 'der Welle. Die Nutbreite bekommt <strong>N9</strong> &ndash; leichter '
+    + 'Sitz, damit sich die Nabe montieren lässt; für wechselnde Belastung '
+    + 'wäre P9 zu wählen. Für t<sub>1</sub> lässt die Norm in diesem '
+    + 'Durchmesserbereich +0,2 mm zu, für die Nutlänge ebenfalls. Beide Maße '
+    + 'liegen quer zur Achse und stehen deshalb im <strong>Querschnitt</strong> '
+    + 'unter der Zeichnung, nicht in der Ansicht. Gefertigt wird sie '
+    + '<strong>gefräst</strong> &ndash; das Teil verlässt dafür die '
+    + 'Drehmaschine.</p>'
     + '<p><strong>Bohrung Ø18 H7</strong>, 40 mm tief, von links. Mehr als '
     + 'doppelt so tief wie weit: Die Bohrstange kragt aus und schwingt.</p>'
     + '<p><strong>Gewinde M24×3 – 6g</strong>. Die Steigung 3 mm ist der '

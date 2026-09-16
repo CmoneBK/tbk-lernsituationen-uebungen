@@ -218,13 +218,31 @@
     <details>
       <summary>4. Der Betrieb kauft eine CNC-Maschine mit konstanter
         Schnittgeschwindigkeit. Was ändert sich?</summary>
-      <p>Die Drehzahl ist dann keine feste Zahl mehr, sondern wird laufend
-        nachgeregelt. Damit fällt der Umweg über den mittleren Durchmesser
-        weg &ndash; die Zeitformel rechnet direkt mit v<sub>c</sub>:</p>
-      <span class="formel">t<sub>h</sub> = π · d<sub>m</sub> · (L · i) /
-        (v<sub>c</sub> · f)</span>
-      <p>Im Tabellenbuch steht das auf der Seite neben der hier verwendeten.
-        Die Vorschubwege sind dieselben.</p>
+      <p>Das Tabellenbuch hat dafür eine eigene Seite, direkt neben der hier
+        verwendeten. Dort ist die Drehzahl keine feste Zahl mehr, sondern
+        wird laufend nachgeregelt, und gerechnet wird direkt mit
+        v<sub>c</sub>:</p>
+      <span class="formel">t<sub>h</sub> = π · d · L · i /
+        (v<sub>c</sub> · 1000 · f)</span>
+      <p>Die <strong>1000</strong> gehört dazu: v<sub>c</sub> steht in
+        Metern je Minute, d und L in Millimetern. Eingesetzt wird für d
+        dasselbe wie bei der Drehzahl &ndash; beim Längsdrehen der
+        Durchmesser, beim Querplandrehen der mittlere Durchmesser
+        d<sub>m</sub>. Die Vorschubwege sind dieselben.</p>
+      <p>Und jetzt der Punkt, an dem man zweimal hinsehen muss:
+        <strong>Beide Formeln liefern dieselbe Zahl.</strong> Setzt man
+        n = v<sub>c</sub> · 1000 / (π · d) in t<sub>h</sub> = L · i / (n · f)
+        ein, steht die CNC-Formel da. Die Zeit ändert sich nicht.</p>
+      <p>Was sich ändert, ist, <em>was während des Schnitts passiert</em>.
+        Auf der konventionellen Maschine steht die Drehzahl fest; beim
+        Querplandrehen stimmt die Schnittgeschwindigkeit deshalb nur am
+        mittleren Durchmesser. Außen ist sie zu hoch, zur Mitte hin fällt
+        sie gegen null &ndash; und dort schneidet das Werkzeug nicht mehr,
+        es drückt. Die CNC hält v<sub>c</sub> konstant und erreicht damit
+        überall dieselbe Standzeit und dieselbe Oberfläche. Dafür muss die
+        Drehzahl zur Mitte hin immer weiter steigen, und irgendwann ist die
+        Spindel am Anschlag: Deshalb gehört zu G96 immer eine
+        Drehzahlbegrenzung.</p>
     </details>
 
     <div class="merksatz">
@@ -241,9 +259,12 @@
 
     <p class="fussnote"><strong>Woher die Angaben stammen:</strong>
       „Hauptnutzungszeit beim Drehen mit konstanter Drehzahl&ldquo; &ndash;
-      Formel, Vorschubwege und An-/Überlauf; Schnittdaten beim Drehen und die
-      Tabelle zur erreichbaren Rautiefe &ndash; Tabellenbuch Metall. Die
-      Spannwelle ist das Übungswerkstück dieses Pakets.</p>
+      Formel, Vorschubwege und An-/Überlauf; die Seite daneben rechnet
+      dasselbe für CNC mit konstanter Schnittgeschwindigkeit. Dazu
+      Schnittdaten beim Drehen und die Tabelle zur erreichbaren Rautiefe
+      &ndash; Tabellenbuch Metall. <strong>Gerechnet wird hier
+      konventionell</strong>, mit fester Drehzahl. Die Spannwelle ist das
+      Übungswerkstück dieses Pakets.</p>
 
     <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
       Maßgebend sind Norm und Tabellenbuch.</p>

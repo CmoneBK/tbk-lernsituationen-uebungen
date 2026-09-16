@@ -39,5 +39,10 @@
     "05-wie-lange-dauert-das.html",
     "06-auf-welches-mass-wird-geschlichtet.html",
     "07-womit-wird-das-geprueft.html"
-  ]
+  ],
+  "zeichnung": {
+    "welle": "spannwelle",
+    "titel": "Die Spannwelle – Gesamtzeichnung",
+    "lead": "Jede Übung zeigt nur den Ausschnitt, um den es ihr geht. Hier steht das ganze Werkstück mit allen Maßen: Längen, Durchmesser mit Passung, Rundungen, Gewinde, Gewindefreistich, Nuten und Rautiefen."
+  }
 }

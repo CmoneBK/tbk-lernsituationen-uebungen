@@ -93,6 +93,20 @@
   }
   .besch{display:block; margin-top:4px; color:var(--muted); font-size:14px}
 
+  /* --- Gesamtzeichnung des Werkstuecks --- */
+  /* Sie steht unter der Liste: Erst das, was zu tun ist, dann das Blatt zum
+     Nachschlagen. Den Rest des Aussehens bringt assets/wellenblatt.js
+     selbst mit - so sieht das Blatt ueberall gleich aus, wo es auftaucht. */
+  .gesamtzeichnung{
+    margin:44px 0 0; padding:20px 18px 6px;
+    background:var(--card); border:1px solid var(--border); border-radius:12px;
+    box-shadow:var(--shadow);
+  }
+  .gesamtzeichnung h2{
+    font-size:18px; letter-spacing:-.2px; margin:0 0 8px;
+  }
+  .zeichnung-lead{margin:0 0 18px; color:var(--muted); font-size:14px}
+
   footer{
     text-align:center; color:var(--muted); font-size:13px;
     padding:40px 0 32px; border-top:1px solid var(--border); margin-top:48px;
@@ -136,6 +150,20 @@
         <li><a class="eintrag" href="06-auf-welches-mass-wird-geschlichtet.html"><span class="eintrag-kopf"><span class="eintrag-name">Auf welches Maß wird geschlichtet?</span><span class="dauer">25 min</span></span><span class="besch">Ø22 g6 und Ø18 n6: Grenzabmaße ablesen, Grenzmaße und Mittenmaß rechnen – und vier gemessene Teile beurteilen. Gutteil, Nacharbeit oder Ausschuss.</span></a></li>
         <li><a class="eintrag" href="07-womit-wird-das-geprueft.html"><span class="eintrag-kopf"><span class="eintrag-name">Womit wird das geprüft?</span><span class="dauer">25 min</span></span><span class="besch">Toleranzweiten gegen Ablesungen halten, Prüfmittel zuordnen, Prüfschritte an die richtige Stelle im Arbeitsplan setzen und das Prüfmaß angeben.</span></a></li>
       </ol>
+      <section class="gesamtzeichnung">
+        <h2>Die Spannwelle – Gesamtzeichnung</h2>
+        <p class="zeichnung-lead">Jede Übung zeigt nur den Ausschnitt, um den es ihr geht. Hier steht das ganze Werkstück mit allen Maßen: Längen, Durchmesser mit Passung, Rundungen, Gewinde, Gewindefreistich, Nuten und Rautiefen.</p>
+        <div id="wellenblatt"></div>
+      </section>
+      <script src="../../assets/zeichnen.js"></script>
+      <script src="../../assets/wellen.js"></script>
+      <script src="../../assets/drehteil.js"></script>
+      <script src="../../assets/wellenblatt.js"></script>
+      <script>
+      wellenblatt(document.getElementById('wellenblatt'),
+                  WELLEN["spannwelle"]);
+      </script>
+
   </main>
 
 <script>
