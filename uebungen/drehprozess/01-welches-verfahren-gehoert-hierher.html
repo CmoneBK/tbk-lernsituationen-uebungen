@@ -23,6 +23,43 @@
   figure.bild figcaption{font-size:13px; color:var(--muted); margin-top:6px}
   ol.ablauf{counter-reset:none}
   ol.ablauf li{margin:0 0 6px}
+
+  /* Die Reihenfolge wird gezogen. Jede Karte ist zugleich ueber die Tastatur
+     zu bewegen - sonst waere die Uebung fuer einen Teil der Klasse keine. */
+  ol.ziehliste{list-style:none; margin:0; padding:0; counter-reset:schritt}
+  ol.ziehliste li{
+    counter-increment:schritt; display:flex; gap:12px; align-items:flex-start;
+    background:var(--card); border:1px solid var(--border-stark);
+    border-radius:10px; padding:11px 13px; margin:0 0 8px; cursor:grab;
+  }
+  ol.ziehliste li:active{cursor:grabbing}
+  ol.ziehliste li::before{
+    content:counter(schritt); flex:0 0 auto;
+    display:inline-flex; align-items:center; justify-content:center;
+    width:28px; height:28px; border-radius:8px;
+    background:var(--bg); border:1px solid var(--border-stark);
+    font-weight:700; font-variant-numeric:tabular-nums;
+  }
+  ol.ziehliste li .text{flex:1; line-height:1.5}
+  ol.ziehliste li .griff{flex:0 0 auto; color:var(--muted); font-size:18px;
+    line-height:1.4; letter-spacing:2px}
+  ol.ziehliste li.gezogen{opacity:.45}
+  ol.ziehliste li.ziel{border-color:var(--accent); border-style:dashed}
+  ol.ziehliste li.ja{border-left:5px solid var(--ok)}
+  ol.ziehliste li.nein{border-left:5px solid var(--bad)}
+  ol.ziehliste li:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+  .ziehknoepfe{display:flex; gap:4px; flex-wrap:wrap}
+  .ziehknoepfe button{
+    font:600 13px/1 inherit; padding:5px 9px; border-radius:7px;
+    border:1px solid var(--border-stark); background:var(--bg); color:inherit;
+    cursor:pointer;
+  }
+  /* Auf dem Papier ist nichts zu ziehen - dort steht die Liste zum
+     Durchnummerieren. */
+  @media print{
+    ol.ziehliste li{cursor:auto}
+    .ziehknoepfe{display:none}
+  }
 </style>
 <script src="../../assets/thema.js"></script>
 </head>
@@ -105,22 +142,20 @@
     </details>
 
     <h2><span class="nr">3</span>Die Reihenfolge</h2>
-    <p>Die Vorgänge stehen hier durcheinander. Tragt die Nummern 1 bis 8 ein
-      &ndash; so, wie sie im Arbeitsplan stehen müssen.</p>
+    <p>Die Vorgänge stehen hier durcheinander. Bringt sie in die Reihenfolge,
+      in der sie im Arbeitsplan stehen müssen &ndash; <strong>zieht die Karten
+      an die richtige Stelle</strong>.</p>
+    <p class="fussnote" data-druck="weg">Mit der Tastatur geht es auch: Karte
+      mit der Tabulatortaste anwählen, dann mit den Pfeiltasten nach oben oder
+      unten schieben. Die beiden Knöpfe an jeder Karte tun dasselbe.</p>
 
-    <div class="tabellenrahmen">
-      <table class="flaechen">
-        <thead>
-          <tr><th>Nr.</th><th>Arbeitsvorgang</th><th>Stimmt?</th></tr>
-        </thead>
-        <tbody id="ablaufListe"></tbody>
-      </table>
-    </div>
+    <ol class="ziehliste" id="ablaufListe"></ol>
 
     <p style="margin-top:14px">
       <button type="button" class="knopf" id="btnAblauf">Reihenfolge prüfen</button>
+      <button type="button" class="knopf leise" id="btnAblaufNeu">Neu mischen</button>
     </p>
-    <p class="bilanzzeile" id="bilanzAblauf">Noch nichts eingetragen.</p>
+    <p class="bilanzzeile" id="bilanzAblauf">Noch nichts geprüft.</p>
 
     <details>
       <summary>Lösung: die Reihenfolge und ihre Gründe</summary>
@@ -359,24 +394,99 @@ el("btnLeeren").addEventListener("click", function(){
 
 /* ---------- Teil 3: die Reihenfolge ---------- */
 
-/* Gemischt, aber immer gleich - eine Übung soll auf Papier und am Bildschirm
-   dieselbe sein. */
+/* Die Startreihenfolge ist fest - eine Übung soll auf Papier und am
+   Bildschirm dieselbe sein. "Neu mischen" würfelt danach. */
 var GEMISCHT = [5, 2, 8, 1, 6, 3, 7, 4];
 
-(function ablaufBauen(){
-  var aus = "";
-  GEMISCHT.forEach(function(nr, i){
+/* Die aktuelle Reihenfolge als Liste der Vorgangsnummern. */
+var reihenfolge = GEMISCHT.slice();
+
+function ablaufZeichnen(){
+  el("ablaufListe").innerHTML = reihenfolge.map(function(nr, i){
     var v = ABLAUF[nr - 1];
-    var opt = '<option value="">–</option>';
-    for(var n = 1; n <= ABLAUF.length; n++){
-      opt += '<option value="' + n + '">' + n + '</option>';
-    }
-    aus += '<tr><td style="width:5.5em"><select id="a' + i + '"'
-      + ' data-druck="ankreuzen">' + opt + '</select></td>'
-      + '<td>' + v.was + '</td>'
-      + '<td class="urteil" id="au' + i + '">&ndash;</td></tr>';
+    return '<li draggable="true" tabindex="0" data-nr="' + nr + '"'
+      + ' aria-label="Platz ' + (i + 1) + ' von ' + reihenfolge.length + ': '
+      + v.was + '">'
+      + '<span class="text">' + v.was + '</span>'
+      + '<span class="ziehknoepfe" data-druck="weg">'
+      + '<button type="button" data-weg="-1" aria-label="nach oben">\u2191</button>'
+      + '<button type="button" data-weg="1" aria-label="nach unten">\u2193</button>'
+      + '</span>'
+      + '<span class="griff" aria-hidden="true">\u22ee\u22ee</span>'
+      + '</li>';
+  }).join("");
+}
+
+/* Eine Karte um einen Platz verschieben - das ist der Weg fuer Tastatur und
+   Knöpfe. Das Ziehen mit der Maus benutzt dieselbe Liste. */
+function schieben(von, nach){
+  if(nach < 0 || nach >= reihenfolge.length) return;
+  var karte = reihenfolge.splice(von, 1)[0];
+  reihenfolge.splice(nach, 0, karte);
+  ablaufZeichnen();
+  var neu = el("ablaufListe").children[nach];
+  if(neu) neu.focus();
+  el("bilanzAblauf").textContent = "Noch nichts geprüft.";
+}
+
+function platzVon(li){
+  return [].indexOf.call(el("ablaufListe").children, li);
+}
+
+(function ablaufBauen(){
+  ablaufZeichnen();
+
+  var liste = el("ablaufListe");
+  var gezogen = null;
+
+  liste.addEventListener("dragstart", function(e){
+    var li = e.target.closest("li");
+    if(!li) return;
+    gezogen = li;
+    li.classList.add("gezogen");
+    e.dataTransfer.effectAllowed = "move";
+    /* Firefox zieht nur, wenn etwas im Paket liegt. */
+    try{ e.dataTransfer.setData("text/plain", li.dataset.nr); }catch(err){}
   });
-  el("ablaufListe").innerHTML = aus;
+
+  liste.addEventListener("dragend", function(){
+    if(gezogen) gezogen.classList.remove("gezogen");
+    [].forEach.call(liste.children, function(x){ x.classList.remove("ziel"); });
+    gezogen = null;
+  });
+
+  liste.addEventListener("dragover", function(e){
+    if(!gezogen) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    var ueber = e.target.closest("li");
+    [].forEach.call(liste.children, function(x){ x.classList.remove("ziel"); });
+    if(ueber && ueber !== gezogen) ueber.classList.add("ziel");
+  });
+
+  liste.addEventListener("drop", function(e){
+    if(!gezogen) return;
+    e.preventDefault();
+    var ueber = e.target.closest("li");
+    [].forEach.call(liste.children, function(x){ x.classList.remove("ziel"); });
+    if(!ueber || ueber === gezogen) return;
+    schieben(platzVon(gezogen), platzVon(ueber));
+  });
+
+  /* Pfeiltasten und die beiden Knöpfe an jeder Karte. */
+  liste.addEventListener("keydown", function(e){
+    var li = e.target.closest("li");
+    if(!li) return;
+    if(e.key === "ArrowUp"){ e.preventDefault(); schieben(platzVon(li), platzVon(li) - 1); }
+    if(e.key === "ArrowDown"){ e.preventDefault(); schieben(platzVon(li), platzVon(li) + 1); }
+  });
+
+  liste.addEventListener("click", function(e){
+    var b = e.target.closest("button[data-weg]");
+    if(!b) return;
+    var li = b.closest("li");
+    schieben(platzVon(li), platzVon(li) + Number(b.dataset.weg));
+  });
 
   var l = "";
   ABLAUF.forEach(function(v){
@@ -386,19 +496,31 @@ var GEMISCHT = [5, 2, 8, 1, 6, 3, 7, 4];
 }());
 
 el("btnAblauf").addEventListener("click", function(){
-  var richtig = 0, offen = 0;
-  GEMISCHT.forEach(function(nr, i){
-    var gewaehlt = el("a" + i).value, u = el("au" + i);
-    if(!gewaehlt){ u.textContent = "–"; u.className = "urteil"; offen++; return; }
-    var ok = Number(gewaehlt) === nr;
+  var richtig = 0;
+  reihenfolge.forEach(function(nr, i){
+    var li = el("ablaufListe").children[i];
+    var ok = nr === i + 1;
     if(ok) richtig++;
-    u.textContent = ok ? "richtig" : "nein";
-    u.className = "urteil " + (ok ? "ja" : "nein");
+    li.classList.remove("ja", "nein");
+    li.classList.add(ok ? "ja" : "nein");
   });
-  el("bilanzAblauf").textContent = offen === GEMISCHT.length
-    ? "Noch nichts eingetragen."
-    : richtig + " von " + GEMISCHT.length + " richtig"
-      + (offen ? ", " + offen + " noch offen." : ".");
+  el("bilanzAblauf").textContent = richtig === reihenfolge.length
+    ? "Alle acht an der richtigen Stelle."
+    : richtig + " von " + reihenfolge.length + " an der richtigen Stelle.";
+});
+
+el("btnAblaufNeu").addEventListener("click", function(){
+  /* So lange mischen, bis nichts mehr zufällig richtig steht - sonst
+     verschenkt die Übung die Hälfte ihrer Aufgabe. */
+  var i, j, t;
+  do{
+    for(i = reihenfolge.length - 1; i > 0; i--){
+      j = Math.floor(Math.random() * (i + 1));
+      t = reihenfolge[i]; reihenfolge[i] = reihenfolge[j]; reihenfolge[j] = t;
+    }
+  }while(reihenfolge.some(function(nr, k){ return nr === k + 1; }));
+  ablaufZeichnen();
+  el("bilanzAblauf").textContent = "Noch nichts geprüft.";
 });
 </script>
 

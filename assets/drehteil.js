@@ -47,9 +47,15 @@ var WELLE = {
   /* Freistiche DIN 509 - E 0,6 x 0,3 an den beiden Schultern, dazu der
      Gewindefreistich DIN 76 - A vor dem Gewinde. */
   freistiche: [
-    {norm: "DIN 509 – E 0,6 × 0,3", bei: 22.3, tiefe: 0.3, breite: 2.0},
-    {norm: "DIN 509 – E 0,6 × 0,3", bei: 91.6, tiefe: 0.3, breite: 2.0}
+    {norm: "DIN 509 – E 0,6 × 0,3", bei: 22.3, r: 0.6, tiefe: 0.3, breite: 2.0},
+    {norm: "DIN 509 – E 0,6 × 0,3", bei: 91.6, r: 0.6, tiefe: 0.3, breite: 2.0}
   ],
+  /* Der kleinste Innenradius der ganzen Kontur - und damit die Grenze fuer
+     den Eckenradius des Schlichtwerkzeugs: r_eps <= r_w - 0,1 mm.
+     Nicht die R1 am Bund, wie man auf den ersten Blick meint: Die beiden
+     Freistiche sind mit 0,6 mm enger. Wer sie uebersieht, waehlt ein
+     Werkzeug, das nicht in die eigene Kontur passt. */
+  kleinsterInnenradius: 0.6,
   gewindefreistich: {norm: "DIN 76 – A", von: 91.6, bis: 95.1},
   radius: {bei: 42.3, r: 1},
   zentrierbohrungen: {links: "ISO 6411 – A2×4,25", rechts: "ISO 6411 – A2,5×5,3"},

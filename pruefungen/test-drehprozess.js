@@ -353,8 +353,12 @@ console.log('\nDie Uebungen');
     p(datei + ': hat Pruefknoepfe', knoepfe.length > 0, String(knoepfe.length));
     knoepfe.forEach((b) => b.click());
     const bilanzen = [...d.querySelectorAll('.bilanzzeile')];
+    /* Keine Bilanz darf eine Trefferzahl nennen, bevor etwas eingetragen ist.
+       Wie sie das sagt, bleibt ihr ueberlassen - die Ziehliste in Uebung 01
+       hat nichts einzutragen und meldet deshalb "noch nichts geprueft". */
     p(datei + ': ohne Eingabe wird nichts als richtig gewertet',
-      bilanzen.every((z) => /Noch nichts eingetragen/.test(z.textContent)),
+      bilanzen.length > 0
+      && !bilanzen.some((z) => /" + B + "d+ von " + B + "d+/.test(z.textContent)),
       bilanzen.map((z) => z.textContent).join(' | ').slice(0, 110));
 
     /* Und jede Loesung steht vollstaendig da - eine leere Loesung ist
@@ -365,6 +369,82 @@ console.log('\nDie Uebungen');
       leer.length + ' zu kurz');
     w.close();
   });
+}
+
+console.log('\nDie Reihenfolge zum Ziehen');
+{
+  const datei = '01-welches-verfahren-gehoert-hierher.html';
+  const dom = new JSDOM(mitAssets(fs.readFileSync(
+    path.join(BASIS, 'uebungen/drehprozess', datei), 'utf8')), {
+    runScripts: 'dangerously',
+    url: 'https://t-bk.de/unterrichtsmaterial/uebungen/drehprozess/' + datei,
+    beforeParse(w) { w.Element.prototype.scrollIntoView = function () {}; },
+  });
+  const w = dom.window, d = w.document;
+  const karten = () => [...d.querySelectorAll('#ablaufListe li')];
+
+  p('acht Karten liegen bereit', karten().length === 8, String(karten().length));
+  p('jede laesst sich ziehen',
+    karten().every((k) => k.getAttribute('draggable') === 'true'));
+  /* Eine Uebung, die sich nur ziehen laesst, waere fuer einen Teil der
+     Klasse keine. */
+  p('jede ist mit der Tastatur erreichbar',
+    karten().every((k) => k.getAttribute('tabindex') === '0'));
+  p('jede sagt, wo sie steht',
+    karten().every((k) => /Platz \d+ von 8/.test(k.getAttribute('aria-label') || '')),
+    karten()[0].getAttribute('aria-label'));
+  p('und hat zwei Knoepfe zum Schieben',
+    karten().every((k) => k.querySelectorAll('button[data-weg]').length === 2));
+  p('die Startreihenfolge ist durcheinander',
+    w.eval('reihenfolge').some((nr, i) => nr !== i + 1),
+    w.eval('reihenfolge').join(' '));
+
+  /* Mit den Knoepfen sortieren - denselben Weg geht die Tastatur. */
+  for (let runde = 0; runde < 40; runde++) {
+    const r = w.eval('reihenfolge');
+    let getan = false;
+    for (let i = 0; i < r.length; i++) {
+      if (r[i] !== i + 1) {
+        w.eval('schieben(' + r.indexOf(i + 1) + ', ' + i + ')');
+        getan = true;
+        break;
+      }
+    }
+    if (!getan) break;
+  }
+  p('sie laesst sich sortieren',
+    w.eval('reihenfolge').join(',') === '1,2,3,4,5,6,7,8',
+    w.eval('reihenfolge').join(' '));
+
+  d.getElementById('btnAblauf').click();
+  p('und wird dann als richtig erkannt',
+    /Alle acht an der richtigen Stelle/.test(
+      d.getElementById('bilanzAblauf').textContent),
+    d.getElementById('bilanzAblauf').textContent);
+  p('jede Karte ist gruen markiert',
+    karten().every((k) => k.classList.contains('ja')));
+
+  /* Neu mischen darf keine Karte an ihrem Platz stehen lassen - sonst
+     verschenkt die Uebung einen Teil ihrer Aufgabe. */
+  let gut = true;
+  for (let i = 0; i < 20; i++) {
+    d.getElementById('btnAblaufNeu').click();
+    if (w.eval('reihenfolge').some((nr, k) => nr === k + 1)) gut = false;
+  }
+  p('nach dem Mischen steht keine Karte zufaellig richtig', gut);
+
+  d.getElementById('btnAblauf').click();
+  p('und das Urteil faellt entsprechend aus',
+    /an der richtigen Stelle/.test(d.getElementById('bilanzAblauf').textContent)
+    && !/Alle acht/.test(d.getElementById('bilanzAblauf').textContent),
+    d.getElementById('bilanzAblauf').textContent);
+
+  /* Ein Zug mit der Maus geht denselben Weg wie einer mit der Tastatur. */
+  const vorher = w.eval('reihenfolge').join(',');
+  d.querySelector('#ablaufListe button[data-weg="1"]').click();
+  p('der Knopf schiebt die Karte', w.eval('reihenfolge').join(',') !== vorher,
+    vorher + ' -> ' + w.eval('reihenfolge').join(','));
+  w.close();
 }
 
 console.log('\nDie Uebung zur Schnittgeschwindigkeit rechnet wie das Buch');
@@ -481,14 +561,54 @@ console.log('\nDie Lernsituation');
     /12 von 12 richtig/.test(d.getElementById('bilanz4').textContent),
     d.getElementById('bilanz4').textContent);
 
-  d.getElementById('vR').value = '0.8';
-  d.getElementById('vF4').value = String(w.eval('vorschub(4, 0.8)'));
-  d.getElementById('vF10').value = String(w.eval('vorschub(10, 0.8)'));
+  d.getElementById('vRw').value = String(w.eval('R_ENG'));
+  d.getElementById('vR').value = String(w.eval('R_ECKE'));
+  d.getElementById('vF4').value = String(w.eval('vorschub(4, R_ECKE)'));
+  d.getElementById('vF10').value = String(w.eval('vorschub(10, R_SCHRUPP)'));
   d.getElementById('btn5').click();
   p('die Vorschuebe werden erkannt',
-    /3 von 3 richtig/.test(d.getElementById('bilanz5').textContent),
+    /4 von 4 richtig/.test(d.getElementById('bilanz5').textContent),
     d.getElementById('bilanz5').textContent);
+  p('die engste Innenrundung ist der Freistich, nicht die R1',
+    w.eval('R_ENG') === 0.6 && w.eval('R_ECKE') === 0.4,
+    'R_ENG=' + w.eval('R_ENG') + ' R_ECKE=' + w.eval('R_ECKE'));
   w.close();
+}
+
+console.log('\nDer Freistichradius - ueberall derselbe');
+{
+  /* Der kleinste Innenradius der Welle LF5 sind die Freistiche
+     DIN 509 - E 0,6 x 0,3, nicht die R1 am Bund. Daraus folgt
+     r_eps <= 0,5 mm, genormt 0,4 mm. Wer das verwechselt, waehlt ein
+     Werkzeug, das an der eigenen Kontur haengen bleibt - und der Fehler
+     zieht sich durch drei Uebungen, die Lernsituation und die Lektion. */
+  const baustein = fs.readFileSync(path.join(BASIS, 'assets/drehteil.js'), 'utf8');
+  p('der Zeichenbaustein kennt den kleinsten Innenradius',
+    /kleinsterInnenradius:\s*0\.6/.test(baustein));
+  p('und die Freistiche tragen ihren Radius',
+    (baustein.match(/r:\s*0\.6/g) || []).length === 2);
+
+  const stellen = [
+    ['uebungen/drehprozess/03-eine-wendeschneidplatte-lesen.html', 'R_ENG = 0.6'],
+    ['uebungen/drehprozess/04-wie-fein-muss-der-vorschub-sein.html', 'R_ENG = 0.6'],
+    ['lernsituationen/welle-lf5/index.html', 'R_ENG = 0.6'],
+  ];
+  stellen.forEach((s) => {
+    const text = fs.readFileSync(path.join(BASIS, s[0]), 'utf8');
+    p(path.basename(s[0]) + ': rechnet mit 0,6 mm', text.indexOf(s[1]) > 0);
+    p(path.basename(s[0]) + ': nennt den Freistich als engste Stelle',
+      /DIN 509/.test(text) && /Freistich/.test(text));
+  });
+
+  /* Und niemand behauptet mehr, 0,8 mm sei zulaessig. */
+  const heikel = stellen.map((s) => s[0])
+    .concat(['trainings/drehprozess/05-vorschub-und-rautiefe.html']);
+  const falsch = heikel.filter((f) => {
+    const t = fs.readFileSync(path.join(BASIS, f), 'utf8');
+    return /engste Innenrundung der Kontur ist\s+<strong>R1/.test(t);
+  });
+  p('keine Datei nennt die R1 als engste Stelle', falsch.length === 0,
+    falsch.join(', '));
 }
 
 console.log('\nDie Lektion im Werkzeug-Repo');

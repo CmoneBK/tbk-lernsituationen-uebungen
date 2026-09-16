@@ -125,13 +125,19 @@
     <figure class="bild" id="bildWelle"></figure>
 
     <p>Der Lagersitz <strong>Ø25</strong> soll mit <strong>Rz 4</strong>
-      geschlichtet werden. Die kleinste Innenrundung der Kontur ist
-      <strong>R1</strong> am Übergang zum Bund.</p>
+      geschlichtet werden. Die Frage ist, ob das Werkzeug in die Kontur
+      passt &ndash; also: <strong>Wo ist die engste Innenrundung?</strong></p>
+    <p>Sehen Sie die ganze Zeichnung durch, nicht nur die Durchmesser. Auch
+      Freistiche haben Radien.</p>
 
     <div class="tabellenrahmen">
       <table class="werte">
         <thead><tr><th>Frage</th><th>Eintrag</th><th>Stimmt?</th></tr></thead>
         <tbody>
+          <tr><td>Engste Innenrundung r<sub>w</sub> der Kontur in mm</td>
+            <td><input type="number" id="pRw" step="0.1" inputmode="decimal"
+              autocomplete="off"></td>
+            <td class="urteil" id="upRw">–</td></tr>
           <tr><td>Größter zulässiger Eckenradius r<sub>ε</sub> in mm
             (r<sub>ε</sub> &le; r<sub>w</sub> &minus; 0,1)</td>
             <td><input type="number" id="pMax" step="0.1" inputmode="decimal"
@@ -165,21 +171,36 @@
     <p class="bilanzzeile" id="bilanz2">Noch nichts eingetragen.</p>
 
     <details>
-      <summary>Lösung: sie taugt &ndash; und sie ist nicht die einzige Wahl</summary>
-      <p>Die kleinste Innenrundung ist R1, also darf der Eckenradius höchstens
-        <strong>0,9 mm</strong> sein. In Normgrößen: 0,8 mm. Mit
-        r<sub>ε</sub> = 0,4 mm ist die Platte also <strong>zulässig</strong>
-        &ndash; sie passt bequem in die Rundung.</p>
-      <p>Für Rz 4 folgt daraus der Vorschub:</p>
+      <summary>Lösung: sie passt &ndash; aber nicht wegen der R1</summary>
+      <p>Der erste Blick fällt auf die <strong>R1</strong> am Übergang zum Bund.
+        Damit wäre r<sub>ε</sub> &le; 0,9 mm erlaubt, also 0,8 mm.
+        <strong>Das ist die falsche Stelle.</strong></p>
+      <p>Die engste Innenrundung der Kontur sind die beiden Freistiche
+        <strong>DIN 509 &ndash; E 0,6 × 0,3</strong>. Die erste Zahl der
+        Bezeichnung <em>ist</em> der Radius: <strong>r = 0,6 mm</strong>.
+        Daraus folgt:</p>
+      <p>r<sub>ε</sub> &le; 0,6 &minus; 0,1 = <strong>0,5 mm</strong>
+        &nbsp;&rarr;&nbsp; genormt <strong>0,4 mm</strong></p>
+      <p>Mit r<sub>ε</sub> = 0,4 mm ist die Platte also <strong>gerade
+        richtig</strong> &ndash; eine mit 0,8 mm wäre zu groß. Für Rz 4 folgt
+        der Vorschub:</p>
       <p>f = √(8 · 0,4 · 0,004) = <strong>0,11 mm</strong></p>
       <p>Die Tabelle im Tabellenbuch nennt für Rz 4 und r<sub>ε</sub> = 0,4 mm
-        denselben Wert. Und 0,11 mm liegt im Vorschubbereich des Schlichtens
-        (0,1 bis 0,25 mm) &ndash; die Kombination ist also fahrbar.</p>
-      <p><strong>Aber:</strong> Mit r<sub>ε</sub> = 0,8 mm ginge f = 0,16 mm
-        &ndash; fast die Hälfte mehr Vorschub bei derselben Rautiefe, also
-        spürbar weniger Zeit. Der größere Eckenradius ist hier die bessere Wahl,
-        solange er in die Kontur passt. Genau deshalb steht die Regel
-        r<sub>ε</sub> &le; r<sub>w</sub> &minus; 0,1 mm im Buch.</p>
+        denselben Wert. 0,11 mm liegt im Vorschubbereich des Schlichtens
+        (0,1 bis 0,25 mm) &ndash; die Kombination ist fahrbar.</p>
+      <div class="merksatz">
+        <strong>Der klassische Fehler:</strong> nur die Durchmesserübergänge
+        ansehen und die Freistiche vergessen. Sie sind meist die engsten
+        Stellen der ganzen Kontur, und sie stehen nicht als Radius in der
+        Zeichnung, sondern versteckt in einer Normbezeichnung. Wer sie
+        übersieht, wählt ein Werkzeug, das an der eigenen Kontur hängen
+        bleibt.
+      </div>
+      <p class="fussnote">Die Regel gilt dem Werkzeug, das die Kontur
+        <em>erzeugt</em> &ndash; beim Konturdrehen auf der CNC also dem
+        Schlichtwerkzeug, das auch durch die Freistiche fährt. Werden die
+        Freistiche mit einem eigenen Formwerkzeug gestochen, bindet für den
+        Schlichtmeißel nur die R1. Im Zweifel gilt die engere Grenze.</p>
     </details>
 
     <h2><span class="nr">3</span>Die Bezeichnung selbst bilden</h2>
@@ -395,6 +416,11 @@ el("btn1").addEventListener("click", function(){
 
 /* ---------- Teil 2 ---------- */
 
+/* Die engste Innenrundung der Kontur: der Radius der Freistiche
+   DIN 509 - E 0,6 x 0,3. Nicht die R1 am Bund - das ist der Fehler, um den
+   es in Teil 2 geht. */
+var R_ENG = 0.6;
+
 /* f = Wurzel(8 * r_eps * Rth); Rth in Millimetern. */
 function vorschub(rzMikro, rEps){
   return Math.sqrt(8 * rEps * rzMikro / 1000);
@@ -403,9 +429,13 @@ function vorschub(rzMikro, rEps){
 el("btn2").addEventListener("click", function(){
   var r = 0, offen = 0;
 
+  var rw = wert("pRw");
+  var leerRw = !isFinite(rw); if(leerRw) offen++;
+  r += urteilen("upRw", Math.abs(rw - R_ENG) < 0.01, leerRw);
+
   var max = wert("pMax");
   var leerMax = !isFinite(max); if(leerMax) offen++;
-  r += urteilen("upMax", Math.abs(max - 0.9) < 0.01, leerMax);
+  r += urteilen("upMax", Math.abs(max - (R_ENG - 0.1)) < 0.01, leerMax);
 
   var passt = el("pPasst").value;
   if(!passt) offen++;
@@ -419,7 +449,7 @@ el("btn2").addEventListener("click", function(){
   if(!gr) offen++;
   r += urteilen("upGruppe", gr === "ja", !gr);
 
-  bilanz("bilanz2", r, 4, offen);
+  bilanz("bilanz2", r, 5, offen);
 });
 
 /* ---------- Teil 3 ---------- */

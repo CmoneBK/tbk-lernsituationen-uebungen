@@ -96,15 +96,16 @@
         zusätzlich geschlichtet, wenn die Fläche es verlangt.</p>
     </details>
 
-    <h2><span class="nr">2</span>Was ein größerer Eckenradius bringt</h2>
+    <h2><span class="nr">2</span>Was ein kleinerer Eckenradius kostet</h2>
     <p>Derselbe Lagersitz Ø25 mit Rz 4, aber ein Werkzeug mit
-      <strong>r<sub>ε</sub> = 0,8 mm</strong>.</p>
+      <strong>r<sub>ε</sub> = 0,2 mm</strong> &ndash; die kleinste genormte
+      Größe.</p>
 
     <div class="tabellenrahmen">
       <table class="werte">
         <thead><tr><th>Gesucht</th><th>Eintrag</th><th>Stimmt?</th></tr></thead>
         <tbody>
-          <tr><td>Vorschub f mit r<sub>ε</sub> = 0,8 mm, in mm</td>
+          <tr><td>Vorschub f mit r<sub>ε</sub> = 0,2 mm, in mm</td>
             <td><input type="number" id="gF" step="0.01" inputmode="decimal"
               autocomplete="off"></td>
             <td class="urteil" id="ugF">–</td></tr>
@@ -112,7 +113,7 @@
             <td><input type="number" id="gU4" step="1" inputmode="decimal"
               autocomplete="off"></td>
             <td class="urteil" id="ugU4">–</td></tr>
-          <tr><td>Umdrehungen für dieselbe Strecke bei r<sub>ε</sub> = 0,8 mm</td>
+          <tr><td>Umdrehungen für dieselbe Strecke bei r<sub>ε</sub> = 0,2 mm</td>
             <td><input type="number" id="gU8" step="1" inputmode="decimal"
               autocomplete="off"></td>
             <td class="urteil" id="ugU8">–</td></tr>
@@ -126,7 +127,7 @@
     <p class="bilanzzeile" id="bilanz2">Noch nichts eingetragen.</p>
 
     <details>
-      <summary>Lösung: ein Drittel weniger Umdrehungen</summary>
+      <summary>Lösung: rund vierzig Prozent mehr Umdrehungen</summary>
       <div id="loesung2"></div>
       <p>Die Zahl der Umdrehungen folgt aus dem Weg geteilt durch den Vorschub
         je Umdrehung:</p>
@@ -134,16 +135,20 @@
       <p>Mit der Drehzahl daraus die Zeit: t = L / (f · n). Das Tabellenbuch
         führt diese Rechnung unter „Hauptnutzungszeit beim Drehen" aus &ndash;
         dort kommen noch An- und Überlauf des Werkzeugs dazu.</p>
-      <p>Die Nachricht: <strong>Derselbe Rz, ein Drittel weniger Zeit</strong>,
-        nur weil das Werkzeug eine rundere Ecke hat. Das ist der Grund, warum
-        man beim Schlichten den größten Eckenradius nimmt, den die Kontur
-        zulässt.</p>
+      <p>Die Nachricht: <strong>Derselbe Rz, deutlich mehr Zeit</strong>, nur
+        weil das Werkzeug eine spitzere Ecke hat. Deshalb nimmt man beim
+        Schlichten den <em>größten</em> Eckenradius, den die Kontur zulässt
+        &ndash; und genau darum muss man wissen, wo die Kontur am engsten ist.
+        Das ist Teil 3.</p>
     </details>
 
     <h2><span class="nr">3</span>Die Grenze</h2>
     <p>Warum nicht gleich r<sub>ε</sub> = 1,6 mm? Weil der Radius in die Kontur
-      passen muss. An der Welle LF5 ist die kleinste Innenrundung
-      <strong>R1</strong>, am Übergang vom Ø24 zum Bund Ø30.</p>
+      passen muss. Die Frage ist nur: <strong>Wo ist die Kontur am
+      engsten?</strong></p>
+    <p>Der erste Blick fällt auf die <strong>R1</strong> am Übergang zum Bund.
+      Sehen Sie noch einmal genauer hin &ndash; auch Freistiche haben Radien,
+      und ihre Bezeichnung nennt sie.</p>
 
     <span class="formel">r<sub>ε</sub> &le; r<sub>w</sub> &minus; 0,1 mm</span>
 
@@ -151,6 +156,10 @@
       <table class="werte">
         <thead><tr><th>Frage</th><th>Eintrag</th><th>Stimmt?</th></tr></thead>
         <tbody>
+          <tr><td>Engste Innenrundung r<sub>w</sub> der Kontur in mm</td>
+            <td><input type="number" id="hRw" step="0.1" inputmode="decimal"
+              autocomplete="off"></td>
+            <td class="urteil" id="uhRw">–</td></tr>
           <tr><td>Größter rechnerisch zulässiger r<sub>ε</sub> in mm</td>
             <td><input type="number" id="hMax" step="0.1" inputmode="decimal"
               autocomplete="off"></td>
@@ -168,8 +177,8 @@
             <td><input type="number" id="hFmin" step="0.01" inputmode="decimal"
               autocomplete="off"></td>
             <td class="urteil" id="uhFmin">–</td></tr>
-          <tr><td>Welche Rautiefe ergäbe dieser kleinste Vorschub mit
-            r<sub>ε</sub> = 0,8 mm, in µm?</td>
+          <tr><td>Welche Rautiefe ergäbe dieser kleinste Vorschub mit dem
+            gewählten Eckenradius, in µm?</td>
             <td><input type="number" id="hRz" step="0.1" inputmode="decimal"
               autocomplete="off"></td>
             <td class="urteil" id="uhRz">–</td></tr>
@@ -183,15 +192,24 @@
     <p class="bilanzzeile" id="bilanz3">Noch nichts eingetragen.</p>
 
     <details>
-      <summary>Lösung: wo Schluss ist</summary>
+      <summary>Lösung: die Freistiche sind die engste Stelle</summary>
       <div id="loesung3"></div>
-      <p>Mit r<sub>ε</sub> = 0,8 mm und dem kleinsten Schlichtvorschub von
-        0,1 mm wäre eine Rautiefe von rund <strong>1,6 µm</strong> erreichbar
-        &ndash; deutlich feiner, als die Welle fordert. Nach unten ist also Luft.</p>
-      <p>Die Grenze liegt woanders: Wer eine Rautiefe verlangt, die auch damit
-        nicht mehr zu drehen ist, muss das Verfahren wechseln.
-        <strong>Schleifen</strong> beginnt ungefähr dort, wo das Drehen aufhört
-        &ndash; und kostet einen zweiten Aufspannvorgang.</p>
+      <div class="merksatz">
+        <strong>Der klassische Fehler:</strong> nur die Durchmesserübergänge
+        ansehen und die Freistiche vergessen. Sie sind meist die engsten
+        Stellen der ganzen Kontur &ndash; und sie stehen nicht als Radius in
+        der Zeichnung, sondern versteckt in einer Normbezeichnung:
+        <strong>DIN 509 &ndash; E 0,6 × 0,3</strong>. Die erste Zahl
+        <em>ist</em> der Radius.
+      </div>
+      <p>Mit r<sub>ε</sub> = 0,4 mm und dem kleinsten Schlichtvorschub von
+        0,1 mm wäre eine Rautiefe von rund <strong>3,1 µm</strong> erreichbar
+        &ndash; noch etwas feiner, als die Welle fordert. Nach unten ist also
+        wenig, aber etwas Luft.</p>
+      <p>Wer eine Rautiefe verlangt, die auch damit nicht mehr zu drehen ist,
+        muss das Verfahren wechseln. <strong>Schleifen</strong> beginnt
+        ungefähr dort, wo das Drehen aufhört &ndash; und kostet einen zweiten
+        Aufspannvorgang.</p>
     </details>
 
     <h2><span class="nr">4</span>Übertragen</h2>
@@ -274,8 +292,11 @@
 "use strict";
 
 var R_SCHLICHT = 0.4;        /* Eckenradius des Schlichtwerkzeugs, Teil 1 */
-var R_GROSS = 0.8;           /* der größere Eckenradius, Teil 2 */
+var R_KLEIN = 0.2;           /* die kleinste genormte Größe, Teil 2 */
 var L_SITZ = 39.3;           /* Länge des Ø25, aus der Zeichnung */
+/* Die engste Innenrundung der Kontur: der Radius der Freistiche
+   DIN 509 - E 0,6 x 0,3. Nicht die R1 am Bund. */
+var R_ENG = 0.6;
 
 var FORDERUNGEN = [
   {name:"Ø20 links und Ø25 – die beiden Lagersitze", rz:4},
@@ -350,20 +371,21 @@ el("btn1").addEventListener("click", function(){
 
 /* ---------- Teil 2 ---------- */
 
-var F_KLEIN = vorschub(4, R_SCHLICHT);
-var F_GROSS = vorschub(4, R_GROSS);
-var U_KLEIN = Math.ceil(L_SITZ / F_KLEIN);
-var U_GROSS = Math.ceil(L_SITZ / F_GROSS);
+var F_VIER = vorschub(4, R_SCHLICHT);
+var F_ZWEI = vorschub(4, R_KLEIN);
+var U_VIER = Math.ceil(L_SITZ / F_VIER);
+var U_ZWEI = Math.ceil(L_SITZ / F_ZWEI);
 
 (function teil2(){
   el("loesung2").innerHTML =
-    '<p><strong>Vorschub mit r<sub>ε</sub> = 0,8 mm:</strong> '
-    + 'f = √(8 · 0,8 · 0,004) = <strong>' + zahl(F_GROSS) + ' mm</strong></p>'
+    '<p><strong>Vorschub mit r<sub>ε</sub> = 0,2 mm:</strong> '
+    + 'f = √(8 · 0,2 · 0,004) = <strong>' + zahl(F_ZWEI) + ' mm</strong></p>'
     + '<p><strong>Umdrehungen für 39,3 mm:</strong><br>'
-    + 'mit r<sub>ε</sub> = 0,4 mm: 39,3 / ' + zahl(F_KLEIN) + ' = <strong>'
-      + U_KLEIN + '</strong><br>'
-    + 'mit r<sub>ε</sub> = 0,8 mm: 39,3 / ' + zahl(F_GROSS) + ' = <strong>'
-      + U_GROSS + '</strong></p>';
+    + 'mit r<sub>ε</sub> = 0,4 mm: 39,3 / ' + zahl(F_VIER) + ' = <strong>'
+      + U_VIER + '</strong><br>'
+    + 'mit r<sub>ε</sub> = 0,2 mm: 39,3 / ' + zahl(F_ZWEI) + ' = <strong>'
+      + U_ZWEI + '</strong> – rund '
+      + Math.round((U_ZWEI / U_VIER - 1) * 100) + ' % mehr</p>';
 }());
 
 el("btn2").addEventListener("click", function(){
@@ -371,17 +393,17 @@ el("btn2").addEventListener("click", function(){
 
   var f = wert("gF");
   var leerF = !isFinite(f); if(leerF) offen++;
-  r += urteilen("ugF", Math.abs(f - F_GROSS) <= 0.011, leerF);
+  r += urteilen("ugF", Math.abs(f - F_ZWEI) <= 0.011, leerF);
 
   /* Beim Abzaehlen der Umdrehungen ist eine Umdrehung Spielraum in Ordnung -
      je nachdem, ob man rundet oder aufrundet. */
   var u4 = wert("gU4");
   var leer4 = !isFinite(u4); if(leer4) offen++;
-  r += urteilen("ugU4", Math.abs(u4 - U_KLEIN) <= 1, leer4);
+  r += urteilen("ugU4", Math.abs(u4 - U_VIER) <= 1, leer4);
 
   var u8 = wert("gU8");
   var leer8 = !isFinite(u8); if(leer8) offen++;
-  r += urteilen("ugU8", Math.abs(u8 - U_GROSS) <= 1, leer8);
+  r += urteilen("ugU8", Math.abs(u8 - U_ZWEI) <= 1, leer8);
 
   bilanz("bilanz2", r, 3, offen);
 });
@@ -390,25 +412,34 @@ el("btn2").addEventListener("click", function(){
 
 (function teil3(){
   el("loesung3").innerHTML =
-    '<p>r<sub>ε</sub> &le; 1,0 &minus; 0,1 = <strong>0,9 mm</strong>. '
-    + 'Die nächstkleinere genormte Größe ist <strong>0,8 mm</strong>.</p>'
+    '<p>Die R1 am Bund ist <em>nicht</em> die engste Stelle. Die beiden '
+    + 'Freistiche <strong>DIN 509 – E 0,6 × 0,3</strong> haben '
+    + '<strong>r<sub>w</sub> = 0,6 mm</strong> – die erste Zahl der '
+    + 'Bezeichnung ist der Radius.</p>'
+    + '<p>r<sub>ε</sub> &le; 0,6 &minus; 0,1 = <strong>0,5 mm</strong>. '
+    + 'Die nächstkleinere genormte Größe ist <strong>0,4 mm</strong> – '
+    + 'genau das Werkzeug aus Teil 1.</p>'
     + '<p>Der kleinste Schlichtvorschub im Tabellenbuch ist '
     + '<strong>0,1 mm</strong>. Damit ergibt sich '
-    + 'R<sub>th</sub> = 0,1² / (8 · 0,8) = '
-    + zahl(rautiefe(0.1, R_GROSS) / 1000, 5) + ' mm = <strong>'
-    + zahl(rautiefe(0.1, R_GROSS), 1) + ' µm</strong>.</p>';
+    + 'R<sub>th</sub> = 0,1² / (8 · 0,4) = '
+    + zahl(rautiefe(0.1, R_SCHLICHT) / 1000, 5) + ' mm = <strong>'
+    + zahl(rautiefe(0.1, R_SCHLICHT), 1) + ' µm</strong>.</p>';
 }());
 
 el("btn3").addEventListener("click", function(){
   var r = 0, offen = 0;
 
+  var rw = wert("hRw");
+  var leerRw = !isFinite(rw); if(leerRw) offen++;
+  r += urteilen("uhRw", Math.abs(rw - R_ENG) < 0.01, leerRw);
+
   var max = wert("hMax");
   var leerMax = !isFinite(max); if(leerMax) offen++;
-  r += urteilen("uhMax", Math.abs(max - 0.9) < 0.01, leerMax);
+  r += urteilen("uhMax", Math.abs(max - (R_ENG - 0.1)) < 0.01, leerMax);
 
   var norm = el("hNorm").value;
   if(!norm) offen++;
-  r += urteilen("uhNorm", norm === "0.8", !norm);
+  r += urteilen("uhNorm", norm === "0.4", !norm);
 
   var fmin = wert("hFmin");
   var leerF = !isFinite(fmin); if(leerF) offen++;
@@ -417,10 +448,10 @@ el("btn3").addEventListener("click", function(){
   var rz = wert("hRz");
   var leerRz = !isFinite(rz); if(leerRz) offen++;
   r += urteilen("uhRz",
-    Math.abs(rz - rautiefe(0.1, R_GROSS)) <= rautiefe(0.1, R_GROSS) * 0.06,
+    Math.abs(rz - rautiefe(0.1, R_SCHLICHT)) <= rautiefe(0.1, R_SCHLICHT) * 0.06,
     leerRz);
 
-  bilanz("bilanz3", r, 4, offen);
+  bilanz("bilanz3", r, 5, offen);
 });
 </script>
 

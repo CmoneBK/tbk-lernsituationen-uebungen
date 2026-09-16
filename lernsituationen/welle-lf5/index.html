@@ -197,7 +197,11 @@
       <table class="werte">
         <thead><tr><th>Gesucht</th><th>Eintrag</th><th>Stimmt?</th></tr></thead>
         <tbody>
-          <tr><td>Größter zulässiger Eckenradius (kleinste Innenrundung R1),
+          <tr><td>Engste Innenrundung r<sub>w</sub> der Kontur in mm</td>
+            <td><input type="number" id="vRw" step="0.1" inputmode="decimal"
+              autocomplete="off"></td>
+            <td class="urteil" id="uvRw">–</td></tr>
+          <tr><td>Größter zulässiger Eckenradius des Schlichtwerkzeugs,
             genormt, in mm</td>
             <td><select id="vR" data-druck="ankreuzen">
               <option value="">bitte wählen</option>
@@ -211,7 +215,7 @@
               autocomplete="off"></td>
             <td class="urteil" id="uvF4">–</td></tr>
           <tr><td>Schruppvorschub am Bund Ø30, damit Rz 10 eingehalten wird
-            (r<sub>ε</sub> = 0,8 mm), in mm</td>
+            (Schruppwerkzeug, r<sub>ε</sub> = 0,8 mm), in mm</td>
             <td><input type="number" id="vF10" step="0.01" inputmode="decimal"
               autocomplete="off"></td>
             <td class="urteil" id="uvF10">–</td></tr>
@@ -225,13 +229,23 @@
     <p class="bilanzzeile" id="bilanz5">Noch nichts eingetragen.</p>
 
     <details>
-      <summary>Lösung: ein Werkzeug für alles Geschlichtete</summary>
+      <summary>Lösung: die Freistiche setzen die Grenze</summary>
       <div id="loesung5"></div>
+      <div class="merksatz">
+        <strong>Der klassische Fehler:</strong> die <strong>R1</strong> am Bund
+        für die engste Stelle halten. Die beiden Freistiche
+        <strong>DIN 509 &ndash; E 0,6 × 0,3</strong> sind enger &ndash; die
+        erste Zahl der Bezeichnung <em>ist</em> der Radius. Wer sie übersieht,
+        wählt ein Werkzeug mit r<sub>ε</sub> = 0,8 mm, und das passt an der
+        eigenen Kontur nicht durch.
+      </div>
       <p>Der <strong>Bund Ø30</strong> ist der Sonderfall: Er trägt nur die
         allgemeine Rautiefe Rz 10 und braucht deshalb
         <strong>keinen Schlichtgang</strong>. Er wird beim Schruppen auf Maß
         gedreht &ndash; mit einem Vorschub, der Rz 10 gerade noch einhält. Das
-        spart einen ganzen Arbeitsgang.</p>
+        spart einen ganzen Arbeitsgang. Das Schruppwerkzeug darf dabei den
+        größeren Eckenradius haben: Es fährt nicht in die Freistiche, die
+        werden eingestochen.</p>
       <p>Für <strong>Rz 6</strong> am Ø24 würde f = 0,14 mm reichen. Man nimmt
         trotzdem denselben Vorschub wie für Rz 4: Ein Werkzeugwechsel mitten im
         Schlichtgang kostet mehr Zeit, als der größere Vorschub auf 20 mm
@@ -406,14 +420,17 @@
     </details>
 
     <details>
-      <summary>3. Die Werkstatt hat kein Werkzeug mit r<sub>ε</sub> = 0,8 mm.
+      <summary>3. Die Werkstatt hat nur Werkzeuge mit r<sub>ε</sub> = 0,2 mm.
         Was tun?</summary>
-      <p>Mit r<sub>ε</sub> = 0,4 mm weiterarbeiten und den Vorschub auf
-        0,11 mm senken. Rz 4 ist damit weiter erreichbar &ndash; es dauert nur
-        länger, weil für dieselbe Strecke mehr Umdrehungen nötig sind.</p>
+      <p>Mit r<sub>ε</sub> = 0,2 mm weiterarbeiten und den Vorschub auf
+        0,08 mm senken. Rz 4 ist damit weiter erreichbar &ndash; es dauert nur
+        länger, weil für dieselbe Strecke rund vierzig Prozent mehr
+        Umdrehungen nötig sind. Und 0,08 mm liegt unter dem Schlichtbereich
+        des Tabellenbuchs: Die Schneide beginnt zu drücken statt zu
+        schneiden.</p>
       <p>Was <em>nicht</em> geht: den Vorschub beibehalten und hoffen. Mit
-        f = 0,16 mm und r<sub>ε</sub> = 0,4 mm wird die Rautiefe rund 8 µm
-        &ndash; doppelt so viel wie gefordert.</p>
+        f = 0,11 mm und r<sub>ε</sub> = 0,2 mm wird die Rautiefe rund 7,6 µm
+        &ndash; fast doppelt so viel wie gefordert.</p>
     </details>
 
     <details>
@@ -472,7 +489,12 @@ var STUFEN = [45, 63, 90, 125, 180, 250, 355, 500, 710, 1000, 1400, 2000];
 /* Startwerte aus der Zeile "P / Vergütungsstahl, legiert, Rm > 750". */
 var VC = {plan:130, schruppen:110, schlichten:150, stechen:105, gewinde:100};
 
-var R_ECKE = 0.8;        /* Eckenradius, den die Kontur mit R1 zulässt */
+/* Die engste Innenrundung der Kontur sind die Freistiche
+   DIN 509 - E 0,6 x 0,3, nicht die R1 am Bund. Daraus folgt der groesste
+   Eckenradius des Schlichtwerkzeugs: 0,6 - 0,1 = 0,5, genormt 0,4 mm. */
+var R_ENG = 0.6;
+var R_ECKE = 0.4;        /* Schlichtwerkzeug */
+var R_SCHRUPP = 0.8;     /* Schruppwerkzeug - es faehrt nicht in die Freistiche */
 var AUFMASS = 1.0;       /* Schlichtaufmaß auf den Durchmesser, in mm */
 
 function el(id){ return document.getElementById(id); }
@@ -631,29 +653,37 @@ el("btn4").addEventListener("click", function(){
 
 (function teil5(){
   el("loesung5").innerHTML =
-    '<p><strong>Eckenradius:</strong> Die kleinste Innenrundung ist R1, also '
-    + 'r<sub>ε</sub> ≤ 1,0 − 0,1 = 0,9 mm. Genormt: <strong>0,8 mm</strong>.</p>'
-    + '<p><strong>Schlichtvorschub für Rz 4:</strong> f = √(8 · 0,8 · 0,004) = '
+    '<p><strong>Engste Innenrundung:</strong> nicht die R1 am Bund, sondern '
+    + 'die Freistiche DIN 509 – E 0,6 × 0,3 – '
+    + '<strong>r<sub>w</sub> = 0,6 mm</strong>.</p>'
+    + '<p><strong>Eckenradius:</strong> r<sub>ε</sub> ≤ 0,6 − 0,1 = 0,5 mm. '
+    + 'Genormt: <strong>0,4 mm</strong>.</p>'
+    + '<p><strong>Schlichtvorschub für Rz 4:</strong> f = √(8 · 0,4 · 0,004) = '
     + '<strong>' + zahl(vorschub(4, R_ECKE)) + ' mm</strong> &ndash; er liegt im '
     + 'Schlichtbereich von 0,1 bis 0,25 mm.</p>'
-    + '<p><strong>Schruppvorschub am Bund:</strong> Für Rz 10 gilt '
-    + 'f = √(8 · 0,8 · 0,010) = <strong>' + zahl(vorschub(10, R_ECKE))
-    + ' mm</strong>. Das ist genau der kleinste Schruppvorschub des '
-    + 'Tabellenbuchs (0,25 mm) - der Bund lässt sich also beim Schruppen auf '
-    + 'Maß bringen, ohne die Rautiefe zu verletzen.</p>';
+    + '<p><strong>Schruppvorschub am Bund:</strong> Das Schruppwerkzeug hat '
+    + 'r<sub>ε</sub> = 0,8 mm – es fährt nicht in die Freistiche. Für Rz 10 '
+    + 'gilt f = √(8 · 0,8 · 0,010) = <strong>'
+    + zahl(vorschub(10, R_SCHRUPP)) + ' mm</strong>. Das ist genau der '
+    + 'kleinste Schruppvorschub des Tabellenbuchs (0,25 mm) – der Bund lässt '
+    + 'sich also beim Schruppen auf Maß bringen, ohne die Rautiefe zu '
+    + 'verletzen.</p>';
 }());
 
 el("btn5").addEventListener("click", function(){
   var r = 0, offen = 0;
+  var rw = wert("vRw");
+  var leerRw = !isFinite(rw); if(leerRw) offen++;
+  r += urteilen("uvRw", Math.abs(rw - R_ENG) < 0.01, leerRw);
   var rr = el("vR").value; if(!rr) offen++;
-  r += urteilen("uvR", rr === "0.8", !rr);
+  r += urteilen("uvR", rr === "0.4", !rr);
   var f4 = wert("vF4");
   var leer4 = !isFinite(f4); if(leer4) offen++;
   r += urteilen("uvF4", Math.abs(f4 - vorschub(4, R_ECKE)) <= 0.011, leer4);
   var f10 = wert("vF10");
   var leer10 = !isFinite(f10); if(leer10) offen++;
-  r += urteilen("uvF10", Math.abs(f10 - vorschub(10, R_ECKE)) <= 0.015, leer10);
-  bilanz("bilanz5", r, 3, offen);
+  r += urteilen("uvF10", Math.abs(f10 - vorschub(10, R_SCHRUPP)) <= 0.015, leer10);
+  bilanz("bilanz5", r, 4, offen);
 });
 
 /* ---------- Teil 7: die Werkzeugliste ---------- */
@@ -670,10 +700,11 @@ var WERKZEUGE = [
      + "abgesetzt - die Ausführung fürs Längsrunddrehen. N an Stelle 2 heißt "
      + "negative Grundform, also beidseitig verwendbar."},
   {nr:"T3", was:"Schlichtdrehmeißel, rechts",
-   norm:"Platte DCMT 11 T3 08 – P15<br>Halter DIN 4984 – SDJCR 2020 K 11",
-   warum:"D-Platte mit 55°: spitz genug für die Absätze, r<sub>ε</sub> = "
-     + "0,8 mm für den Vorschub. C an Stelle 2 heißt 7° Freiwinkel, also "
-     + "positive Grundform - sie schneidet leichter."},
+   norm:"Platte DCMT 11 T3 04 – P15<br>Halter DIN 4984 – SDJCR 2020 K 11",
+   warum:"D-Platte mit 55°: spitz genug für die Absätze. Die 04 an Stelle 7 "
+     + "ist r<sub>ε</sub> = 0,4 mm - mehr geht nicht, die Freistiche haben "
+     + "nur 0,6 mm Radius. C an Stelle 2 heißt 7° Freiwinkel, also positive "
+     + "Grundform; sie schneidet leichter."},
   {nr:"T4", was:"Einstechdrehmeißel, Schneidenbreite 1,3 mm",
    norm:"Stechplatte 1,3 mm breit, Stechtiefe mindestens 3 mm",
    warum:"Die Schneidenbreite ist die Nutbreite. Für 1,3 mm gibt es genau "
@@ -728,10 +759,11 @@ var PLAN = [
      + "für Rz 10. Lange Spiralspäne: Vorschub eher erhöhen."},
   {nr:40, vorgang:"Kontur schlichten: Ø25, Ø24, Ø20",
    wz:"T3, Bügelmessschraube, Rauheitsvergleichsmuster",
-   schnitt:"v<sub>c</sub> = 150 m/min, n = " + 0 + " 1/min, f = 0,16 mm, "
+   schnitt:"v<sub>c</sub> = 150 m/min, n = " + 0 + " 1/min, f = 0,11 mm, "
      + "a<sub>p</sub> = 0,5 mm, i = 1",
-   hinweis:"r<sub>ε</sub> = 0,8 mm ergibt Rz 4. Bund Ø30 bleibt aus. "
-     + "Kühlschmierstoff zugeben - das Maß stimmt nur kalt."},
+   hinweis:"r<sub>ε</sub> = 0,4 mm ergibt Rz 4 - größer darf die Ecke nicht "
+     + "sein, sonst passt sie nicht in die Freistiche (r = 0,6 mm). Bund Ø30 "
+     + "bleibt aus. Kühlschmierstoff zugeben - das Maß stimmt nur kalt."},
   {nr:50, vorgang:"Freistiche und Nuten A und B einstechen",
    wz:"T4, Messschieber",
    schnitt:"v<sub>c</sub> = 105 m/min, n = " + 0 + " 1/min, f = 0,08 mm",
