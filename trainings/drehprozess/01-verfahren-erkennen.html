@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Verfahren erkennen</title>
-<meta name="description" content="Welches Drehverfahren gehört an diese Fläche? Kontur lesen, Werkzeugangaben zuordnen und die Reihenfolge begründen – an der Antriebswelle.">
+<meta name="description" content="Welches Drehverfahren gehört an diese Fläche? Kontur lesen, Werkzeugangaben zuordnen und die Reihenfolge begründen – an der Spannwelle.">
 <meta name="dauer" content="10 min">
 <link rel="stylesheet" href="../../assets/uebung.css">
 <style>
@@ -57,7 +57,7 @@
         die Kontur gelesen sein: Welche Fläche entsteht durch welches
         Drehverfahren? Daraus folgt das Werkzeug, daraus die Spalte in der
         Schnittdatentabelle &ndash; und daraus die Reihenfolge im Arbeitsplan.</p>
-      <p>Drei Rundenarten wechseln sich ab: eine markierte Fläche der Antriebswelle
+      <p>Drei Rundenarten wechseln sich ab: eine markierte Fläche der Spannwelle
         zuordnen, ein Verfahren an seinen Werkzeugangaben erkennen, und
         entscheiden, was im Ablauf zuerst kommt.</p>
     </div>
@@ -128,7 +128,8 @@
     <details>
       <summary>4. Gewindedrehen</summary>
       <p>Hier ist der Vorschub keine freie Wahl: Er <strong>ist die
-        Steigung</strong> des Gewindes. Bei M20×1 also f = 1 mm je Umdrehung.
+        Steigung</strong> des Gewindes. Bei M16×1,5 also f = 1,5 mm je
+        Umdrehung.
         Der Eckenwinkel folgt dem Gewindeprofil: 60° beim metrischen Gewinde,
         55° beim Whitworth, 30° beim Trapezgewinde.</p>
       <p>Die volle Tiefe entsteht in mehreren Zustellungen. Wie viele es sind,
@@ -164,7 +165,7 @@
       <em>Startwert ablesen</em>.</p>
     <p class="fussnote"><strong>Woher die Zahlen stammen:</strong> Übersicht der
       Drehverfahren mit Werkzeugangaben und Schnittgrößen, Tabellenbuch.
-      Die Antriebswelle ist die Fertigungszeichnung aus dem Unterricht.</p>
+      Die Spannwelle ist das Übungswerkstück dieses Pakets.</p>
 
     <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
       Maßgebend sind Norm und Tabellenbuch.</p>
@@ -180,7 +181,7 @@
 
 <script src="../../assets/drehteil.js"></script>
 
-<script>var WELLE = WELLEN.antriebswelle;</script>
+<script>var WELLE = WELLEN.spannwelle;</script>
 <script>
 "use strict";
 
@@ -196,36 +197,34 @@ var AUSWAHL = ["Querplandrehen", "Längsrunddrehen, Schruppen",
   "Längsrunddrehen, Schlichten", "Einstechdrehen", "Gewindedrehen",
   "Abstechdrehen"];
 
-/* Die Flächen der Antriebswelle, wie sie der Zeichenbaustein kennt, mit dem
+/* Die Flächen der Spannwelle, wie sie der Zeichenbaustein kennt, mit dem
    Verfahren, das sie erzeugt, und dem Grund dafür. */
 var FLAECHEN = [
   {id:"stirn_links", verfahren:"abstechdrehen",
    grund:"Sie entsteht beim Trennen vom Stangenmaterial. Das Futter sitzt "
      + "links, also fällt hier die letzte Fläche an - Abstechen ist immer "
      + "der letzte Drehvorgang."},
-  {id:"mantel_20", verfahren:"schlichten",
-   grund:"Eine zylindrische Mantelfläche, und mit Rz 4 eine, die geschlichtet "
-     + "werden muss. Geschruppt wurde sie vorher."},
+  {id:"mantel_18", verfahren:"schlichten",
+   grund:"Eine zylindrische Mantelfläche, und mit Rz 6,3 eine, die "
+     + "geschlichtet werden muss. Geschruppt wurde sie vorher."},
   {id:"nut_a", verfahren:"einstechdrehen",
    grund:"Eine 1,3 mm breite Nut entsteht durch ein Werkzeug, das quer "
      + "einsticht. Die Nutbreite ist die Schneidenbreite."},
-  {id:"schulter_22", verfahren:"querplandrehen",
+  {id:"schulter_14", verfahren:"querplandrehen",
    grund:"Auch ein Absatz steht senkrecht zur Achse - dieselbe Bewegung wie "
      + "bei der Stirnfläche."},
-  {id:"mantel_24", verfahren:"schlichten",
-   grund:"Zylindrische Mantelfläche mit Rz 6 - geschlichtet."},
-  {id:"bund_30", verfahren:"schruppen",
-   grund:"Der Bund trägt nur Rz 10, die allgemeine Rautiefe. Was geschruppt "
-     + "ist, reicht hier."},
-  {id:"mantel_25", verfahren:"schlichten",
-   grund:"Lagersitz mit Rz 4 - ohne Schlichten nicht zu machen."},
+  {id:"mantel_22", verfahren:"schlichten",
+   grund:"Führungssitz mit Rz 4 - ohne Schlichten nicht zu machen."},
   {id:"nut_b", verfahren:"einstechdrehen",
    grund:"Wie Nut A: quer einstechen, Breite gleich Schneidenbreite."},
+  {id:"bund_26", verfahren:"schruppen",
+   grund:"Der Bund trägt nur Rz 10, die allgemeine Rautiefe. Was geschruppt "
+     + "ist, reicht hier."},
   {id:"freistich", verfahren:"einstechdrehen",
    grund:"Der Gewindefreistich DIN 76 - A wird eingestochen, damit das "
      + "Gewindewerkzeug auslaufen kann."},
   {id:"gewinde", verfahren:"gewindedrehen",
-   grund:"M20×1 - der Vorschub ist die Steigung, also 1 mm je Umdrehung."},
+   grund:"M16×1,5 - der Vorschub ist die Steigung, also 1,5 mm je Umdrehung."},
   {id:"stirn_rechts", verfahren:"querplandrehen",
    grund:"Das freie Ende rechts wird zuerst bearbeitet: Die Schneide läuft "
      + "quer zur Achse. Danach wird zentriert, damit die Reitstockspitze "

@@ -470,7 +470,10 @@ console.log('\nDie Uebung zur Schnittgeschwindigkeit rechnet wie das Buch');
   });
   const w = dom.window, d = w.document;
   const start = w.eval('STARTWERTE');
-  const zeile = BUCH.schnittdaten_drehen.P.verguetungsstahl_legiert[1];
+  /* Die Spannwelle ist aus C25E: Rm 575 N/mm2, also die Zeile
+     'Verguetungsstahl, unlegiert, Rm <= 650'. */
+  const zeile = BUCH.schnittdaten_drehen.P.verguetungsstahl_unlegiert
+    .find((z) => z.rm === '<=650');
   const paare = {plan: 'querplandrehen', schr: 'laengsrund_schruppen',
     schl: 'laengsrund_schlichten', abst: 'abstechen_einstechen',
     gew: 'gewindedrehen'};
@@ -480,18 +483,18 @@ console.log('\nDie Uebung zur Schnittgeschwindigkeit rechnet wie das Buch');
     schief.map((v) => v.id).join(', '));
 
   /* Den ganzen Weg einmal richtig ausfuellen. */
-  d.getElementById('wNr').value = '1.7225';
+  d.getElementById('wNr').value = '1.1158';
   d.getElementById('wZu').value = '+QT';
-  d.getElementById('wRmU').value = '1000';
-  d.getElementById('wRmO').value = '1200';
-  d.getElementById('wRmM').value = '1100';
+  d.getElementById('wRmU').value = '500';
+  d.getElementById('wRmO').value = '650';
+  d.getElementById('wRmM').value = '575';
   d.getElementById('btn1').click();
   p('Teil 1 wird als vollstaendig richtig erkannt',
     /5 von 5 richtig/.test(d.getElementById('bilanz1').textContent),
     d.getElementById('bilanz1').textContent);
 
   d.getElementById('wG').value = 'P';
-  d.getElementById('wZ').value = 'd';
+  d.getElementById('wZ').value = 'b';
   d.getElementById('btn2').click();
   p('Teil 2 ebenso',
     /2 von 2 richtig/.test(d.getElementById('bilanz2').textContent),
@@ -509,7 +512,8 @@ console.log('\nDie Uebung zur Schnittgeschwindigkeit rechnet wie das Buch');
     const vc = schrupp[f.griff];
     d.getElementById('b_' + f.id).value = f.urteil;
     d.getElementById('v_' + f.id).value = String(vc);
-    d.getElementById('n_' + f.id).value = String(w.eval('drehzahl(' + vc + ', 30)'));
+    d.getElementById('n_' + f.id).value =
+      String(w.eval('drehzahl(' + vc + ', D_BUND)'));
   });
   d.getElementById('btn4').click();
   p('Teil 4 ebenso',
@@ -587,42 +591,174 @@ console.log('\nDie Lernsituation');
   w.close();
 }
 
-console.log('\nDer Freistichradius - ueberall derselbe');
+console.log('\nDie Uebung zur Wendeschneidplatte');
 {
-  /* Der kleinste Innenradius der Antriebswelle sind die Freistiche
-     DIN 509 - E 0,6 x 0,3, nicht die R1 am Bund. Daraus folgt
-     r_eps <= 0,5 mm, genormt 0,4 mm. Wer das verwechselt, waehlt ein
-     Werkzeug, das an der eigenen Kontur haengen bleibt - und der Fehler
-     zieht sich durch drei Uebungen, die Lernsituation und die Lektion. */
-  const daten = fs.readFileSync(path.join(BASIS, 'assets/wellen.js'), 'utf8');
-  const antriebswelle = daten.slice(daten.indexOf('WELLEN.antriebswelle'),
-                                    daten.indexOf('WELLEN.mitnehmerwelle'));
-  p('die Antriebswelle kennt ihren kleinsten Innenradius',
-    /kleinsterInnenradius:\s*0\.6/.test(antriebswelle));
-  p('und ihre Freistiche tragen ihren Radius',
-    (antriebswelle.match(/r:\s*0\.6/g) || []).length === 2);
+  const datei = '03-eine-wendeschneidplatte-lesen.html';
+  const dom = new JSDOM(mitAssets(fs.readFileSync(
+    path.join(BASIS, 'uebungen/drehprozess', datei), 'utf8')), {
+    runScripts: 'dangerously',
+    url: 'https://t-bk.de/unterrichtsmaterial/uebungen/drehprozess/' + datei,
+    beforeParse(w) { w.Element.prototype.scrollIntoView = function () {}; },
+  });
+  const w = dom.window, d = w.document;
+  const setz = (id, wert) => { d.getElementById(id).value = String(wert); };
+
+  /* Teil 1: die Platte aus der Schachtel zerlegen. */
+  setz('z1', 55); setz('z2', 7); setz('z7', 0.8);
+  setz('z9', 'R'); setz('z10', 'P');
+  d.getElementById('btn1').click();
+  p('die Bezeichnung wird richtig zerlegt',
+    /5 von 5 richtig/.test(d.getElementById('bilanz1').textContent),
+    d.getElementById('bilanz1').textContent);
+
+  /* Teil 2: die Kette von der engsten Rundung zum Vorschub. */
+  const eng = w.eval('R_ENG'), ecke = w.eval('R_ECKE');
+  setz('pRw', eng);
+  setz('pMax', Math.round((eng - 0.1) * 100) / 100);
+  setz('pPasst', 'ja');
+  setz('pF', w.eval('vorschub(4, R_ECKE)').toFixed(2));
+  setz('pGruppe', 'ja');
+  d.getElementById('btn2').click();
+  p('die Kette zum Vorschub geht auf',
+    /5 von 5 richtig/.test(d.getElementById('bilanz2').textContent),
+    d.getElementById('bilanz2').textContent);
+  p('sie rechnet mit der Welle, die sie zeigt',
+    eng === w.WELLE.kleinsterInnenradius && ecke < eng,
+    'R_ENG=' + eng + ' R_ECKE=' + ecke + ' Welle=' + w.WELLE.id);
+
+  /* Teil 3: die Bezeichnung selbst bilden. */
+  setz('b1', 'C'); setz('b2', 'N'); setz('b9', 'R');
+  setz('b7', '12');
+  d.getElementById('btn3').click();
+  p('die Schruppplatte wird richtig zusammengesetzt',
+    /4 von 4 richtig/.test(d.getElementById('bilanz3').textContent),
+    d.getElementById('bilanz3').textContent);
+  w.close();
+}
+
+console.log('\nDie Uebung zum Vorschub');
+{
+  const datei = '04-wie-fein-muss-der-vorschub-sein.html';
+  const dom = new JSDOM(mitAssets(fs.readFileSync(
+    path.join(BASIS, 'uebungen/drehprozess', datei), 'utf8')), {
+    runScripts: 'dangerously',
+    url: 'https://t-bk.de/unterrichtsmaterial/uebungen/drehprozess/' + datei,
+    beforeParse(w) { w.Element.prototype.scrollIntoView = function () {}; },
+  });
+  const w = dom.window, d = w.document;
+  const setz = (id, wert) => { d.getElementById(id).value = String(wert); };
+
+  /* Teil 1: je Forderung ein Vorschub. */
+  const forderungen = w.eval('FORDERUNGEN');
+  forderungen.forEach((f, i) => {
+    setz('f' + i, w.eval('vorschub(' + f.rz + ', R_ECKE)').toFixed(2));
+  });
+  d.getElementById('btn1').click();
+  p('zu jeder Rautiefe der richtige Vorschub',
+    new RegExp(forderungen.length + ' von ' + forderungen.length
+      + ' richtig').test(d.getElementById('bilanz1').textContent),
+    d.getElementById('bilanz1').textContent);
+
+  /* Die Rautiefen muessen die der Welle sein, nicht irgendwelche. */
+  const gefordert = forderungen.map((f) => f.rz).sort();
+  const imBild = (w.WELLE.rauheiten || [])
+    .map((r) => Number(String(r.text).replace('Rz ', '').replace(',', '.')));
+  p('die Rautiefen stehen auch in der Zeichnung',
+    imBild.every((rz) => gefordert.indexOf(rz) >= 0),
+    'Bild ' + imBild.join(', ') + ' / Aufgabe ' + gefordert.join(', '));
+
+  /* Teil 2: was der kleinere Eckenradius kostet. */
+  setz('gF', w.eval('F_ZWEI').toFixed(2));
+  setz('gU4', w.eval('U_VIER'));
+  setz('gU8', w.eval('U_ZWEI'));
+  d.getElementById('btn2').click();
+  p('der Zeitverlust wird richtig gerechnet',
+    /3 von 3 richtig/.test(d.getElementById('bilanz2').textContent),
+    d.getElementById('bilanz2').textContent);
+  p('der kleinere Eckenradius kostet auch wirklich mehr',
+    w.eval('U_ZWEI') > w.eval('U_VIER'),
+    w.eval('U_VIER') + ' -> ' + w.eval('U_ZWEI') + ' Umdrehungen');
+
+  /* Teil 3: die Grenze. */
+  const eng = w.eval('R_ENG');
+  setz('hRw', eng);
+  setz('hMax', Math.round((eng - 0.1) * 100) / 100);
+  setz('hNorm', String(w.eval('R_ECKE')));
+  setz('hFmin', 0.1);
+  setz('hRz', w.eval('rautiefe(0.1, R_ECKE)').toFixed(1));
+  d.getElementById('btn3').click();
+  p('die Grenze wird richtig bestimmt',
+    /5 von 5 richtig/.test(d.getElementById('bilanz3').textContent),
+    d.getElementById('bilanz3').textContent);
+  w.close();
+}
+
+console.log('\nDie engste Innenrundung - jede Welle ihre eigene');
+{
+  /* Die Kette, um die es geht: Die engste Innenrundung der Kontur begrenzt
+     den Eckenradius des Werkzeugs, das die Kontur erzeugt - r_eps <= r_w
+     minus 0,1 mm, abgerundet auf die naechstkleinere genormte Groesse.
+
+     Der Fehler, der nicht zurueckkommen soll: die auffaelligste Rundung
+     fuer die engste halten. An der Antriebswelle sind das die Freistiche
+     DIN 509 - E 0,6 x 0,3, deren Radius gar nicht als Radius dasteht; an
+     der Spannwelle die kleine R1 am unscheinbaren Absatz.
+
+     Geprueft wird gegen assets/wellen.js, nicht gegen eine Zahl im Test -
+     sonst muesste man an zwei Stellen nachziehen. */
+  const GENORMT = [0.2, 0.4, 0.6, 0.8, 1.2, 1.6];
+  const groesste = (rw) => GENORMT.filter((r) => r <= rw - 0.1 + 1e-9).pop();
+
+  const SCHLUSS = '<' + '/script>';
+  const quellen = ['zeichnen.js', 'wellen.js', 'drehteil.js'].map((f) =>
+    '<script>' + fs.readFileSync(path.join(BASIS, 'assets', f), 'utf8')
+      .split(SCHLUSS).join('<\\/script>') + SCHLUSS).join('');
+  const wellen = new JSDOM('<!doctype html>' + quellen,
+    { runScripts: 'dangerously' }).window.WELLEN;
 
   const stellen = [
-    ['uebungen/drehprozess/03-eine-wendeschneidplatte-lesen.html', 'R_ENG = 0.6'],
-    ['uebungen/drehprozess/04-wie-fein-muss-der-vorschub-sein.html', 'R_ENG = 0.6'],
-    ['lernsituationen/antriebswelle/index.html', 'R_ENG = 0.6'],
+    ['uebungen/drehprozess/03-eine-wendeschneidplatte-lesen.html', 'spannwelle'],
+    ['uebungen/drehprozess/04-wie-fein-muss-der-vorschub-sein.html', 'spannwelle'],
+    ['lernsituationen/antriebswelle/index.html', 'antriebswelle'],
   ];
   stellen.forEach((s) => {
+    const kurz = path.basename(s[0]);
+    const welle = wellen[s[1]];
     const text = fs.readFileSync(path.join(BASIS, s[0]), 'utf8');
-    p(path.basename(s[0]) + ': rechnet mit 0,6 mm', text.indexOf(s[1]) > 0);
-    p(path.basename(s[0]) + ': nennt den Freistich als engste Stelle',
-      /DIN 509/.test(text) && /Freistich/.test(text));
+    const m = text.match(/var R_ENG = ([0-9.]+)/);
+    p(kurz + ': nennt die engste Innenrundung',
+      m && Math.abs(Number(m[1]) - welle.kleinsterInnenradius) < 1e-9,
+      m ? m[1] + ' statt ' + welle.kleinsterInnenradius : 'kein R_ENG');
+    const e = text.match(/var R_ECKE = ([0-9.]+)/);
+    p(kurz + ': und den groessten genormten Eckenradius dazu',
+      e && Math.abs(Number(e[1]) - groesste(welle.kleinsterInnenradius)) < 1e-9,
+      e ? e[1] + ' statt ' + groesste(welle.kleinsterInnenradius)
+        : 'kein R_ECKE');
   });
 
-  /* Und niemand behauptet mehr, 0,8 mm sei zulaessig. */
-  const heikel = stellen.map((s) => s[0])
-    .concat(['trainings/drehprozess/05-vorschub-und-rautiefe.html']);
-  const falsch = heikel.filter((f) => {
-    const t = fs.readFileSync(path.join(BASIS, f), 'utf8');
-    return /engste Innenrundung der Kontur ist\s+<strong>R1/.test(t);
-  });
-  p('keine Datei nennt die R1 als engste Stelle', falsch.length === 0,
-    falsch.join(', '));
+  /* Die Antriebswelle traegt die Freistiche - und nur bei ihr darf die
+     Bezeichnung als Fundstelle auftreten. Auf den anderen Seiten steht sie
+     als Hinweis, nicht als Rechengrundlage. */
+  const ls = fs.readFileSync(
+    path.join(BASIS, 'lernsituationen/antriebswelle/index.html'), 'utf8');
+  p('die Lernsituation nennt den Freistich als engste Stelle',
+    /DIN 509/.test(ls) && /Freistich/.test(ls));
+
+  const baustein = fs.readFileSync(path.join(BASIS, 'assets/wellen.js'), 'utf8');
+  const teil = baustein.slice(baustein.indexOf('WELLEN.antriebswelle'),
+                              baustein.indexOf('WELLEN.mitnehmerwelle'));
+  p('und der Zeichenbaustein kennt ihren Radius',
+    /kleinsterInnenradius:\s*0\.6/.test(teil)
+    && (teil.match(/r:\s*0\.6/g) || []).length === 2);
+
+  /* Und die vier Wellen sind wirklich verschieden - sonst waeren die
+     Ergebnisse von Lektion, Uebung und Lernsituation wieder dieselben. */
+  const radien = Object.keys(wellen).map((k) => wellen[k].kleinsterInnenradius);
+  p('keine zwei Wellen haben dieselbe engste Rundung',
+    new Set(radien).size === radien.length, radien.join(', '));
+  const stoffe = Object.keys(wellen).map((k) => wellen[k].werkstoff);
+  p('und keine zwei denselben Werkstoff',
+    new Set(stoffe).size === stoffe.length, stoffe.join(', '));
 }
 
 console.log('\nAlle Wellen lassen sich zeichnen');

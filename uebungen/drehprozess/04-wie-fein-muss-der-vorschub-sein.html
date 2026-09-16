@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Wie fein muss der Vorschub sein?</title>
-<meta name="description" content="Rz 4, Rz 6, Rz 10: drei Forderungen der Antriebswelle, drei Vorschübe. Und was es kostet, wenn man am Vorschub spart – oder ihn verdoppelt.">
+<meta name="description" content="Rz 4, Rz 6,3, Rz 10: drei Forderungen der Spannwelle, drei Vorschübe. Und was es kostet, wenn man am Vorschub spart – oder ihn verdoppelt.">
 <meta name="dauer" content="25 min">
 <link rel="stylesheet" href="../../assets/uebung.css">
 <style>
@@ -40,10 +40,10 @@
   <main class="wrap">
 
     <div class="box auftrag">
-      <p><strong>Die Lage:</strong> Auf der Antriebswelle stehen drei verschiedene
+      <p><strong>Die Lage:</strong> Auf der Spannwelle stehen drei verschiedene
         Rautiefen: <strong>Rz 10</strong> als allgemeine Angabe im Schriftfeld,
-        <strong>Rz 6</strong> am Ø24 und <strong>Rz 4</strong> an den beiden
-        Lagersitzen Ø20 und Ø25.</p>
+        <strong>Rz 6,3</strong> am Ø18 und <strong>Rz 4</strong> am
+        Führungssitz Ø22.</p>
       <p>Drei Forderungen, drei Vorschübe &ndash; und drei verschiedene
         Antworten auf die Frage, ob überhaupt geschlichtet werden muss.</p>
     </div>
@@ -65,7 +65,7 @@
       Millimetern.</p>
 
     <p>Das Schlichtwerkzeug hat einen Eckenradius <strong>r<sub>ε</sub> =
-      0,4 mm</strong>. Rechnet für jede geforderte Rautiefe den Vorschub aus.</p>
+      0,8 mm</strong>. Rechnet für jede geforderte Rautiefe den Vorschub aus.</p>
 
     <div class="tabellenrahmen">
       <table class="werte">
@@ -85,35 +85,34 @@
       <div id="loesung1"></div>
       <p>Im Tabellenbuch steht die Rechnung schon fertig: eine Tabelle mit
         Rautiefen in den Zeilen und Eckenradien in den Spalten, darin der
-        Vorschub. Für Rz 4 und r<sub>ε</sub> = 0,4 mm steht dort
-        <strong>0,11 mm</strong> &ndash; genau das Ergebnis der Rechnung.</p>
+        Vorschub. Für Rz 4 und r<sub>ε</sub> = 0,8 mm steht dort
+        <strong>0,16 mm</strong> &ndash; genau das Ergebnis der Rechnung.</p>
       <p><strong>Rz 10 ist der interessante Fall.</strong> Der Vorschub dafür
-        wäre 0,18 mm. Aber das ist die <em>allgemeine</em> Rautiefe der
+        wäre 0,25 mm. Aber das ist die <em>allgemeine</em> Rautiefe der
         Zeichnung, und der Schruppvorgang liefert sie nicht: Beim Schruppen
         liegt f zwischen 0,25 und 0,6 mm, und daraus wird selbst mit
-        r<sub>ε</sub> = 0,8 mm eine Rautiefe von 10 bis 56 µm. Am Bund Ø30 wird
+        r<sub>ε</sub> = 0,8 mm eine Rautiefe von 10 bis 56 µm. Am Bund Ø26 wird
         deshalb mit dem kleinsten Schruppvorschub gearbeitet &ndash; oder
         zusätzlich geschlichtet, wenn die Fläche es verlangt.</p>
     </details>
 
     <h2><span class="nr">2</span>Was ein kleinerer Eckenradius kostet</h2>
-    <p>Derselbe Lagersitz Ø25 mit Rz 4, aber ein Werkzeug mit
-      <strong>r<sub>ε</sub> = 0,2 mm</strong> &ndash; die kleinste genormte
-      Größe.</p>
+    <p>Derselbe Führungssitz Ø22 mit Rz 4, aber ein Werkzeug mit
+      <strong>r<sub>ε</sub> = 0,4 mm</strong> &ndash; die Hälfte.</p>
 
     <div class="tabellenrahmen">
       <table class="werte">
         <thead><tr><th>Gesucht</th><th>Eintrag</th><th>Stimmt?</th></tr></thead>
         <tbody>
-          <tr><td>Vorschub f mit r<sub>ε</sub> = 0,2 mm, in mm</td>
+          <tr><td>Vorschub f mit r<sub>ε</sub> = 0,4 mm, in mm</td>
             <td><input type="number" id="gF" step="0.01" inputmode="decimal"
               autocomplete="off"></td>
             <td class="urteil" id="ugF">–</td></tr>
-          <tr><td>Umdrehungen für die 39,3 mm des Ø25 bei r<sub>ε</sub> = 0,4 mm</td>
+          <tr><td>Umdrehungen für die 34 mm des Ø22 bei r<sub>ε</sub> = 0,8 mm</td>
             <td><input type="number" id="gU4" step="1" inputmode="decimal"
               autocomplete="off"></td>
             <td class="urteil" id="ugU4">–</td></tr>
-          <tr><td>Umdrehungen für dieselbe Strecke bei r<sub>ε</sub> = 0,2 mm</td>
+          <tr><td>Umdrehungen für dieselbe Strecke bei r<sub>ε</sub> = 0,4 mm</td>
             <td><input type="number" id="gU8" step="1" inputmode="decimal"
               autocomplete="off"></td>
             <td class="urteil" id="ugU8">–</td></tr>
@@ -146,9 +145,9 @@
     <p>Warum nicht gleich r<sub>ε</sub> = 1,6 mm? Weil der Radius in die Kontur
       passen muss. Die Frage ist nur: <strong>Wo ist die Kontur am
       engsten?</strong></p>
-    <p>Der erste Blick fällt auf die <strong>R1</strong> am Übergang zum Bund.
-      Sehen Sie noch einmal genauer hin &ndash; auch Freistiche haben Radien,
-      und ihre Bezeichnung nennt sie.</p>
+    <p>Der erste Blick fällt auf die <strong>R1,6</strong> am Übergang zum
+      Bund. Sehen Sie noch einmal genauer hin &ndash; die engste Rundung sitzt
+      nicht immer am größten Absatz.</p>
 
     <span class="formel">r<sub>ε</sub> &le; r<sub>w</sub> &minus; 0,1 mm</span>
 
@@ -192,20 +191,22 @@
     <p class="bilanzzeile" id="bilanz3">Noch nichts eingetragen.</p>
 
     <details>
-      <summary>Lösung: die Freistiche sind die engste Stelle</summary>
+      <summary>Lösung: die kleine Rundung ist die engste Stelle</summary>
       <div id="loesung3"></div>
       <div class="merksatz">
-        <strong>Der klassische Fehler:</strong> nur die Durchmesserübergänge
-        ansehen und die Freistiche vergessen. Sie sind meist die engsten
-        Stellen der ganzen Kontur &ndash; und sie stehen nicht als Radius in
-        der Zeichnung, sondern versteckt in einer Normbezeichnung:
-        <strong>DIN 509 &ndash; E 0,6 × 0,3</strong>. Die erste Zahl
-        <em>ist</em> der Radius.
+        <strong>Der klassische Fehler:</strong> nur den größten Übergang
+        ansehen. Maßgeblich ist die engste Rundung der ganzen Kontur &ndash;
+        hier die R1 am kleinen Absatz, nicht die R1,6 am Bund.
+        <br>Noch besser versteckt ist sie, wenn eine Welle
+        <strong>Freistiche nach DIN 509</strong> trägt: Deren Radius steht
+        gar nicht als Radius in der Zeichnung, sondern in der
+        Normbezeichnung. Bei <strong>DIN 509 &ndash; E 0,6 × 0,3</strong> ist
+        die erste Zahl der Radius.
       </div>
-      <p>Mit r<sub>ε</sub> = 0,4 mm und dem kleinsten Schlichtvorschub von
-        0,1 mm wäre eine Rautiefe von rund <strong>3,1 µm</strong> erreichbar
-        &ndash; noch etwas feiner, als die Welle fordert. Nach unten ist also
-        wenig, aber etwas Luft.</p>
+      <p>Mit r<sub>ε</sub> = 0,8 mm und dem kleinsten Schlichtvorschub von
+        0,1 mm wäre eine Rautiefe von rund <strong>1,6 µm</strong> erreichbar
+        &ndash; deutlich feiner, als die Welle fordert. Nach unten ist also
+        Luft.</p>
       <p>Wer eine Rautiefe verlangt, die auch damit nicht mehr zu drehen ist,
         muss das Verfahren wechseln. <strong>Schleifen</strong> beginnt
         ungefähr dort, wo das Drehen aufhört &ndash; und kostet einen zweiten
@@ -254,7 +255,7 @@
     </details>
 
     <details>
-      <summary>4. Am Bund Ø30 steht nur Rz 10. Lohnt ein Schlichtgang trotzdem?</summary>
+      <summary>4. Am Bund Ø26 steht nur Rz 10. Lohnt ein Schlichtgang trotzdem?</summary>
       <p>Für die Oberfläche nicht &ndash; Rz 10 ist die allgemeine Rautiefe, die
         an keiner Funktionsfläche liegt. Der Bund trägt hier weder ein Lager
         noch eine Dichtung.</p>
@@ -262,7 +263,7 @@
         hinterlässt nicht nur eine raue Fläche, sondern auch eine größere
         Maßstreuung, weil die Schnittkräfte das Werkstück wegdrücken. Steht am
         Bund eine enge Toleranz, wird geschlichtet &ndash; wegen des Maßes, nicht
-        wegen der Rauheit. Auf der Antriebswelle ist das nicht der Fall.</p>
+        wegen der Rauheit. Auf der Spannwelle ist das nicht der Fall.</p>
     </details>
 
     <div class="merksatz">
@@ -291,21 +292,22 @@
 
 <script src="../../assets/drehteil.js"></script>
 
-<script>var WELLE = WELLEN.antriebswelle;</script>
+<script>var WELLE = WELLEN.spannwelle;</script>
 <script>
 "use strict";
 
-var R_SCHLICHT = 0.4;        /* Eckenradius des Schlichtwerkzeugs, Teil 1 */
-var R_KLEIN = 0.2;           /* die kleinste genormte Größe, Teil 2 */
-var L_SITZ = 39.3;           /* Länge des Ø25, aus der Zeichnung */
-/* Die engste Innenrundung der Kontur: der Radius der Freistiche
-   DIN 509 - E 0,6 x 0,3. Nicht die R1 am Bund. */
-var R_ENG = 0.6;
+var R_ECKE = 0.8;           /* groesster genormter Eckenradius, den die
+                               Kontur zulaesst - siehe R_ENG unten */
+var R_KLEIN = 0.4;           /* die Haelfte davon, Teil 2 */
+var L_SITZ = 34;             /* Länge des Ø22, aus der Zeichnung */
+/* Die engste Innenrundung der Kontur: die R1 am kleinen Absatz zwischen
+   Durchmesser 18 und 22. Nicht die R1,6 am Bund. */
+var R_ENG = 1.0;
 
 var FORDERUNGEN = [
-  {name:"Ø20 links und Ø25 – die beiden Lagersitze", rz:4},
-  {name:"Ø24 – der Absatz", rz:6},
-  {name:"Bund Ø30 – allgemeine Rautiefe der Zeichnung", rz:10}
+  {name:"Führungssitz Ø22 – die Funktionsfläche", rz:4},
+  {name:"Ø18 links – der Zapfen", rz:6.3},
+  {name:"Bund Ø26 – allgemeine Rautiefe der Zeichnung", rz:10}
 ];
 
 function el(id){ return document.getElementById(id); }
@@ -339,8 +341,8 @@ function bilanz(id, richtig, gesamt, offen){
 (function zeichnung(){
   var g = wellenGroesse(WELLE, {s:5.8, rauheiten:true});
   var svg = bild("bildWelle", g.breite, g.hoehe,
-    "Die Antriebswelle mit den geforderten Rautiefen",
-    "Rz 4 an den beiden Lagersitzen, Rz 6 am Ø24, sonst Rz 10.");
+    "Die Spannwelle mit den geforderten Rautiefen",
+    "Rz 4 am Führungssitz Ø22, Rz 6,3 am Ø18, sonst Rz 10.");
   zeichneWelle(svg, WELLE, {x:g.x, y:g.y, s:5.8, rauheiten:true});
 }());
 
@@ -353,9 +355,9 @@ function bilanz(id, richtig, gesamt, offen){
       + '<td><input type="number" id="f' + i + '" step="0.01"'
       + ' inputmode="decimal" autocomplete="off"></td>'
       + '<td class="urteil" id="uf' + i + '">–</td></tr>';
-    var v = vorschub(f.rz, R_SCHLICHT);
+    var v = vorschub(f.rz, R_ECKE);
     l += '<p><strong>Rz ' + f.rz + ':</strong> '
-      + 'f = √(8 · ' + zahl(R_SCHLICHT, 1) + ' · ' + zahl(f.rz / 1000, 4)
+      + 'f = √(8 · ' + zahl(R_ECKE, 1) + ' · ' + zahl(f.rz / 1000, 4)
       + ') = <strong>' + zahl(v) + ' mm</strong></p>';
   });
   el("liste1").innerHTML = aus;
@@ -368,26 +370,29 @@ el("btn1").addEventListener("click", function(){
     var v = wert("f" + i);
     var leer = !isFinite(v); if(leer) offen++;
     r += urteilen("uf" + i,
-      Math.abs(v - vorschub(f.rz, R_SCHLICHT)) <= 0.011, leer);
+      Math.abs(v - vorschub(f.rz, R_ECKE)) <= 0.011, leer);
   });
   bilanz("bilanz1", r, FORDERUNGEN.length, offen);
 });
 
 /* ---------- Teil 2 ---------- */
 
-var F_VIER = vorschub(4, R_SCHLICHT);
+var F_VIER = vorschub(4, R_ECKE);
 var F_ZWEI = vorschub(4, R_KLEIN);
 var U_VIER = Math.ceil(L_SITZ / F_VIER);
 var U_ZWEI = Math.ceil(L_SITZ / F_ZWEI);
 
 (function teil2(){
   el("loesung2").innerHTML =
-    '<p><strong>Vorschub mit r<sub>ε</sub> = 0,2 mm:</strong> '
-    + 'f = √(8 · 0,2 · 0,004) = <strong>' + zahl(F_ZWEI) + ' mm</strong></p>'
-    + '<p><strong>Umdrehungen für 39,3 mm:</strong><br>'
-    + 'mit r<sub>ε</sub> = 0,4 mm: 39,3 / ' + zahl(F_VIER) + ' = <strong>'
+    '<p><strong>Vorschub mit r<sub>ε</sub> = ' + zahl(R_KLEIN, 1)
+    + ' mm:</strong> f = √(8 · ' + zahl(R_KLEIN, 1) + ' · 0,004) = <strong>'
+    + zahl(F_ZWEI) + ' mm</strong></p>'
+    + '<p><strong>Umdrehungen für ' + zahl(L_SITZ, 0) + ' mm:</strong><br>'
+    + 'mit r<sub>ε</sub> = ' + zahl(R_ECKE, 1) + ' mm: '
+      + zahl(L_SITZ, 0) + ' / ' + zahl(F_VIER) + ' = <strong>'
       + U_VIER + '</strong><br>'
-    + 'mit r<sub>ε</sub> = 0,2 mm: 39,3 / ' + zahl(F_ZWEI) + ' = <strong>'
+    + 'mit r<sub>ε</sub> = ' + zahl(R_KLEIN, 1) + ' mm: '
+      + zahl(L_SITZ, 0) + ' / ' + zahl(F_ZWEI) + ' = <strong>'
       + U_ZWEI + '</strong> – rund '
       + Math.round((U_ZWEI / U_VIER - 1) * 100) + ' % mehr</p>';
 }());
@@ -416,18 +421,17 @@ el("btn2").addEventListener("click", function(){
 
 (function teil3(){
   el("loesung3").innerHTML =
-    '<p>Die R1 am Bund ist <em>nicht</em> die engste Stelle. Die beiden '
-    + 'Freistiche <strong>DIN 509 – E 0,6 × 0,3</strong> haben '
-    + '<strong>r<sub>w</sub> = 0,6 mm</strong> – die erste Zahl der '
-    + 'Bezeichnung ist der Radius.</p>'
-    + '<p>r<sub>ε</sub> &le; 0,6 &minus; 0,1 = <strong>0,5 mm</strong>. '
-    + 'Die nächstkleinere genormte Größe ist <strong>0,4 mm</strong> – '
+    '<p>Die R1,6 am Bund ist <em>nicht</em> die engste Stelle. Das ist die '
+    + '<strong>R1</strong> am kleinen Absatz zwischen Ø18 und Ø22 – sie '
+    + 'fällt weniger auf, gilt aber trotzdem.</p>'
+    + '<p>r<sub>ε</sub> &le; 1,0 &minus; 0,1 = <strong>0,9 mm</strong>. '
+    + 'Die nächstkleinere genormte Größe ist <strong>0,8 mm</strong> – '
     + 'genau das Werkzeug aus Teil 1.</p>'
     + '<p>Der kleinste Schlichtvorschub im Tabellenbuch ist '
     + '<strong>0,1 mm</strong>. Damit ergibt sich '
-    + 'R<sub>th</sub> = 0,1² / (8 · 0,4) = '
-    + zahl(rautiefe(0.1, R_SCHLICHT) / 1000, 5) + ' mm = <strong>'
-    + zahl(rautiefe(0.1, R_SCHLICHT), 1) + ' µm</strong>.</p>';
+    + 'R<sub>th</sub> = 0,1² / (8 · ' + zahl(R_ECKE, 1) + ') = '
+    + zahl(rautiefe(0.1, R_ECKE) / 1000, 5) + ' mm = <strong>'
+    + zahl(rautiefe(0.1, R_ECKE), 1) + ' µm</strong>.</p>';
 }());
 
 el("btn3").addEventListener("click", function(){
@@ -443,7 +447,7 @@ el("btn3").addEventListener("click", function(){
 
   var norm = el("hNorm").value;
   if(!norm) offen++;
-  r += urteilen("uhNorm", norm === "0.4", !norm);
+  r += urteilen("uhNorm", norm === "0.8", !norm);
 
   var fmin = wert("hFmin");
   var leerF = !isFinite(fmin); if(leerF) offen++;
@@ -452,7 +456,7 @@ el("btn3").addEventListener("click", function(){
   var rz = wert("hRz");
   var leerRz = !isFinite(rz); if(leerRz) offen++;
   r += urteilen("uhRz",
-    Math.abs(rz - rautiefe(0.1, R_SCHLICHT)) <= rautiefe(0.1, R_SCHLICHT) * 0.06,
+    Math.abs(rz - rautiefe(0.1, R_ECKE)) <= rautiefe(0.1, R_ECKE) * 0.06,
     leerRz);
 
   bilanz("bilanz3", r, 5, offen);

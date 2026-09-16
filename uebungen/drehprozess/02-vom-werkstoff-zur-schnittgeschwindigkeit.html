@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Vom Werkstoff zur Schnittgeschwindigkeit</title>
-<meta name="description" content="42CrMo4 auf der Zeichnung – und am Ende eine Drehzahl an der Maschine. Der ganze Weg mit dem Tabellenbuch, zweimal unter verschiedenen Bedingungen.">
+<meta name="description" content="C25E auf der Zeichnung – und am Ende eine Drehzahl an der Maschine. Der ganze Weg mit dem Tabellenbuch, zweimal unter verschiedenen Bedingungen.">
 <meta name="dauer" content="30 min">
 <link rel="stylesheet" href="../../assets/uebung.css">
 <style>
@@ -44,8 +44,8 @@
   <main class="wrap">
 
     <div class="box auftrag">
-      <p><strong>Die Lage:</strong> Auf der Zeichnung der Antriebswelle steht genau
-        eine Angabe zum Werkstoff: <strong>42CrMo4</strong>. Mehr nicht. Daraus
+      <p><strong>Die Lage:</strong> Auf der Zeichnung der Spannwelle steht genau
+        eine Angabe zum Werkstoff: <strong>C25E</strong>. Mehr nicht. Daraus
         muss am Ende eine Drehzahl werden, die sich an der Maschine einstellen
         lässt.</p>
       <p>Der Weg dahin führt über vier Stationen im Tabellenbuch. Diese Übung
@@ -54,9 +54,9 @@
       <p><strong>Das Tabellenbuch gehört aufgeschlagen daneben.</strong></p>
     </div>
 
-    <h2><span class="nr">1</span>Was hinter 42CrMo4 steckt</h2>
+    <h2><span class="nr">1</span>Was hinter C25E steckt</h2>
     <p>Schlagt den Werkstoff in der Tabelle der Vergütungsstähle nach. Das
-      Werkstück ist an der dicksten Stelle Ø30 &ndash; achtet auf die Spalte
+      Werkstück ist an der dicksten Stelle Ø26 &ndash; achtet auf die Spalte
       für den <strong>Walzdurchmesser</strong>.</p>
 
     <div class="tabellenrahmen">
@@ -94,18 +94,19 @@
 
     <details>
       <summary>Lösung und warum der Durchmesser zählt</summary>
-      <p><strong>42CrMo4, Werkstoffnummer 1.7225, Zustand +QT.</strong> Für
-        Walzdurchmesser über 16 bis 40 mm steht dort R<sub>m</sub> = 1000 bis
-        1200 N/mm², gemittelt also <strong>1100 N/mm²</strong>.</p>
+      <p><strong>C25E, Werkstoffnummer 1.1158, Zustand +QT.</strong> Für
+        Walzdurchmesser über 16 bis 40 mm steht dort R<sub>m</sub> = 500 bis
+        650 N/mm², gemittelt also <strong>575 N/mm²</strong>.</p>
       <p>Der Durchmesser steht in der Tabelle, weil ein Vergütungsstahl beim
         Abschrecken von außen nach innen durchhärtet. Im dicken Stück kommt die
         Wirkung nicht bis zur Mitte &ndash; derselbe Stahl ist dort weicher.
         Deshalb hat jede Zeile mehrere Spalten, und man muss die nehmen, in die
-        das Werkstück fällt. Für Ø30 ist das die Spalte „über 16 bis 40".</p>
-      <p>Der Zustand <strong>+QT</strong> ist der vergütete. Ein 42CrMo4 wird
-        praktisch immer vergütet geliefert &ndash; darum geht es bei einem
-        Vergütungsstahl. Im weichgeglühten Zustand stünde dort ein ganz anderer
-        Wert, und damit eine andere Zeile in der Schnittdatentabelle.</p>
+        das Werkstück fällt. Für Ø26 ist das die Spalte „über 16 bis 40".</p>
+      <p>Der Zustand <strong>+QT</strong> ist der vergütete. Daneben steht in
+        derselben Zeile <strong>+N</strong>, normalgeglüht &ndash; und dort
+        stehen ganz andere Zahlen. Bei C25 sind es 440 N/mm² statt 500 bis
+        650. Wer den Zustand übersieht, landet eine Zeile tiefer in der
+        Schnittdatentabelle.</p>
     </details>
 
     <h2><span class="nr">2</span>Gruppe und Zeile</h2>
@@ -126,10 +127,10 @@
             <td><select id="wZ" data-druck="ankreuzen">
               <option value="">bitte wählen</option>
               <option value="a">Baustahl, R&#8202;m &gt; 500</option>
-              <option value="b">Vergütungsstahl, unlegiert, R&#8202;m &gt; 650</option>
-              <option value="c">Vergütungsstahl, legiert, R&#8202;m &le; 750</option>
+              <option value="b">Vergütungsstahl, unlegiert, R&#8202;m &le; 650</option>
+              <option value="c">Vergütungsstahl, unlegiert, R&#8202;m &gt; 650</option>
               <option value="d">Vergütungsstahl, legiert, R&#8202;m &gt; 750</option>
-              <option value="e">Werkzeugstahl, R&#8202;m &gt; 750</option>
+              <option value="e">Werkzeugstahl, R&#8202;m &le; 750</option>
             </select></td>
             <td class="urteil" id="uZ">–</td></tr>
         </tbody>
@@ -143,16 +144,20 @@
 
     <details>
       <summary>Lösung: P, und warum nicht M</summary>
-      <p>42CrMo4 ist ein <strong>legierter Vergütungsstahl</strong> &ndash;
-        Stahl, also Gruppe <strong>P</strong>. Das Chrom im Namen führt gern in
-        die Irre: Nichtrostend wird ein Stahl erst ab etwa 10,5 % Chrom, und
-        dann trägt er ein <strong>X</strong> vor der Bezeichnung. 42CrMo4 hat
-        rund 1 % Chrom und rostet wie jeder andere Vergütungsstahl.</p>
-      <p>Mit R<sub>m</sub> = 1100 N/mm² fällt er in die Zeile
-        <strong>„Vergütungsstahl, legiert, R<sub>m</sub> &gt; 750"</strong>.
-        Die Zeile darüber (≤ 750) hätte fast <strong>ein Drittel höhere</strong>
-        Schnittgeschwindigkeiten &ndash; ein Griff daneben, und die Schneide
-        hält nicht durch.</p>
+      <p>C25E ist ein <strong>unlegierter Vergütungsstahl</strong> &ndash;
+        Stahl, also Gruppe <strong>P</strong>. Das <strong>E</strong> führt
+        gern in die Irre: Es steht für <strong>Edelstahl</strong>, also für
+        besonders niedrige Gehalte an Phosphor und Schwefel &ndash; nicht für
+        nichtrostend. Nichtrostend wird ein Stahl erst ab etwa 10,5 % Chrom,
+        und dann trägt er ein <strong>X</strong> vor der Bezeichnung, etwa
+        X5CrNi18-10. C25E hat überhaupt kein Chrom und rostet wie jeder
+        andere unlegierte Stahl.</p>
+      <p>Mit R<sub>m</sub> = 575 N/mm² fällt er in die Zeile
+        <strong>„Vergütungsstahl, unlegiert, R<sub>m</sub> &le; 650"</strong>.
+        Die Zeile darunter (&gt; 650) läge rund <strong>ein Fünftel
+        tiefer</strong>. Hier kostet der Griff daneben also keine Schneide,
+        sondern Zeit &ndash; und umgekehrt, in der Zeile eines weicheren
+        Stahls, wäre es die Schneide.</p>
     </details>
 
     <h2><span class="nr">3</span>Die Startwerte</h2>
@@ -176,8 +181,8 @@
     <details>
       <summary>Lösung: die fünf Startwerte</summary>
       <div id="loesung3"></div>
-      <p>Auffällig: Geschlichtet wird mit <strong>150</strong>, geschruppt nur
-        mit <strong>110</strong> m/min. Das überrascht viele &ndash; man würde
+      <p>Auffällig: Geschlichtet wird mit <strong>300</strong>, geschruppt nur
+        mit <strong>190</strong> m/min. Das überrascht viele &ndash; man würde
         erwarten, dass der grobe Schnitt schneller geht. Der Grund ist die
         Wärme: Beim Schruppen fließt viel mehr Span über die Schneide, und der
         trägt die Wärme hinein. Kleinerer Span erlaubt höhere Geschwindigkeit.</p>
@@ -187,7 +192,7 @@
     <p>Derselbe Werkstoff, dasselbe Verfahren &ndash; aber die Umstände sind
       verschieden. Beurteilt für jede Werkstatt die Bearbeitungsbedingungen und
       rechnet die Drehzahl aus.</p>
-    <p>Gedreht wird jeweils der <strong>Bund Ø30</strong> im
+    <p>Gedreht wird jeweils der <strong>Bund Ø26</strong> im
       <strong>Längsrunddrehen, Schruppen</strong>.</p>
 
     <div class="box" id="fallA"></div>
@@ -290,14 +295,14 @@
 <script>
 "use strict";
 
-/* Die Zeile "Vergütungsstahl, legiert, Rm > 750" aus den Schnittdaten beim
-   Drehen: [unterer Grenzwert, Startwert, oberer Grenzwert] in m/min. */
+/* Die Zeile "Vergütungsstahl, unlegiert, Rm <= 650" aus den Schnittdaten
+   beim Drehen: [unterer Grenzwert, Startwert, oberer Grenzwert] in m/min. */
 var STARTWERTE = [
-  {id:"plan",  name:"Querplandrehen",              werte:[80, 130, 180]},
-  {id:"schr",  name:"Längsrunddrehen, Schruppen",  werte:[70, 110, 160]},
-  {id:"schl",  name:"Längsrunddrehen, Schlichten", werte:[100, 150, 200]},
-  {id:"abst",  name:"Abstechdrehen, Einstechdrehen", werte:[95, 105, 115]},
-  {id:"gew",   name:"Gewindedrehen",               werte:[90, 100, 110]}
+  {id:"plan",  name:"Querplandrehen",              werte:[180, 250, 320]},
+  {id:"schr",  name:"Längsrunddrehen, Schruppen",  werte:[120, 190, 240]},
+  {id:"schl",  name:"Längsrunddrehen, Schlichten", werte:[220, 300, 380]},
+  {id:"abst",  name:"Abstechdrehen, Einstechdrehen", werte:[115, 135, 155]},
+  {id:"gew",   name:"Gewindedrehen",               werte:[120, 130, 140]}
 ];
 
 /* Zwei Werkstätten, zwei Zeilen der Bedingungstabelle. */
@@ -323,7 +328,7 @@ var FAELLE = [
      + "„ungünstig“. Also der untere Grenzwert."}
 ];
 
-var D_BUND = 30;
+var D_BUND = 26;
 
 function el(id){ return document.getElementById(id); }
 function wert(id){
@@ -355,13 +360,13 @@ el("btn1").addEventListener("click", function(){
 
   var nr = String(el("wNr").value).trim().replace(",", ".");
   p = !nr; if(p) offen++;
-  r += urteilen("uNr", nr === "1.7225", p);
+  r += urteilen("uNr", nr === "1.1158", p);
 
   var zu = el("wZu").value;
   p = !zu; if(p) offen++;
   r += urteilen("uZu", zu === "+QT", p);
 
-  [["wRmU", "uRmU", 1000], ["wRmO", "uRmO", 1200], ["wRmM", "uRmM", 1100]]
+  [["wRmU", "uRmU", 500], ["wRmO", "uRmO", 650], ["wRmM", "uRmM", 575]]
     .forEach(function(f){
       var v = wert(f[0]);
       var leer = !isFinite(v); if(leer) offen++;
@@ -379,7 +384,7 @@ el("btn2").addEventListener("click", function(){
   if(!g) offen++;
   r += urteilen("uG", g === "P", !g);
   if(!z) offen++;
-  r += urteilen("uZ", z === "d", !z);
+  r += urteilen("uZ", z === "b", !z);
   bilanz("bilanz2", r, 2, offen);
 });
 

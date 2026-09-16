@@ -74,8 +74,8 @@
 
     <div class="box auftrag">
       <p><strong>Die Lage:</strong> Auf dem Tisch liegt die Fertigungszeichnung
-        der <strong>Antriebswelle</strong> aus 42CrMo4. Sie soll aus Rundmaterial
-        Ø32 × 135 mm gedreht werden. Bevor irgendeine Schnittgeschwindigkeit
+        der <strong>Spannwelle</strong> aus C25E. Sie soll aus Rundmaterial
+        Ø28 × 96 mm gedreht werden. Bevor irgendeine Schnittgeschwindigkeit
         nachgeschlagen wird, ist die erste Frage zu klären: Welche Fläche
         entsteht durch welches Drehverfahren?</p>
       <p>Denn daraus folgt alles Weitere &ndash; das Werkzeug, die Spalte in
@@ -86,8 +86,8 @@
 
     <figure class="bild" id="bildWelle"></figure>
 
-    <p>Die Welle hat fünf zylindrische Abschnitte, zwei Stirnflächen, zwei
-      Absätze, zwei Nuten, einen Freistich und ein Gewinde. Jedes davon entsteht
+    <p>Die Welle hat vier zylindrische Abschnitte, zwei Stirnflächen, einen
+      Absatz, zwei Nuten, einen Freistich und ein Gewinde. Jedes davon entsteht
       durch eine bestimmte Bewegung von Werkzeug und Werkstück.</p>
 
     <details>
@@ -174,15 +174,15 @@
         Längenmaß ungenau. Die linke Stirnfläche gibt es zu diesem Zeitpunkt
         noch gar nicht &ndash; sie entsteht erst beim Abstechen.</p>
       <p>Zweitens braucht die Welle eine <strong>Zentrierbohrung</strong>. Bei
-        135 mm Länge und nur 32 mm Durchmesser biegt sich das Teil unter dem
+        96 mm Länge und nur 28 mm Durchmesser biegt sich das Teil unter dem
         Schnittdruck, wenn es nur im Futter hängt. Die Spitze im Reitstock hält
         dagegen &ndash; und die braucht einen Sitz, den es erst nach dem
         Plandrehen gibt.</p>
     </details>
 
     <details>
-      <summary>2. Die Nut A liegt 9 mm von der Stirnfläche entfernt, mitten auf
-        dem Ø20. Warum wird sie nicht vor dem Schlichten eingestochen?</summary>
+      <summary>2. Die Nut A liegt 6 mm von der Stirnfläche entfernt, mitten auf
+        dem Ø18. Warum wird sie nicht vor dem Schlichten eingestochen?</summary>
       <p>Weil das Schlichtwerkzeug danach über sie hinwegfahren müsste. An jeder
         Nutkante verlässt die Schneide den Werkstoff und trifft ihn gleich
         wieder &ndash; ein unterbrochener Schnitt im Kleinen. Das ist genau die
@@ -194,15 +194,15 @@
     </details>
 
     <details>
-      <summary>3. Der Bund Ø30 trägt nur Rz 10, der Lagersitz Ø25 dagegen Rz 4.
-        Was heißt das für den Arbeitsplan?</summary>
+      <summary>3. Der Bund Ø26 trägt nur Rz 10, der Führungssitz Ø22 dagegen
+        Rz 4. Was heißt das für den Arbeitsplan?</summary>
       <p>Rz 10 ist die allgemeine Rautiefe der Zeichnung &ndash; was
         geschruppt ist, reicht dort. Der Bund braucht also
         <strong>keinen Schlichtgang</strong>.</p>
       <p>Rz 4 dagegen verlangt einen: Mit Schruppvorschüben von 0,25 bis 0,6 mm
         ist diese Rautiefe nicht zu erreichen. Der Arbeitsplan bekommt deshalb
         zwei getrennte Zeilen &ndash; eine fürs Schruppen aller Absätze, eine
-        fürs Schlichten der Flächen mit Rz 4 und Rz 6. Das spart Zeit: Man
+        fürs Schlichten der Flächen mit Rz 4 und Rz 6,3. Das spart Zeit: Man
         schlichtet nur, wo es gefordert ist.</p>
     </details>
 
@@ -228,8 +228,8 @@
 
     <p class="fussnote"><strong>Woher die Angaben stammen:</strong> Übersicht der
       Drehverfahren mit Werkzeugangaben und Schnittgrößen sowie die
-      Arbeitsplanung beim Drehen &ndash; Tabellenbuch Metall. Die Antriebswelle ist
-      die Fertigungszeichnung aus dem Unterricht.</p>
+      Arbeitsplanung beim Drehen &ndash; Tabellenbuch Metall. Die Spannwelle ist
+      das Übungswerkstück dieses Pakets.</p>
 
     <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
       Maßgebend sind Norm und Tabellenbuch.</p>
@@ -245,7 +245,7 @@
 
 <script src="../../assets/drehteil.js"></script>
 
-<script>var WELLE = WELLEN.antriebswelle;</script>
+<script>var WELLE = WELLEN.spannwelle;</script>
 <script>
 "use strict";
 
@@ -263,44 +263,41 @@ var FLAECHEN = [
      + "Stangenmaterial. Danach hält das Werkstück nicht mehr - deshalb ist "
      + "Abstechen immer der letzte Drehvorgang. Ihre Zentrierbohrung kommt "
      + "nach dem Umspannen dazu."},
-  {name:"Ø20 links", fordert:"Rz 4",
+  {name:"Ø18 links", fordert:"Rz 6,3",
    soll:"Längsrunddrehen, Schlichten",
-   grund:"Eine zylindrische Mantelfläche entsteht beim Längsrunddrehen. Rz 4 "
+   grund:"Eine zylindrische Mantelfläche entsteht beim Längsrunddrehen. Rz 6,3 "
      + "ist mit Schruppvorschüben nicht zu erreichen, also wird sie "
      + "geschlichtet. Geschruppt wurde sie vorher - fertig macht sie das "
      + "Schlichten."},
-  {name:"Nut A bei 9 mm", fordert:"Breite 1,3 mm, Einzelheit A (4:1)",
+  {name:"Nut A bei 6 mm", fordert:"Breite 1,3 mm, Einzelheit A (4:1)",
    soll:"Einstechdrehen",
    grund:"Eine 1,3 mm breite Nut entsteht durch ein Werkzeug, das quer "
      + "einsticht. Die Nutbreite ist die Schneidenbreite - deshalb braucht es "
      + "für 1,3 mm ein Werkzeug mit genau dieser Breite."},
-  {name:"Absatz bei 22,3 mm", fordert:"Freistich DIN 509 – E 0,6 × 0,3",
+  {name:"Absatz bei 14 mm", fordert:"Rundung R1 am Fuß",
    soll:"Querplandrehen",
    grund:"Auch ein Absatz steht senkrecht zur Achse - dieselbe Bewegung wie "
-     + "bei der Stirnfläche. Der Freistich selbst wird eingestochen."},
-  {name:"Ø24", fordert:"Rz 6",
+     + "bei der Stirnfläche. Die Rundung an seinem Fuß fährt das Werkzeug mit "
+     + "seiner Schneidenecke aus; sie ist die engste Innenrundung der Welle."},
+  {name:"Führungssitz Ø22", fordert:"Rz 4",
    soll:"Längsrunddrehen, Schlichten",
-   grund:"Mantelfläche mit Rz 6 - auch das verlangt einen Schlichtgang, wenn "
-     + "auch mit etwas größerem Vorschub als Rz 4."},
-  {name:"Bund Ø30", fordert:"Rz 10 (allgemein), R1 am Übergang",
+   grund:"Der längste Abschnitt und der genaueste. Ohne Schlichten ist Rz 4 "
+     + "nicht zu machen."},
+  {name:"Nut B bei 43 mm", fordert:"Breite 1,3 mm, Einzelheit B (4:1)",
+   soll:"Einstechdrehen",
+   grund:"Wie Nut A: quer einstechen, Breite gleich Schneidenbreite."},
+  {name:"Bund Ø26", fordert:"Rz 10 (allgemein), R1,6 am Übergang",
    soll:"Längsrunddrehen, Schruppen",
    grund:"Rz 10 ist die allgemeine Rautiefe. Was geschruppt ist, reicht hier - "
      + "ein Schlichtgang wäre verschenkte Zeit."},
-  {name:"Ø25 Lagersitz", fordert:"Rz 4",
-   soll:"Längsrunddrehen, Schlichten",
-   grund:"Der längste Abschnitt und der zweite mit Rz 4. Ohne Schlichten ist "
-     + "diese Rautiefe nicht zu machen."},
-  {name:"Nut B bei 83,6 mm", fordert:"Breite 1,3 mm, Einzelheit B (4:1)",
-   soll:"Einstechdrehen",
-   grund:"Wie Nut A: quer einstechen, Breite gleich Schneidenbreite."},
-  {name:"Freistich DIN 76 – A", fordert:"vor dem Gewinde, bei 91,6 mm",
+  {name:"Freistich DIN 76 – A", fordert:"vor dem Gewinde, bei 58 mm",
    soll:"Einstechdrehen",
    grund:"Der Gewindefreistich wird eingestochen, damit das Gewindewerkzeug "
      + "auslaufen kann. Er gehört deshalb vor das Gewindedrehen."},
-  {name:"Gewinde M20×1 – 6g", fordert:"Länge 33,5 mm, Steigung 1 mm",
+  {name:"Gewinde M16×1,5 – 6g", fordert:"Länge 28,5 mm, Steigung 1,5 mm",
    soll:"Gewindedrehen",
-   grund:"Der Vorschub ist hier keine Wahl, sondern die Steigung: 1 mm je "
-     + "Umdrehung. Die volle Tiefe entsteht in mehreren Zustellungen."},
+   grund:"Der Vorschub ist hier keine Wahl, sondern die Steigung: 1,5 mm je "
+     + "Umdrehung. Die volle Tiefe entsteht in sieben Zustellungen."},
   {name:"Rechte Stirnfläche", fordert:"Rz 10, Zentrierbohrung ISO 6411 – A2,5×5,3",
    soll:"Querplandrehen",
    grund:"Das freie Ende liegt rechts, also wird hier zuerst bearbeitet: Die "
@@ -318,14 +315,14 @@ var ABLAUF = [
   {nr:3, was:"Alle Absätze durch Längsrunddrehen schruppen",
    grund:"Erst das Volumen weg, mit großer Schnitttiefe und großem Vorschub. "
      + "Das Schlichtaufmaß bleibt stehen."},
-  {nr:4, was:"Flächen mit Rz 6 und Rz 4 schlichten",
-   grund:"Jetzt die Oberfläche. Der Bund Ø30 bleibt aus - Rz 10 ist schon "
+  {nr:4, was:"Flächen mit Rz 6,3 und Rz 4 schlichten",
+   grund:"Jetzt die Oberfläche. Der Bund Ø26 bleibt aus - Rz 10 ist schon "
      + "erreicht."},
-  {nr:5, was:"Freistiche und Nuten A und B einstechen",
+  {nr:5, was:"Gewindefreistich und Nuten A und B einstechen",
    grund:"Nach dem Schlichten: Ein Schlichtwerkzeug, das über eine Nut läuft, "
      + "schlägt auf."},
-  {nr:6, was:"Gewinde M20×1 drehen",
-   grund:"Nach dem Freistich, damit das Werkzeug auslaufen kann. Mehrere "
+  {nr:6, was:"Gewinde M16×1,5 drehen",
+   grund:"Nach dem Freistich, damit das Werkzeug auslaufen kann. Sieben "
      + "Zustellungen und zwei bis vier Leerdurchläufe."},
   {nr:7, was:"Maße prüfen",
    grund:"Solange das Teil noch eingespannt ist, lässt sich nachbessern. "
@@ -345,8 +342,8 @@ function el(id){ return document.getElementById(id); }
   var o = {s:6.2, masse:true};
   var g = wellenGroesse(WELLE, o);
   var svg = bild("bildWelle", g.breite, g.hoehe,
-    "Fertigungszeichnung der Antriebswelle mit Maßen",
-    "Antriebswelle aus 42CrMo4, Rohteil Ø32 × 135 mm. Die Nuten A und B sind "
+    "Fertigungszeichnung der Spannwelle mit Maßen",
+    "Spannwelle aus C25E, Rohteil Ø28 × 96 mm. Die Nuten A und B sind "
     + "1,3 mm breit; die Einzelheiten dazu stehen auf der Zeichnung im "
     + "Maßstab 4:1.");
   zeichneWelle(svg, WELLE, {x:g.x, y:g.y, s:o.s, masse:true});

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Eine Wendeschneidplatte lesen</title>
-<meta name="description" content="Die Bezeichnung nach DIN ISO 1832 Stelle für Stelle zerlegen – und aus den Anforderungen der Antriebswelle umgekehrt eine Bezeichnung bilden.">
+<meta name="description" content="Die Bezeichnung nach DIN ISO 1832 Stelle für Stelle zerlegen – und aus den Anforderungen der Spannwelle umgekehrt eine Bezeichnung bilden.">
 <meta name="dauer" content="25 min">
 <link rel="stylesheet" href="../../assets/uebung.css">
 <style>
@@ -47,11 +47,11 @@
 
     <div class="box auftrag">
       <p><strong>Die Lage:</strong> Im Werkzeugschrank liegt eine Schachtel mit
-        der Aufschrift <strong>DIN 4968 – D C G N 11 04 04 F R – P15</strong>.
-        Ob die Platte für die Antriebswelle taugt, steht nicht dabei &ndash; das
+        der Aufschrift <strong>DIN 4968 – D C G N 11 04 08 F R – P15</strong>.
+        Ob die Platte für die Spannwelle taugt, steht nicht dabei &ndash; das
         steht in der Bezeichnung selbst.</p>
       <p>Diese Übung geht sie Stelle für Stelle durch und bildet danach
-        umgekehrt die Bezeichnung, die für den Lagersitz Ø25 gebraucht wird.</p>
+        umgekehrt die Bezeichnung, die zum Schruppen gebraucht wird.</p>
     </div>
 
     <h2><span class="nr">1</span>Die Bezeichnung zerlegen</h2>
@@ -109,8 +109,8 @@
         Schlichten und Vorschlichten. <strong>C</strong> an Stelle 2 heißt
         <strong>7°</strong> Freiwinkel, also eine positive Grundform: Sie
         schneidet leichter und braucht weniger Kraft.</p>
-      <p><strong>04</strong> an Stelle 7 mal 0,1 ergibt
-        <strong>r<sub>ε</sub> = 0,4 mm</strong>. <strong>R</strong> an Stelle 9
+      <p><strong>08</strong> an Stelle 7 mal 0,1 ergibt
+        <strong>r<sub>ε</sub> = 0,8 mm</strong>. <strong>R</strong> an Stelle 9
         heißt <strong>rechtsschneidend</strong> &ndash; die Platte arbeitet vom
         Reitstock zum Futter, der Normalfall beim Längsrunddrehen.</p>
       <p><strong>P15</strong> ist ein Schneidstoff der Gruppe
@@ -124,11 +124,11 @@
 
     <figure class="bild" id="bildWelle"></figure>
 
-    <p>Der Lagersitz <strong>Ø25</strong> soll mit <strong>Rz 4</strong>
+    <p>Der Führungssitz <strong>Ø22</strong> soll mit <strong>Rz 4</strong>
       geschlichtet werden. Die Frage ist, ob das Werkzeug in die Kontur
       passt &ndash; also: <strong>Wo ist die engste Innenrundung?</strong></p>
-    <p>Sehen Sie die ganze Zeichnung durch, nicht nur die Durchmesser. Auch
-      Freistiche haben Radien.</p>
+    <p>Sehen Sie die ganze Zeichnung durch, nicht nur den größten Absatz.
+      Maßgeblich ist die <em>engste</em> Rundung, nicht die auffälligste.</p>
 
     <div class="tabellenrahmen">
       <table class="werte">
@@ -143,14 +143,14 @@
             <td><input type="number" id="pMax" step="0.1" inputmode="decimal"
               autocomplete="off"></td>
             <td class="urteil" id="upMax">–</td></tr>
-          <tr><td>Passt r<sub>ε</sub> = 0,4 mm in die Kontur?</td>
+          <tr><td>Passt r<sub>ε</sub> = 0,8 mm in die Kontur?</td>
             <td><select id="pPasst" data-druck="ankreuzen">
               <option value="">bitte wählen</option>
               <option value="ja">ja</option>
               <option value="nein">nein</option>
             </select></td>
             <td class="urteil" id="upPasst">–</td></tr>
-          <tr><td>Vorschub f für Rz 4 mit r<sub>ε</sub> = 0,4 mm, in mm</td>
+          <tr><td>Vorschub f für Rz 4 mit r<sub>ε</sub> = 0,8 mm, in mm</td>
             <td><input type="number" id="pF" step="0.01" inputmode="decimal"
               autocomplete="off"></td>
             <td class="urteil" id="upF">–</td></tr>
@@ -171,42 +171,53 @@
     <p class="bilanzzeile" id="bilanz2">Noch nichts eingetragen.</p>
 
     <details>
-      <summary>Lösung: sie passt &ndash; aber nicht wegen der R1</summary>
-      <p>Der erste Blick fällt auf die <strong>R1</strong> am Übergang zum Bund.
-        Damit wäre r<sub>ε</sub> &le; 0,9 mm erlaubt, also 0,8 mm.
+      <summary>Lösung: sie passt &ndash; aber nicht wegen der R1,6</summary>
+      <p>Der erste Blick fällt auf die <strong>R1,6</strong> am Übergang zum
+        Bund. Damit wäre r<sub>ε</sub> &le; 1,5 mm erlaubt, also 1,2 mm.
         <strong>Das ist die falsche Stelle.</strong></p>
-      <p>Die engste Innenrundung der Kontur sind die beiden Freistiche
-        <strong>DIN 509 &ndash; E 0,6 × 0,3</strong>. Die erste Zahl der
-        Bezeichnung <em>ist</em> der Radius: <strong>r = 0,6 mm</strong>.
-        Daraus folgt:</p>
-      <p>r<sub>ε</sub> &le; 0,6 &minus; 0,1 = <strong>0,5 mm</strong>
-        &nbsp;&rarr;&nbsp; genormt <strong>0,4 mm</strong></p>
-      <p>Mit r<sub>ε</sub> = 0,4 mm ist die Platte also <strong>gerade
-        richtig</strong> &ndash; eine mit 0,8 mm wäre zu groß. Für Rz 4 folgt
+      <p>Die engste Innenrundung der Kontur ist die <strong>R1</strong> am
+        kleinen Absatz zwischen Ø18 und Ø22. Sie fällt weniger auf, weil der
+        Absatz kleiner ist &ndash; maßgeblich ist trotzdem sie. Daraus folgt:</p>
+      <p>r<sub>ε</sub> &le; 1,0 &minus; 0,1 = <strong>0,9 mm</strong>
+        &nbsp;&rarr;&nbsp; genormt <strong>0,8 mm</strong></p>
+      <p>Mit r<sub>ε</sub> = 0,8 mm ist die Platte also <strong>gerade
+        richtig</strong> &ndash; eine mit 1,2 mm wäre zu groß. Für Rz 4 folgt
         der Vorschub:</p>
-      <p>f = √(8 · 0,4 · 0,004) = <strong>0,11 mm</strong></p>
-      <p>Die Tabelle im Tabellenbuch nennt für Rz 4 und r<sub>ε</sub> = 0,4 mm
-        denselben Wert. 0,11 mm liegt im Vorschubbereich des Schlichtens
+      <p>f = √(8 · 0,8 · 0,004) = <strong>0,16 mm</strong></p>
+      <p>Die Tabelle im Tabellenbuch nennt für Rz 4 und r<sub>ε</sub> = 0,8 mm
+        denselben Wert. 0,16 mm liegt im Vorschubbereich des Schlichtens
         (0,1 bis 0,25 mm) &ndash; die Kombination ist fahrbar.</p>
       <div class="merksatz">
-        <strong>Der klassische Fehler:</strong> nur die Durchmesserübergänge
-        ansehen und die Freistiche vergessen. Sie sind meist die engsten
-        Stellen der ganzen Kontur, und sie stehen nicht als Radius in der
-        Zeichnung, sondern versteckt in einer Normbezeichnung. Wer sie
-        übersieht, wählt ein Werkzeug, das an der eigenen Kontur hängen
-        bleibt.
+        <strong>Der klassische Fehler:</strong> nur den größten Übergang
+        ansehen. Maßgeblich ist die engste Rundung der ganzen Kontur, egal wie
+        klein der Absatz ist, an dem sie sitzt. Wer sie übersieht, wählt ein
+        Werkzeug, das an der eigenen Kontur hängen bleibt.
+      </div>
+      <div class="merksatz">
+        <strong>Und noch besser versteckt:</strong> Trägt eine Welle
+        <strong>Freistiche nach DIN 509</strong>, steht deren Radius gar nicht
+        als Radius in der Zeichnung, sondern in der Normbezeichnung. Bei
+        <strong>DIN 509 &ndash; E 0,6 × 0,3</strong> ist die erste Zahl der
+        Radius: 0,6 mm &ndash; enger als jede sichtbare Rundung. Die
+        Antriebswelle der Lernsituation ist so ein Fall.
       </div>
       <p class="fussnote">Die Regel gilt dem Werkzeug, das die Kontur
         <em>erzeugt</em> &ndash; beim Konturdrehen auf der CNC also dem
-        Schlichtwerkzeug, das auch durch die Freistiche fährt. Werden die
-        Freistiche mit einem eigenen Formwerkzeug gestochen, bindet für den
-        Schlichtmeißel nur die R1. Im Zweifel gilt die engere Grenze.</p>
+        Schlichtwerkzeug, das auch durch die Rundungen fährt. Wird eine enge
+        Stelle mit einem eigenen Formwerkzeug gestochen, bindet für den
+        Schlichtmeißel nur die übrige Kontur. Im Zweifel gilt die engere
+        Grenze.</p>
     </details>
 
     <h2><span class="nr">3</span>Die Bezeichnung selbst bilden</h2>
-    <p>Gesucht ist eine Platte zum <strong>Schruppen</strong> der Antriebswelle:
+    <p>Gesucht ist eine Platte zum <strong>Schruppen</strong> der Spannwelle:
       Stahl, kräftiger Schnitt, große Schnitttiefe, beidseitig verwendbar,
-      rechtsschneidend, Eckenradius 0,8 mm.</p>
+      rechtsschneidend, Eckenradius 1,2 mm.</p>
+    <p class="fussnote">Größer als die 0,8 mm des Schlichtwerkzeugs &ndash;
+      und das ist kein Widerspruch: Der Schruppmeißel lässt überall
+      Schlichtaufmaß stehen und fährt deshalb gar nicht in die R1 hinein.
+      Erzeugt wird die Kontur vom Schlichtwerkzeug, und nur für das gilt die
+      Grenze.</p>
 
     <div class="tabellenrahmen">
       <table class="werte">
@@ -228,7 +239,7 @@
               <option value="G">G</option>
             </select></td>
             <td class="urteil" id="ub2">–</td></tr>
-          <tr><td>7 – Kennzahl für r<sub>ε</sub> = 0,8 mm</td>
+          <tr><td>7 – Kennzahl für r<sub>ε</sub> = 1,2 mm</td>
             <td><input type="text" id="b7" autocomplete="off" placeholder="zwei Ziffern"></td>
             <td class="urteil" id="ub7">–</td></tr>
           <tr><td>9 – Schneidrichtung</td>
@@ -248,7 +259,7 @@
     <p class="bilanzzeile" id="bilanz3">Noch nichts eingetragen.</p>
 
     <details>
-      <summary>Lösung: C N … 08 … R</summary>
+      <summary>Lösung: C N … 12 … R</summary>
       <p><strong>C</strong> &ndash; die 80°-Raute. Sie hat eine stabile Ecke und
         ist damit die Schruppform schlechthin. <strong>W</strong> (Trigon, auch
         80°) wäre ebenfalls möglich; C ist die häufigere Wahl beim
@@ -257,10 +268,10 @@
         Platte ohne Freiwinkel lässt sich <strong>wenden</strong>: Sie hat auf
         beiden Seiten Schneiden, also doppelt so viele wie eine positive. Beim
         Schruppen zählt das, weil die Schneide schneller stumpf wird.</p>
-      <p><strong>08</strong> &ndash; Kennzahl mal 0,1 ergibt 0,8 mm. Ein großer
+      <p><strong>12</strong> &ndash; Kennzahl mal 0,1 ergibt 1,2 mm. Ein großer
         Eckenradius trägt höhere Vorschübe und stabilisiert die Ecke.</p>
       <p><strong>R</strong> &ndash; rechtsschneidend, vom Reitstock zum Futter.</p>
-      <p>Zusammen etwa: <strong>C N M G 12 04 08 – P25</strong>. Ein
+      <p>Zusammen etwa: <strong>C N M G 12 04 12 – P25</strong>. Ein
         Schneidstoff mit höherer Kennzahl (P25 statt P15) ist beim Schruppen
         richtig: zäher, verträgt den unterbrochenen Schnitt in der Walzhaut.</p>
     </details>
@@ -342,7 +353,7 @@
 
 <script src="../../assets/drehteil.js"></script>
 
-<script>var WELLE = WELLEN.antriebswelle;</script>
+<script>var WELLE = WELLEN.spannwelle;</script>
 <script>
 "use strict";
 
@@ -394,9 +405,9 @@ function bilanz(id, richtig, gesamt, offen){
 (function zeichnung(){
   var g = wellenGroesse(WELLE, {s:5.6, bezeichnungen:true});
   var svg = bild("bildWelle", g.breite, g.hoehe,
-    "Die Antriebswelle mit Benennungen",
-    "Der Lagersitz Ø25 ist der längste Abschnitt; am Übergang zum Bund "
-    + "sitzt die Rundung R1.");
+    "Die Spannwelle mit Benennungen",
+    "Der Führungssitz Ø22 ist der längste Abschnitt; am Übergang zum Bund "
+    + "sitzt die Rundung R1,6, am kleinen Absatz die R1.");
   zeichneWelle(svg, WELLE, {x:g.x, y:g.y, s:5.6, bezeichnungen:true});
 }());
 
@@ -404,7 +415,7 @@ function bilanz(id, richtig, gesamt, offen){
 
 el("btn1").addEventListener("click", function(){
   var r = 0, offen = 0;
-  [["z1", "u1", 55], ["z2", "u2", 7], ["z7", "u7", 0.4]].forEach(function(f){
+  [["z1", "u1", 55], ["z2", "u2", 7], ["z7", "u7", 0.8]].forEach(function(f){
     var v = wert(f[0]);
     var leer = !isFinite(v); if(leer) offen++;
     r += urteilen(f[1], Math.abs(v - f[2]) < 0.01, leer);
@@ -420,10 +431,14 @@ el("btn1").addEventListener("click", function(){
 
 /* ---------- Teil 2 ---------- */
 
-/* Die engste Innenrundung der Kontur: der Radius der Freistiche
-   DIN 509 - E 0,6 x 0,3. Nicht die R1 am Bund - das ist der Fehler, um den
-   es in Teil 2 geht. */
-var R_ENG = 0.6;
+/* Die engste Innenrundung der Kontur: die R1 am kleinen Absatz zwischen
+   Durchmesser 18 und 22. Nicht die R1,6 am Bund - das ist der Fehler, um
+   den es in Teil 2 geht. Beides steht in assets/wellen.js; hier steht die
+   Zahl noch einmal, damit die Uebung ohne den Zeichenbaustein rechnet. */
+var R_ENG = 1.0;
+
+/* Daraus der groesste genormte Eckenradius: r_eps <= R_ENG - 0,1. */
+var R_ECKE = 0.8;
 
 /* f = Wurzel(8 * r_eps * Rth); Rth in Millimetern. */
 function vorschub(rzMikro, rEps){
@@ -447,7 +462,7 @@ el("btn2").addEventListener("click", function(){
 
   var f = wert("pF");
   var leerF = !isFinite(f); if(leerF) offen++;
-  r += urteilen("upF", Math.abs(f - vorschub(4, 0.4)) <= 0.011, leerF);
+  r += urteilen("upF", Math.abs(f - vorschub(4, R_ECKE)) <= 0.011, leerF);
 
   var gr = el("pGruppe").value;
   if(!gr) offen++;
@@ -468,8 +483,7 @@ el("btn3").addEventListener("click", function(){
     });
   var k = String(el("b7").value).trim();
   if(!k) offen++;
-  /* 08 und 8 sind beide gemeint - die führende Null ist Schreibweise. */
-  r += urteilen("ub7", k === "08" || k === "8", !k);
+  r += urteilen("ub7", k === "12", !k);
   bilanz("bilanz3", r, 4, offen);
 });
 </script>
