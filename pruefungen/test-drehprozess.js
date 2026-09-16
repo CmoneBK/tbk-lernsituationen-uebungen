@@ -936,10 +936,25 @@ console.log('\nDie Lektion im Werkzeug-Repo');
       const text = fs.readFileSync(datei, 'utf8');
       p('sie ist als Lektion gekennzeichnet',
         /name="art" content="lektion"/.test(text));
-      p('sie hat die fuenf Schritte als Reiter',
-        ['kontur', 'werkstoff', 'schnitt', 'werkzeug', 'vorschub', 'hinweise']
+      p('sie hat alle Schritte als Reiter',
+        ['kontur', 'werkstoff', 'schnitt', 'werkzeug', 'vorschub', 'passung',
+         'zeit', 'pruefen', 'hinweise']
           .every((r) => text.indexOf('data-tab="' + r + '"') > 0));
       p('sie nennt ihre Quellen', /Tabellenbuch Metall/.test(text));
+
+      /* Die Lektion verweist auf Werkzeuge, die es schon gibt. Ein Verweis
+         ins Leere ist schlimmer als keiner: Er sieht aus wie ein Angebot. */
+      const verweise = [];
+      [...text.matchAll(/<p class="tool">([^]*?)<\/p>/g)].forEach((kasten) => {
+        [...kasten[1].matchAll(/href="([^"]+)"/g)]
+          .forEach((a) => verweise.push(a[1]));
+      });
+      const tot = verweise.filter(
+        (v) => !fs.existsSync(path.join(TOOLS, v)));
+      p('jeder Werkzeugverweis trifft eine Datei', tot.length === 0,
+        tot.join(', '));
+      p('und es sind mindestens fuenf', verweise.length >= 5,
+        String(verweise.length));
 
       /* Geladen und bedient: Zu jeder Flaeche der Welle muss die Lektion
          sagen koennen, welches Verfahren sie erzeugt. Wechselt die Welle
@@ -971,6 +986,63 @@ console.log('\nDie Lektion im Werkzeug-Repo');
         w.WELLE.id === 'mitnehmerwelle', w.WELLE.id);
       p('und rechnet mit deren Werkstoff',
         /C45E/.test(text) && w.WELLE.werkstoff === 'C45E');
+
+      /* Die Reiter Passung, Zeit und Pruefen rechnen - also wird gerechnet.
+         Ein Regler, den man setzt, muss sein Ereignis bekommen; sonst
+         steht im Kasten noch das Ergebnis des Startwertes. */
+      const setz = (id, wert) => {
+        const e = d.getElementById(id);
+        e.value = String(wert);
+        e.dispatchEvent(new w.Event('input', { bubbles: true }));
+        e.dispatchEvent(new w.Event('change', { bubbles: true }));
+      };
+      const inhalt = (id) => d.getElementById(id).textContent
+        .replace(/\s+/g, ' ');
+
+      /* Passung: 32 k6 hat es = +18, ei = +2 Mikrometer (Nennmassbereich
+         ueber 30 bis 50). Daraus 32,018 / 32,002, Mitte 32,010. */
+      setz('tN', 32); setz('tK', 'k6');
+      const passung = inhalt('passungInfo');
+      p('der Passungsreiter liest die Grenzabmasse',
+        /32,018/.test(passung) && /32,002/.test(passung), passung.slice(0, 120));
+      p('und nennt das Mittenmass', /Mittenma\u00df = 32,010/.test(passung));
+      p('die Toleranzweite stimmt', /16 \u00b5m/.test(passung));
+
+      /* 20 f7: es = -20, ei = -41 -> 19,980 / 19,959, Mitte 19,970. */
+      setz('tN', 20); setz('tK', 'f7');
+      const f7 = inhalt('passungInfo');
+      p('auch bei einer Spielpassung',
+        /19,980/.test(f7) && /19,959/.test(f7) && /19,970/.test(f7),
+        f7.slice(0, 120));
+
+      /* Zeit: das durchgerechnete Beispiel der Seite 354 - Laengsrunddrehen
+         mit Ansatz, d = 42 mm, l = 50 mm, v_c = 130 m/min, f = 0,3 mm,
+         i = 2. Das Buch kommt auf L = 52 mm, n = 985 1/min, t_h = 0,35 min.
+         Trifft die Lektion das, stimmt die ganze Kette. */
+      setz('zF', 'laengs_mit'); setz('zL', 50); setz('zD', 42);
+      setz('zV', 130); setz('zVor', 0.3); setz('zI', 2);
+      const zeit = inhalt('zeitInfo');
+      p('der Zeitreiter trifft den Vorschubweg des Buches',
+        /52,0 mm/.test(zeit), zeit.slice(0, 140));
+      p('und die Drehzahl', /985 1\/min/.test(zeit));
+      p('und die Hauptnutzungszeit', /0,35 min/.test(zeit));
+
+      /* Querplandrehen rechnet mit dem mittleren Durchmesser d/2. */
+      setz('zF', 'plan_voll'); setz('zD', 40); setz('zV', 200);
+      const plan = inhalt('zeitInfo');
+      p('beim Querplandrehen mit dem mittleren Durchmesser',
+        /d<sub>m<\/sub> = d\/2/.test(d.getElementById('zeitInfo').innerHTML)
+        && /\u00b7 20,0/.test(plan), plan.slice(0, 140));
+
+      /* Pruefen: 16 Mikrometer Weite sind 1,6 Schritte einer
+         Buegelmessschraube - und weniger als ein Schritt eines
+         Messschiebers. */
+      setz('mN', 32); setz('mK', 'k6');
+      const liste = inhalt('messmittelListe');
+      p('der Pruefreiter zaehlt die Ablesungsschritte',
+        /1,6 Schritte/.test(liste), liste.slice(0, 160));
+      p('und nennt den Messschieber hier untauglich',
+        (liste.match(/gr\u00f6ber als die ganze Toleranz/g) || []).length === 2);
       w.close();
     }
     /* Der Zeichenbaustein liegt in beiden Repos - er muss derselbe sein,
