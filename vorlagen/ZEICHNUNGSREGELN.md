@@ -81,6 +81,14 @@ Strichpunkt einheitlich als `"12 2 2 2"`.
   Durchgangsloch einer Schraubverbindung bleibt die Trennfuge der Bauteile
   sichtbar, bis die Schraube sie verdeckt — die Linie läuft also vom
   Lochrand bis zum Schaft, nicht nur bis zum Lochrand.
+* **Verdeckte Kanten** sind schmale Strichlinien. Eine Innenbohrung in einer
+  Welle wird so gezeichnet, nicht geschnitten: Eine Welle stellt man im
+  Längsschnitt ohnehin nicht geschnitten dar, und für eine Bohrung allein
+  lohnt kein Teilschnitt.
+* **Eine Längsnut wird nicht gespiegelt.** Sicherungsringnuten laufen rundum
+  und erscheinen oben wie unten. Eine Passfedernut liegt auf einer Seite; sie
+  gehört nur einmal ins Bild, mit dem Nutgrund als breiter Linie und den
+  Endbögen des Fräsers.
 * **Die Auflagekante eines Schraubenkopfes läuft durch.** Sie steht senkrecht
   zur Achse und wird von der Seite als Linie gesehen. Ob der Schaft sie
   verdeckt, entscheidet die Tiefe: Innerhalb des Schaftradius liegt der
