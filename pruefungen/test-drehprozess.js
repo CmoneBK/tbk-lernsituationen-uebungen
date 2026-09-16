@@ -16,6 +16,18 @@ const fs = require('fs'), path = require('path');
 const { JSDOM } = require('jsdom');
 const { BASIS, mitAssets } = require('./harness');
 
+/* Die Lektion liegt im Werkzeug-Repo und bindet ihre Bausteine von dort
+   ein - mit eigenem Pfad, deshalb ein eigenes Einsetzen. */
+function mitTools(html, ordner) {
+  const schluss = '<' + '/script>';
+  return html.replace(
+    new RegExp('<script src="(assets/[a-z-]+\.js)"[^>]*>[^]*?' + schluss, 'g'),
+    (_, d) => '<script>'
+      + fs.readFileSync(path.join(ordner, d), 'utf8')
+        .split(schluss).join('<\\' + '/script>')
+      + schluss);
+}
+
 let fehler = 0;
 const p = (was, ok, zusatz) => {
   console.log((ok ? '  ok     ' : '  FEHLER ') + was + (ok || !zusatz ? '' : ' – ' + zusatz));
@@ -792,10 +804,43 @@ console.log('\nDie Lektion im Werkzeug-Repo');
         ['kontur', 'werkstoff', 'schnitt', 'werkzeug', 'vorschub', 'hinweise']
           .every((r) => text.indexOf('data-tab="' + r + '"') > 0));
       p('sie nennt ihre Quellen', /Tabellenbuch Metall/.test(text));
+
+      /* Geladen und bedient: Zu jeder Flaeche der Welle muss die Lektion
+         sagen koennen, welches Verfahren sie erzeugt. Wechselt die Welle
+         und die Begruendungen bleiben stehen, zeigt der halbe Knopfsatz
+         den Platzhaltertext - und niemand merkt es. */
+      const dom = new JSDOM(mitTools(text, TOOLS), {
+        runScripts: 'dangerously',
+        url: 'https://t-bk.de/werkzeuge/tools/'
+             + 'fertigungstechnik-zerspanung-drehprozess-planen.html',
+      });
+      const w = dom.window, d = w.document;
+      const knoepfe = [...d.querySelectorAll('#flaechenknoepfe button')];
+      p('die Lektion zeigt Flaechenknoepfe', knoepfe.length >= 7,
+        String(knoepfe.length));
+      p('so viele, wie die Welle Flaechen hat',
+        knoepfe.length === w.WELLE.flaechen.length,
+        knoepfe.length + ' Knoepfe, ' + w.WELLE.flaechen.length + ' Flaechen');
+
+      const ohne = knoepfe.filter((b) => {
+        b.click();
+        const t = d.getElementById('flaecheInfo').textContent;
+        b.click();
+        return /Eine Fl\u00e4che w\u00e4hlen/.test(t) || t.trim().length < 40;
+      });
+      p('jede Flaeche hat ihre Begruendung', ohne.length === 0,
+        ohne.map((b) => b.dataset.f).join(', '));
+
+      p('sie zeigt die Welle, die sie meint',
+        w.WELLE.id === 'mitnehmerwelle', w.WELLE.id);
+      p('und rechnet mit deren Werkstoff',
+        /C45E/.test(text) && w.WELLE.werkstoff === 'C45E');
+      w.close();
     }
     /* Der Zeichenbaustein liegt in beiden Repos - er muss derselbe sein,
        sonst zeichnet die Lektion eine andere Welle als die Uebungen. */
     [['assets/zeichnen.js', 'zeichnen.js'],
+     ['assets/wellen.js', 'wellen.js'],
      ['assets/drehteil.js', 'drehteil.js']].forEach((paar) => {
       const hier = fs.readFileSync(path.join(BASIS, paar[0]), 'utf8');
       const dort = path.join(TOOLS, 'assets', paar[1]);
