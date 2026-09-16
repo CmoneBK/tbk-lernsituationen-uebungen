@@ -53,11 +53,15 @@
     background:rgba(43,108,176,.14); color:var(--accent);
   }
 
-  /* --- Werkzeug-Hinweis --- */
+  /* --- Verweise ins Werkzeugrepo: Lektionen und Simulationen --- */
+  /* Zwei Bereiche, nicht einer: Eine Lektion arbeitet ein Thema durch, eine
+     Simulation rechnet einen Fall. Die Lektionen stehen oben und sind
+     gefuellt - erst durcharbeiten, dann rechnen. */
   .werkzeuge{
     background:var(--card); border:1px solid var(--border); border-radius:12px;
     padding:16px 18px; margin:28px 0 0; box-shadow:var(--shadow);
   }
+  .werkzeuge + .werkzeuge{margin-top:12px}
   .werkzeuge-lead{margin:0 0 10px; font-size:14px; color:var(--muted)}
   a.werkzeug{
     display:inline-flex; align-items:center; gap:8px;
@@ -67,6 +71,8 @@
   }
   a.werkzeug::after{content:"\2197"; font-weight:400}
   a.werkzeug:hover{background:var(--accent); color:var(--accent-fg)}
+  a.werkzeug.lektion{background:var(--accent); color:var(--accent-fg)}
+  a.werkzeug.lektion:hover{filter:brightness(1.08)}
 
   /* --- Liste der Übungen --- */
   ol.liste{list-style:none; counter-reset:nr; margin:26px 0 0; padding:0}
@@ -130,9 +136,9 @@
   <div class="wrap"><div class="bg-zeile" id="tbk-bg"></div></div>
 
   <main class="wrap">
-      <div class="werkzeuge">
-        <p class="werkzeuge-lead">Passendes interaktives Werkzeug:</p>
-        <a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-ueberblick.html">Werkzeug Fügeverfahren im Überblick</a>
+      <div class="werkzeuge lektionen">
+        <p class="werkzeuge-lead">Passende Lektion zum Durcharbeiten:</p>
+        <a class="werkzeug lektion" data-werkzeug="fertigungstechnik-fuegeverfahren-ueberblick.html">Fügeverfahren im Überblick</a>
       </div>
 
       <ol class="liste">

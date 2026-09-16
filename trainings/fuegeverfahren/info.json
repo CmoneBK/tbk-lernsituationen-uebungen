@@ -4,7 +4,8 @@
   "werkzeuge": [
     {
       "datei": "fertigungstechnik-fuegeverfahren-ueberblick.html",
-      "name": "Werkzeug Fügeverfahren im Überblick"
+      "name": "Fügeverfahren im Überblick",
+      "art": "lektion"
     }
   ],
   "reihenfolge": [

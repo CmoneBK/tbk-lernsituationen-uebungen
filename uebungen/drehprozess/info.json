@@ -4,31 +4,38 @@
   "werkzeuge": [
     {
       "datei": "fertigungstechnik-zerspanung-drehprozess-planen.html",
-      "name": "Lektion Drehprozess planen"
+      "name": "Drehprozess planen",
+      "art": "lektion"
     },
     {
       "datei": "fertigungstechnik-vorschub-rautiefe-beim-schlichten.html",
-      "name": "Werkzeug Vorschub und Rautiefe beim Schlichten"
+      "name": "Vorschub und Rautiefe beim Schlichten",
+      "art": "simulation"
     },
     {
       "datei": "fertigungstechnik-beurteilung-bedingungen-fuer-die-fertigung.html",
-      "name": "Werkzeug Bedingungen für die Fertigung beurteilen"
+      "name": "Bedingungen für die Fertigung beurteilen",
+      "art": "simulation"
     },
     {
       "datei": "fertigungstechnik-hauptnutzungszeit-beim-drehen.html",
-      "name": "Werkzeug Hauptnutzungszeit beim Drehen"
+      "name": "Hauptnutzungszeit beim Drehen",
+      "art": "simulation"
     },
     {
       "datei": "fertigungstechnik-iso-toleranzen-und-passungen.html",
-      "name": "Werkzeug ISO-Toleranzen und Passungen"
+      "name": "ISO-Toleranzen und Passungen",
+      "art": "simulation"
     },
     {
       "datei": "fertigungstechnik-messmittel-messschieber.html",
-      "name": "Werkzeug Messschieber"
+      "name": "Messschieber",
+      "art": "simulation"
     },
     {
       "datei": "fertigungstechnik-messmittel-buegelmessschraube.html",
-      "name": "Werkzeug Bügelmessschraube"
+      "name": "Bügelmessschraube",
+      "art": "simulation"
     }
   ],
   "reihenfolge": [

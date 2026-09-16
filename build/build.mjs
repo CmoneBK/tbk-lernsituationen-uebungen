@@ -489,18 +489,47 @@ function uebersichtInhalt(alle, ordnung) {
 
 /* ---------- Paketseite ---------- */
 
+/* Die Verweise auf das Werkzeugrepo - in zwei Bereichen.
+ *
+ * Lektionen und Simulationen sind zweierlei: Eine Lektion arbeitet ein Thema
+ * in Kapiteln durch, eine Simulation rechnet einen Fall. Bis hierher standen
+ * beide unter derselben Zeile "Passendes interaktives Werkzeug", und zweimal
+ * log der Name: "Fuegeverfahren im Ueberblick" und "Schraubverbindungen"
+ * hiessen "Werkzeug ...", sind aber Lektionen.
+ *
+ * Woher die Art kommt: aus `art` in der info.json des Pakets, und die wurde
+ * aus dem <meta name="art"> der Werkzeugseite selbst uebernommen. Der Build
+ * kann dort nicht nachsehen - das Werkzeugrepo ist ein eigenes Repo und beim
+ * Ausliefern nicht da. Dass beide uebereinstimmen, prueft test-werkzeug.js.
+ */
+function werkzeugLink(w) {
+  const datei = typeof w === 'string' ? w : w.datei;
+  const name = typeof w === 'string' ? 'Öffnen' : (w.name ?? 'Öffnen');
+  const art = typeof w === 'object' && w.art === 'lektion' ? 'lektion' : 'simulation';
+  const fach = typeof w === 'object' && w.fach ? ` data-fach="${escHtml(w.fach)}"` : '';
+  return `        <a class="werkzeug ${art}" data-werkzeug="${escHtml(datei)}"${fach}>` +
+         `${escHtml(name)}</a>`;
+}
+
 function werkzeugeHtml(werkzeuge) {
   if (!werkzeuge.length) return '';
-  const links = werkzeuge.map((w) => {
-    const datei = typeof w === 'string' ? w : w.datei;
-    const name = typeof w === 'string' ? 'Werkzeug öffnen' : (w.name ?? 'Werkzeug öffnen');
-    const fach = typeof w === 'object' && w.fach ? ` data-fach="${escHtml(w.fach)}"` : '';
-    return `        <a class="werkzeug" data-werkzeug="${escHtml(datei)}"${fach}>` +
-           `${escHtml(name)}</a>`;
-  }).join('\n');
-  return `      <div class="werkzeuge">\n` +
-         `        <p class="werkzeuge-lead">Passendes interaktives Werkzeug:</p>\n` +
-         `${links}\n      </div>\n`;
+  const istLektion = (w) => typeof w === 'object' && w.art === 'lektion';
+  const lektionen = werkzeuge.filter(istLektion);
+  const simulationen = werkzeuge.filter((w) => !istLektion(w));
+
+  const block = (liste, klasse, lead) => liste.length
+    ? `      <div class="werkzeuge ${klasse}">\n`
+      + `        <p class="werkzeuge-lead">${lead(liste.length)}</p>\n`
+      + `${liste.map(werkzeugLink).join('\n')}\n      </div>\n`
+    : '';
+
+  /* Erst durcharbeiten, dann rechnen - deshalb stehen die Lektionen oben. */
+  return block(lektionen, 'lektionen',
+    (n) => n === 1 ? 'Passende Lektion zum Durcharbeiten:'
+      : 'Passende Lektionen zum Durcharbeiten:')
+    + block(simulationen, 'simulationen',
+      (n) => n === 1 ? 'Passendes interaktives Werkzeug:'
+        : 'Passende interaktive Werkzeuge:');
 }
 
 /* Die Gesamtzeichnung des Werkstuecks, an dem ein Paket arbeitet.

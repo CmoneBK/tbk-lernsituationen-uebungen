@@ -3,7 +3,7 @@
 const fs = require('fs'), path = require('path');
 const { JSDOM, VirtualConsole } = require('jsdom');
 
-const { WERKZEUGE, WEBSEITE, dran } = require('./orte');
+const { MATERIAL, WERKZEUGE, WEBSEITE, dran } = require('./orte');
 /* Diese Pruefung gilt dem Nachbar-Repo. Ist es hier nicht ausgecheckt, gibt
    es nichts zu pruefen - das ist kein Fehler im Material. */
 if(!dran(WERKZEUGE, 'Werkzeug-Repo')) return;
@@ -234,6 +234,53 @@ console.log('\nPrüftechnik – Stil und Fachbegriffe');
   /* Der Messvorgang läuft über die Kette. */
   klick(w, d.getElementById('btnMessen'));
   p('Messvorgang startet', d.getElementById('btnMessen').disabled);
+}
+
+console.log('\nLektion oder Werkzeug - die Pakete muessen es richtig sagen');
+{
+  /* Die Paketseiten fuehren die Verweise ins Werkzeugrepo in zwei
+     Bereichen: Lektionen zum Durcharbeiten, Simulationen zum Rechnen.
+     Welche Art ein Verweis hat, steht in der info.json des Pakets - der
+     Build kann beim Ausliefern nicht im Nachbarrepo nachsehen.
+
+     Damit die Angabe nicht auseinanderlaeuft, wird sie hier gegen die
+     Quelle gehalten: das <meta name="art"> der Werkzeugseite selbst. Vor
+     der Trennung log der Name zweimal - "Fuegeverfahren im Ueberblick" und
+     "Schraubverbindungen" hiessen "Werkzeug ...", sind aber Lektionen. */
+  const ART = /<meta\s+name="art"\s+content="([a-z]+)"/i;
+  const infos = [];
+  ['lernsituationen', 'trainings', 'uebungen'].forEach((typ) => {
+    const wurzel = path.join(MATERIAL, typ);
+    if (!fs.existsSync(wurzel)) return;
+    fs.readdirSync(wurzel, { withFileTypes: true })
+      .filter((e) => e.isDirectory())
+      .forEach((e) => {
+        const datei = path.join(wurzel, e.name, 'info.json');
+        if (fs.existsSync(datei)) infos.push([typ + '/' + e.name, datei]);
+      });
+  });
+  p('es gibt Pakete mit Verweisen', infos.length > 0);
+
+  infos.forEach(([kurz, datei]) => {
+    let info;
+    try { info = JSON.parse(fs.readFileSync(datei, 'utf8')); }
+    catch (e) { p(kurz + ': info.json ist lesbar', false, e.message); return; }
+    (info.werkzeuge || []).forEach((w) => {
+      const seite = path.join(TOOLS, w.datei);
+      if (!fs.existsSync(seite)) {
+        p(kurz + ': ' + w.datei + ' gibt es', false, 'nicht im Werkzeugrepo');
+        return;
+      }
+      const m = ART.exec(fs.readFileSync(seite, 'utf8').slice(0, 8000));
+      p(kurz + ': ' + w.name + ' ist als ' + (m ? m[1] : '?') + ' gefuehrt',
+        !!m && w.art === m[1],
+        'info.json sagt ' + w.art + ', die Seite sagt ' + (m ? m[1] : 'nichts'));
+      /* Der Zusatz im Namen war die alte Kruecke - jetzt sagt es die
+         Ueberschrift des Bereichs. */
+      p(kurz + ': ' + w.name + ' traegt die Art nicht noch im Namen',
+        !/^(Lektion|Werkzeug|Simulation)\s/.test(w.name), w.name);
+    });
+  });
 }
 
 console.log('\n' + (fehler ? fehler + ' Fehler' : 'alles gruen'));

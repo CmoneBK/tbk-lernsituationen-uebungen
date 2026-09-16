@@ -27,6 +27,9 @@
   }
   figure.bild{margin:0 0 18px}
   figure.bild svg{width:100%; height:auto}
+  /* Die Einzelheit ist ein kleines Bild - auf voller Breite waere die Nut
+     groesser als die Welle, zu der sie gehoert. */
+  figure.bild.schmal{max-width:360px}
   figure.bild figcaption{font-size:13px; color:var(--muted); margin-top:6px}
   /* Der Arbeitsplan ist das Handlungsprodukt - er darf breit sein. */
   table.plan{font-size:13.5px}
@@ -67,6 +70,8 @@
     </div>
 
     <figure class="bild" id="bildWelle"></figure>
+
+    <figure class="bild schmal" id="bildNut"></figure>
 
     <div class="box">
       <p><strong>Die Maschine in der Werkstatt</strong></p>
@@ -708,6 +713,18 @@ function bilanz(id, richtig, gesamt, offen){
     + "Innenradius der ganzen Kontur.");
   o.x = g.x; o.y = g.y;
   zeichneWelle(svg, WELLE, o);
+
+  /* Breite und Tiefe der Sicherungsringnuten sind in der Ansicht nicht zu
+     bemassen - die Nut ist dort acht Bildpunkte breit. Dafuer die
+     Einzelheit. Beide Nuten haben dieselbe Form, also genuegt eine. */
+  var nut = WELLE.nuten[0];
+  var sn = bild("bildNut", 430, 160,
+    "Einzelheit der Sicherungsringnut, stark vergrößert",
+    "<strong>Einzelheit A und B</strong> &ndash; beide Nuten haben dieselbe "
+    + "Form. Nutgrund Ø" + (WELLE.nuten[0].d - 2 * nut.tiefe) + " bei A, Ø"
+    + (WELLE.nuten[1].d - 2 * WELLE.nuten[1].tiefe) + " bei B; ihre Lage "
+    + "steht in der Ansicht darüber.");
+  zeichneNutEinzelheit(sn, WELLE, {marke:nut.marke, s:70, x:130, y:60});
 
   el("stufen").innerHTML = STUFEN.map(function(n){
     return "<span>" + n + "</span>"; }).join("");

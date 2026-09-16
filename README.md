@@ -88,7 +88,7 @@ uebungen/schraubverbindungen/
   "lead": "Ein Satz, der auf der Karte und über der Paketseite steht.",
   "werkzeuge": [
     { "datei": "maschinenelemente-schrauben-schraubverbindungen.html",
-      "name": "Werkzeug Schraubverbindungen", "fach": "1" }
+      "name": "Schraubverbindungen", "art": "lektion", "fach": "1" }
   ],
   "reihenfolge": ["03-wohin-geht-das-drehmoment.html"]
 }
@@ -98,7 +98,7 @@ uebungen/schraubverbindungen/
 | --- | --- |
 | `titel` | folgt der [Titelkonvention](#titelkonvention) – **er** bestimmt Bereich und Unterkategorie |
 | `lead` | optional, ein Satz |
-| `werkzeuge` | optional, Dateinamen im Werkzeuge-Repo; siehe [Werkzeug-Links](#-werkzeug-links) |
+| `werkzeuge` | optional, Dateinamen im Werkzeuge-Repo; siehe [Werkzeug-Links](#-werkzeug-links). `art` ist `lektion` oder `simulation` und steht im `<meta name="art">` der Werkzeugseite — die Paketseite macht daraus zwei Bereiche. Der Name traegt die Art nicht noch einmal. |
 | `reihenfolge` | optional; was fehlt, wird alphabetisch angehängt – deshalb Dateien nummerieren |
 
 Die Übungen im Paket brauchen im `<title>` **nur ihren Namen** – Bereich und

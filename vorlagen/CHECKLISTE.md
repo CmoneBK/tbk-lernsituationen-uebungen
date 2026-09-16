@@ -194,6 +194,27 @@ Drei Regeln, immer in dieser Reihenfolge — `assets/uebung.css` macht es vor:
 Den `href` setzt `assets/werkzeug-link.js` je nach Umgebung (t-bk.de, GitHub
 Pages, lokal). Nie fest verdrahten.
 
+**Auf der Paketseite stehen sie in zwei Bereichen**, denn es sind zweierlei
+Dinge: eine **Lektion** arbeitet ein Thema in Kapiteln durch, eine
+**Simulation** rechnet einen Fall. Beides kommt aus `info.json`:
+
+```json
+"werkzeuge": [
+  { "datei": "fertigungstechnik-zerspanung-drehprozess-planen.html",
+    "name": "Drehprozess planen", "art": "lektion" },
+  { "datei": "fertigungstechnik-hauptnutzungszeit-beim-drehen.html",
+    "name": "Hauptnutzungszeit beim Drehen", "art": "simulation" }
+]
+```
+
+* `art` ist **abzuschreiben, nicht zu raten**: Sie steht im
+  `<meta name="art">` der Werkzeugseite selbst. Der Build kann dort nicht
+  nachsehen — das Werkzeug-Repo ist beim Ausliefern nicht da. Dass beide
+  übereinstimmen, prüft `test-lektionen.js`.
+* Der **Namenszusatz fällt weg**: kein „Lektion …“, kein „Werkzeug …“. Das
+  sagt schon die Überschrift des Bereichs. Auch das wird geprüft.
+* Reihenfolge: Lektionen zuerst — erst durcharbeiten, dann rechnen.
+
 ## 9. Wettkampf (nur Trainings)
 
 Ein Training kann gegeneinander gespielt werden: Alle mit demselben Code

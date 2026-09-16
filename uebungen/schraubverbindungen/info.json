@@ -4,7 +4,8 @@
   "werkzeuge": [
     {
       "datei": "maschinenelemente-schrauben-schraubverbindungen.html",
-      "name": "Werkzeug Schraubverbindungen"
+      "name": "Schraubverbindungen",
+      "art": "lektion"
     }
   ],
   "reihenfolge": [
