@@ -284,6 +284,35 @@ Mittellinie wird nicht bemaßt; verdeckte Geometrie möglichst nicht bemaßen.
 * **Schraffur** (Seiten 75/77): parallele schmale Volllinien unter 45°,
   Grundschraffur ohne Rücksicht auf den Werkstoff, für Beschriftungen
   unterbrochen.
+* Der Teilschnitt an einer Passfedernut geht über die **ganze Länge** der
+  Passfeder. Damit ist die Nut eindeutig als Nut zu lesen; die
+  Durchdringungslinie steht dort, wo man sie wirklich sieht — als Umriss
+  der Nut in der Draufsicht.
+
+### 6.9 Einzelheiten und Schnitte kennzeichnen — Seiten 74 und 75
+
+Ein vergrößertes Bild ohne Kennzeichnung ist keine Einzelheit, sondern ein
+zweites Werkstück. Beides gehört dazu:
+
+* **Einzelheit** (Seite 74): Der Teilbereich wird in der Ansicht mit einer
+  **schmalen Vollinie eingekreist** und mit einem **Großbuchstaben**
+  versehen; das vergrößerte Bild trägt denselben Buchstaben **und den
+  Vergrößerungsmaßstab** — `A (10:1)`. Umgesetzt in `einzelheitKreis()` und
+  `zeichneNutEinzelheit({massstab: 10})`. Damit „(10:1)" auch stimmt, ist der
+  Maßstab der Einzelheit **das Zehnfache des Ansichtsmaßstabs**, nicht eine
+  runde Zahl aus der Luft (`nutEinzelheitGroesse()`).
+* **Schnitt** (Seite 75): Die Schnittlinie ist eine **breite**
+  Strich-Punktlinie — dieselbe Strichfolge wie die Mittellinie, nur breiter.
+  An ihren Enden Pfeile aus breiten Volllinien mit **30° Schenkelwinkel** für
+  die Blickrichtung, daneben der Großbuchstabe; der Schnitt heißt dann
+  `A–A`. Umgesetzt in `schnittebene()`.
+* **Teilansicht** (Seite 73): Blickpfeil mit Buchstaben in der Ansicht, das
+  Bild trägt denselben Buchstaben — `blickpfeil()`.
+
+Eine Benennung an einer Hinweislinie ersetzt das **nicht**: „Nut A" an einem
+Pfeil ist keine Kennzeichnung einer Einzelheit. Und wo zwei Nuten
+verschieden tief sind, braucht jede ihre eigene Einzelheit — eine für beide
+wäre gelogen.
 
 ---
 

@@ -202,9 +202,8 @@ WELLEN.antriebswelle = {
     ]
   },
   bezeichnungen: [
-    {x: 9.65,  d: 20, text: "Nut A",           ab: -30, hoch: 46},
-    {x: 84.25, d: 25, text: "Nut B",           ab: -46, hoch: 26},
-    {x: 93.3,  d: 19, text: "DIN 76 – A",      ab: -12, hoch: 46},
+    /* Nach rechts: Links steht jetzt der Buchstabe der Einzelheit B. */
+    {x: 93.3,  d: 19, text: "DIN 76 – A",      ab: 20,  hoch: 46},
     {x: 112,   d: 20, text: "M20×1 – 6g",      ab: 20,  hoch: 26,
      wennOhneMasse: true}
   ],
@@ -316,7 +315,6 @@ WELLEN.mitnehmerwelle = {
     ]
   },
   bezeichnungen: [
-    {x: 7.65, d: 26, text: "Nut A",      ab: -30, hoch: 46},
     {x: 71.5, d: 22, text: "DIN 76 – A", ab: -12, hoch: 46},
     {x: 90,   d: 24, text: "M24×2 – 6g", ab: 20,  hoch: 26,
      wennOhneMasse: true}
@@ -434,9 +432,6 @@ WELLEN.spannwelle = {
     ]
   },
   bezeichnungen: [
-    {x: 6.65,  d: 18, text: "Nut A",        ab: -30, hoch: 46},
-    /* Siehe Antriebswelle: Platz fuer die Fahne der Rz 4. */
-    {x: 43.65, d: 22, text: "Nut B",        ab: 20,  hoch: 46},
     {x: 59.7,  d: 15, text: "DIN 76 – A",   ab: -12, hoch: 46},
     {x: 76,    d: 16, text: "M16×1,5 – 6g", ab: 20,  hoch: 26,
      wennOhneMasse: true}
@@ -505,6 +500,10 @@ WELLEN.abtriebswelle = {
                  breiteToleranz: "N9", tiefeToleranz: "+0,2",
                  laengeToleranz: "+0,3", sitz: "leichter Sitz",
                  hoeheFeder: 8,
+                 /* Seite 75: Der Querschnitt braucht seine Schnittebene in
+                    der Ansicht. Seite 73: Die Draufsicht ist eine
+                    Teilansicht und bekommt einen Blickpfeil. */
+                 schnittMarke: "A", ansichtMarke: "B",
                  norm: "Passfeder DIN 6885-1 – A – 10 × 8 × 32"}],
   /* Eine Sacklochbohrung von links, als verdeckte Kante gezeichnet. */
   bohrungen: [{von: 0, bis: 40, d: 18, norm: "Ø18 H7, 40 tief"}],
@@ -587,9 +586,6 @@ WELLEN.abtriebswelle = {
        laeuft nach rechts aus dem Werkstoff heraus - links stuende sie in
        der Angabe "Rz 6,3" des Zapfens. Nachgemessen, nicht geschaetzt. */
     {x: 30,  d: 18, text: "Ø18 H7, 40 tief",     ab: 20,  hoch: 56},
-    /* Nur die Benennung: b und t1 stehen im Querschnitt, die Laenge in der
-       Ansicht. Wer sie hier wiederholt, bemasst doppelt. */
-    {x: 54,  d: 36, text: "Passfedernut",          ab: 14,  hoch: 34},
     /* Seite 80: Der Kegel bekommt sein Sinnbild, nicht das Wort. Es zeigt
        in Richtung der Verjüngung - hier nach rechts, von Ø38 auf Ø34. */
     /* Nach rechts, damit das Sinnbild VOR der Zahl steht - so zeigt es

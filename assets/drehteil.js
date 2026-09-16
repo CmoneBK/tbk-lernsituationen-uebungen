@@ -178,6 +178,9 @@ function wellenGroesse(w, o){
   if(o.bezeichnungen) oben = Math.max(oben, 56);
   if(o.rauheiten)     oben = Math.max(oben, 52);
   if(o.radien)        oben = Math.max(oben, 56);
+  /* Der Einzelheitkreis steht auf der Mantellinie und ragt halb darueber
+     hinaus; der Buchstabe daneben. */
+  if(o.einzelheiten)  oben = Math.max(oben, 2.2 * s + 26);
   /* Die Zentrierbohrungen haengen unter dem Teil, am Rand. */
   if(o.zentrierbohrungen && w.zentrierbohrungen){
     unten = Math.max(unten, 46);
@@ -338,14 +341,16 @@ function zeichneWelle(svg, w, o){
      Teilschnitt, dessen Bruchlinie eine durchgezogene Freihandlinie ist
      (Seite 75). Ohne ihn sieht die Nut aus wie eine Stufe. */
   (w.laengsnuten || []).forEach(function(n){
-    var a = laengsnutAusbruch(svg, g, m, w, n);
-    var rr = n.d / 2, halb = n.breite / 2;
-    if(halb >= rr) return;
-    var dk = 2 * Math.sqrt(rr * rr - halb * halb);
-    if(dk <= n.d - 2 * n.tiefe) return;
-    /* Nur ueber dem Teil, der Ansicht geblieben ist - im Schnitt gibt es
-       keine Durchdringungslinie, dort sieht man die Schnittflaeche. */
-    linie(g, m.x(a.bis), m.y(dk, true), m.x(n.bis), m.y(dk, true), BREIT);
+    laengsnutAusbruch(svg, g, m, w, n);
+    /* Die Schnittebene des Querschnitts - Seite 75 - und der Blickpfeil
+       zur Teilansicht - Seite 73. Sie stehen an verschiedenen Stellen der
+       Nut, sonst liegen Buchstabe auf Buchstabe. */
+    if(n.schnittMarke){
+      schnittebene(g, m, w, n.von + (n.bis - n.von) * 0.68, n.schnittMarke);
+    }
+    if(n.ansichtMarke){
+      blickpfeil(g, m, w, n.von + (n.bis - n.von) * 0.22, n.ansichtMarke);
+    }
   });
 
   /* Mittellinie, zwei bis drei Millimeter über das Teil hinaus. */
@@ -355,9 +360,85 @@ function zeichneWelle(svg, w, o){
   if(o.rauheiten)     wellenRauheiten(g, m, w);
   if(o.radien)        wellenRadien(g, m, w);
   if(o.zentrierbohrungen) wellenZentrierbohrungen(g, m, w);
+  if(o.einzelheiten)      wellenEinzelheiten(g, m, w);
   if(o.masse)         wellenMasse(g, m, w, o.masseUnten);
   if(o.markiert)      wellenMarkieren(g, m, w, o.markiert, o.markenfarbe);
   return g;
+}
+
+/* Eine Schnittebene kennzeichnen - Tabellenbuch Seite 75.
+
+   Die Schnittlinie ist eine BREITE Strich-Punktlinie quer über das Teil.
+   An ihren Enden stehen Pfeile aus breiten Volllinien, die die
+   Blickrichtung angeben; ihr Schenkelwinkel beträgt 30 Grad. Daneben der
+   Großbuchstabe, mit dem der Schnitt selbst überschrieben wird. */
+function schnittebene(g, m, w, mm, marke){
+  var gd = wellenGroesstDurchmesser(w);
+  var x = m.x(mm);
+  var yo = m.y(gd, true) - 10, yu = m.y(gd, false) + 10;
+  /* Dasselbe Strichbild wie die Mittellinie - der Unterschied ist die
+     Breite, nicht das Muster: schmale Strich-Punktlinie fuer die Achse,
+     breite fuer die Schnittlinie (Seite 75). */
+  linie(g, x, yo - 16, x, yu + 16, BREIT, {strich:"12 2 2 2"});
+  [[yo - 16, -1], [yu + 16, 1]].forEach(function(e){
+    schnittpfeil(g, x, e[0], 1);
+    txt(g, x - 13, e[0] + (e[1] < 0 ? -4 : 12), marke,
+        {fett: true, groesse: 13});
+  });
+  return g;
+}
+
+/* Der Pfeil einer Schnittlinie: breite Vollinie, Schenkelwinkel 30 Grad
+   (Seite 75). Er ist deutlich größer als ein Maßpfeil - und er ist keiner. */
+function schnittpfeil(g, x, y, ri){
+  var l = 15, halb = l * Math.tan(15 * Math.PI / 180);
+  linie(g, x, y, x + ri * l, y, BREIT);
+  svgEl("polygon", {points: [
+    (x + ri * l).toFixed(1) + "," + y.toFixed(1),
+    (x + ri * (l - 11)).toFixed(1) + "," + (y - halb * 2.6).toFixed(1),
+    (x + ri * (l - 11)).toFixed(1) + "," + (y + halb * 2.6).toFixed(1)
+  ].join(" "), fill: "currentColor"}, g);
+  return g;
+}
+
+/* Der Blickpfeil einer Teilansicht - Seite 73: Die Teilansicht wird
+   gekennzeichnet und in Pfeilrichtung dargestellt. Hier schaut man von
+   oben auf die Nut. */
+function blickpfeil(g, m, w, mm, marke){
+  var gd = wellenGroesstDurchmesser(w);
+  var x = m.x(mm), y = m.y(gd, true) - 30;
+  linie(g, x, y - 16, x, y, BREIT);
+  svgEl("polygon", {points: [
+    x.toFixed(1) + "," + y.toFixed(1),
+    (x - 4).toFixed(1) + "," + (y - 11).toFixed(1),
+    (x + 4).toFixed(1) + "," + (y - 11).toFixed(1)
+  ].join(" "), fill: "currentColor"}, g);
+  txt(g, x + 14, y - 21, marke, {anker: "start", fett: true, groesse: 13});
+  return g;
+}
+
+/* Eine Einzelheit in der Ansicht kennzeichnen - Tabellenbuch Seite 74:
+   Der Teilbereich wird mit einer schmalen Vollinie eingekreist und mit
+   einem Großbuchstaben versehen. Derselbe Buchstabe steht am
+   vergrößerten Bild, dazu der Vergrößerungsmaßstab. */
+function einzelheitKreis(g, m, w, mm, d, marke){
+  var x = m.x(mm), y = m.y(d, true);
+  var r = Math.max(13, 2.2 * m.s);
+  svgEl("circle", {cx: x, cy: y, r: r, fill: "none",
+    stroke: "currentColor", "stroke-width": SCHMAL}, g);
+  /* Der Buchstabe steht ueber dem Kreis, nicht daneben: Daneben liegt die
+     Mantellinie, und Text auf Geometrie ist der haeufigste Lesefehler. */
+  txt(g, x + r + 8, y - r - 9, marke, {fett: true, groesse: 13});
+  return g;
+}
+
+/* Die Einzelheiten aller Sicherungsringnuten einer Welle. */
+function wellenEinzelheiten(g, m, w){
+  var e = svgEl("g", {}, g);
+  (w.nuten || []).forEach(function(n){
+    einzelheitKreis(e, m, w, n.bei + n.breite / 2, n.d, n.marke);
+  });
+  return e;
 }
 
 /* Der Ausbruch an einer Passfedernut - ein flacher Teilschnitt, der zeigt,
@@ -373,31 +454,31 @@ function zeichneWelle(svg, w, o){
 function laengsnutAusbruch(svg, g, m, w, n){
   var grund = n.d - 2 * n.tiefe;
   var tief = Math.max(grund - 10, grund * 0.45);   /* Boden des Ausbruchs */
-  var rand = Math.min(5, (n.bis - n.von) / 4);     /* links daneben */
-  /* Der Ausbruch erfasst nur den linken Teil der Nut. Das ist Absicht:
-     Rechts bleibt Ansicht, und nur dort ist die Durchdringungslinie zu
-     sehen - die Kante, an der die Nutflanke die Mantelflaeche schneidet
-     (Seite 73). Ein Ausbruch ueber die ganze Nut wuerde sie verschlucken. */
-  var bis = n.von + (n.bis - n.von) * 0.45;
-  var xl = m.x(n.von - rand), xr = m.x(bis);
+  var rand = Math.min(5, (n.bis - n.von) / 4);     /* seitlich daneben */
+  /* Der Teilschnitt geht über die ganze Länge der Passfeder. Damit ist die
+     Nut in der Ansicht eindeutig als Nut zu lesen und nicht als Stufe.
+     Die Durchdringungslinie steht dafür dort, wo man sie wirklich sieht:
+     als Umriss der Nut in der Draufsicht. */
+  var bis = n.bis;
+  var xl = m.x(n.von - rand), xr = m.x(bis + rand);
   var yM = m.y(n.d, true), yG = m.y(grund, true), yT = m.y(tief, true);
 
   var punkte = [
-    [xl, yM], [m.x(n.von), yM], [m.x(n.von), yG], [xr, yG], [xr, yT],
-    [xl, yT]
+    [xl, yM], [m.x(n.von), yM], [m.x(n.von), yG],
+    [m.x(n.bis), yG], [m.x(n.bis), yM], [xr, yM], [xr, yT], [xl, yT]
   ];
   svgEl("polygon", {points: punkte.map(function(p){
       return p[0].toFixed(1) + "," + p[1].toFixed(1); }).join(" "),
     fill: schraffur(svg, "ausbruch-" + w.id, 45), stroke: "none"}, g);
 
-  /* Die Bruchlinie: unten quer, links hoch bis zur Mantellinie, rechts
-     hoch bis zum Nutgrund. */
+  /* Die Bruchlinie: unten quer, an beiden Seiten hoch bis zur Mantellinie.
+     Durchgezogene Freihandlinie, Seite 75. */
   svgEl("path", {d: bruchlinieQuer(xl, xr, yT), fill: "none",
     stroke: "currentColor", "stroke-width": SCHMAL}, g);
-  svgEl("path", {d: bruchlinie(xl, yM, yT - yM), fill: "none",
-    stroke: "currentColor", "stroke-width": SCHMAL}, g);
-  svgEl("path", {d: bruchlinie(xr, yG, yT - yG), fill: "none",
-    stroke: "currentColor", "stroke-width": SCHMAL}, g);
+  [xl, xr].forEach(function(x){
+    svgEl("path", {d: bruchlinie(x, yM, yT - yM), fill: "none",
+      stroke: "currentColor", "stroke-width": SCHMAL}, g);
+  });
   return {bis: bis};
 }
 
@@ -829,6 +910,12 @@ function zeichneNutEinzelheit(svg, w, o){
 
   /* Nutbreite mit ihrer Toleranzklasse, soweit das Buch sie fuer diesen
      Durchmesser hergibt (DIN 471, Seite 287: m ist H13). */
+  /* Buchstabe und Vergroesserungsmassstab - Seite 74. Ohne beides ist ein
+     vergroessertes Bild keine Einzelheit, sondern ein zweites Werkstueck. */
+  if(o.massstab){
+    txt(g, x0 - rand, y0 - 1.5 * s, n.marke + " (" + o.massstab + ":1)",
+        {anker: "start", fett: true, groesse: 13});
+  }
   mass(g, x0, x0 + b, y0 + t + 34,
        o.text || (zahlKomma(n.breite)
                   + (n.breiteToleranz ? " " + n.breiteToleranz : "")),
@@ -989,6 +1076,20 @@ function nutDraufsichtGroesse(w, o){
   return {breite: (n.bis - n.von) * s + 130,
           hoehe: n.breite * s * 2.8 + 70,
           x: 62, y: n.breite * s * 0.9 + 46, s: s};
+}
+
+/* Wie groß die Zeichenfläche für eine Nut-Einzelheit sein muss. Gerechnet
+   statt geraten: Die Breite haengt am Massstab, und der haengt am Massstab
+   der Ansicht - zehnfach, damit "(10:1)" auch stimmt. */
+function nutEinzelheitGroesse(w, o){
+  o = o || {};
+  var n = (w.nuten || [])[0];
+  if(!n) return null;
+  var s = o.s || 26;
+  var b = n.breite * s, t = n.tiefe * s, rand = 1.6 * s;
+  return {breite: 2 * rand + b + 150,
+          hoehe: 1.5 * s + 26 + t + 56,
+          x: rand + 22, y: 1.5 * s + 26, s: s};
 }
 
 /* Eine Zahl mit Komma statt Punkt - für Maßzahlen. */

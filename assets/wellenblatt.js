@@ -202,7 +202,7 @@ function wellenblatt(ziel, w, o){
      vermutet, siehe pruefungen/test-beschriftung.js. */
   var op = {s: o.s || 5.8, masse: true, masseUnten: true,
             bezeichnungen: true, rauheiten: true, radien: true,
-            zentrierbohrungen: true};
+            zentrierbohrungen: true, einzelheiten: true};
   var g = wellenGroesse(w, op);
   var svg = bild(f1.id, g.breite, g.hoehe,
     "Gesamtzeichnung der " + w.name + " mit allen Maßen",
@@ -216,20 +216,37 @@ function wellenblatt(ziel, w, o){
   if((w.nuten || []).length){
     var f2 = document.createElement("figure");
     f2.id = vorne + "nut";
-    f2.className = "blatt-einzelheit";
+    f2.className = (w.nuten.length > 1
+      && !(w.nuten[0].tiefe === w.nuten[1].tiefe))
+      ? "blatt-zweiriss" : "blatt-einzelheit";
     ziel.appendChild(f2);
 
     var marken = w.nuten.map(function(n){ return n.marke; });
     var gleich = w.nuten.every(function(n){
       return n.breite === w.nuten[0].breite && n.tiefe === w.nuten[0].tiefe;
     });
-    var s2 = bild(f2.id, 430, 160,
+    /* Zehnfach gegenüber der Ansicht - der Maßstab steht nach Seite 74 am
+       Bild, und er muss ein glatter sein.
+
+       Gezeichnet wird jede Nut, die sich von der ersten unterscheidet:
+       Nut A und Nut B der Antriebswelle sitzen auf verschiedenen
+       Durchmessern und sind deshalb verschieden tief. Eine Einzelheit fuer
+       beide waere gelogen. */
+    var vergr = 10, ge = nutEinzelheitGroesse(w, {s: op.s * vergr});
+    var zeigen = gleich ? [w.nuten[0]] : w.nuten;
+    var s2 = bild(f2.id, ge.breite * zeigen.length, ge.hoehe,
       "Einzelheit der Sicherungsringnut, stark vergrößert",
       "<strong>Einzelheit " + marken.join(" und ") + "</strong> "
-      + (gleich ? "&ndash; beide Nuten haben dieselbe Form. " : "")
+      + (gleich
+         ? "&ndash; beide Nuten haben dieselbe Form. "
+         : "&ndash; die Nuten sitzen auf verschiedenen Durchmessern und "
+           + "sind deshalb verschieden tief. ")
       + "Nutgrund und Lage stehen in der Tabelle.");
-    zeichneNutEinzelheit(s2, w, {marke: w.nuten[0].marke,
-                                 s: 70, x: 130, y: 60});
+    zeigen.forEach(function(n2, i){
+      zeichneNutEinzelheit(s2, w, {marke: n2.marke, s: ge.s,
+                                   x: ge.x + i * ge.breite, y: ge.y,
+                                   massstab: vergr});
+    });
   }
 
   /* ---------- 2b. Der Querschnitt durch die Passfedernut ---------- */

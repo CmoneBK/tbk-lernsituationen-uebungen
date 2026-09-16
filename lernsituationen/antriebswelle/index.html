@@ -29,7 +29,7 @@
   figure.bild svg{width:100%; height:auto}
   /* Die Einzelheit ist ein kleines Bild - auf voller Breite waere die Nut
      groesser als die Welle, zu der sie gehoert. */
-  figure.bild.schmal{max-width:360px}
+  figure.bild.schmal{max-width:620px}
   figure.bild figcaption{font-size:13px; color:var(--muted); margin-top:6px}
   /* Der Arbeitsplan ist das Handlungsprodukt - er darf breit sein. */
   table.plan{font-size:13.5px}
@@ -707,7 +707,8 @@ function bilanz(id, richtig, gesamt, offen){
      Mit `masseUnten` steht keine Maßkette mehr ueber dem Teil, und die
      Benennungen, Freistiche und Rundungen bekommen dort Platz. */
   var o = {s:6.2, masse:true, masseUnten:true, bezeichnungen:true,
-           rauheiten:true, radien:true, zentrierbohrungen:true};
+           rauheiten:true, radien:true, zentrierbohrungen:true,
+           einzelheiten:true};
   var g = wellenGroesse(WELLE, o);
   var svg = bild("bildWelle", g.breite, g.hoehe,
     "Fertigungszeichnung der Antriebswelle mit allen Maßen",
@@ -720,14 +721,21 @@ function bilanz(id, richtig, gesamt, offen){
   /* Breite und Tiefe der Sicherungsringnuten sind in der Ansicht nicht zu
      bemassen - die Nut ist dort acht Bildpunkte breit. Dafuer die
      Einzelheit. Beide Nuten haben dieselbe Form, also genuegt eine. */
-  var nut = WELLE.nuten[0];
-  var sn = bild("bildNut", 430, 160,
-    "Einzelheit der Sicherungsringnut, stark vergrößert",
-    "<strong>Einzelheit A und B</strong> &ndash; beide Nuten haben dieselbe "
-    + "Form. Nutgrund Ø" + (WELLE.nuten[0].d - 2 * nut.tiefe) + " bei A, Ø"
-    + (WELLE.nuten[1].d - 2 * WELLE.nuten[1].tiefe) + " bei B; ihre Lage "
-    + "steht in der Ansicht darüber.");
-  zeichneNutEinzelheit(sn, WELLE, {marke:nut.marke, s:70, x:130, y:60});
+  /* Zehnfach gegenueber der Ansicht, damit "(10:1)" am Bild stimmt - der
+     Massstab gehoert nach Tabellenbuch Seite 74 dazu. Und jede Nut bekommt
+     ihre eigene Einzelheit: A sitzt auf Ø20, B auf Ø25, die Nutgruende
+     unterscheiden sich. */
+  var vergr = 10, ge = nutEinzelheitGroesse(WELLE, {s: o.s * vergr});
+  var sn = bild("bildNut", ge.breite * WELLE.nuten.length, ge.hoehe,
+    "Einzelheiten A und B der Sicherungsringnuten, stark vergrößert",
+    "<strong>Einzelheiten A und B</strong> &ndash; wo sie liegen, sagen die "
+    + "Kreise in der Ansicht darüber. Nut A sitzt auf Ø20 und ist 0,5 mm "
+    + "tief, Nut B auf Ø25 und 0,55 mm &ndash; die Nutgründe stehen in "
+    + "DIN 471 und sind nicht dieselben.");
+  WELLE.nuten.forEach(function(n, i){
+    zeichneNutEinzelheit(sn, WELLE, {marke:n.marke, s:ge.s,
+      x: ge.x + i * ge.breite, y: ge.y, massstab: vergr});
+  });
 
   el("stufen").innerHTML = STUFEN.map(function(n){
     return "<span>" + n + "</span>"; }).join("");

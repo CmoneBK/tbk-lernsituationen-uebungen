@@ -754,7 +754,8 @@ function bilanz(id, richtig, gesamt, offen){
      darueber Benennungen, Rundungen und Rautiefen. Nur weil keine Maßkette
      mehr ueber dem Teil steht, passen Maße und Benennungen in ein Bild. */
   var o = {s:5.6, masse:true, masseUnten:true, bezeichnungen:true,
-           rauheiten:true, radien:true, zentrierbohrungen:true};
+           rauheiten:true, radien:true, zentrierbohrungen:true,
+           einzelheiten:true};
   var g = wellenGroesse(WELLE, o);
   var svg = bild("bildWelle", g.breite, g.hoehe,
     "Fertigungszeichnung der Abtriebswelle mit allen Maßen",
@@ -773,8 +774,9 @@ function bilanz(id, richtig, gesamt, offen){
   var n = WELLE.laengsnuten[0];
   var sq = bild("bildNut", q.breite + dr.breite,
     Math.max(q.hoehe, dr.hoehe),
-    "Querschnitt und Draufsicht der Passfedernut",
-    "<strong>Querschnitt und Draufsicht der Passfedernut.</strong> "
+    "Querschnitt A–A und Teilansicht B der Passfedernut",
+    "<strong>Schnitt A&ndash;A</strong> und <strong>Teilansicht B</strong> "
+    + "der Passfedernut. "
     + n.norm + " &ndash; " + n.sitz + ", Nutlänge "
     + (n.bis - n.von) + " " + n.laengeToleranz + " mm. Breite und Tiefe "
     + "liegen quer zur Achse, die runden Enden sieht man nur von oben "
