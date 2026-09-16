@@ -235,8 +235,25 @@ Zu tun ist dafür nichts — außer in zwei Fällen:
   Stand verworfen statt irgendwo eingesetzt. Wer es sicherer haben will, gibt
   erzeugten Feldern eine `id`.
 
-Nicht vergessen: Der Stand liegt nur auf **einem** Gerät. Wer die Aufgabe im
-Unterricht beginnt und zu Hause weitermacht, fängt von vorn an.
+### Auf einem anderen Gerät
+
+Derselbe Baustein bietet einen Knopf **„Auf anderem Gerät weiterarbeiten"**.
+Dahinter liegt ein Code und eine selbst gewählte vierstellige PIN — der
+Vertrag steht in `docs/FORTSCHRITT-API.md`.
+
+Auch dafür ist nichts zu tun. Zwei Dinge sind aber gut zu wissen:
+
+* **Der Server wird nur auf Knopfdruck gefragt.** Beim Ausfüllen geht nichts
+  hinaus, auch nicht beim Aufmachen der Tafel. Wer es nachsehen will:
+  `pruefungen/test-fortschritt-api.js` fängt jeden Netzweg ab.
+* **Die Seitenkennung hängt nicht am Auslieferungspfad.** Sie wird aus dem
+  Skriptpfad abgeleitet, damit ein Code von t-bk.de auf GitHub Pages
+  dieselbe Seite wiederfindet. Wer eine Seite verschiebt oder umbenennt,
+  trennt sie damit von ihrem gespeicherten Stand — das ist der Preis dafür,
+  dass keine Kennung im Dokument steht.
+
+Lokal per Doppelklick geöffnet (`file:`) fehlt der Knopf. Es gibt dort keinen
+Server, und ein Knopf, der nichts halten kann, ist schlimmer als keiner.
 
 ## 11. Trackingfrei — ohne Ausnahme
 

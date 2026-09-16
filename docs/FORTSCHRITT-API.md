@@ -1,16 +1,17 @@
 # Fortschritts-API für t-bk.de
 
-**Stand:** 16.09.2026 — **Bestellung.** · Content-Repo
+**Stand:** 16.09.2026 — **in Betrieb.** Der Endpunkt steht und ist
+abgenommen; der Client spricht dagegen. · Content-Repo
 `tbk-lernsituationen-uebungen` ↔ Website-Repo `tbk-webseite`
 
 Diese Datei ist der Vertrag zwischen Material und Server: Verhalten, Felder,
 Tabellen und Grenzen, so beschrieben, dass beide Seiten sich darauf verlassen
 können. Aufgebaut wie `WETTKAMPF-API.md`, weil dieselben Regeln gelten.
 
-Das Gegenstück im Content-Repo wird `assets/fortschritt.js`. Der Baustein
-existiert bereits und merkt sich den Stand **auf dem Gerät**
-(`localStorage`). Was hier bestellt wird, ist die zweite Stufe: derselbe
-Stand auf einem **anderen** Gerät.
+Das Gegenstück im Content-Repo ist `assets/fortschritt.js`. Der Baustein
+merkt sich den Stand **auf dem Gerät** (`localStorage`) und spricht auf
+Knopfdruck mit diesem Endpunkt, damit derselbe Stand auf einem **anderen**
+Gerät wieder aufgeht.
 
 ---
 
@@ -227,11 +228,12 @@ bleibt.
 
 ## 7. Die Tabellen
 
-**Eigene Datenbank**, nicht `ctnutzerone_db3` mitbenutzen. Zwei Gründe: Die
+**Eigene Datenbank:** `ctnutzerone_db4`, Benutzer gleichen Namens. Nicht
+`ctnutzerone_db3` mitbenutzen — zwei Gründe: Die
 Aufbewahrungsfristen sind verschieden (Wettkampf 24 Stunden, Fortschritt 60
 Tage), und hier liegen erstmals Inhalte, die jemand selbst geschrieben hat —
 eine eigene Datenbank macht die Trennung auch im Betrieb sichtbar. Das
-Anlegen läuft wie bei db3 über KeyHelp; Name und Benutzer nach eurem Schema.
+Anlegen lief wie bei db3 über KeyHelp.
 
 ```sql
 CREATE TABLE fs_konto (
@@ -340,11 +342,38 @@ Dazu eine Abnahme gegen den laufenden Endpunkt, wie beim Wettkampf am
 
 ---
 
-## 12. Offen für euch
+## 12. Beantwortet
 
-1. Name der neuen Datenbank und des Benutzers — sagt Bescheid, dann trage
-   ich ihn hier nach.
-2. Reicht euch das Ratenlimit aus Abschnitt 5, oder wollt ihr es anders
-   verankern?
-3. Gibt es beim Hoster eine Obergrenze für `MEDIUMTEXT` oder die
-   Paketgröße, die gegen die 64 KB spricht?
+1. **Datenbank und Benutzer:** `ctnutzerone_db4`. Steht in Abschnitt 7.
+2. **Ratenlimit:** passt so — ein Schreibvorgang je Seite und zehn
+   Sekunden, kein IP-Zähler, weil keine IP gespeichert wird.
+3. **64 KB:** unkritisch. `max_allowed_packet` = 16 MB, `MEDIUMTEXT` = 16 MB.
+
+---
+
+## 13. Abnahme
+
+**Endpunkt:** abgenommen, in Betrieb. Das Aufräum-Event läuft, die Kaskade
+greift — nachgemessen, `reste = 0`. Das war beim Wettkampf die Stelle, an
+der es anfangs klemmte (der `event_scheduler` stand auf `OFF`), deshalb ist
+es hier gleich mitgeprüft worden.
+
+**Client:** `assets/fortschritt.js` spricht dagegen.
+`pruefungen/test-fortschritt-api.js` fährt den ganzen Weg gegen eine
+Attrappe, die sich an diesen Vertrag hält:
+
+* Ohne Code geht nichts an den Server — auch das Aufmachen der Tafel nicht.
+* Die PIN liegt nach dem Anlegen in keinem Speicher und in keinem Feld.
+* Falscher Code und falsche PIN ergeben denselben Satz.
+* Ab dem zehnten Fehlversuch wird gesperrt, auch für die richtige PIN.
+* `holen` auf eine unbekannte Seite ist kein Fehler, sondern eine leere
+  Antwort.
+* Ein Stand, dessen Fingerabdruck nicht mehr passt, wird nicht eingesetzt.
+* Schweigt der Server, läuft die Seite weiter und sagt es.
+* `loeschen` räumt Konto und Stände weg; der Stand auf dem Gerät bleibt —
+  er gehört dem Gerät.
+* Die Seitenkennung hängt nicht am Auslieferungspfad: `/unterrichtsmaterial/`
+  und `/tbk-lernsituationen-uebungen/` ergeben dieselbe.
+
+**Was noch aussteht:** ein Live-Durchlauf gegen den echten Endpunkt mit
+einem Wegwerf-Code, der danach über `action=loeschen` wieder verschwindet.
