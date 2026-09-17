@@ -165,6 +165,59 @@ function weiter() {
       felder === 'category,hp,message,path,role,title,token,ts', felder);
   }
 
+  console.log('\nDer Knopf legt sich nicht auf den Hell-Dunkel-Schalter');
+  {
+    /* Beide stehen fest oben rechts. Der Knopf misst die Breite des
+       Schalters und setzt sich links daneben - nur baut thema.js den
+       Schalter erst bei DOMContentLoaded, und dieser Baustein laeuft davor,
+       noch waehrend des Parsens. Beim ersten Messen ist die Breite 0, der
+       Knopf sitzt auf right:14px - genau dort, wo gleich der Schalter
+       erscheint. Darunter ist er unsichtbar, und genau so war er online auf
+       vier von fuenf Lektionen.
+
+       Geprueft wird zweimal: mit einem Schalter, der bei DOMContentLoaded
+       entsteht (wie in Wirklichkeit), und mit einem, der erst bei load
+       kommt. So faellt auf, wenn wieder nur ein Zeitpunkt gemessen wird.
+       92 ist die Breite des Schalters mit der Aufschrift "System". */
+    const SCHALTER = (wann) => '<' + 'script>'
+      + (wann === 'load' ? 'window' : 'document')
+      + '.addEventListener("' + wann + '", function(){'
+      + ' var s = document.createElement("button"); s.id = "tbk-thema";'
+      + ' s.getBoundingClientRect = function(){ return {width: 92, height: 33,'
+      + ' top: 14, left: 1253, right: 1345, bottom: 47}; };'
+      + ' document.body.appendChild(s); });<' + '/script>';
+
+    ['DOMContentLoaded', 'load'].forEach((wann) => {
+      const dom = new JSDOM(
+        '<!doctype html><html><head><title>Uebung 1</title>' + SCHALTER(wann)
+        + '</head><body><main><h1>Da</h1></main><footer>Fuss</footer>'
+        + '<script>' + QUELLE.split('<' + '/script>').join('<\\/script>')
+        + '</script></body></html>',
+        { runScripts: 'dangerously',
+          url: 'https://t-bk.de/unterrichtsmaterial/uebungen/x.html',
+          beforeParse(w) {
+            w.fetch = () => Promise.resolve({ json: () => Promise.resolve(TOKEN) });
+          } });
+      const w = dom.window;
+      const knopf = w.document.getElementById('tbk-feedback-auf');
+      p('Schalter bei ' + wann + ': der Knopf entsteht beim Parsen', !!knopf);
+      if (!knopf) return;
+      p('Schalter bei ' + wann + ': zuerst steht er ganz rechts',
+        knopf.style.right === '14px', knopf.style.right || '-');
+
+      /* Jetzt entsteht der Schalter - so, wie thema.js ihn baut. */
+      if (wann === 'load') w.dispatchEvent(new w.Event('load'));
+      else w.document.dispatchEvent(new w.Event('DOMContentLoaded'));
+
+      p('Schalter bei ' + wann + ': er ist entstanden',
+        !!w.document.getElementById('tbk-thema'));
+      p('Schalter bei ' + wann + ': der Knopf rueckt daneben',
+        knopf.style.right === '114px',
+        'right ist ' + (knopf.style.right || '-') + ', erwartet 114px');
+      w.close();
+    });
+  }
+
   console.log('\nAuf jeder Inhaltsseite eingebunden');
   {
     const sammeln = (ordner, tief) => {

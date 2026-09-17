@@ -196,9 +196,19 @@
   window.addEventListener('resize', einordnen);
   /* thema.js meldet jeden Wechsel - dabei ändert sich die Beschriftung. */
   document.addEventListener('tbk-thema', einordnen);
-  /* Der Schalter steht im head und ist beim Laden meist schon da; wenn nicht,
-     wird nach dem ersten Bild noch einmal nachgemessen. */
-  if (!document.getElementById('tbk-thema')) setTimeout(einordnen, 0);
+  /* Und dann die Zeitfrage: thema.js baut den Schalter erst bei
+     DOMContentLoaded, dieser Baustein läuft davor - am Ende des body, aber
+     noch während des Parsens. Beim ersten Messen ist der Schalter also gar
+     nicht da, die Breite ist 0, und der Knopf setzt sich auf right:14px -
+     genau dorthin, wo gleich der Schalter erscheint. Er liegt dann darunter
+     und ist unsichtbar.
+
+     Ein setTimeout(0) reichte dagegen nicht: Der Parser unterbricht sich bei
+     langen Seiten, und dann läuft der Timer vor DOMContentLoaded. Deshalb
+     wird an den beiden Stellen nachgemessen, an denen der Schalter sicher
+     steht - thema.js hat sich früher eingetragen und baut zuerst. */
+  document.addEventListener('DOMContentLoaded', einordnen);
+  window.addEventListener('load', einordnen);
 
   /* ---------------- das Fenster ---------------- */
 
