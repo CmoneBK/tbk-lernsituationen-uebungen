@@ -49,9 +49,17 @@
 
     <div class="box auftrag">
       <p><strong>Worum es geht:</strong> Zwei Platten werden mit einer
-        Sechskantschraube und einer Mutter verspannt. Gesucht sind zwei Zahlen:
-        die <strong>nötige Länge</strong> und die <strong>Normlänge</strong>, die
-        man dafür kauft.</p>
+        <strong>Sechskantschraube DIN EN ISO 4014</strong> und einer
+        <strong>Sechskantmutter DIN EN ISO 4032</strong> verspannt, das Gewinde
+        ist metrisches <strong>ISO-Regelgewinde nach DIN 13-1</strong>. Gesucht
+        sind zwei Zahlen: die <strong>nötige Länge</strong> und die
+        <strong>Normlänge</strong>, die man dafür kauft.</p>
+      <p>Die Normen stehen bei jeder Aufgabe dabei, und das hat einen Grund:
+        Das Tabellenbuch führt mehrere Mutter- und Scheibenarten nebeneinander
+        und neben dem Regelgewinde das Feingewinde. Wer die falsche Zeile
+        nachschlägt, rechnet mit einer anderen Höhe, Dicke oder Steigung
+        &ndash; und die Aufgabe geht daneben, ohne dass man den Fehler
+        sieht.</p>
       <p>Die Länge <em>l</em> einer Sechskantschraube wird <strong>ohne Kopf</strong>
         gemessen. Sie muss reichen für: Klemmlänge, Scheibe, Mutter und ein Stück
         Überstand. Gekauft wird danach die nächste Länge aus der Normreihe &ndash;
@@ -108,10 +116,25 @@
     <details>
       <summary>2. Woher kommen Mutterhöhe und Scheibendicke?</summary>
       <p>Aus dem Tabellenbuch. Die Mutterhöhe <em>m</em> steht in der Maßtabelle
-        der Sechskantmuttern (DIN EN ISO 4032), die Dicke <em>h</em> in der
-        Tabelle der flachen Scheiben (DIN EN ISO 7090).</p>
-      <p>Beides hängt nur vom Gewinde ab, nicht von der Länge &ndash; einmal
-        nachgeschlagen, gilt es für alle Aufgaben mit dieser Größe.</p>
+        der Sechskantmuttern <strong>DIN EN ISO 4032</strong> (Typ 1, normale
+        Höhe, früher DIN 934), die Dicke <em>h</em> in der Tabelle der flachen
+        Scheiben mit Fase, normale Reihe, <strong>DIN EN ISO 7090</strong>.</p>
+      <p><strong>Und warum die Norm dazugehört:</strong> Auf derselben Seite
+        stehen weitere Scheiben &ndash; die kleine Reihe
+        <em>DIN EN ISO 7092</em>, die Produktklasse C <em>DIN EN ISO 7091</em>,
+        die Scheiben für HV-Verbindungen <em>DIN EN 14399-6</em> und die
+        Spannscheiben <em>DIN 6796</em>. Sie sind bei gleichem Gewinde
+        verschieden dick. Bei den Muttern ist es dasselbe: Neben der
+        Sechskantmutter gibt es Kronen-, Hut- und HV-Muttern mit eigener Höhe.
+        „Scheibe" und „Mutter" allein sagen also noch nicht, welche Zahl
+        gilt.</p>
+      <p>Beim Gewinde genauso: Die Steigung <em>P</em> kommt aus der Tabelle
+        der metrischen ISO-Regelgewinde <strong>DIN 13-1</strong>. Ein
+        Feingewinde derselben Nenngröße hat eine kleinere Steigung &ndash; und
+        damit einen anderen Überstand für zwei Gänge.</p>
+      <p>Höhe, Dicke und Steigung hängen nur vom Gewinde ab, nicht von der
+        Länge &ndash; einmal nachgeschlagen, gilt es für alle Aufgaben mit
+        dieser Größe.</p>
     </details>
 
     <details>
@@ -146,11 +169,13 @@
       <a class="werkzeug" data-werkzeug="maschinenelemente-schrauben-schraubverbindungen.html"
          data-fach="1">Werkzeug Schraubverbindungen öffnen</a>
     </p>
-    <p class="fussnote"><strong>Woher die Zahlen stammen:</strong> Steigung P aus der
-      Gewindetabelle, Mutterhöhe m aus der Maßtabelle der Sechskantmuttern
-      DIN EN ISO 4032, Scheibendicke h aus der Tabelle der flachen Scheiben
-      DIN EN ISO 7090, die Normlängenreihe aus der Maßtabelle der
-      Sechskantschrauben DIN EN ISO 4014 &ndash; alles Tabellenbuch.</p>
+    <p class="fussnote"><strong>Woher die Zahlen stammen:</strong> Steigung P
+      aus der Tabelle der metrischen ISO-Regelgewinde DIN 13-1, Mutterhöhe m
+      aus der Maßtabelle der Sechskantmuttern DIN EN ISO 4032 (Typ 1),
+      Scheibendicke h aus der Tabelle der flachen Scheiben mit Fase
+      DIN EN ISO 7090 (normale Reihe, Produktklasse A), die Normlängenreihe
+      aus der Maßtabelle der Sechskantschrauben mit Schaft DIN EN ISO 4014
+      &ndash; alles Tabellenbuch.</p>
 
     <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
       Maßgebend sind Norm und Tabellenbuch.</p>
@@ -164,10 +189,13 @@
 <script>
 "use strict";
 
-/* Alle Zahlen aus dem Tabellenbuch:
-     P  Steigung, Gewindetabelle
-     m  Mutterhöhe, DIN EN ISO 4032
-     h  Scheibendicke, DIN EN ISO 7090 */
+/* Alle Zahlen aus dem Tabellenbuch. Die Norm gehoert jedes Mal dazu: Das
+   Buch fuehrt mehrere Mutter- und Scheibenarten nebeneinander, und neben
+   dem Regelgewinde steht das Feingewinde.
+     P  Steigung, metrisches ISO-Regelgewinde DIN 13-1
+     m  Mutterhoehe, Sechskantmutter Typ 1 DIN EN ISO 4032
+     h  Scheibendicke, flache Scheibe mit Fase DIN EN ISO 7090
+     Normlaengen, Sechskantschraube mit Schaft DIN EN ISO 4014 */
 var SCHRAUBEN = {
   M6:  {P:1.00, m:5.2,  h:1.6},
   M8:  {P:1.25, m:6.8,  h:1.6},
@@ -235,12 +263,20 @@ function neueAufgabe(){
 
   aufgabe = {groesse:groesse, t1:t1, t2:t2, mitScheibe:mitScheibe, loesung:l};
 
+  /* Die Norm steht bei jeder Art dabei. Das Tabellenbuch fuehrt mehrere
+     Mutter- und Scheibenarten nebeneinander und neben dem Regelgewinde das
+     Feingewinde - ohne Norm weiss niemand, welche Zeile gilt. */
   el("aufgabe").innerHTML =
     "Zwei Platten von <strong>" + zahl(t1, 0) + " mm</strong> und <strong>"
-    + zahl(t2, 0) + " mm</strong> werden mit einer Sechskantschraube <strong>"
-    + groesse + "</strong> und einer Sechskantmutter verspannt"
-    + (mitScheibe ? ", <strong>mit</strong> Scheibe unter der Mutter"
-                  : ", <strong>ohne</strong> Scheibe")
+    + zahl(t2, 0) + " mm</strong> werden verspannt &ndash; mit einer "
+    + "Sechskantschraube <strong>" + groesse + "</strong> nach "
+    + "<strong>DIN EN ISO 4014</strong>, metrisches ISO-Regelgewinde "
+    + "<strong>DIN 13-1</strong>, und einer Sechskantmutter "
+    + "<strong>DIN EN ISO 4032</strong>"
+    + (mitScheibe
+        ? ", <strong>mit</strong> flacher Scheibe <strong>DIN EN ISO 7090"
+          + "</strong> unter der Mutter"
+        : ", <strong>ohne</strong> Scheibe")
     + ". Gefordert sind zwei Gewindegänge Überstand.";
 
   el("stand").textContent = "Aufgabe " + nr;
@@ -268,8 +304,9 @@ function wegBauen(){
         : "Scheibe = <b>0 mm</b> (keine gefordert)<br>")
     + "Mutterhöhe m = <b>" + zahl(l.mutter, 1) + " mm</b><br>"
     + "Überstand 2 · P = 2 · " + zahl(g.P, 2) + " = <b>" + zahl(l.ueberstand, 1) + " mm</b>"
-    + buch("m steht in der Maßtabelle der Sechskantmuttern ISO 4032, h in der "
-        + "Tabelle der flachen Scheiben ISO 7090, P in der Gewindetabelle. "
+    + buch("m steht in der Maßtabelle der Sechskantmuttern DIN EN ISO 4032, "
+        + "h in der Tabelle der flachen Scheiben mit Fase DIN EN ISO 7090, "
+        + "P in der Tabelle der metrischen ISO-Regelgewinde DIN 13-1. "
         + "Für " + aufgabe.groesse + ": m = " + zahl(g.m, 1) + " mm, h = "
         + zahl(g.h, 1) + " mm, P = " + zahl(g.P, 2) + " mm.")
     + "<span class=\"schritt\">2. Summe</span>"
@@ -279,7 +316,8 @@ function wegBauen(){
     + "<span class=\"schritt\">3. Aufrunden auf die Normreihe</span>"
     + "Die nächste Länge der Reihe ist <b>" + l.wahl + " mm</b>."
     + buch("Die Normlängen stehen in der Maßtabelle der Sechskantschrauben "
-        + "ISO 4014. Zwischenlängen gibt es nicht - aufgerundet wird immer.");
+        + "DIN EN ISO 4014. Zwischenlängen gibt es nicht - aufgerundet wird "
+        + "immer.");
 }
 
 el("btnPruefen").addEventListener("click", function(){

@@ -316,6 +316,51 @@ async function main() {
     p('Im Tabellenbuch nachschlagen: alle zehn Spalten', !abw.length, abw.join(' · '));
   }
 
+  /* ---------- Jede Art mit ihrer Norm ---------- */
+
+  console.log('\nReicht die Laenge: jede Art nennt ihre Norm');
+  {
+    /* Das Tabellenbuch fuehrt mehrere Mutter- und Scheibenarten
+       nebeneinander und neben dem Regelgewinde das Feingewinde. Steht in
+       der Aufgabe nur "Sechskantmutter" und "Scheibe", schlaegt man die
+       falsche Zeile nach und rechnet mit einer anderen Hoehe oder Dicke -
+       ohne dass man den Fehler sieht. Deshalb gehoert die Norm in die
+       Aufgabe selbst, nicht nur in die Fussnote. */
+    const datei = 'trainings/schraubverbindungen/04-reicht-die-laenge.html';
+    const roh = fs.readFileSync(path.join(BASIS, datei), 'utf8');
+    const dom = new JSDOM(mitAssets(roh), {
+      runScripts: 'dangerously',
+      url: 'https://t-bk.de/unterrichtsmaterial/' + datei,
+      beforeParse(w) { w.Element.prototype.scrollIntoView = function () {}; },
+    });
+    await fertig(dom.window);
+    const text = (dom.window.document.getElementById('aufgabe') || {}).textContent || '';
+
+    /* Die Normen, die das Material selbst als Quelle angibt. */
+    const SOLL = [
+      ['das Regelgewinde', 'DIN 13-1'],
+      ['die Sechskantschraube', 'DIN EN ISO 4014'],
+      ['die Sechskantmutter', 'DIN EN ISO 4032'],
+    ];
+    p('die Aufgabe steht da', text.length > 40, text.slice(0, 60));
+    SOLL.forEach(([was, norm]) => {
+      p('die Aufgabe nennt fuer ' + was + ' die ' + norm,
+        text.indexOf(norm) !== -1, text);
+    });
+    /* Die Scheibe kommt nur in einem Teil der Aufgaben vor - dann aber mit
+       Norm. Also so lange wuerfeln, bis eine mit Scheibe dabei ist. */
+    let mitScheibe = /Scheibe/.test(text) && !/ohne<\/strong> Scheibe/.test(
+      dom.window.document.getElementById('aufgabe').innerHTML);
+    for (let i = 0; i < 40 && !mitScheibe; i++) {
+      dom.window.neueAufgabe && dom.window.neueAufgabe();
+      const h = dom.window.document.getElementById('aufgabe').innerHTML;
+      mitScheibe = /DIN EN ISO 7090/.test(h);
+    }
+    p('eine Aufgabe mit Scheibe nennt die DIN EN ISO 7090', mitScheibe,
+      dom.window.document.getElementById('aufgabe').textContent);
+    dom.window.close();
+  }
+
   console.log(fehler ? '\n' + fehler + ' Fehler.' : '\nAlles deckt sich mit dem Tabellenbuch.');
   process.exitCode = fehler ? 1 : 0;
 }
