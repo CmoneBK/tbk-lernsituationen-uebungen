@@ -256,8 +256,14 @@ async function main() {
     p('Teil 5: Nahtvorbereitung und Schweissfolge', alles(stand(d, 'bilanz4'), 4),
       stand(d, 'bilanz4'));
 
-    setz(d, 'r1', '140'); setz(d, 'r2', '90'); setz(d, 'r3', '81');
-    setz(d, 'r4', '1.23'); setz(d, 'r5', '324');
+    /* Die beiden Richtwerte stehen im Tabellenbuch und werden weiter oben
+       dagegen geprueft; die drei Ergebnisse rechnet die Seite daraus. Sie
+       hier noch einmal hinzuschreiben hiesse, die Zahlen an zwei Stellen zu
+       pflegen - und beim naechsten Mal stimmt eine davon nicht mehr. */
+    setz(d, 'r1', String(w.G_A4)); setz(d, 'r2', String(w.G_A3));
+    setz(d, 'r3', w.DRAHT_BOCK.toFixed(1));
+    setz(d, 'r4', w.ZEIT_BOCK.toFixed(2));
+    setz(d, 'r5', (w.DRAHT_BOCK * w.STUECK).toFixed(0));
     knopf(d, w, 'btn5');
     p('Teil 6: Draht und Zeit', alles(stand(d, 'bilanz5'), 5), stand(d, 'bilanz5'));
 

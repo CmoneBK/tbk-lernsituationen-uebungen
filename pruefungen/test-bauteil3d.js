@@ -96,33 +96,65 @@ async function main() {
   p('und keine Marke steht für sich allein',
     marken.every((m) => w.NAEHTE.some((n) => n.id === m.id)));
 
-  /* Naht A: Doppel-Kehlnaht, "zweimal 180 mm". Beide Seiten des Stehblechs
-     über seine ganze Länge - das geht nur auf, wenn das Blech so lang ist
-     wie die Platte. */
-  p('Naht A: 2 × Stehblechlänge ergibt die 360 mm aus Teil 6',
-    2 * M.blechB === 360, '2 × ' + M.blechB);
+  /* Die Nahtlängen aus Teil 6 werden nicht hier hineingeschrieben, sondern
+     aus der Seite gelesen: Geprüft wird, dass sie aus der Geometrie folgen.
+     Wer eines von beiden ändert, muss das andere mitändern - sonst fällt es
+     hier auf und nicht erst im Unterricht. */
+  const roh0 = fs.readFileSync(path.join(BASIS, LS), 'utf8');
+  const lies = (was) => {
+    const m = new RegExp('Nähte mit a = ' + was
+      + '</span><span class="v">(\\d+) mm').exec(roh0);
+    return m ? Number(m[1]) : null;
+  };
+  const langA4 = lies('4'), langA3 = lies('3');
+  p('Teil 6 nennt eine Länge für a = 4', langA4 !== null, String(langA4));
+  p('Teil 6 nennt eine Länge für a = 3', langA3 !== null, String(langA3));
+
+  /* Naht A: Doppel-Kehlnaht - beide Seiten über die Breite des Stehblechs. */
+  p('Naht A folgt aus der Blechbreite: 2 × ' + M.blechB + ' = ' + langA4,
+    2 * M.blechB === langA4, '2 × ' + M.blechB + ' ≠ ' + langA4);
   p('das Stehblech überragt die Grundplatte nicht',
     M.blechB <= M.platteL, M.blechB + ' auf ' + M.platteL);
 
-  /* Naht C: umlaufend um die Rippe, 250 mm. Umlaufend heißt beidseitig
-     entlang der beiden Katheten. */
-  p('Naht C: 2 × (Kathete + Kathete) ergibt die 250 mm aus Teil 6',
-    2 * (M.rippeX + M.rippeY) === 250,
-    '2 × (' + M.rippeX + ' + ' + M.rippeY + ')');
+  /* Naht C läuft umlaufend um die Rippe, also beidseitig entlang der beiden
+     Katheten. Dazu die unterbrochene Naht D mit 3 × 30 mm. */
+  const langC = 2 * (M.rippeX + M.rippeY), langD = 90;
+  p('Naht C und D ergeben zusammen die ' + langA3 + ' mm aus Teil 6',
+    langC + langD === langA3,
+    '2 × (' + M.rippeX + ' + ' + M.rippeY + ') + ' + langD + ' = '
+    + (langC + langD) + ' ≠ ' + langA3);
 
-  /* Und die Rippe muss auch draufpassen. */
+  /* Und die Rechnung darunter muss dieselben Längen verwenden. */
+  p('die Rechnung arbeitet mit denselben Metern',
+    Math.abs(w.L_A4 - langA4 / 1000) < 1e-9
+    && Math.abs(w.L_A3 - langA3 / 1000) < 1e-9,
+    w.L_A4 + ' / ' + w.L_A3);
+
+  /* Und die Rippe muss auch draufpassen: neben dem Blech ist auf jeder
+     Seite nur (Plattenlänge - Blechbreite) / 2 Platz, und davon geht noch
+     der Anschlag ab. */
   p('die Rippe bleibt auf der Grundplatte',
-    M.rippeX <= (M.platteT - M.blechD) / 2,
-    M.rippeX + ' mm vor dem Blech, Platz ist ' + (M.platteT - M.blechD) / 2);
+    M.rippeX + M.anschlagX <= (M.platteL - M.blechB) / 2,
+    M.rippeX + ' + ' + M.anschlagX + ' mm, Platz ist '
+    + (M.platteL - M.blechB) / 2);
   p('die Rippe bleibt unter der Blechkante',
     M.rippeY < M.blechH, M.rippeY + ' von ' + M.blechH);
 
-  /* Der Stutzen sitzt im Blech und ragt beidseitig heraus. */
+  /* Die Bohrung: Der Stutzen muss hindurchpassen und das Blech muss sie
+     tragen können. */
+  const blech = teile.filter((x) => x.id === 'blech')[0];
+  p('das Stehblech hat die Bohrung für den Stutzen',
+    !!(blech.masse.loch && blech.masse.loch.d === M.rohrD),
+    blech.masse.loch ? String(blech.masse.loch.d) : 'keine Bohrung');
+  p('rund um die Bohrung bleibt Blech stehen',
+    M.rohrY + M.rohrD / 2 < M.platteD + M.blechH
+    && M.rohrD < M.blechB,
+    'Oberkante ' + (M.rohrY + M.rohrD / 2) + ' von '
+    + (M.platteD + M.blechH));
+
+  /* Der Stutzen sitzt in der Bohrung und ragt beidseitig heraus. */
   p('der Rohrstutzen durchdringt das Stehblech',
     M.rohrL > M.blechD, M.rohrL + ' zu ' + M.blechD);
-  p('der Stutzen liegt ganz im Blech',
-    M.platteD + 55 + M.rohrD / 2 <= M.platteD + M.blechH,
-    'Oberkante ' + (M.platteD + 55 + M.rohrD / 2));
 
   /* Jede Marke muss am Bauteil liegen, nicht daneben in der Luft. */
   const daneben = marken.filter((m) => {

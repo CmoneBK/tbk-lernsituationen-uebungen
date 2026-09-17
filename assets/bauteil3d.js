@@ -67,7 +67,7 @@
  *
  * Formen
  * ------
- *   quader   masse {x, y, z}
+ *   quader   masse {x, y, z}, wahlweise loch {d, x, y} - Durchbruch laengs z
  *   rohr     masse {d, di, l}, achse "x"|"y"|"z"
  *   keil     masse {x, y, z} - rechtwinkliges Dreieck in der xy-Ebene,
  *            über z ausgezogen; die Kathete liegt auf +x und +y
@@ -142,7 +142,23 @@
      --------------------------------------------------------------------- */
   var FORMEN = {
     quader: function (m) {
-      return new THREE.BoxGeometry(m.x, m.y, m.z);
+      if (!m.loch) return new THREE.BoxGeometry(m.x, m.y, m.z);
+      /* Ein Blech mit Durchbruch: Rechteck in xy, rundes Loch darin, ueber z
+         ausgezogen. Die Lage des Lochs zaehlt von der Blechmitte aus. */
+      var form = new THREE.Shape();
+      form.moveTo(-m.x / 2, -m.y / 2);
+      form.lineTo(m.x / 2, -m.y / 2);
+      form.lineTo(m.x / 2, m.y / 2);
+      form.lineTo(-m.x / 2, m.y / 2);
+      form.closePath();
+      var loch = new THREE.Path();
+      loch.absarc(m.loch.x || 0, m.loch.y || 0, m.loch.d / 2, 0,
+        Math.PI * 2, true);
+      form.holes.push(loch);
+      var g = new THREE.ExtrudeGeometry(form,
+        { depth: m.z, bevelEnabled: false, curveSegments: 48 });
+      g.translate(0, 0, -m.z / 2);
+      return g;
     },
 
     rohr: function (m, achse) {
