@@ -191,13 +191,16 @@ function weiter() {
       ohne.map((f) => path.relative(MATERIAL, f)).join(', '));
 
     if (teilweise(TOOLS, 'die Werkzeuge')) {
-      const lektionen = fs.readdirSync(TOOLS)
+      /* Jede Werkzeugseite, nicht nur die Lektionen: Wer beim Messschieber
+         einen Fehler findet, soll ihn dort melden koennen, wo er ihn sieht.
+         Solange hier nur die Lektionen geprueft wurden, fiel neunzehn Mal
+         nicht auf, dass die Simulationen keinen Knopf hatten. */
+      const werkzeuge = fs.readdirSync(TOOLS)
         .filter((d) => /\.html$/.test(d) && !d.startsWith('_'))
-        .map((d) => path.join(TOOLS, d))
-        .filter((f) => /name="art" content="lektion"/.test(fs.readFileSync(f, 'utf8')));
-      const ohneL = lektionen.filter(
+        .map((d) => path.join(TOOLS, d));
+      const ohneL = werkzeuge.filter(
         (f) => !fs.readFileSync(f, 'utf8').includes('assets/feedback.js'));
-      p(lektionen.length + ' Lektionen, alle mit Rueckmeldung', ohneL.length === 0,
+      p(werkzeuge.length + ' Werkzeugseiten, alle mit Rueckmeldung', ohneL.length === 0,
         ohneL.map((f) => path.basename(f)).join(', '));
       const kopie = path.join(TOOLS, 'assets', 'feedback.js');
       p('derselbe Baustein liegt bei den Werkzeugen',
