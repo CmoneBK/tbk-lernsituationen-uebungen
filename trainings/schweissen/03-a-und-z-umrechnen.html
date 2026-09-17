@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>a und z umrechnen</title>
+<meta name="description" content="Zwei Maße für dieselbe Kehlnaht: Höhe und Schenkel. Immer neue Zahlen, in beide Richtungen – und auf Wunsch gleich der Draht dazu.">
+<meta name="dauer" content="10 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/schweissnaht.js"></script>
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .frage{font-size:19px; line-height:1.45; font-weight:600; margin:0 0 14px;
+    min-height:1.45em}
+  .eingabe{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+  .eingabe input{flex:1 1 150px; font:700 17px/1.2 inherit; padding:12px 14px;
+    border-radius:10px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark)}
+  .eingabe input:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+  .eingabe .einheit{font-weight:700; font-size:16px}
+  .uhr{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:13px; color:var(--muted); margin:0 0 10px;
+    font-variant-numeric:tabular-nums}
+  .fortschritt{height:8px; border-radius:999px; background:var(--border);
+    overflow:hidden; margin:0 0 16px}
+  .fortschritt i{display:block; height:100%; background:var(--accent);
+    transition:width .2s ease}
+  .bild{margin:2px 0 14px}
+  .bild svg{width:100%; height:auto; display:block; max-width:340px;
+    margin-inline:auto}
+  .bilanz{font-size:19px; font-weight:700; margin:0 0 8px}
+  .weg{background:var(--bg); border:1px solid var(--border); border-radius:10px;
+    padding:12px 14px; margin:12px 0 0; font-size:15px; line-height:1.7}
+  .rueckblick{list-style:none; margin:12px 0 0; padding:0}
+  .rueckblick li{display:flex; gap:10px; align-items:baseline; padding:5px 0;
+    border-top:1px solid var(--border); font-size:14px}
+  .rueckblick .marke{font-weight:700; flex:0 0 auto}
+  .rueckblick .marke.ok{color:var(--ok)}
+  .rueckblick .marke.nein{color:var(--bad)}
+  .einstellung{display:flex; flex-wrap:wrap; gap:14px; align-items:flex-end;
+    margin:0 0 4px}
+  .einstellung > div{flex:1 1 190px}
+  .einstellung label{display:block; font-size:13px; font-weight:700; margin:0 0 5px}
+  .einstellung select{width:100%; font:inherit; font-size:14px; padding:8px 9px;
+    border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark)}
+  .einstellung select:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+  .stufentext{font-size:13px; color:var(--muted); margin:8px 0 0}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Schweißen</p>
+    <h1>a und z umrechnen</h1>
+    <p class="lead">Dieselbe Kehlnaht, zwei Maße. Wer sie verwechselt, schweißt
+      um vierzig Prozent daneben.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>So läuft es:</strong> In den Nahtquerschnitt einer Kehlnaht passt
+        ein gleichschenkliges Dreieck. <strong>a</strong> ist seine Höhe,
+        <strong>z</strong> die Länge seiner Schenkel. Gegeben ist das eine,
+        gesucht das andere.</p>
+      <p>Weil die Schenkel im rechten Winkel zueinander stehen, folgt der
+        Zusammenhang aus dem Dreieck:
+        <strong>a = z &middot; cos 45°</strong> und
+        <strong>z = a &middot; &radic;2</strong>. Gerundet:
+        a &asymp; 0,7 &middot; z, z &asymp; 1,4 &middot; a.</p>
+      <p>Ein Zehntel Millimeter Abweichung wird angenommen.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Durchgang</h2>
+
+    <div class="box">
+      <div class="einstellung">
+        <div>
+          <label for="stufe">Schwierigkeit</label>
+          <select id="stufe">
+            <option value="einfach">Einfach &ndash; nur von z nach a</option>
+            <option value="mittel" selected>Mittel &ndash; beide Richtungen</option>
+            <option value="schwer">Schwer &ndash; dazu der Draht für einen Meter Naht</option>
+          </select>
+        </div>
+        <div>
+          <label for="umfang">Wie viele Aufgaben?</label>
+          <select id="umfang">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+          </select>
+        </div>
+      </div>
+      <p class="stufentext" id="stufentext"></p>
+    </div>
+
+    <div class="box">
+      <div class="uhr">
+        <span id="stand">Aufgabe 1 von 10</span>
+        <span id="zeit">0:00</span>
+      </div>
+      <div class="fortschritt"><i id="balken" style="width:0%"></i></div>
+
+      <figure class="bild" id="bildFrage"></figure>
+      <p class="frage" id="frage">&ndash;</p>
+
+      <div class="eingabe">
+        <input type="number" id="antwort" step="0.1" inputmode="decimal"
+          autocomplete="off" aria-label="Antwort in Millimeter">
+        <span class="einheit" id="einheit">mm</span>
+        <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+      </div>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+      <div class="weg" id="weg" hidden></div>
+
+      <p style="margin-top:14px">
+        <button type="button" class="knopf" id="btnWeiter" hidden>Weiter</button>
+        <button type="button" class="knopf leise" id="btnNeu">Von vorn</button>
+      </p>
+    </div>
+
+    <div id="ende" hidden>
+      <h3>Ergebnis</h3>
+      <div class="box">
+        <p class="bilanz" id="bilanz">&ndash;</p>
+        <p id="urteil"></p>
+        <div id="rueckblick"></div>
+      </div>
+    </div>
+
+    <h2><span class="nr">2</span>Warum es auf den Buchstaben ankommt</h2>
+
+    <details>
+      <summary>1. Wie groß ist der Unterschied wirklich?</summary>
+      <p>Rund 40 %. Eine Naht mit z = 7 mm hat die Nahtdicke a &asymp; 4,9 mm.
+        Wer z für a hält und auf a = 7 mm geht, schweißt eine Naht, deren
+        Querschnitt doppelt so groß ist &ndash; denn der wächst mit dem Quadrat.</p>
+      <p>Das kostet doppelt so viel Draht, doppelt so viel Zeit und bringt
+        doppelt so viel Wärme ins Bauteil. Der Verzug wächst mit.</p>
+    </details>
+
+    <details>
+      <summary>2. Warum gibt es überhaupt zwei Maße?</summary>
+      <p>Weil sie unterschiedlich gemessen werden. <strong>z</strong> lässt sich
+        an der fertigen Naht mit einem Nahtlehrenkamm am Blech ablesen &ndash; man
+        sieht, wie weit die Naht hochreicht. <strong>a</strong> liegt im Inneren
+        und wird gerechnet.</p>
+      <p>Die Festigkeitsrechnung dagegen braucht a: Die Nahtdicke ist der
+        tragende Querschnitt, nicht der Schenkel.</p>
+    </details>
+
+    <details>
+      <summary>3. Woran erkennt man in der Zeichnung, welches gemeint ist?</summary>
+      <p>Am Buchstaben vor der Zahl &ndash; und nur daran. „a5“ und „z5“ sind zwei
+        verschiedene Nähte. Steht gar kein Buchstabe, ist die Angabe
+        unvollständig; dann muss nachgefragt werden.</p>
+      <p>Merkhilfe: <em>z</em> ist die größere Zahl, weil der Schenkel länger ist
+        als die Höhe. Wer eine Naht mit a = 8 sieht, weiß, dass sie mit z fast
+        11 hieße.</p>
+    </details>
+
+    <p class="fussnote"><strong>Woher die Angaben stammen:</strong> Bemaßung der
+      Kehlnaht mit a und z nach DIN EN ISO 2553 (2022-07); Schweißzusatz je Meter
+      aus der Tabelle „Nahtplanung, Einstell- und Leistungswerte beim Schweißen“
+      für das MAG-Schweißen unlegierter Stähle &ndash; Tabellenbuch Metall.</p>
+
+    <p><a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-schweissen.html">Lektion Schweißen öffnen</a></p>
+
+  </main>
+
+  <footer class="wrap">
+    <p>&copy; 2026 t-bk.de &middot; <a href="https://t-bk.de/impressum/">Impressum</a>
+      &middot; <a href="https://t-bk.de/datenschutz/">Datenschutz</a></p>
+  </footer>
+
+<script>
+"use strict";
+
+/* Schweisszusatz je Meter Kehlnaht, MAG, unlegierte Staehle, Position PB -
+   Tabellenbuch, Nahtplanung und Leistungswerte. */
+var ZUSATZ = {2:45, 3:90, 4:140, 5:215, 6:300, 7:390, 8:545, 10:805};
+
+var STUFEN = {
+  einfach: {text:"Immer dieselbe Richtung: gegeben ist der Schenkel z, gesucht "
+    + "die Nahtdicke a."},
+  mittel:  {text:"Beide Richtungen, zufällig gemischt. Erst lesen, dann rechnen."},
+  schwer:  {text:"Dazu kommt bei jeder zweiten Aufgabe der Schweißzusatz für "
+    + "einen Meter Naht &ndash; nachzuschlagen im Tabellenbuch."}
+};
+
+function el(id){ return document.getElementById(id); }
+function zufall(liste){ return liste[Math.floor(Math.random() * liste.length)]; }
+function kom(x, n){ return x.toFixed(n === undefined ? 1 : n).replace(".", ","); }
+
+var runde = [], nr = 0, treffer = 0, offen = true, start = 0, uhr = null;
+
+function aufgabeBauen(){
+  var stufe = el("stufe").value;
+  var a = {};
+  if(stufe === "einfach"){
+    a.art = "zuA";
+  }else if(stufe === "mittel"){
+    a.art = Math.random() < 0.5 ? "zuA" : "zuZ";
+  }else{
+    var w = Math.random();
+    a.art = w < 0.35 ? "zuA" : (w < 0.7 ? "zuZ" : "draht");
+  }
+  if(a.art === "draht"){
+    a.a = zufall([2, 3, 4, 5, 6, 7, 8, 10]);
+    a.soll = ZUSATZ[a.a];
+    a.einheit = "g";
+    a.frage = "Eine Kehlnaht a = " + a.a + " mm, ein Meter lang. Wie viel "
+      + "Schweißzusatz wird gebraucht?";
+    a.weg = "Das Tabellenbuch nennt für a = " + a.a + " mm den Schweißzusatz "
+      + "<b>" + ZUSATZ[a.a] + " g je Meter</b>. Für einen Meter also genau "
+      + "diese Menge.";
+    a.tol = 0.5;
+  }else if(a.art === "zuA"){
+    a.z = zufall([3, 4, 5, 6, 7, 8, 9, 10, 12]);
+    a.soll = a.z / Math.SQRT2;
+    a.einheit = "mm";
+    a.frage = "Die Zeichnung fordert z = " + a.z + " mm. Wie groß ist die "
+      + "Nahtdicke a?";
+    a.weg = "a = z &middot; cos 45° = " + a.z + " mm &middot; 0,707 = <b>"
+      + kom(a.soll, 2) + " mm</b> &asymp; " + kom(a.soll) + " mm.";
+    a.tol = 0.1;
+  }else{
+    a.a = zufall([2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    a.soll = a.a * Math.SQRT2;
+    a.einheit = "mm";
+    a.frage = "Die Zeichnung fordert a = " + a.a + " mm. Wie lang ist der "
+      + "Schenkel z?";
+    a.weg = "z = a &middot; &radic;2 = " + a.a + " mm &middot; 1,414 = <b>"
+      + kom(a.soll, 2) + " mm</b> &asymp; " + kom(a.soll) + " mm.";
+    a.tol = 0.1;
+  }
+  return a;
+}
+
+function zeitText(ms){
+  var s = Math.floor(ms / 1000);
+  return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2);
+}
+
+function uhrLaufen(){
+  if(uhr) clearInterval(uhr);
+  start = Date.now();
+  uhr = setInterval(function(){
+    el("zeit").textContent = zeitText(Date.now() - start);
+  }, 500);
+}
+
+window.TBK_WETTKAMPF = { neu: function(){ neuerDurchgang(); }, ergebnisAn: "ende" };
+
+function neuerDurchgang(){
+  el("stufentext").textContent = STUFEN[el("stufe").value].text;
+  var n = Number(el("umfang").value);
+  runde = [];
+  for(var i = 0; i < n; i++) runde.push(aufgabeBauen());
+  nr = 0;
+  treffer = 0;
+  el("ende").hidden = true;
+  el("rueckblick").textContent = "";
+  uhrLaufen();
+  zeigen();
+}
+
+/* Der Nahtquerschnitt mit dem eingelegten Dreieck - dasselbe Bild in jeder
+   Aufgabe, damit a und z ihren Ort behalten. */
+function dreieckZeichnen(ziel){
+  ziel.textContent = "";
+  var NS = "http://www.w3.org/2000/svg";
+  var svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("viewBox", "0 0 260 180");
+  svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", "Nahtquerschnitt einer Kehlnaht mit "
+    + "eingelegtem gleichschenkligem Dreieck: a ist die Höhe, z der Schenkel");
+  ziel.appendChild(svg);
+  function e(name, attr){
+    var x = document.createElementNS(NS, name);
+    for(var k in attr) if(attr.hasOwnProperty(k)) x.setAttribute(k, attr[k]);
+    svg.appendChild(x);
+    return x;
+  }
+  var x = 30, y = 126, t = 16, b = 190, m = x + 80, s = 54;
+  e("rect", {x:x, y:y, width:b, height:t, fill:"none", stroke:"currentColor",
+    "stroke-width":2});
+  e("rect", {x:m, y:y - 100, width:t, height:100, fill:"none",
+    stroke:"currentColor", "stroke-width":2});
+  /* Nur umrissen: Auf einer ausgefuellten Flaeche waeren die Masslinien
+     fuer a und z nicht zu lesen. */
+  e("polygon", {points: m + "," + y + " " + (m - s) + "," + y + " "
+    + m + "," + (y - s), fill:"none", stroke:"currentColor",
+    "stroke-width":2});
+  /* z am waagerechten Schenkel, unter der Grundplatte - innen im Dreieck
+     laege die Masszahl auf der Hypotenuse. */
+  var yz = y + t + 30;
+  e("line", {x1:m - s, y1:yz, x2:m, y2:yz, stroke:"currentColor",
+    "stroke-width":1});
+  [m - s, m].forEach(function(xx){
+    e("line", {x1:xx, y1:y + t + 3, x2:xx, y2:yz + 5, stroke:"currentColor",
+      "stroke-width":1});
+  });
+  var tz = e("text", {x:m - s / 2, y:yz - 6, "text-anchor":"middle",
+    "font-size":15, fill:"currentColor", "font-style":"italic"});
+  tz.textContent = "z";
+  var hx = m - s / 2, hy = y - s / 2;
+  e("line", {x1:m, y1:y, x2:hx - 16, y2:hy - 16, stroke:"currentColor",
+    "stroke-width":1});
+  var ta = e("text", {x:hx - 22, y:hy - 20, "text-anchor":"end",
+    "font-size":15, fill:"currentColor", "font-style":"italic"});
+  ta.textContent = "a";
+}
+
+function zeigen(){
+  var a = runde[nr];
+  offen = true;
+
+  el("stand").textContent = "Aufgabe " + (nr + 1) + " von " + runde.length;
+  el("balken").style.width = (100 * nr / runde.length) + "%";
+  el("frage").innerHTML = a.frage;
+  el("einheit").textContent = a.einheit;
+
+  dreieckZeichnen(el("bildFrage"));
+
+  el("antwort").value = "";
+  el("antwort").disabled = false;
+  el("btnPruefen").hidden = false;
+  el("rueck").hidden = true;
+  el("weg").hidden = true;
+  el("btnWeiter").hidden = true;
+  el("antwort").focus();
+}
+
+function pruefen(){
+  if(!offen) return;
+  var a = runde[nr];
+  var v = parseFloat(String(el("antwort").value).replace(",", "."));
+  if(!isFinite(v)) return;
+  offen = false;
+
+  var ok = Math.abs(v - a.soll) <= a.tol;
+  if(ok) treffer++;
+  a.richtigBeantwortet = ok;
+  a.gegeben = v;
+
+  el("antwort").disabled = true;
+  el("btnPruefen").hidden = true;
+
+  var r = el("rueck");
+  r.hidden = false;
+  r.className = "rueckmeldung " + (ok ? "ja" : "nein");
+  r.innerHTML = ok
+    ? "<strong>Richtig.</strong> " + kom(a.soll, 2) + " " + a.einheit + "."
+    : "<strong>Nein &ndash; richtig wäre " + kom(a.soll, 2) + " " + a.einheit
+      + ".</strong>";
+
+  var w = el("weg");
+  w.hidden = false;
+  w.innerHTML = a.weg;
+
+  el("btnWeiter").hidden = false;
+  el("btnWeiter").focus();
+}
+
+function weiter(){
+  nr++;
+  if(nr < runde.length){ zeigen(); return; }
+
+  if(uhr) clearInterval(uhr);
+  el("balken").style.width = "100%";
+  el("stand").textContent = "fertig";
+  el("ende").hidden = false;
+
+  el("bilanz").textContent = treffer + " von " + runde.length + " richtig, in "
+    + zeitText(Date.now() - start) + " min.";
+
+  var anteil = treffer / runde.length;
+  el("urteil").textContent = anteil === 1
+    ? "Vollständig. Probiert die nächsthöhere Stufe."
+    : (anteil >= 0.8
+       ? "Sitzt weitgehend. Prüft, ob die Fehler in einer Richtung liegen – "
+         + "dann ist es die Formel, nicht die Rechnung."
+       : "Die beiden Zahlen liegen rund 40 % auseinander. Wer das im Kopf hat, "
+         + "merkt einen Dreher sofort.");
+
+  var ul = document.createElement("ul");
+  ul.className = "rueckblick";
+  runde.forEach(function(a){
+    var li = document.createElement("li");
+    var was = a.art === "draht" ? "Draht für a = " + a.a
+      : (a.art === "zuA" ? "z = " + a.z + " → a" : "a = " + a.a + " → z");
+    li.innerHTML = '<span class="marke ' + (a.richtigBeantwortet ? "ok" : "nein")
+      + '">' + (a.richtigBeantwortet ? "richtig" : "falsch") + "</span><span>"
+      + was + " &ndash; " + kom(a.soll, 2) + " " + a.einheit + "</span>";
+    ul.appendChild(li);
+  });
+  el("rueckblick").textContent = "";
+  el("rueckblick").appendChild(ul);
+  document.dispatchEvent(new CustomEvent("tbk-durchgang-ende",
+    {detail:{richtig: treffer, gesamt: runde.length}}));
+
+  el("ende").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+el("btnPruefen").addEventListener("click", pruefen);
+el("antwort").addEventListener("keydown", function(e){
+  if(e.key === "Enter"){ e.preventDefault(); pruefen(); }
+});
+el("btnWeiter").addEventListener("click", weiter);
+el("btnNeu").addEventListener("click", neuerDurchgang);
+el("stufe").addEventListener("change", neuerDurchgang);
+el("umfang").addEventListener("change", neuerDurchgang);
+
+neuerDurchgang();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/wettkampf.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

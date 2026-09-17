@@ -1,0 +1,18 @@
+{
+  "titel": "Fertigungstechnik: Fügeverfahren - Schweißen",
+  "lead": "Fünf Trainings mit immer neuen Aufgaben: Symbole auf einen Blick erkennen, die Seite am Sinnbild ablesen, a und z umrechnen, die Fachbegriffe sicher haben und die Ordnungsnummern zuordnen.",
+  "werkzeuge": [
+    {
+      "datei": "fertigungstechnik-fuegeverfahren-schweissen.html",
+      "name": "Schweißen",
+      "art": "lektion"
+    }
+  ],
+  "reihenfolge": [
+    "01-symbol-schnellcheck.html",
+    "02-pfeilseite-erkennen.html",
+    "03-a-und-z-umrechnen.html",
+    "04-begriffe-der-schweisstechnik.html",
+    "05-verfahren-und-kennzahl.html"
+  ]
+}

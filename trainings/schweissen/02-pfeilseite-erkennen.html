@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pfeilseite erkennen</title>
+<meta name="description" content="Immer neue Sinnbilder, immer dieselbe Frage: Auf welcher Seite liegt die Naht? Volllinie, Strichlinie oder beides – mit Uhr und sofortiger Begründung.">
+<meta name="dauer" content="10 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/schweissnaht.js"></script>
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .frage{font-size:19px; line-height:1.4; font-weight:600; margin:0 0 14px;
+    min-height:1.4em}
+  .wahl{display:flex; gap:10px; flex-wrap:wrap}
+  .wahl button{
+    flex:1 1 170px; font:700 15px/1.25 inherit; cursor:pointer; padding:14px 16px;
+    border-radius:10px; border:1px solid var(--border-stark);
+    background:var(--bg); color:var(--fg);
+  }
+  .wahl button:hover:not(:disabled){border-color:var(--accent)}
+  .wahl button:disabled{cursor:default; opacity:.6}
+  .wahl button.war{opacity:1}
+  .wahl button.war.ok{border-color:var(--ok); background:rgba(22,163,74,.14)}
+  .wahl button.war.nein{border-color:var(--bad); background:rgba(220,38,38,.12)}
+  .uhr{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:13px; color:var(--muted); margin:0 0 10px;
+    font-variant-numeric:tabular-nums}
+  .fortschritt{height:8px; border-radius:999px; background:var(--border);
+    overflow:hidden; margin:0 0 16px}
+  .fortschritt i{display:block; height:100%; background:var(--accent);
+    transition:width .2s ease}
+  .bild{margin:2px 0 14px}
+  .bild svg{width:100%; height:auto; display:block; max-width:420px;
+    margin-inline:auto}
+  .bilanz{font-size:19px; font-weight:700; margin:0 0 8px}
+  .rueckblick{list-style:none; margin:12px 0 0; padding:0}
+  .rueckblick li{display:flex; gap:10px; align-items:baseline; padding:5px 0;
+    border-top:1px solid var(--border); font-size:14px}
+  .rueckblick .marke{font-weight:700; flex:0 0 auto}
+  .rueckblick .marke.ok{color:var(--ok)}
+  .rueckblick .marke.nein{color:var(--bad)}
+  .einstellung{display:flex; flex-wrap:wrap; gap:14px; align-items:flex-end;
+    margin:0 0 4px}
+  .einstellung > div{flex:1 1 190px}
+  .einstellung label{display:block; font-size:13px; font-weight:700; margin:0 0 5px}
+  .einstellung select{width:100%; font:inherit; font-size:14px; padding:8px 9px;
+    border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark)}
+  .einstellung select:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+  .stufentext{font-size:13px; color:var(--muted); margin:8px 0 0}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Schweißen</p>
+    <h1>Pfeilseite erkennen</h1>
+    <p class="lead">Immer ein neues Sinnbild, immer dieselbe Frage: Wo liegt die
+      Naht &ndash; dort, wohin der Pfeil zeigt, oder gegenüber?</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>So läuft es:</strong> Ihr seht ein Sinnbild. Entscheidet, auf
+        welcher Seite des Stoßes die Naht liegt. Es gibt nur drei Möglichkeiten &ndash;
+        aber wer die Linien verwechselt, trifft zuverlässig die falsche.</p>
+      <p>Die Regel steht am Sinnbild, nicht am Bauteil: Was an der
+        <strong>durchgezogenen</strong> Linie steht, liegt dort, wohin der Pfeil
+        zeigt. Was an der <strong>gestrichelten</strong> steht, gegenüber.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Durchgang</h2>
+
+    <div class="box">
+      <div class="einstellung">
+        <div>
+          <label for="stufe">Schwierigkeit</label>
+          <select id="stufe">
+            <option value="einfach">Einfach &ndash; Strichlinie immer unten</option>
+            <option value="mittel" selected>Mittel &ndash; Strichlinie oben oder unten</option>
+            <option value="schwer">Schwer &ndash; dazu Bemaßung und Zusatzzeichen</option>
+          </select>
+        </div>
+        <div>
+          <label for="umfang">Wie viele Sinnbilder?</label>
+          <select id="umfang">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+          </select>
+        </div>
+      </div>
+      <p class="stufentext" id="stufentext"></p>
+    </div>
+
+    <div class="box">
+      <div class="uhr">
+        <span id="stand">Sinnbild 1 von 10</span>
+        <span id="zeit">0:00</span>
+      </div>
+      <div class="fortschritt"><i id="balken" style="width:0%"></i></div>
+
+      <figure class="bild" id="bildFrage"></figure>
+      <p class="frage" id="frage">&ndash;</p>
+
+      <div class="wahl" id="wahl"></div>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+
+      <p>
+        <button type="button" class="knopf" id="btnWeiter" hidden>Weiter</button>
+        <button type="button" class="knopf leise" id="btnNeu">Von vorn</button>
+      </p>
+    </div>
+
+    <div id="ende" hidden>
+      <h3>Ergebnis</h3>
+      <div class="box">
+        <p class="bilanz" id="bilanz">&ndash;</p>
+        <p id="urteil"></p>
+        <div id="rueckblick"></div>
+      </div>
+    </div>
+
+    <h2><span class="nr">2</span>Die Regel in drei Zeilen</h2>
+
+    <div class="tabellenrahmen">
+      <table>
+        <thead><tr><th>Das Symbol steht &hellip;</th><th>Die Naht liegt &hellip;</th>
+          <th>Und das heißt für die Werkstatt</th></tr></thead>
+        <tbody>
+          <tr><td>an der Bezugs-Volllinie</td><td>auf der Pfeilseite</td>
+            <td>dort schweißen, wohin der Pfeil zeigt</td></tr>
+          <tr><td>an der Bezugs-Strichlinie</td><td>auf der Gegenseite</td>
+            <td>das Teil wenden</td></tr>
+          <tr><td>über <em>und</em> unter der Volllinie</td><td>auf beiden Seiten</td>
+            <td>beide Seiten schweißen; eine Strichlinie gibt es dann nicht</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2><span class="nr">3</span>Woran man es erkennt</h2>
+
+    <details>
+      <summary>1. Wo die gestrichelte Linie liegt, ist gleichgültig</summary>
+      <p>Sie darf über oder unter der durchgezogenen verlaufen &ndash; beides ist
+        normgerecht und meint dasselbe. Entscheidend ist allein, an
+        <em>welcher</em> der beiden Linien das Symbol sitzt.</p>
+      <p>Genau deshalb reicht es nicht, sich zu merken „oben heißt Pfeilseite“.
+        Das stimmt in der Hälfte der Fälle &ndash; und das ist schlimmer als gar keine
+        Regel.</p>
+    </details>
+
+    <details>
+      <summary>2. Wenn es keine gestrichelte Linie gibt</summary>
+      <p>Dann gibt es auch keine Gegenseite: Entweder steht ein einzelnes Symbol
+        an der Volllinie &ndash; Pfeilseite &ndash;, oder es steht ein kombiniertes
+        Grundsymbol über und unter ihr &ndash; beide Seiten.</p>
+      <p>Bei symmetrischen beidseitigen Nähten lässt die Norm die Strichlinie
+        ausdrücklich weg. Das X, das K und die Doppel-Kehlnaht brauchen sie
+        nicht.</p>
+    </details>
+
+    <details>
+      <summary>3. Warum diese Unterscheidung überhaupt wichtig ist</summary>
+      <p>Weil sie über einen Arbeitsgang entscheidet. Eine Naht auf der
+        Gegenseite heißt: umspannen, wenden, neu ausrichten &ndash; und bei einer
+        großen Baugruppe heißt das Kran.</p>
+      <p>Und im schlimmsten Fall heißt es gar nichts mehr: Ist das Teil erst
+        zusammengebaut, kann die Gegenseite unzugänglich sein.</p>
+    </details>
+
+    <p class="fussnote"><strong>Woher die Angaben stammen:</strong> Lage der Symbole
+      für Schweißen und Löten in Zeichnungen nach DIN EN ISO 2553 (2022-07),
+      Tabellenbuch Metall.</p>
+
+    <p><a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-schweissen.html">Lektion Schweißen öffnen</a></p>
+
+  </main>
+
+  <footer class="wrap">
+    <p>&copy; 2026 t-bk.de &middot; <a href="https://t-bk.de/impressum/">Impressum</a>
+      &middot; <a href="https://t-bk.de/datenschutz/">Datenschutz</a></p>
+  </footer>
+
+<script>
+"use strict";
+
+/* Aus diesen Bausteinen wuerfelt das Training seine Aufgaben. Die
+   kombinierten Grundsymbole stehen nur bei "beide" zur Wahl - sie gibt es
+   nur symmetrisch. */
+var EINZELN = ["kehl", "v", "y", "hv", "i", "u"];
+var KOMBI   = ["dkehl", "dv", "dhv", "dy"];
+var MASSE   = ["a3", "a4", "a5", "z6", "z8", "s4", "s6"];
+var ZUSATZ  = ["gegenlage", "konkav", "konvex", "flach"];
+
+var LAGEN = [
+  {id:"pfeil", text:"Pfeilseite",
+   satz:"Das Symbol steht an der <b>Bezugs-Volllinie</b>. Die Naht liegt dort, "
+      + "wohin der Pfeil zeigt."},
+  {id:"gegen", text:"Gegenseite",
+   satz:"Das Symbol steht an der <b>Bezugs-Strichlinie</b>. Die Naht liegt auf "
+      + "der anderen Seite des Stoßes &ndash; das Teil muss gewendet werden."},
+  {id:"beide", text:"beide Seiten",
+   satz:"Ein <b>kombiniertes Grundsymbol</b>, über und unter der Volllinie. "
+      + "Beide Seiten bekommen dieselbe Naht; eine Strichlinie gibt es dann "
+      + "nicht."}
+];
+
+var STUFEN = {
+  einfach: {text:"Die Strichlinie liegt immer unter der Volllinie. Nur das "
+    + "Symbol wandert."},
+  mittel:  {text:"Die Strichlinie liegt mal über, mal unter der Volllinie &ndash; "
+    + "wie in echten Zeichnungen. „Oben“ sagt jetzt nichts mehr."},
+  schwer:  {text:"Dazu Nahtdicken und Zusatzzeichen. Sie lenken ab, ändern an "
+    + "der Frage aber nichts."}
+};
+
+function el(id){ return document.getElementById(id); }
+function zufall(liste){ return liste[Math.floor(Math.random() * liste.length)]; }
+
+var runde = [], nr = 0, treffer = 0, offen = true, start = 0, uhr = null;
+
+function aufgabeBauen(){
+  var stufe = el("stufe").value;
+  var lage = zufall(LAGEN);
+  var a = {lage: lage.id, satz: lage.satz};
+  a.strichOben = stufe === "einfach" ? false : Math.random() < 0.5;
+  if(lage.id === "beide"){
+    a.art = zufall(KOMBI);
+  }else{
+    a.art = zufall(EINZELN);
+  }
+  if(stufe === "schwer"){
+    a.mass = zufall(MASSE);
+    if(Math.random() < 0.4) a.zusatz = zufall(ZUSATZ);
+    if(Math.random() < 0.3) a.ringsum = true;
+  }
+  return a;
+}
+
+function zeitText(ms){
+  var s = Math.floor(ms / 1000);
+  return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2);
+}
+
+function uhrLaufen(){
+  if(uhr) clearInterval(uhr);
+  start = Date.now();
+  uhr = setInterval(function(){
+    el("zeit").textContent = zeitText(Date.now() - start);
+  }, 500);
+}
+
+window.TBK_WETTKAMPF = { neu: function(){ neuerDurchgang(); }, ergebnisAn: "ende" };
+
+function neuerDurchgang(){
+  el("stufentext").textContent = STUFEN[el("stufe").value].text;
+  var n = Number(el("umfang").value);
+  runde = [];
+  for(var i = 0; i < n; i++) runde.push(aufgabeBauen());
+  nr = 0;
+  treffer = 0;
+  el("ende").hidden = true;
+  el("rueckblick").textContent = "";
+  uhrLaufen();
+  zeigen();
+}
+
+function sinnbildZeichnen(ziel, a){
+  ziel.textContent = "";
+  var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", "0 0 360 150");
+  svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", "Sinnbild einer Schweißnaht an einer "
+    + "Bezugslinie mit Pfeillinie");
+  ziel.appendChild(svg);
+  var o = {x:195, y:62, zielX:70, zielY:115, laenge:150,
+           strichOben: a.strichOben, ringsum: a.ringsum};
+  if(a.lage === "beide"){
+    o.kombi = a.art;
+    if(a.mass) o.mass = a.mass;
+  }else{
+    var seite = {art:a.art};
+    if(a.mass) seite.mass = a.mass;
+    if(a.zusatz) seite.zusatz = a.zusatz;
+    if(a.lage === "pfeil") o.pfeilseite = seite; else o.gegenseite = seite;
+  }
+  schweissSinnbild(svg, o);
+}
+
+function zeigen(){
+  var a = runde[nr];
+  offen = true;
+
+  el("stand").textContent = "Sinnbild " + (nr + 1) + " von " + runde.length;
+  el("balken").style.width = (100 * nr / runde.length) + "%";
+  el("frage").textContent = "Auf welcher Seite liegt die Naht?";
+
+  sinnbildZeichnen(el("bildFrage"), a);
+
+  var w = el("wahl");
+  w.textContent = "";
+  LAGEN.forEach(function(l){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.textContent = l.text;
+    b.addEventListener("click", function(){ antwort(l.id, b); });
+    w.appendChild(b);
+  });
+
+  el("rueck").hidden = true;
+  el("btnWeiter").hidden = true;
+}
+
+function antwort(gewaehlt, knopf){
+  if(!offen) return;
+  offen = false;
+
+  var a = runde[nr];
+  var ok = gewaehlt === a.lage;
+  if(ok) treffer++;
+  a.richtigBeantwortet = ok;
+
+  var knoepfe = el("wahl").querySelectorAll("button");
+  for(var i = 0; i < knoepfe.length; i++){
+    knoepfe[i].disabled = true;
+    if(LAGEN[i].id === a.lage) knoepfe[i].className = "war ok";
+  }
+  if(!ok) knopf.className = "war nein";
+
+  var r = el("rueck");
+  r.hidden = false;
+  r.className = "rueckmeldung " + (ok ? "ja" : "nein");
+  var naht = schweissName(a.art);
+  r.innerHTML = "<strong>" + LAGEN.filter(function(l){
+    return l.id === a.lage; })[0].text + " &ndash; " + naht + ".</strong> " + a.satz;
+
+  el("btnWeiter").hidden = false;
+  el("btnWeiter").focus();
+}
+
+function weiter(){
+  nr++;
+  if(nr < runde.length){ zeigen(); return; }
+
+  if(uhr) clearInterval(uhr);
+  el("balken").style.width = "100%";
+  el("stand").textContent = "fertig";
+  el("ende").hidden = false;
+
+  el("bilanz").textContent = treffer + " von " + runde.length + " richtig, in "
+    + zeitText(Date.now() - start) + " min.";
+
+  var anteil = treffer / runde.length;
+  el("urteil").textContent = anteil === 1
+    ? "Vollständig. Probiert die nächsthöhere Stufe."
+    : (anteil >= 0.8
+       ? "Sitzt weitgehend. Wer hier noch danebengreift, hat meist auf „oben “ "
+         + "statt auf die Linienart geachtet."
+       : "Lest die drei Zeilen unter „Die Regel in drei Zeilen“ und startet dann "
+         + "neu. Es sind wirklich nur drei Fälle.");
+
+  var ul = document.createElement("ul");
+  ul.className = "rueckblick";
+  runde.forEach(function(a){
+    var li = document.createElement("li");
+    li.innerHTML = '<span class="marke ' + (a.richtigBeantwortet ? "ok" : "nein")
+      + '">' + (a.richtigBeantwortet ? "richtig" : "falsch") + "</span><span>"
+      + schweissName(a.art) + " &ndash; "
+      + LAGEN.filter(function(l){ return l.id === a.lage; })[0].text + "</span>";
+    ul.appendChild(li);
+  });
+  el("rueckblick").textContent = "";
+  el("rueckblick").appendChild(ul);
+  document.dispatchEvent(new CustomEvent("tbk-durchgang-ende",
+    {detail:{richtig: treffer, gesamt: runde.length}}));
+
+  el("ende").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+el("btnWeiter").addEventListener("click", weiter);
+el("btnNeu").addEventListener("click", neuerDurchgang);
+el("stufe").addEventListener("change", neuerDurchgang);
+el("umfang").addEventListener("change", neuerDurchgang);
+
+neuerDurchgang();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/wettkampf.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

@@ -468,5 +468,41 @@
         "url": "trainings/schraubverbindungen/07-im-tabellenbuch-nachschlagen.html"
       }
     ]
+  },
+  {
+    "typ": "trainings",
+    "bereich": "Fertigungstechnik",
+    "kategorie": "Fügeverfahren",
+    "name": "Schweißen",
+    "url": "trainings/schweissen/index.html",
+    "werkzeuge": [
+      {
+        "datei": "fertigungstechnik-fuegeverfahren-schweissen.html",
+        "name": "Schweißen",
+        "art": "lektion"
+      }
+    ],
+    "inhalt": [
+      {
+        "titel": "Symbol-Schnellcheck",
+        "url": "trainings/schweissen/01-symbol-schnellcheck.html"
+      },
+      {
+        "titel": "Pfeilseite erkennen",
+        "url": "trainings/schweissen/02-pfeilseite-erkennen.html"
+      },
+      {
+        "titel": "a und z umrechnen",
+        "url": "trainings/schweissen/03-a-und-z-umrechnen.html"
+      },
+      {
+        "titel": "Begriffe der Schweißtechnik",
+        "url": "trainings/schweissen/04-begriffe-der-schweisstechnik.html"
+      },
+      {
+        "titel": "Verfahren und Kennzahl",
+        "url": "trainings/schweissen/05-verfahren-und-kennzahl.html"
+      }
+    ]
   }
 ]

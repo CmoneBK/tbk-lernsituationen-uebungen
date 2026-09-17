@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Symbol-Schnellcheck</title>
+<meta name="description" content="Ein Symbol, vier Antworten: Welche Naht ist gemeint? Mit Uhr, drei Schwierigkeitsgraden und dem Nahtquerschnitt als Begründung.">
+<meta name="dauer" content="10 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/schweissnaht.js"></script>
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .frage{font-size:19px; line-height:1.4; font-weight:600; margin:0 0 14px;
+    min-height:1.4em}
+  .wahl{display:flex; gap:10px; flex-wrap:wrap}
+  .wahl button{
+    flex:1 1 150px; font:700 15px/1.25 inherit; cursor:pointer; padding:14px 16px;
+    border-radius:10px; border:1px solid var(--border-stark);
+    background:var(--bg); color:var(--fg);
+  }
+  .wahl button:hover:not(:disabled){border-color:var(--accent)}
+  .wahl button:disabled{cursor:default; opacity:.6}
+  .wahl button.war{opacity:1}
+  .wahl button.war.ok{border-color:var(--ok); background:rgba(22,163,74,.14)}
+  .wahl button.war.nein{border-color:var(--bad); background:rgba(220,38,38,.12)}
+  .uhr{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:13px; color:var(--muted); margin:0 0 10px;
+    font-variant-numeric:tabular-nums}
+  .fortschritt{height:8px; border-radius:999px; background:var(--border);
+    overflow:hidden; margin:0 0 16px}
+  .fortschritt i{display:block; height:100%; background:var(--accent);
+    transition:width .2s ease}
+  .bild{margin:2px 0 14px}
+  .bild svg{width:100%; height:auto; display:block; max-width:360px;
+    margin-inline:auto}
+  .bilanz{font-size:19px; font-weight:700; margin:0 0 8px}
+  .rueckblick{list-style:none; margin:12px 0 0; padding:0}
+  .rueckblick li{display:flex; gap:10px; align-items:baseline; padding:5px 0;
+    border-top:1px solid var(--border); font-size:14px}
+  .rueckblick .marke{font-weight:700; flex:0 0 auto}
+  .rueckblick .marke.ok{color:var(--ok)}
+  .rueckblick .marke.nein{color:var(--bad)}
+  .einstellung{display:flex; flex-wrap:wrap; gap:14px; align-items:flex-end;
+    margin:0 0 4px}
+  .einstellung > div{flex:1 1 190px}
+  .einstellung label{display:block; font-size:13px; font-weight:700; margin:0 0 5px}
+  .einstellung select{width:100%; font:inherit; font-size:14px; padding:8px 9px;
+    border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark)}
+  .einstellung select:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+  .stufentext{font-size:13px; color:var(--muted); margin:8px 0 0}
+  table.symbole td:first-child{font-weight:600; white-space:nowrap}
+  table.symbole svg{height:42px; width:90px; display:block}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Schweißen</p>
+    <h1>Symbol-Schnellcheck</h1>
+    <p class="lead">Ein Zeichen an der Bezugslinie &ndash; welche Naht ist gemeint?
+      Vier Antworten, und danach sofort der Querschnitt dazu.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>So läuft es:</strong> Ihr seht ein Grundsymbol auf der
+        Bezugslinie. Entscheidet, welche Naht es meint. Nach jeder Antwort
+        erscheint der Nahtquerschnitt &ndash; das Symbol ist nichts anderes als
+        dessen Umriss.</p>
+      <p>Stellt euch den Durchgang so ein, wie ihr ihn braucht.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Durchgang</h2>
+
+    <div class="box">
+      <div class="einstellung">
+        <div>
+          <label for="stufe">Schwierigkeit</label>
+          <select id="stufe">
+            <option value="einfach">Einfach &ndash; die vier häufigsten</option>
+            <option value="mittel" selected>Mittel &ndash; dazu Y, HV, U und die Doppelnähte</option>
+            <option value="schwer">Schwer &ndash; alle Grundsymbole</option>
+          </select>
+        </div>
+        <div>
+          <label for="umfang">Wie viele Symbole?</label>
+          <select id="umfang"></select>
+        </div>
+      </div>
+      <p class="stufentext" id="stufentext"></p>
+    </div>
+
+    <div class="box">
+      <div class="uhr">
+        <span id="stand">Symbol 1 von 10</span>
+        <span id="zeit">0:00</span>
+      </div>
+      <div class="fortschritt"><i id="balken" style="width:0%"></i></div>
+
+      <figure class="bild" id="bildFrage"></figure>
+      <p class="frage" id="frage">&ndash;</p>
+
+      <div class="wahl" id="wahl"></div>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+
+      <p>
+        <button type="button" class="knopf" id="btnWeiter" hidden>Weiter</button>
+        <button type="button" class="knopf leise" id="btnNeu">Von vorn</button>
+      </p>
+    </div>
+
+    <div id="ende" hidden>
+      <h3>Ergebnis</h3>
+      <div class="box">
+        <p class="bilanz" id="bilanz">&ndash;</p>
+        <p id="urteil"></p>
+        <div id="rueckblick"></div>
+      </div>
+    </div>
+
+    <h2><span class="nr">2</span>Die Grundsymbole auf einen Blick</h2>
+    <p>Wer den Querschnitt kennt, muss die Symbole nicht auswendig lernen &ndash;
+      jedes ist sein Umriss, auf zwei oder drei Striche eingedampft.</p>
+
+    <div class="tabellenrahmen">
+      <table class="symbole">
+        <thead>
+          <tr><th>Symbol</th><th>Naht</th><th>Woran man sie erkennt</th></tr>
+        </thead>
+        <tbody id="tabelle"></tbody>
+      </table>
+    </div>
+
+    <h2><span class="nr">3</span>Woran man es erkennt</h2>
+
+    <details>
+      <summary>1. Zwei Striche, ein Haken oder ein Dreieck – die drei häufigsten</summary>
+      <p>Die <strong>I-Naht</strong> sind zwei senkrechte Striche: die beiden
+        Blechkanten, unverändert nebeneinander. Keine Vorbereitung, kein Winkel.</p>
+      <p>Die <strong>V-Naht</strong> ist die aufgeschnittene Fuge: zwei Schenkel,
+        die von der Wurzel aus nach oben auseinandergehen. Und die
+        <strong>Kehlnaht</strong> ist das rechtwinklige Dreieck der Innenecke &ndash;
+        senkrechte Kathete links, waagerechte auf der Bezugslinie.</p>
+    </details>
+
+    <details>
+      <summary>2. Mit oder ohne Steg: V gegen Y, HV gegen HY</summary>
+      <p>Der senkrechte Strich unten am Symbol ist der <strong>Steg</strong>: das
+        Stück Blech, das an der Wurzel stehen bleibt. Die V-Naht hat keinen &ndash;
+        ihre Schenkel treffen sich in einem Punkt auf der Linie. Die Y-Naht hat
+        einen, deshalb sieht sie aus wie ein Y.</p>
+      <p>Dasselbe gilt für die halben Formen: HV ohne Steg, HY mit. „Halb“ heißt
+        dabei immer: Nur ein Blech ist angeschrägt, das andere bleibt gerade.</p>
+    </details>
+
+    <details>
+      <summary>3. Einfach oder doppelt – wo steht das Symbol?</summary>
+      <p>Bei den Doppelnähten steht dasselbe Symbol <strong>zweimal</strong>:
+        einmal über und einmal unter der Bezugs-Volllinie. Aus zwei V wird ein X,
+        aus zwei HV ein K, aus zwei Dreiecken eine Doppel-Kehlnaht.</p>
+      <p>Das ist mehr als eine Schreibweise: Beidseitig geschweißt heißt halb so
+        viel Schweißgut bei gleicher Dicke &ndash; und viel weniger Winkelverzug,
+        weil von beiden Seiten gleichmäßig geschrumpft wird.</p>
+    </details>
+
+    <p class="fussnote"><strong>Woher die Angaben stammen:</strong> Grundsymbole und
+      kombinierte Grundsymbole nach DIN EN ISO 2553 (2022-07), Tabellenbuch
+      Metall.</p>
+
+    <p><a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-schweissen.html">Lektion Schweißen öffnen</a></p>
+
+  </main>
+
+  <footer class="wrap">
+    <p>&copy; 2026 t-bk.de &middot; <a href="https://t-bk.de/impressum/">Impressum</a>
+      &middot; <a href="https://t-bk.de/datenschutz/">Datenschutz</a></p>
+  </footer>
+
+<script>
+"use strict";
+
+var NS = "http://www.w3.org/2000/svg";
+
+/* Die Symbole des Trainings. `stoss` sagt, welcher Querschnitt nach der
+   Antwort gezeigt wird; `stufe` steuert, ab welcher Schwierigkeit das
+   Symbol vorkommt. */
+var SYMBOLE = [
+  {art:"i",     stoss:"i",     stufe:1,
+   satz:"Zwei senkrechte Striche: die Blechkanten, unverändert nebeneinander. "
+      + "Keine Nahtvorbereitung, bis etwa 4 mm Dicke."},
+  {art:"v",     stoss:"v",     stufe:1,
+   satz:"Zwei Schenkel, die von der Wurzel nach oben auseinandergehen &ndash; die "
+      + "aufgeschnittene Fuge. Öffnungswinkel 40° bis 60°, Dicke 3 bis 10 mm."},
+  {art:"kehl",  stoss:"kehl",  stufe:1,
+   satz:"Das rechtwinklige Dreieck der Innenecke. Keine Fuge, keine "
+      + "Vorbereitung &ndash; die häufigste Naht überhaupt."},
+  {art:"dv",    stoss:"dv",    stufe:1,
+   satz:"Zweimal V, über und unter der Linie: das X. Von beiden Seiten "
+      + "geschweißt &ndash; ab etwa 12 mm die günstigere Wahl."},
+  {art:"y",     stoss:"y",     stufe:2,
+   satz:"Wie die V-Naht, aber mit Steg an der Wurzel. Der senkrechte Strich "
+      + "unten ist der Unterschied."},
+  {art:"hv",    stoss:"hv",    stufe:2,
+   satz:"Die halbe V-Naht: Nur ein Blech ist angeschrägt, das andere bleibt "
+      + "gerade. Deshalb steht eine Flanke senkrecht."},
+  {art:"u",     stoss:"v",     stufe:2,
+   satz:"Gerundete Fuge mit fast senkrechten Flanken. Weniger Schweißgut als "
+      + "die V-Naht, aber eine teurere Vorbereitung."},
+  {art:"dkehl", stoss:"dkehl", stufe:2,
+   satz:"Zwei Dreiecke, über und unter der Linie: eine Kehlnaht je Seite. Eine "
+      + "Strichlinie braucht es dafür nicht."},
+  {art:"dhv",   stoss:"dv",    stufe:2,
+   satz:"Zweimal HV: das K. Beide Seiten angeschrägt, aber nur an einem Blech."},
+  {art:"hy",    stoss:"y",     stufe:3,
+   satz:"Die halbe Y-Naht: eine senkrechte Flanke, eine angeschrägte &ndash; und "
+      + "ein Steg an der Wurzel."},
+  {art:"hu",    stoss:"v",     stufe:3,
+   satz:"Die halbe U-Naht: eine Flanke senkrecht, die andere gerundet."},
+  {art:"boerdel", stoss:"i",   stufe:3,
+   satz:"Die Bördelnaht: Die hochgestellten Blechkanten werden abgeschmolzen. "
+      + "Nur für dünnes Blech."},
+  {art:"steilflanke", stoss:"v", stufe:3,
+   satz:"Steile Flanken mit kleinem Öffnungswinkel, 5° bis 20° &ndash; für dickes "
+      + "Blech ab 16 mm, mit Schweißbadsicherung."},
+  {art:"stirn", stoss:"i",     stufe:3,
+   satz:"Die Stirnnaht: zwei Blechkanten, die stirnseitig aneinanderstoßen."},
+  {art:"loch",  stoss:"i",     stufe:3,
+   satz:"Die Lochnaht: durch ein Loch im oberen Blech wird auf das untere "
+      + "geschweißt."},
+  {art:"punkt", stoss:"i",     stufe:3,
+   satz:"Die schmelzgeschweißte Punktnaht: ein Kreis, kein Strich &ndash; "
+      + "geschweißt wird punktweise."}
+];
+
+var STUFEN = {
+  einfach: {max:1, text:"Die vier, die in fast jeder Zeichnung vorkommen: "
+    + "I, V, Kehlnaht und die Doppel-V-Naht."},
+  mittel:  {max:2, text:"Dazu Y, HV und U sowie die Doppelnähte. Jetzt zählt "
+    + "der Unterschied zwischen mit und ohne Steg."},
+  schwer:  {max:3, text:"Alle Grundsymbole der Auswahl im Tabellenbuch, auch "
+    + "Bördel-, Steilflanken-, Stirn-, Loch- und Punktnaht."}
+};
+
+function el(id){ return document.getElementById(id); }
+function sv(name, attr, eltern){
+  var e = document.createElementNS(NS, name);
+  for(var k in attr) if(attr.hasOwnProperty(k)) e.setAttribute(k, attr[k]);
+  if(eltern) eltern.appendChild(e);
+  return e;
+}
+
+var runde = [], nr = 0, treffer = 0, offen = true, start = 0, uhr = null;
+
+function vorrat(){
+  var max = STUFEN[el("stufe").value].max;
+  return SYMBOLE.filter(function(s){ return s.stufe <= max; });
+}
+
+function mischen(liste){
+  var a = liste.slice();
+  for(var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+function umfangFuellen(){
+  var feld = el("umfang"), da = vorrat().length, vorher = Number(feld.value) || 0;
+  feld.textContent = "";
+  for(var n = 4; n <= da; n++){
+    var o = document.createElement("option");
+    o.value = String(n);
+    o.textContent = n + (n === da ? " (alle)" : "");
+    feld.appendChild(o);
+  }
+  feld.value = String(Math.min(Math.max(vorher || 10, 4), da));
+}
+
+function zeitText(ms){
+  var s = Math.floor(ms / 1000);
+  return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2);
+}
+
+function uhrLaufen(){
+  if(uhr) clearInterval(uhr);
+  start = Date.now();
+  uhr = setInterval(function(){
+    el("zeit").textContent = zeitText(Date.now() - start);
+  }, 500);
+}
+
+/* Wettkampf (assets/wettkampf.js): eigener Durchgang, eigene Uhr, eigenes
+   Ergebnisbild - der Baustein sorgt nur fuer dieselbe Reihenfolge. */
+window.TBK_WETTKAMPF = { neu: function(){ neuerDurchgang(); }, ergebnisAn: "ende" };
+
+function neuerDurchgang(){
+  umfangFuellen();
+  el("stufentext").textContent = STUFEN[el("stufe").value].text;
+  runde = mischen(vorrat()).slice(0, Number(el("umfang").value));
+  nr = 0;
+  treffer = 0;
+  el("ende").hidden = true;
+  el("rueckblick").textContent = "";
+  uhrLaufen();
+  zeigen();
+}
+
+/* Das Symbol allein auf einem Stueck Bezugslinie. */
+function symbolZeichnen(ziel, art, mitStoss){
+  ziel.textContent = "";
+  var svg = sv("svg", {viewBox:"0 0 300 120", role:"img",
+    "aria-label":"Grundsymbol einer Schweißnaht auf der Bezugslinie"
+      + (mitStoss ? " und der zugehörige Nahtquerschnitt" : "")}, ziel);
+  var g = sv("g", {}, svg);
+  var yl = mitStoss ? 62 : 70;
+  var xm = mitStoss ? 70 : 150;
+  sv("line", {x1:xm - 60, y1:yl, x2:xm + 60, y2:yl, stroke:"currentColor",
+    "stroke-width":1}, g);
+  if(SN_KOMBI[art]){
+    SN_SYMBOLE[SN_KOMBI[art].teile[0]].zeichne(g, xm, yl, 26, -1);
+    SN_SYMBOLE[SN_KOMBI[art].teile[1]].zeichne(g, xm, yl, 26, 1);
+  }else{
+    SN_SYMBOLE[art].zeichne(g, xm, yl, 26, -1);
+  }
+  if(mitStoss){
+    schweissStoss(g, {art:mitStoss, x:160, y:44, t:20, breite:120});
+    var t = sv("text", {x:220, y:112, "text-anchor":"middle", "font-size":12,
+      fill:"currentColor"}, g);
+    t.textContent = "so sieht die Naht aus";
+  }
+  return svg;
+}
+
+/* Vier Antworten: die richtige und drei andere aus demselben Vorrat. */
+function antwortenFuer(s){
+  var andere = mischen(vorrat().filter(function(x){ return x.art !== s.art; }))
+    .slice(0, 3);
+  return mischen([s].concat(andere));
+}
+
+function zeigen(){
+  var s = runde[nr];
+  offen = true;
+
+  el("stand").textContent = "Symbol " + (nr + 1) + " von " + runde.length;
+  el("balken").style.width = (100 * nr / runde.length) + "%";
+  el("frage").textContent = "Welche Naht ist gemeint?";
+
+  symbolZeichnen(el("bildFrage"), s.art, null);
+
+  s.wahl = antwortenFuer(s);
+  var w = el("wahl");
+  w.textContent = "";
+  s.wahl.forEach(function(a){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.textContent = schweissName(a.art);
+    b.addEventListener("click", function(){ antwort(a.art, b); });
+    w.appendChild(b);
+  });
+
+  el("rueck").hidden = true;
+  el("btnWeiter").hidden = true;
+}
+
+function antwort(gewaehlt, knopf){
+  if(!offen) return;
+  offen = false;
+
+  var s = runde[nr];
+  var ok = gewaehlt === s.art;
+  if(ok) treffer++;
+  s.richtigBeantwortet = ok;
+
+  var knoepfe = el("wahl").querySelectorAll("button");
+  for(var i = 0; i < knoepfe.length; i++){
+    knoepfe[i].disabled = true;
+    if(s.wahl[i].art === s.art) knoepfe[i].className = "war ok";
+  }
+  if(!ok) knopf.className = "war nein";
+
+  /* Jetzt den Querschnitt dazu zeigen - das ist die eigentliche Begruendung. */
+  symbolZeichnen(el("bildFrage"), s.art, s.stoss);
+
+  var r = el("rueck");
+  r.hidden = false;
+  r.className = "rueckmeldung " + (ok ? "ja" : "nein");
+  r.innerHTML = "<strong>" + schweissName(s.art) + ".</strong> " + s.satz;
+
+  el("btnWeiter").hidden = false;
+  el("btnWeiter").focus();
+}
+
+function weiter(){
+  nr++;
+  if(nr < runde.length){ zeigen(); return; }
+
+  if(uhr) clearInterval(uhr);
+  el("balken").style.width = "100%";
+  el("stand").textContent = "fertig";
+  el("ende").hidden = false;
+
+  el("bilanz").textContent = treffer + " von " + runde.length + " richtig, in "
+    + zeitText(Date.now() - start) + " min.";
+
+  var anteil = treffer / runde.length;
+  el("urteil").textContent = anteil === 1
+    ? "Vollständig. Probiert die nächsthöhere Stufe."
+    : (anteil >= 0.8
+       ? "Sitzt weitgehend. Seht euch unten an, was danebenging – meist sind es "
+         + "die halben Formen oder der Steg."
+       : "Geht die Tabelle unter „Die Grundsymbole auf einen Blick“ einmal durch "
+         + "und startet dann neu.");
+
+  var ul = document.createElement("ul");
+  ul.className = "rueckblick";
+  runde.forEach(function(s){
+    var li = document.createElement("li");
+    li.innerHTML = '<span class="marke ' + (s.richtigBeantwortet ? "ok" : "nein")
+      + '">' + (s.richtigBeantwortet ? "richtig" : "falsch") + "</span><span>"
+      + schweissName(s.art) + "</span>";
+    ul.appendChild(li);
+  });
+  el("rueckblick").textContent = "";
+  el("rueckblick").appendChild(ul);
+  document.dispatchEvent(new CustomEvent("tbk-durchgang-ende",
+    {detail:{richtig: treffer, gesamt: runde.length}}));
+
+  el("ende").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+function tabelle(){
+  var ziel = el("tabelle");
+  ziel.textContent = "";
+  SYMBOLE.forEach(function(s){
+    var tr = document.createElement("tr");
+    var td1 = document.createElement("td");
+    var svg = sv("svg", {viewBox:"0 0 90 46", role:"img",
+      "aria-label":"Grundsymbol der " + schweissName(s.art)}, td1);
+    var g = sv("g", {}, svg);
+    sv("line", {x1:10, y1:32, x2:80, y2:32, stroke:"currentColor",
+      "stroke-width":1}, g);
+    if(SN_KOMBI[s.art]){
+      SN_SYMBOLE[SN_KOMBI[s.art].teile[0]].zeichne(g, 45, 32, 14, -1);
+      SN_SYMBOLE[SN_KOMBI[s.art].teile[1]].zeichne(g, 45, 32, 12, 1);
+    }else{
+      SN_SYMBOLE[s.art].zeichne(g, 45, 32, 16, -1);
+    }
+    tr.appendChild(td1);
+    var td2 = document.createElement("td");
+    td2.textContent = schweissName(s.art);
+    tr.appendChild(td2);
+    var td3 = document.createElement("td");
+    td3.innerHTML = s.satz;
+    tr.appendChild(td3);
+    ziel.appendChild(tr);
+  });
+}
+
+el("btnWeiter").addEventListener("click", weiter);
+el("btnNeu").addEventListener("click", neuerDurchgang);
+el("stufe").addEventListener("change", neuerDurchgang);
+el("umfang").addEventListener("change", neuerDurchgang);
+
+tabelle();
+neuerDurchgang();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/wettkampf.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

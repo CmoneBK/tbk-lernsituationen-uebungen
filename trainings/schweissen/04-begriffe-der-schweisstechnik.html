@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Begriffe der Schweißtechnik</title>
+<meta name="description" content="Wurzel, Decklage, Wärmeeinflusszone, Bewertungsgruppe: die Wörter sicher haben, mit denen in der Werkstatt über Nähte gesprochen wird.">
+<meta name="dauer" content="10 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .frage{font-size:20px; line-height:1.4; font-weight:700; margin:0 0 6px;
+    min-height:1.4em}
+  .frageart{font-size:13px; color:var(--muted); margin:0 0 14px}
+  .wahl{display:grid; gap:10px}
+  .wahl button{
+    font:600 15px/1.35 inherit; cursor:pointer; padding:13px 15px; text-align:left;
+    border-radius:10px; border:1px solid var(--border-stark);
+    background:var(--bg); color:var(--fg);
+  }
+  .wahl button:hover:not(:disabled){border-color:var(--accent)}
+  .wahl button:disabled{cursor:default; opacity:.6}
+  .wahl button.war{opacity:1}
+  .wahl button.war.ok{border-color:var(--ok); background:rgba(22,163,74,.14)}
+  .wahl button.war.nein{border-color:var(--bad); background:rgba(220,38,38,.12)}
+  .uhr{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:13px; color:var(--muted); margin:0 0 10px;
+    font-variant-numeric:tabular-nums}
+  .fortschritt{height:8px; border-radius:999px; background:var(--border);
+    overflow:hidden; margin:0 0 16px}
+  .fortschritt i{display:block; height:100%; background:var(--accent);
+    transition:width .2s ease}
+  .bilanz{font-size:19px; font-weight:700; margin:0 0 8px}
+  .rueckblick{list-style:none; margin:12px 0 0; padding:0}
+  .rueckblick li{display:flex; gap:10px; align-items:baseline; padding:5px 0;
+    border-top:1px solid var(--border); font-size:14px}
+  .rueckblick .marke{font-weight:700; flex:0 0 auto}
+  .rueckblick .marke.ok{color:var(--ok)}
+  .rueckblick .marke.nein{color:var(--bad)}
+  .einstellung{display:flex; flex-wrap:wrap; gap:14px; align-items:flex-end;
+    margin:0 0 4px}
+  .einstellung > div{flex:1 1 190px}
+  .einstellung label{display:block; font-size:13px; font-weight:700; margin:0 0 5px}
+  .einstellung select{width:100%; font:inherit; font-size:14px; padding:8px 9px;
+    border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark)}
+  .einstellung select:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+  .stufentext{font-size:13px; color:var(--muted); margin:8px 0 0}
+  table.begriffe td:first-child{font-weight:600; white-space:nowrap}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Schweißen</p>
+    <h1>Begriffe der Schweißtechnik</h1>
+    <p class="lead">Wer in der Werkstatt über eine Naht spricht, braucht die
+      Wörter dafür. Zwanzig Stück, immer neu gemischt.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>So läuft es:</strong> Mal steht der Begriff da und ihr sucht die
+        Erklärung, mal ist es umgekehrt. Vier Antworten, eine stimmt.</p>
+      <p>Die Begriffe stammen aus der Lektion &bdquo;Schweißen&ldquo; und aus dem
+        Tabellenbuch &ndash; dieselben Wörter, die in einer Schweißanweisung
+        stehen.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Durchgang</h2>
+
+    <div class="box">
+      <div class="einstellung">
+        <div>
+          <label for="stufe">Schwierigkeit</label>
+          <select id="stufe">
+            <option value="einfach">Einfach &ndash; Begriff gesucht</option>
+            <option value="mittel" selected>Mittel &ndash; beide Richtungen</option>
+            <option value="schwer">Schwer &ndash; auch die Begriffe der Zeichnung</option>
+          </select>
+        </div>
+        <div>
+          <label for="umfang">Wie viele Begriffe?</label>
+          <select id="umfang"></select>
+        </div>
+      </div>
+      <p class="stufentext" id="stufentext"></p>
+    </div>
+
+    <div class="box">
+      <div class="uhr">
+        <span id="stand">Begriff 1 von 10</span>
+        <span id="zeit">0:00</span>
+      </div>
+      <div class="fortschritt"><i id="balken" style="width:0%"></i></div>
+
+      <p class="frage" id="frage">&ndash;</p>
+      <p class="frageart" id="frageart"></p>
+
+      <div class="wahl" id="wahl"></div>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+
+      <p style="margin-top:14px">
+        <button type="button" class="knopf" id="btnWeiter" hidden>Weiter</button>
+        <button type="button" class="knopf leise" id="btnNeu">Von vorn</button>
+      </p>
+    </div>
+
+    <div id="ende" hidden>
+      <h3>Ergebnis</h3>
+      <div class="box">
+        <p class="bilanz" id="bilanz">&ndash;</p>
+        <p id="urteil"></p>
+        <div id="rueckblick"></div>
+      </div>
+    </div>
+
+    <h2><span class="nr">2</span>Alle Begriffe auf einen Blick</h2>
+
+    <div class="tabellenrahmen">
+      <table class="begriffe">
+        <thead><tr><th>Begriff</th><th>Was gemeint ist</th></tr></thead>
+        <tbody id="tabelle"></tbody>
+      </table>
+    </div>
+
+    <h2><span class="nr">3</span>Vier, die oft verwechselt werden</h2>
+
+    <details>
+      <summary>1. Grundwerkstoff, Zusatzwerkstoff, Schweißgut</summary>
+      <p>Der <strong>Grundwerkstoff</strong> ist das Bauteil. Der
+        <strong>Zusatzwerkstoff</strong> ist der Draht oder die Elektrode, die
+        abschmilzt. Das <strong>Schweißgut</strong> ist, was danach in der Fuge
+        steht &ndash; eine Mischung aus beidem.</p>
+      <p>Deshalb ist die Frage nach dem richtigen Zusatz keine Nebensache: Er
+        bestimmt mit, welche Festigkeit das Schweißgut am Ende hat.</p>
+    </details>
+
+    <details>
+      <summary>2. Wurzel und Decklage</summary>
+      <p>Die <strong>Wurzel</strong> ist die Stelle ganz unten in der Naht, dort,
+        wo die beiden Bleche zuerst zusammenkommen. Sie wird zuerst geschweißt
+        und ist die kritischste Stelle: Ein Fehler dort trägt nicht.</p>
+      <p>Die <strong>Decklage</strong> ist die letzte Lage obenauf &ndash; die, die
+        man sieht. Sie entscheidet über das Aussehen, aber selten über die
+        Festigkeit.</p>
+    </details>
+
+    <details>
+      <summary>3. Wärmeeinflusszone und Schweißgut</summary>
+      <p>Das <strong>Schweißgut</strong> war flüssig. Die
+        <strong>Wärmeeinflusszone</strong> daneben war es nicht &ndash; sie wurde nur
+        heiß. Genau dort liegt aber das Problem: Sie hat sich im Gefüge verändert,
+        ohne umgeschmolzen zu sein, und ist oft die härteste und sprödeste
+        Stelle der ganzen Verbindung.</p>
+      <p>Wenn eine Schweißverbindung reißt, reißt sie selten in der Naht. Meist
+        reißt sie daneben.</p>
+    </details>
+
+    <details>
+      <summary>4. Heftnaht und Wurzelnaht</summary>
+      <p>Die <strong>Heftnaht</strong> hält die Teile nur in Position, bis
+        richtig geschweißt wird. Sie ist kurz, und sie wird beim Schweißen der
+        eigentlichen Naht wieder aufgeschmolzen &ndash; oder vorher entfernt.</p>
+      <p>Die <strong>Wurzelnaht</strong> ist dagegen die erste echte Lage. Sie
+        bleibt im Bauteil und trägt.</p>
+    </details>
+
+    <p class="fussnote"><strong>Woher die Angaben stammen:</strong> Fachbegriffe wie
+      in der Lektion &bdquo;Schweißen&ldquo;; Bewertungsgruppen, Schweißpositionen und
+      Symbole nach ISO 5817, DIN EN ISO 6947 und DIN EN ISO 2553 &ndash; Tabellenbuch
+      Metall.</p>
+
+    <p><a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-schweissen.html">Lektion Schweißen öffnen</a></p>
+
+  </main>
+
+  <footer class="wrap">
+    <p>&copy; 2026 t-bk.de &middot; <a href="https://t-bk.de/impressum/">Impressum</a>
+      &middot; <a href="https://t-bk.de/datenschutz/">Datenschutz</a></p>
+  </footer>
+
+<script>
+"use strict";
+
+/* stufe 1: die Grundbegriffe, stufe 2: Verfahren und Werkstoff,
+   stufe 3: was in der Zeichnung steht. */
+var BEGRIFFE = [
+  {b:"Grundwerkstoff",       e:"der Werkstoff der Bauteile, die verbunden werden", s:1},
+  {b:"Zusatzwerkstoff",      e:"der Draht oder die Elektrode, die abschmilzt", s:1},
+  {b:"Schweißgut",           e:"das erstarrte Metall in der Fuge – aus Grund- und Zusatzwerkstoff", s:1},
+  {b:"Wurzel",               e:"die Stelle ganz unten in der Naht, zuerst geschweißt", s:1},
+  {b:"Decklage",             e:"die letzte Lage obenauf, die sichtbare", s:1},
+  {b:"Wärmeeinflusszone",    e:"der Bereich neben der Naht, der heiß wurde, ohne zu schmelzen", s:1},
+  {b:"Heftnaht",             e:"eine kurze Naht, die die Teile nur bis zum Schweißen in Position hält", s:1},
+  {b:"Lichtbogen",           e:"der Stromübergang durch die Luft, der die Wärme liefert", s:1},
+  {b:"Schutzgas",            e:"das Gaspolster, das die Schmelze von der Luft trennt", s:2},
+  {b:"Schlacke",             e:"die Kruste auf der Naht, die nach dem Schweißen entfernt wird", s:2},
+  {b:"Nahtvorbereitung",     e:"das Anschrägen und Richten der Kanten vor dem Schweißen", s:2},
+  {b:"Steg",                 e:"der Rest an Blech, der an der Wurzel stehen bleibt", s:2},
+  {b:"Spaltbreite",          e:"der Abstand zwischen den Blechkanten vor dem Schweißen", s:2},
+  {b:"Öffnungswinkel",       e:"der Winkel zwischen den angeschrägten Kanten der Fuge", s:2},
+  {b:"Vorwärmen",            e:"das Anwärmen des Bauteils vor dem Schweißen, gegen zu schnelles Abkühlen", s:2},
+  {b:"Aufhärtung",           e:"die Härte, die beim schnellen Abkühlen entsteht – und die Sprödigkeit dazu", s:2},
+  {b:"Verzug",               e:"der Formfehler, der bleibt, weil das Schweißgut beim Abkühlen schrumpft", s:2},
+  {b:"Eigenspannung",        e:"die Spannung, die im Bauteil stehen bleibt, weil es nicht nachgeben konnte", s:2},
+  {b:"Pfeilseite",           e:"die Seite des Stoßes, auf die die Pfeillinie zeigt", s:3},
+  {b:"Gegenseite",           e:"die Seite des Stoßes, die der Pfeilseite gegenüberliegt", s:3},
+  {b:"Bezugslinie",          e:"die waagerechte Linie des Sinnbilds, an der das Symbol steht", s:3},
+  {b:"Nahtdicke",            e:"die Höhe des Dreiecks im Nahtquerschnitt, vor dem Symbol angegeben", s:3},
+  {b:"Gegenlage",            e:"eine zweite Lage von der anderen Seite, nachdem die Wurzel ausgearbeitet wurde", s:3},
+  {b:"Wurzelüberhöhung",     e:"das erlaubte Überstehen der Naht an der Wurzel", s:3},
+  {b:"Baustellennaht",       e:"eine Naht, die erst am Aufstellort geschweißt wird", s:3},
+  {b:"Bewertungsgruppe",     e:"die Stufe, die sagt, wie groß ein Fehler in der Naht sein darf", s:3},
+  {b:"Schweißposition",      e:"die Lage der Naht beim Schweißen, als Kurzzeichen angegeben", s:3},
+  {b:"Ordnungsnummer",       e:"die Kennzahl, mit der ein Schweißverfahren bezeichnet wird", s:3}
+];
+
+var STUFEN = {
+  einfach: {max:1, text:"Die Grundbegriffe: Werkstoff, Naht, Zonen. Gefragt ist "
+    + "immer der Begriff."},
+  mittel:  {max:2, text:"Dazu Verfahren, Nahtvorbereitung und was die Wärme "
+    + "anrichtet. Beide Richtungen."},
+  schwer:  {max:3, text:"Dazu alles, was in der Zeichnung steht: Pfeilseite, "
+    + "Bezugslinie, Bewertungsgruppe."}
+};
+
+function el(id){ return document.getElementById(id); }
+
+var runde = [], nr = 0, treffer = 0, offen = true, start = 0, uhr = null;
+
+function vorrat(){
+  var max = STUFEN[el("stufe").value].max;
+  return BEGRIFFE.filter(function(b){ return b.s <= max; });
+}
+
+function mischen(liste){
+  var a = liste.slice();
+  for(var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+function umfangFuellen(){
+  var feld = el("umfang"), da = vorrat().length, vorher = Number(feld.value) || 0;
+  feld.textContent = "";
+  for(var n = 5; n <= da; n++){
+    var o = document.createElement("option");
+    o.value = String(n);
+    o.textContent = n + (n === da ? " (alle)" : "");
+    feld.appendChild(o);
+  }
+  feld.value = String(Math.min(Math.max(vorher || 10, 5), da));
+}
+
+function zeitText(ms){
+  var s = Math.floor(ms / 1000);
+  return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2);
+}
+
+function uhrLaufen(){
+  if(uhr) clearInterval(uhr);
+  start = Date.now();
+  uhr = setInterval(function(){
+    el("zeit").textContent = zeitText(Date.now() - start);
+  }, 500);
+}
+
+window.TBK_WETTKAMPF = { neu: function(){ neuerDurchgang(); }, ergebnisAn: "ende" };
+
+function neuerDurchgang(){
+  umfangFuellen();
+  el("stufentext").textContent = STUFEN[el("stufe").value].text;
+  var stufe = el("stufe").value;
+  runde = mischen(vorrat()).slice(0, Number(el("umfang").value)).map(function(b){
+    var o = {b:b.b, e:b.e, s:b.s};
+    /* Bei "einfach" wird immer der Begriff gesucht; sonst gemischt. */
+    o.richtung = stufe === "einfach" ? "begriff"
+      : (Math.random() < 0.5 ? "begriff" : "erklaerung");
+    return o;
+  });
+  nr = 0;
+  treffer = 0;
+  el("ende").hidden = true;
+  el("rueckblick").textContent = "";
+  uhrLaufen();
+  zeigen();
+}
+
+function zeigen(){
+  var a = runde[nr];
+  offen = true;
+
+  el("stand").textContent = "Begriff " + (nr + 1) + " von " + runde.length;
+  el("balken").style.width = (100 * nr / runde.length) + "%";
+
+  var andere = mischen(vorrat().filter(function(x){ return x.b !== a.b; }))
+    .slice(0, 3);
+  a.wahl = mischen([{b:a.b, e:a.e}].concat(andere));
+
+  if(a.richtung === "begriff"){
+    el("frage").textContent = a.e;
+    el("frageart").textContent = "Welcher Begriff ist gemeint?";
+  }else{
+    el("frage").textContent = a.b;
+    el("frageart").textContent = "Was ist damit gemeint?";
+  }
+
+  var w = el("wahl");
+  w.textContent = "";
+  a.wahl.forEach(function(x){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.textContent = a.richtung === "begriff" ? x.b : x.e;
+    b.addEventListener("click", function(){ antwort(x.b, b); });
+    w.appendChild(b);
+  });
+
+  el("rueck").hidden = true;
+  el("btnWeiter").hidden = true;
+}
+
+function antwort(gewaehlt, knopf){
+  if(!offen) return;
+  offen = false;
+
+  var a = runde[nr];
+  var ok = gewaehlt === a.b;
+  if(ok) treffer++;
+  a.richtigBeantwortet = ok;
+
+  var knoepfe = el("wahl").querySelectorAll("button");
+  for(var i = 0; i < knoepfe.length; i++){
+    knoepfe[i].disabled = true;
+    if(a.wahl[i].b === a.b) knoepfe[i].className = "war ok";
+  }
+  if(!ok) knopf.className = "war nein";
+
+  var r = el("rueck");
+  r.hidden = false;
+  r.className = "rueckmeldung " + (ok ? "ja" : "nein");
+  r.innerHTML = "<strong>" + a.b + ":</strong> " + a.e + ".";
+
+  el("btnWeiter").hidden = false;
+  el("btnWeiter").focus();
+}
+
+function weiter(){
+  nr++;
+  if(nr < runde.length){ zeigen(); return; }
+
+  if(uhr) clearInterval(uhr);
+  el("balken").style.width = "100%";
+  el("stand").textContent = "fertig";
+  el("ende").hidden = false;
+
+  el("bilanz").textContent = treffer + " von " + runde.length + " richtig, in "
+    + zeitText(Date.now() - start) + " min.";
+
+  var anteil = treffer / runde.length;
+  el("urteil").textContent = anteil === 1
+    ? "Vollständig. Probiert die nächsthöhere Stufe."
+    : (anteil >= 0.8
+       ? "Sitzt weitgehend. Seht euch unten an, welche Wörter danebengingen."
+       : "Geht die Tabelle einmal durch – zwanzig Wörter sind schnell gelesen "
+         + "und halten den Rest des Halbjahres.");
+
+  var ul = document.createElement("ul");
+  ul.className = "rueckblick";
+  runde.forEach(function(a){
+    var li = document.createElement("li");
+    li.innerHTML = '<span class="marke ' + (a.richtigBeantwortet ? "ok" : "nein")
+      + '">' + (a.richtigBeantwortet ? "richtig" : "falsch") + "</span><span>"
+      + a.b + "</span>";
+    ul.appendChild(li);
+  });
+  el("rueckblick").textContent = "";
+  el("rueckblick").appendChild(ul);
+  document.dispatchEvent(new CustomEvent("tbk-durchgang-ende",
+    {detail:{richtig: treffer, gesamt: runde.length}}));
+
+  el("ende").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+function tabelle(){
+  var ziel = el("tabelle");
+  ziel.textContent = "";
+  BEGRIFFE.forEach(function(b){
+    var tr = document.createElement("tr");
+    tr.innerHTML = "<td>" + b.b + "</td><td>" + b.e + "</td>";
+    ziel.appendChild(tr);
+  });
+}
+
+el("btnWeiter").addEventListener("click", weiter);
+el("btnNeu").addEventListener("click", neuerDurchgang);
+el("stufe").addEventListener("change", neuerDurchgang);
+el("umfang").addEventListener("change", neuerDurchgang);
+
+tabelle();
+neuerDurchgang();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/wettkampf.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

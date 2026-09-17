@@ -346,7 +346,8 @@ function bild(zielId, breite, hoehe, label, unterschrift){
   var svg = bild("bildAZ", 300, 230,
     "Nahtquerschnitt einer Kehlnaht mit eingelegtem gleichschenkligem Dreieck; "
     + "a ist die Höhe, z die Schenkellänge",
-    "Dasselbe Dreieck, zwei Maße: a misst die Höhe, z den Schenkel.");
+    "Dasselbe Dreieck, zwei Maße: a misst die Höhe, z den Schenkel. Die Naht "
+    + "ist nur umrissen, damit die Maße lesbar bleiben.");
   var g = sv("g", {}, svg);
   var x = 40, y = 170, t = 20, b = 220, m = x + 95;
   /* Grundplatte und Steg */
@@ -354,18 +355,23 @@ function bild(zielId, breite, hoehe, label, unterschrift){
     "stroke-width":2}, g);
   sv("rect", {x:m, y:y - 110, width:t, height:110, fill:"none",
     stroke:"currentColor", "stroke-width":2}, g);
-  /* die Naht */
+  /* Die Naht - hier nur umrissen, nicht ausgefuellt. Eine schwarze Flaeche
+     saehe echter aus, aber die Masslinien fuer a und z laegen dann als
+     dunkle Striche darauf und waeren nicht zu lesen. */
   var s = 62;
   sv("polygon", {points: m + "," + y + " " + (m - s) + "," + y + " "
-    + m + "," + (y - s), fill:"currentColor", opacity:"0.9"}, g);
-  /* z: der Schenkel, senkrecht am Steg */
-  sv("line", {x1:m - 10, y1:y, x2:m - 10, y2:y - s, stroke:"currentColor",
+    + m + "," + (y - s), fill:"none", stroke:"currentColor",
+    "stroke-width":2}, g);
+  /* z: die Schenkellaenge, gemessen am waagerechten Schenkel unter der
+     Grundplatte. Innen im Dreieck laege die Masszahl auf der Hypotenuse. */
+  var yz = y + t + 26;
+  sv("line", {x1:m - s, y1:yz, x2:m, y2:yz, stroke:"currentColor",
     "stroke-width":1}, g);
-  [[m - 10, y], [m - 10, y - s]].forEach(function(p){
-    sv("line", {x1:p[0] - 5, y1:p[1], x2:p[0] + 5, y2:p[1],
-      stroke:"currentColor", "stroke-width":1}, g);
+  [m - s, m].forEach(function(xx){
+    sv("line", {x1:xx, y1:y + t + 3, x2:xx, y2:yz + 5, stroke:"currentColor",
+      "stroke-width":1}, g);
   });
-  var tz = sv("text", {x:m - 16, y:y - s / 2, "text-anchor":"end",
+  var tz = sv("text", {x:m - s / 2, y:yz - 6, "text-anchor":"middle",
     "font-size":15, fill:"currentColor", "font-style":"italic"}, g);
   tz.textContent = "z";
   /* a: die Hoehe, senkrecht auf der Hypotenuse. Die Linie laeuft ueber die

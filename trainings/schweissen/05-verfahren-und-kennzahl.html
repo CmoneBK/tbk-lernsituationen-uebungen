@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verfahren und Kennzahl</title>
+<meta name="description" content="111, 135, 141 und die übrigen: die Ordnungsnummern nach DIN EN ISO 4063 in beide Richtungen zuordnen – mit Uhr und drei Schwierigkeitsgraden.">
+<meta name="dauer" content="10 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .frage{font-size:20px; line-height:1.4; font-weight:700; margin:0 0 6px;
+    min-height:1.4em}
+  .frageart{font-size:13px; color:var(--muted); margin:0 0 14px}
+  .kennzahl{font-size:34px; font-weight:800; letter-spacing:.04em;
+    font-variant-numeric:tabular-nums}
+  .wahl{display:grid; gap:10px}
+  .wahl button{
+    font:600 15px/1.35 inherit; cursor:pointer; padding:13px 15px; text-align:left;
+    border-radius:10px; border:1px solid var(--border-stark);
+    background:var(--bg); color:var(--fg);
+  }
+  .wahl button:hover:not(:disabled){border-color:var(--accent)}
+  .wahl button:disabled{cursor:default; opacity:.6}
+  .wahl button.war{opacity:1}
+  .wahl button.war.ok{border-color:var(--ok); background:rgba(22,163,74,.14)}
+  .wahl button.war.nein{border-color:var(--bad); background:rgba(220,38,38,.12)}
+  .uhr{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:13px; color:var(--muted); margin:0 0 10px;
+    font-variant-numeric:tabular-nums}
+  .fortschritt{height:8px; border-radius:999px; background:var(--border);
+    overflow:hidden; margin:0 0 16px}
+  .fortschritt i{display:block; height:100%; background:var(--accent);
+    transition:width .2s ease}
+  .bilanz{font-size:19px; font-weight:700; margin:0 0 8px}
+  .rueckblick{list-style:none; margin:12px 0 0; padding:0}
+  .rueckblick li{display:flex; gap:10px; align-items:baseline; padding:5px 0;
+    border-top:1px solid var(--border); font-size:14px}
+  .rueckblick .marke{font-weight:700; flex:0 0 auto}
+  .rueckblick .marke.ok{color:var(--ok)}
+  .rueckblick .marke.nein{color:var(--bad)}
+  .einstellung{display:flex; flex-wrap:wrap; gap:14px; align-items:flex-end;
+    margin:0 0 4px}
+  .einstellung > div{flex:1 1 190px}
+  .einstellung label{display:block; font-size:13px; font-weight:700; margin:0 0 5px}
+  .einstellung select{width:100%; font:inherit; font-size:14px; padding:8px 9px;
+    border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark)}
+  .einstellung select:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+  .stufentext{font-size:13px; color:var(--muted); margin:8px 0 0}
+  table.nummern td:first-child{font-weight:700; white-space:nowrap;
+    font-variant-numeric:tabular-nums}
+  table.nummern tr.gruppe td{background:var(--bg); font-weight:700}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Schweißen</p>
+    <h1>Verfahren und Kennzahl</h1>
+    <p class="lead">In der Gabel steht keine Abkürzung, sondern eine Zahl. Wer
+      sie nicht kennt, kann die Schweißanweisung nicht lesen.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>So läuft es:</strong> Mal steht die Zahl da und ihr sucht das
+        Verfahren, mal umgekehrt. Vier Antworten, eine stimmt.</p>
+      <p>Die Nummern sind nicht willkürlich: Die <strong>erste Ziffer</strong>
+        nennt die Gruppe &ndash; 1 Lichtbogenschweißen, 2 Widerstandsschweißen,
+        3 Gasschmelzschweißen, 4 Pressschweißen, 5 Strahlschweißen,
+        8 Schneiden, 9 Löten. Wer das weiß, hat schon die Hälfte.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Durchgang</h2>
+
+    <div class="box">
+      <div class="einstellung">
+        <div>
+          <label for="stufe">Schwierigkeit</label>
+          <select id="stufe">
+            <option value="einfach">Einfach &ndash; die fünf häufigsten</option>
+            <option value="mittel" selected>Mittel &ndash; alle Schmelzschweißverfahren</option>
+            <option value="schwer">Schwer &ndash; dazu Pressschweißen, Schneiden und Löten</option>
+          </select>
+        </div>
+        <div>
+          <label for="umfang">Wie viele Aufgaben?</label>
+          <select id="umfang"></select>
+        </div>
+      </div>
+      <p class="stufentext" id="stufentext"></p>
+    </div>
+
+    <div class="box">
+      <div class="uhr">
+        <span id="stand">Aufgabe 1 von 10</span>
+        <span id="zeit">0:00</span>
+      </div>
+      <div class="fortschritt"><i id="balken" style="width:0%"></i></div>
+
+      <p class="frage" id="frage">&ndash;</p>
+      <p class="frageart" id="frageart"></p>
+
+      <div class="wahl" id="wahl"></div>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+
+      <p style="margin-top:14px">
+        <button type="button" class="knopf" id="btnWeiter" hidden>Weiter</button>
+        <button type="button" class="knopf leise" id="btnNeu">Von vorn</button>
+      </p>
+    </div>
+
+    <div id="ende" hidden>
+      <h3>Ergebnis</h3>
+      <div class="box">
+        <p class="bilanz" id="bilanz">&ndash;</p>
+        <p id="urteil"></p>
+        <div id="rueckblick"></div>
+      </div>
+    </div>
+
+    <h2><span class="nr">2</span>Die Nummern auf einen Blick</h2>
+    <p>Ein Auszug, wie er im Tabellenbuch steht. Die Gruppen sind grau
+      hinterlegt.</p>
+
+    <div class="tabellenrahmen">
+      <table class="nummern">
+        <thead><tr><th>Nummer</th><th>Verfahren</th></tr></thead>
+        <tbody id="tabelle"></tbody>
+      </table>
+    </div>
+
+    <h2><span class="nr">3</span>Woran man sie erkennt</h2>
+
+    <details>
+      <summary>1. Die Systematik: erste Ziffer, zweite Ziffer, dritte Ziffer</summary>
+      <p>Die <strong>erste</strong> Ziffer ist die Gruppe. Die
+        <strong>zweite</strong> verfeinert sie: 13 ist Metall-Schutzgasschweißen
+        innerhalb des Lichtbogenschweißens, 14 Wolfram-Schutzgasschweißen. Die
+        <strong>dritte</strong> nennt die Bauart: 131 mit inertem Gas und
+        Massivdraht (MIG), 135 mit aktivem Gas und Massivdraht (MAG), 136 mit
+        Fülldraht.</p>
+      <p>Deshalb lohnt es sich, nicht die Zahlen auswendig zu lernen, sondern
+        den Aufbau. 132 muss dann nicht geraten werden: 13 ist
+        Metall-Schutzgas, die 2 ist der Fülldraht &ndash; also MIG mit
+        Fülldrahtelektrode.</p>
+    </details>
+
+    <details>
+      <summary>2. Die drei, die man in der Werkstatt am häufigsten sieht</summary>
+      <p><strong>111</strong> Lichtbogenhandschweißen &ndash; die Stabelektrode.
+        <strong>135</strong> MAG &ndash; der Standard für Stahl in der Werkstatt.
+        <strong>141</strong> WIG &ndash; für dünnes Blech, nichtrostenden Stahl und
+        überall dort, wo die Naht gut aussehen muss.</p>
+      <p>Wer diese drei sicher hat, liest die meisten Schweißanweisungen ohne
+        Nachschlagen.</p>
+    </details>
+
+    <details>
+      <summary>3. Warum steht die Zahl überhaupt in der Zeichnung?</summary>
+      <p>Weil das Verfahren die Eigenschaften der Naht mitbestimmt: Einbrand,
+        Wärmeeinbringung, Spritzer, Nachbearbeitung. Wer eine mit 141
+        vorgeschriebene Wurzel mit 111 schweißt, bekommt eine andere Naht &ndash;
+        und damit unter Umständen eine andere Festigkeit.</p>
+      <p>In Dokumenten wird dieselbe Angabe ausgeschrieben, etwa
+        <strong>ISO 4063-111</strong>. Das ist dann keine Empfehlung, sondern
+        eine Vorschrift.</p>
+    </details>
+
+    <p class="fussnote"><strong>Woher die Angaben stammen:</strong> Schweißen,
+      Schneiden, Löten &ndash; Ordnungsnummern nach DIN EN ISO 4063 (2023-07),
+      Auszug im Tabellenbuch Metall.</p>
+
+    <p><a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-schweissen.html">Lektion Schweißen öffnen</a></p>
+
+  </main>
+
+  <footer class="wrap">
+    <p>&copy; 2026 t-bk.de &middot; <a href="https://t-bk.de/impressum/">Impressum</a>
+      &middot; <a href="https://t-bk.de/datenschutz/">Datenschutz</a></p>
+  </footer>
+
+<script>
+"use strict";
+
+/* Auszug aus DIN EN ISO 4063, wie er im Tabellenbuch steht.
+   stufe 1: die haeufigsten, 2: alle Schmelzschweissverfahren,
+   3: dazu Pressschweissen, Schneiden und Loeten. */
+var GRUPPEN = {
+  "1":"Lichtbogenschweißen", "2":"Widerstandsschweißen",
+  "3":"Gasschmelzschweißen", "4":"Pressschweißen", "5":"Strahlschweißen",
+  "7":"Andere Schweißverfahren", "8":"Schneiden", "9":"Hartlöten, Weichlöten"
+};
+
+var NUMMERN = [
+  {n:"111", v:"Lichtbogenhandschweißen", s:1},
+  {n:"135", v:"Metall-Aktivgasschweißen mit Massivdrahtelektrode (MAG)", s:1},
+  {n:"131", v:"Metall-Inertgasschweißen mit Massivdrahtelektrode (MIG)", s:1},
+  {n:"141", v:"Wolfram-Inertgasschweißen mit Massivdrahtzusatz (WIG)", s:1},
+  {n:"311", v:"Gasschweißen mit Sauerstoff-Acetylen-Flamme", s:1},
+  {n:"12",  v:"Unterpulverschweißen", s:2},
+  {n:"13",  v:"Metall-Schutzgasschweißen", s:2},
+  {n:"132", v:"Metall-Inertgasschweißen mit schweißpulvergefüllter Drahtelektrode", s:2},
+  {n:"136", v:"MAG-Schweißen mit schweißpulvergefüllter Drahtelektrode", s:2},
+  {n:"14",  v:"Wolfram-Schutzgasschweißen", s:2},
+  {n:"15",  v:"Plasmaschweißen", s:2},
+  {n:"151", v:"Plasma-Inertgasschweißen", s:2},
+  {n:"312", v:"Gasschweißen mit Sauerstoff-Propan-Flamme", s:2},
+  {n:"51",  v:"Elektronenstrahlschweißen", s:2},
+  {n:"52",  v:"Laserstrahlschweißen", s:2},
+  {n:"21",  v:"Widerstands-Punktschweißen", s:3},
+  {n:"22",  v:"Rollennahtschweißen", s:3},
+  {n:"23",  v:"Buckelschweißen", s:3},
+  {n:"41",  v:"Ultraschallschweißen", s:3},
+  {n:"42",  v:"Reibschweißen", s:3},
+  {n:"45",  v:"Diffusionsschweißen", s:3},
+  {n:"78",  v:"Bolzenschweißen", s:3},
+  {n:"81",  v:"Autogenes Brennschneiden", s:3},
+  {n:"83",  v:"Plasmaschneiden", s:3},
+  {n:"84",  v:"Laserstrahlschneiden", s:3},
+  {n:"912", v:"Flammhartlöten", s:3},
+  {n:"942", v:"Flammweichlöten", s:3},
+  {n:"943", v:"Kolbenweichlöten", s:3}
+];
+
+var STUFEN = {
+  einfach: {max:1, text:"Die fünf, die einem ständig begegnen: 111, 131, 135, "
+    + "141 und 311."},
+  mittel:  {max:2, text:"Alle Schmelzschweißverfahren des Auszugs &ndash; auch die "
+    + "mit Fülldraht und die Strahlverfahren."},
+  schwer:  {max:3, text:"Dazu Pressschweißen, Schneiden und Löten. Jetzt hilft "
+    + "die erste Ziffer wirklich."}
+};
+
+function el(id){ return document.getElementById(id); }
+
+var runde = [], nr = 0, treffer = 0, offen = true, start = 0, uhr = null;
+
+function vorrat(){
+  var max = STUFEN[el("stufe").value].max;
+  return NUMMERN.filter(function(x){ return x.s <= max; });
+}
+
+function mischen(liste){
+  var a = liste.slice();
+  for(var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+function umfangFuellen(){
+  var feld = el("umfang"), da = vorrat().length, vorher = Number(feld.value) || 0;
+  feld.textContent = "";
+  for(var n = 5; n <= da; n++){
+    var o = document.createElement("option");
+    o.value = String(n);
+    o.textContent = n + (n === da ? " (alle)" : "");
+    feld.appendChild(o);
+  }
+  feld.value = String(Math.min(Math.max(vorher || 10, 5), da));
+}
+
+function zeitText(ms){
+  var s = Math.floor(ms / 1000);
+  return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2);
+}
+
+function uhrLaufen(){
+  if(uhr) clearInterval(uhr);
+  start = Date.now();
+  uhr = setInterval(function(){
+    el("zeit").textContent = zeitText(Date.now() - start);
+  }, 500);
+}
+
+window.TBK_WETTKAMPF = { neu: function(){ neuerDurchgang(); }, ergebnisAn: "ende" };
+
+function neuerDurchgang(){
+  umfangFuellen();
+  el("stufentext").innerHTML = STUFEN[el("stufe").value].text;
+  runde = mischen(vorrat()).slice(0, Number(el("umfang").value)).map(function(x){
+    return {n:x.n, v:x.v, richtung: Math.random() < 0.5 ? "verfahren" : "nummer"};
+  });
+  nr = 0;
+  treffer = 0;
+  el("ende").hidden = true;
+  el("rueckblick").textContent = "";
+  uhrLaufen();
+  zeigen();
+}
+
+function zeigen(){
+  var a = runde[nr];
+  offen = true;
+
+  el("stand").textContent = "Aufgabe " + (nr + 1) + " von " + runde.length;
+  el("balken").style.width = (100 * nr / runde.length) + "%";
+
+  var andere = mischen(vorrat().filter(function(x){ return x.n !== a.n; }))
+    .slice(0, 3);
+  a.wahl = mischen([{n:a.n, v:a.v}].concat(andere));
+
+  if(a.richtung === "verfahren"){
+    el("frage").innerHTML = '<span class="kennzahl">' + a.n + "</span>";
+    el("frageart").textContent = "Welches Verfahren hat diese Ordnungsnummer?";
+  }else{
+    el("frage").textContent = a.v;
+    el("frageart").textContent = "Welche Ordnungsnummer gehört dazu?";
+  }
+
+  var w = el("wahl");
+  w.textContent = "";
+  a.wahl.forEach(function(x){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.textContent = a.richtung === "verfahren" ? x.v : x.n;
+    if(a.richtung === "nummer") b.style.fontVariantNumeric = "tabular-nums";
+    b.addEventListener("click", function(){ antwort(x.n, b); });
+    w.appendChild(b);
+  });
+
+  el("rueck").hidden = true;
+  el("btnWeiter").hidden = true;
+}
+
+function antwort(gewaehlt, knopf){
+  if(!offen) return;
+  offen = false;
+
+  var a = runde[nr];
+  var ok = gewaehlt === a.n;
+  if(ok) treffer++;
+  a.richtigBeantwortet = ok;
+
+  var knoepfe = el("wahl").querySelectorAll("button");
+  for(var i = 0; i < knoepfe.length; i++){
+    knoepfe[i].disabled = true;
+    if(a.wahl[i].n === a.n) knoepfe[i].className = "war ok";
+  }
+  if(!ok) knopf.className = "war nein";
+
+  var r = el("rueck");
+  r.hidden = false;
+  r.className = "rueckmeldung " + (ok ? "ja" : "nein");
+  r.innerHTML = "<strong>" + a.n + " &ndash; " + a.v + ".</strong> Erste Ziffer "
+    + a.n.charAt(0) + ": " + GRUPPEN[a.n.charAt(0)] + ".";
+
+  el("btnWeiter").hidden = false;
+  el("btnWeiter").focus();
+}
+
+function weiter(){
+  nr++;
+  if(nr < runde.length){ zeigen(); return; }
+
+  if(uhr) clearInterval(uhr);
+  el("balken").style.width = "100%";
+  el("stand").textContent = "fertig";
+  el("ende").hidden = false;
+
+  el("bilanz").textContent = treffer + " von " + runde.length + " richtig, in "
+    + zeitText(Date.now() - start) + " min.";
+
+  var anteil = treffer / runde.length;
+  el("urteil").textContent = anteil === 1
+    ? "Vollständig. Probiert die nächsthöhere Stufe."
+    : (anteil >= 0.8
+       ? "Sitzt weitgehend. Wer noch danebengreift, verwechselt meist 131 und 135 – "
+         + "Inertgas und Aktivgas."
+       : "Lernt nicht die Zahlen, sondern den Aufbau: erste Ziffer die Gruppe, "
+         + "zweite die Art, dritte die Bauart.");
+
+  var ul = document.createElement("ul");
+  ul.className = "rueckblick";
+  runde.forEach(function(a){
+    var li = document.createElement("li");
+    li.innerHTML = '<span class="marke ' + (a.richtigBeantwortet ? "ok" : "nein")
+      + '">' + (a.richtigBeantwortet ? "richtig" : "falsch") + "</span><span>"
+      + a.n + " &ndash; " + a.v + "</span>";
+    ul.appendChild(li);
+  });
+  el("rueckblick").textContent = "";
+  el("rueckblick").appendChild(ul);
+  document.dispatchEvent(new CustomEvent("tbk-durchgang-ende",
+    {detail:{richtig: treffer, gesamt: runde.length}}));
+
+  el("ende").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+function tabelle(){
+  var ziel = el("tabelle");
+  ziel.textContent = "";
+  var zuletzt = "";
+  NUMMERN.slice().sort(function(a, b){
+    return a.n.charAt(0) === b.n.charAt(0)
+      ? (a.n.length - b.n.length || a.n.localeCompare(b.n))
+      : a.n.charAt(0).localeCompare(b.n.charAt(0));
+  }).forEach(function(x){
+    var g = x.n.charAt(0);
+    if(g !== zuletzt){
+      var kopf = document.createElement("tr");
+      kopf.className = "gruppe";
+      kopf.innerHTML = "<td>" + g + "</td><td>" + GRUPPEN[g] + "</td>";
+      ziel.appendChild(kopf);
+      zuletzt = g;
+    }
+    var tr = document.createElement("tr");
+    tr.innerHTML = "<td>" + x.n + "</td><td>" + x.v + "</td>";
+    ziel.appendChild(tr);
+  });
+}
+
+el("btnWeiter").addEventListener("click", weiter);
+el("btnNeu").addEventListener("click", neuerDurchgang);
+el("stufe").addEventListener("change", neuerDurchgang);
+el("umfang").addEventListener("change", neuerDurchgang);
+
+tabelle();
+neuerDurchgang();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/wettkampf.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>
