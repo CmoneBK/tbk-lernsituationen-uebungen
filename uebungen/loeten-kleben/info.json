@@ -1,0 +1,24 @@
+{
+  "titel": "Fertigungstechnik: Fügeverfahren - Löten und Kleben",
+  "platz": 3,
+  "lead": "Vier Übungen zu den beiden Verfahren, bei denen der Grundwerkstoff fest bleibt: entscheiden, welches Verfahren das Bauteil überhaupt zulässt, den Lötspalt aus der Tabelle holen, das Lot nach Werkstoff und Arbeitstemperatur auswählen und eine Klebung so gestalten, dass sie geschoben und nicht geschält wird.",
+  "untertitel": "Vier Übungen zum Löten und Kleben – Verfahren entscheiden, Lötspalt und Lot wählen, die Klebung richtig legen.",
+  "werkzeuge": [
+    {
+      "datei": "fertigungstechnik-fuegeverfahren-loeten-kleben.html",
+      "name": "Löten und Kleben",
+      "art": "lektion"
+    },
+    {
+      "datei": "fertigungstechnik-fuegeverfahren-ueberblick.html",
+      "name": "Überblick über die Verfahren",
+      "art": "lektion"
+    }
+  ],
+  "reihenfolge": [
+    "01-loeten-schweissen-oder-kleben.html",
+    "02-den-loetspalt-waehlen.html",
+    "03-welches-lot.html",
+    "04-die-klebung-gestalten.html"
+  ]
+}

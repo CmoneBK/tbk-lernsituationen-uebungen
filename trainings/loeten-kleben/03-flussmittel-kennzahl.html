@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flussmittel-Kennzahl</title>
+<meta name="description" content="Vier Ziffern nach DIN EN ISO 9454-1 lesen und bilden – und wissen, wann die Rückstände abgewaschen werden müssen.">
+<meta name="dauer" content="10 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .frage{font-size:19px; line-height:1.4; font-weight:700; margin:0 0 6px;
+    min-height:1.4em}
+  .frageart{font-size:13px; color:var(--muted); margin:0 0 14px}
+  .kennzahl{font-size:28px; font-weight:800; letter-spacing:.14em;
+    font-variant-numeric:tabular-nums}
+  .kennzahl b{color:var(--accent)}
+  .wahl{display:grid; gap:10px}
+  .wahl button{
+    font:600 15px/1.35 inherit; cursor:pointer; padding:13px 15px; text-align:left;
+    border-radius:10px; border:1px solid var(--border-stark);
+    background:var(--bg); color:var(--fg);
+  }
+  .wahl button:hover:not(:disabled){border-color:var(--accent)}
+  .wahl button:disabled{cursor:default; opacity:.6}
+  .wahl button.war{opacity:1}
+  .wahl button.war.ok{border-color:var(--ok); background:rgba(22,163,74,.14)}
+  .wahl button.war.nein{border-color:var(--bad); background:rgba(220,38,38,.12)}
+  .uhr{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:13px; color:var(--muted); margin:0 0 10px;
+    font-variant-numeric:tabular-nums}
+  .fortschritt{height:8px; border-radius:999px; background:var(--border);
+    overflow:hidden; margin:0 0 16px}
+  .fortschritt i{display:block; height:100%; background:var(--accent);
+    transition:width .2s ease}
+  .bilanz{font-size:19px; font-weight:700; margin:0 0 8px}
+  .rueckblick{list-style:none; margin:12px 0 0; padding:0}
+  .rueckblick li{display:flex; gap:10px; align-items:baseline; padding:5px 0;
+    border-top:1px solid var(--border); font-size:14px}
+  .rueckblick .marke{font-weight:700; flex:0 0 auto}
+  .rueckblick .marke.ok{color:var(--ok)}
+  .rueckblick .marke.nein{color:var(--bad)}
+  .einstellung{display:flex; flex-wrap:wrap; gap:14px; align-items:flex-end;
+    margin:0 0 4px}
+  .einstellung > div{flex:1 1 190px}
+  .einstellung label{display:block; font-size:13px; font-weight:700; margin:0 0 5px}
+  .einstellung select{width:100%; font:inherit; font-size:14px; padding:8px 9px;
+    border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark)}
+  .einstellung select:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+  .stufentext{font-size:13px; color:var(--muted); margin:8px 0 0}
+  .normen{color:var(--muted); font-size:12.5px; line-height:1.6; margin:10px 0 0}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Löten und Kleben</p>
+    <h1>Flussmittel-Kennzahl</h1>
+    <p class="lead">Vier Ziffern, vier Aussagen. Wer sie liest, weiß auch, ob die
+      Rückstände auf dem Bauteil bleiben dürfen.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>So läuft es:</strong> Mal steht die Kennzahl da und eine Ziffer ist
+        hervorgehoben &ndash; gefragt ist, was sie sagt. Mal ist es umgekehrt: Die
+        Beschreibung steht da, gesucht ist die Kennzahl.</p>
+      <p>Der Aufbau nach DIN EN ISO 9454-1:
+        <strong>Typ &ndash; Basis &ndash; Aktivator &ndash; Halogenidanteil.</strong>
+        Die ersten drei Ziffern zusammen sagen, wie sich die Rückstände verhalten.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Durchgang</h2>
+
+    <div class="box">
+      <div class="einstellung">
+        <div>
+          <label for="stufe">Schwierigkeit</label>
+          <select id="stufe">
+            <option value="einfach">Einfach &ndash; Ziffer lesen</option>
+            <option value="mittel" selected>Mittel &ndash; beide Richtungen</option>
+            <option value="schwer">Schwer &ndash; dazu die Rückstände</option>
+          </select>
+        </div>
+        <div>
+          <label for="umfang">Wie viele Fragen?</label>
+          <select id="umfang"></select>
+        </div>
+      </div>
+      <p class="stufentext" id="stufentext"></p>
+    </div>
+
+    <div class="box">
+      <div class="uhr">
+        <span id="stand">Frage 1 von 10</span>
+        <span id="zeit">0:00</span>
+      </div>
+      <div class="fortschritt"><i id="balken" style="width:0%"></i></div>
+
+      <p class="frage" id="frage">&ndash;</p>
+      <p class="frageart" id="frageart"></p>
+
+      <div class="wahl" id="wahl"></div>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+
+      <p style="margin-top:14px">
+        <button type="button" class="knopf" id="btnWeiter" hidden>Weiter</button>
+        <button type="button" class="knopf leise" id="btnNeu">Von vorn</button>
+      </p>
+    </div>
+
+    <div id="ende" hidden>
+      <h3>Ergebnis</h3>
+      <div class="box">
+        <p class="bilanz" id="bilanz">&ndash;</p>
+        <p id="urteil"></p>
+        <div id="rueckblick"></div>
+      </div>
+    </div>
+
+    <h2><span class="nr">2</span>Der Aufbau</h2>
+
+    <div class="tabellenrahmen">
+      <table>
+        <thead><tr><th>Stelle</th><th>bedeutet</th><th>Ziffern</th></tr></thead>
+        <tbody id="tabelle"></tbody>
+      </table>
+    </div>
+
+    <h3>Rückstände</h3>
+    <div class="tabellenrahmen">
+      <table>
+        <thead><tr><th>Kennzahl (Stelle 1 bis 3)</th><th>Rückstände</th></tr></thead>
+        <tbody id="tabRueck"></tbody>
+      </table>
+    </div>
+
+    <p class="normen">Flussmittel zum Weichlöten, Kennzeichnung vgl.
+      DIN EN ISO 9454-1. Beispiel aus dem Tabellenbuch: <em>Flussmittel
+      ISO 9454 &ndash; 1223</em> &ndash; Typ Harz (1), Basis ohne Kolophonium (2),
+      Halogenid aktiviert (2), Halogenidanteil 0,15 bis 2,0&nbsp;% (3).
+      Fürs Hartlöten gilt DIN EN 1045 mit den Gruppen FH10 bis FH40.</p>
+
+    <h3>Weiterarbeiten</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-loeten-kleben.html">Werkzeug „Löten und Kleben“ öffnen</a>
+    </p>
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot;
+    <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Der Aufbau des Kennzeichens nach DIN EN ISO 9454-1. Alle Angaben aus dem
+   Tabellenbuch. */
+var TYP = [["1", "Harz"], ["2", "organisch"], ["3", "anorganisch"]];
+var BASIS = {
+  "1": [["1", "Kolophonium"], ["2", "ohne Kolophonium"]],
+  "2": [["1", "wasserlöslich"], ["2", "nicht wasserlöslich"]],
+  "3": [["1", "Salze"], ["2", "Säuren"], ["3", "alkalisch"]]
+};
+var AKT = {
+  "harz":   [["1", "ohne Aktivator"], ["2", "mit Halogen aktiviert"],
+             ["3", "ohne Halogene aktiviert"]],
+  "salze":  [["1", "mit Ammoniumchlorid"], ["2", "ohne Ammoniumchlorid"]],
+  "saeure": [["1", "Phosphorsäure"], ["2", "andere Säuren"]],
+  "alk":    [["1", "Amine und/oder Ammoniak"]]
+};
+var HAL = [["1", "unter 0,01 %"], ["2", "unter 0,15 %"],
+           ["3", "0,15…2,0 %"], ["4", "über 2,0 %"]];
+var RUECKSTAND = {
+  "111":"nicht korrodierend", "123":"nicht korrodierend",
+  "122":"bedingt korrodierend", "212":"bedingt korrodierend",
+  "213":"bedingt korrodierend", "321":"bedingt korrodierend",
+  "322":"stark korrodierend"
+};
+/* 311 steht im Buch in beiden Zeilen - bedingt und stark korrodierend.
+   Danach wird deshalb nicht gefragt; in der Tabelle unten steht es mit
+   dem Hinweis, dass die Zuordnung dort nicht eindeutig ist. */
+var RUECKSTAND_UNEINDEUTIG = {"311":"bedingt und stark korrodierend"};
+
+var STELLEN = ["Typ", "Basis", "Aktivator", "Halogenidanteil"];
+
+var STUFEN = {
+  einfach: {richtungen:["lesen"], rueck:false,
+    text:"Die Kennzahl steht da, eine Ziffer ist hervorgehoben. Gefragt ist, "
+       + "was sie sagt."},
+  mittel:  {richtungen:["lesen", "bilden"], rueck:false,
+    text:"Dazu die Gegenrichtung: Die Beschreibung steht da, gesucht ist die "
+       + "Kennzahl."},
+  schwer:  {richtungen:["lesen", "bilden", "rueckstand"], rueck:true,
+    text:"Dazu die Frage nach den Rückständen – die entscheidet, ob nach dem "
+       + "Löten gewaschen werden muss."}
+};
+
+function el(id){ return document.getElementById(id); }
+
+var runde = [], nr = 0, treffer = 0, offen = true, start = 0, uhr = null;
+
+/* Welche Aktivatorliste zu Typ und Basis gehoert. */
+function aktArt(typ, basis){
+  if(typ !== "3") return "harz";
+  return basis === "1" ? "salze" : basis === "2" ? "saeure" : "alk";
+}
+
+/* Alle gueltigen Kennzahlen - und nur die. */
+function alleKennzahlen(){
+  var a = [];
+  TYP.forEach(function(t){
+    BASIS[t[0]].forEach(function(b){
+      AKT[aktArt(t[0], b[0])].forEach(function(k){
+        HAL.forEach(function(h){
+          a.push({typ:t[0], basis:b[0], akt:k[0], hal:h[0]});
+        });
+      });
+    });
+  });
+  return a;
+}
+
+/* Nur die Kennzahlen, zu denen die Tabelle einen Rueckstandshinweis nennt. */
+function mitRueckstand(){
+  return alleKennzahlen().filter(function(k){
+    return RUECKSTAND[k.typ + k.basis + k.akt];
+  });
+}
+
+function text(k, stelle){
+  if(stelle === 0) return klartext(TYP, k.typ);
+  if(stelle === 1) return klartext(BASIS[k.typ], k.basis);
+  if(stelle === 2) return klartext(AKT[aktArt(k.typ, k.basis)], k.akt);
+  return klartext(HAL, k.hal);
+}
+
+function klartext(liste, wert){
+  var t = liste.filter(function(e){ return e[0] === wert; })[0];
+  return t ? t[1] : "?";
+}
+
+function zahl(k){ return k.typ + k.basis + k.akt + k.hal; }
+
+function mischen(liste){
+  var a = liste.slice();
+  for(var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+function umfangFuellen(){
+  var feld = el("umfang"), vorher = Number(feld.value) || 0;
+  feld.textContent = "";
+  for(var n = 5; n <= 20; n++){
+    var o = document.createElement("option");
+    o.value = String(n);
+    o.textContent = String(n);
+    feld.appendChild(o);
+  }
+  feld.value = String(Math.min(Math.max(vorher || 10, 5), 20));
+}
+
+function zeitText(ms){
+  var s = Math.floor(ms / 1000);
+  return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2);
+}
+
+function uhrLaufen(){
+  if(uhr) clearInterval(uhr);
+  start = Date.now();
+  uhr = setInterval(function(){
+    el("zeit").textContent = zeitText(Date.now() - start);
+  }, 500);
+}
+
+window.TBK_WETTKAMPF = { neu: function(){ neuerDurchgang(); }, ergebnisAn: "ende" };
+
+function neuerDurchgang(){
+  umfangFuellen();
+  var stufe = STUFEN[el("stufe").value];
+  el("stufentext").textContent = stufe.text;
+
+  var n = Number(el("umfang").value);
+  runde = [];
+  for(var i = 0; i < n; i++){
+    var art = stufe.richtungen[Math.floor(Math.random() * stufe.richtungen.length)];
+    var vorrat = art === "rueckstand" ? mitRueckstand() : alleKennzahlen();
+    var k = vorrat[Math.floor(Math.random() * vorrat.length)];
+    runde.push({k:k, art:art, stelle:Math.floor(Math.random() * 4)});
+  }
+  nr = 0;
+  treffer = 0;
+  el("ende").hidden = true;
+  el("rueckblick").textContent = "";
+  uhrLaufen();
+  zeigen();
+}
+
+function zeigen(){
+  var a = runde[nr];
+  offen = true;
+
+  el("stand").textContent = "Frage " + (nr + 1) + " von " + runde.length;
+  el("balken").style.width = (100 * nr / runde.length) + "%";
+
+  var w = el("wahl");
+  w.textContent = "";
+  var z = zahl(a.k);
+
+  if(a.art === "lesen"){
+    el("frage").innerHTML = "<span class=\"kennzahl\">ISO 9454 &ndash; "
+      + z.split("").map(function(c, i){
+          return i === a.stelle ? "<b>" + c + "</b>" : c;
+        }).join("") + "</span>";
+    el("frageart").textContent = "Die " + (a.stelle + 1) + ". Ziffer ("
+      + STELLEN[a.stelle] + ") – was sagt sie?";
+    var liste = a.stelle === 0 ? TYP
+      : a.stelle === 1 ? BASIS[a.k.typ]
+      : a.stelle === 2 ? AKT[aktArt(a.k.typ, a.k.basis)] : HAL;
+    /* Steht an dieser Stelle nur eine Moeglichkeit, kommen die Ablenkungen
+       aus den anderen Listen - sonst gaebe es nichts zu entscheiden. */
+    var moeglich = liste.map(function(e){ return e[1]; });
+    if(moeglich.length < 3){
+      var fremd = [].concat(TYP, BASIS["1"], BASIS["3"], AKT.harz, AKT.salze)
+        .map(function(e){ return e[1]; });
+      mischen(fremd).forEach(function(t){
+        if(moeglich.length < 4 && moeglich.indexOf(t) < 0) moeglich.push(t);
+      });
+    }
+    a.wahl = mischen(moeglich).slice(0, 4);
+    a.richtig = text(a.k, a.stelle);
+    if(a.wahl.indexOf(a.richtig) < 0){ a.wahl[0] = a.richtig; a.wahl = mischen(a.wahl); }
+
+  }else if(a.art === "bilden"){
+    el("frage").textContent = "Typ " + text(a.k, 0) + ", Basis " + text(a.k, 1)
+      + ", " + text(a.k, 2) + ", Halogenidanteil " + text(a.k, 3);
+    el("frageart").textContent = "Wie lautet die Kennzahl?";
+    var andere = mischen(alleKennzahlen().filter(function(x){
+      return zahl(x) !== z; })).slice(0, 3).map(zahl);
+    a.wahl = mischen([z].concat(andere));
+    a.richtig = z;
+
+  }else{
+    el("frage").innerHTML = "<span class=\"kennzahl\">ISO 9454 &ndash; " + z
+      + "</span>";
+    el("frageart").textContent = "Wie verhalten sich die Rückstände?";
+    a.wahl = ["nicht korrodierend", "bedingt korrodierend", "stark korrodierend"];
+    a.richtig = RUECKSTAND[a.k.typ + a.k.basis + a.k.akt];
+  }
+
+  a.wahl.forEach(function(x){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.textContent = a.art === "bilden" ? "ISO 9454 – " + x : x;
+    b.addEventListener("click", function(){ antwort(x, b); });
+    w.appendChild(b);
+  });
+
+  el("rueck").hidden = true;
+  el("btnWeiter").hidden = true;
+}
+
+function antwort(gewaehlt, knopf){
+  if(!offen) return;
+  offen = false;
+
+  var a = runde[nr];
+  var ok = gewaehlt === a.richtig;
+  if(ok) treffer++;
+  a.richtigBeantwortet = ok;
+
+  var knoepfe = el("wahl").querySelectorAll("button");
+  for(var i = 0; i < knoepfe.length; i++){
+    knoepfe[i].disabled = true;
+    if(a.wahl[i] === a.richtig) knoepfe[i].className = "war ok";
+  }
+  if(!ok) knopf.className = "war nein";
+
+  var rs = RUECKSTAND[a.k.typ + a.k.basis + a.k.akt];
+  var r = el("rueck");
+  r.hidden = false;
+  r.className = "rueckmeldung " + (ok ? "ja" : "nein");
+  r.innerHTML = "<strong>ISO 9454 &ndash; " + zahl(a.k) + ":</strong> Typ "
+    + text(a.k, 0) + " (" + a.k.typ + "), Basis " + text(a.k, 1) + " ("
+    + a.k.basis + "), " + text(a.k, 2) + " (" + a.k.akt + "), Halogenidanteil "
+    + text(a.k, 3) + " (" + a.k.hal + ")."
+    + (rs ? " Rückstände: <b>" + rs + "</b>." : "");
+
+  el("btnWeiter").hidden = false;
+  el("btnWeiter").focus();
+}
+
+function weiter(){
+  nr++;
+  if(nr < runde.length){ zeigen(); return; }
+
+  if(uhr) clearInterval(uhr);
+  el("balken").style.width = "100%";
+  el("stand").textContent = "fertig";
+  el("ende").hidden = false;
+
+  el("bilanz").textContent = treffer + " von " + runde.length + " richtig, in "
+    + zeitText(Date.now() - start) + " min.";
+
+  var anteil = treffer / runde.length;
+  el("urteil").textContent = anteil === 1
+    ? "Vollständig. Nehmt die nächste Stufe."
+    : (anteil >= 0.8
+       ? "Sitzt weitgehend. Unten steht, was danebenging."
+       : "Merkt euch zuerst die Reihenfolge der vier Stellen – der Rest ist "
+         + "Nachschlagen.");
+
+  var ul = document.createElement("ul");
+  ul.className = "rueckblick";
+  runde.forEach(function(a){
+    var li = document.createElement("li");
+    li.innerHTML = '<span class="marke ' + (a.richtigBeantwortet ? "ok" : "nein")
+      + '">' + (a.richtigBeantwortet ? "richtig" : "falsch") + "</span><span>"
+      + "ISO 9454 – " + zahl(a.k) + "</span>";
+    ul.appendChild(li);
+  });
+  el("rueckblick").textContent = "";
+  el("rueckblick").appendChild(ul);
+  document.dispatchEvent(new CustomEvent("tbk-durchgang-ende",
+    {detail:{richtig: treffer, gesamt: runde.length}}));
+
+  el("ende").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+function tabellen(){
+  var ziel = el("tabelle");
+  ziel.textContent = "";
+  var zeilen = [
+    ["1", "Typ", TYP.map(function(e){ return e[0] + " " + e[1]; }).join(" · ")],
+    ["2", "Basis (hängt vom Typ ab)",
+     "Harz: 1 Kolophonium · 2 ohne Kolophonium<br>"
+     + "organisch: 1 wasserlöslich · 2 nicht wasserlöslich<br>"
+     + "anorganisch: 1 Salze · 2 Säuren · 3 alkalisch"],
+    ["3", "Aktivator (hängt von der Basis ab)",
+     "Harz und organisch: 1 ohne Aktivator · 2 mit Halogen aktiviert · "
+     + "3 ohne Halogene aktiviert<br>"
+     + "Salze: 1 mit Ammoniumchlorid · 2 ohne Ammoniumchlorid<br>"
+     + "Säuren: 1 Phosphorsäure · 2 andere Säuren<br>"
+     + "alkalisch: 1 Amine und/oder Ammoniak"],
+    ["4", "Halogenidmassenanteil",
+     HAL.map(function(e){ return e[0] + " " + e[1]; }).join(" · ")]
+  ];
+  zeilen.forEach(function(z){
+    var tr = document.createElement("tr");
+    tr.innerHTML = "<td><b>" + z[0] + "</b></td><td>" + z[1] + "</td><td>"
+      + z[2] + "</td>";
+    ziel.appendChild(tr);
+  });
+
+  var zr = el("tabRueck");
+  zr.textContent = "";
+  var gruppen = {};
+  Object.keys(RUECKSTAND).forEach(function(k){
+    if(!gruppen[RUECKSTAND[k]]) gruppen[RUECKSTAND[k]] = [];
+    gruppen[RUECKSTAND[k]].push(k);
+  });
+  ["nicht korrodierend", "bedingt korrodierend", "stark korrodierend"]
+    .forEach(function(art){
+      var tr = document.createElement("tr");
+      tr.innerHTML = "<td><b>" + gruppen[art].join(", ") + "</b></td><td>"
+        + art + "</td>";
+      zr.appendChild(tr);
+    });
+  Object.keys(RUECKSTAND_UNEINDEUTIG).forEach(function(k){
+    var tr = document.createElement("tr");
+    tr.innerHTML = "<td><b>" + k + "</b></td><td>" + RUECKSTAND_UNEINDEUTIG[k]
+      + " &ndash; das Buch führt diese Kennzahl in beiden Zeilen.</td>";
+    zr.appendChild(tr);
+  });
+}
+
+el("btnWeiter").addEventListener("click", weiter);
+el("btnNeu").addEventListener("click", neuerDurchgang);
+el("stufe").addEventListener("change", neuerDurchgang);
+el("umfang").addEventListener("change", neuerDurchgang);
+
+tabellen();
+neuerDurchgang();
+</script>
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/wettkampf.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

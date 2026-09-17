@@ -82,7 +82,10 @@
     'font:600 14px/1 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif!important;' +
     'color:#1a1a1a!important; background:rgba(255,255,255,.92)!important;' +
     'border:1px solid rgba(0,0,0,.14)!important; box-shadow:0 1px 3px rgba(0,0,0,.18)!important;' +
-    'cursor:pointer!important; -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);}' +
+    'cursor:pointer!important; width:auto!important; max-width:none!important;' +
+    'min-width:0!important; height:auto!important; margin:0!important;' +
+    'box-sizing:border-box!important;' +
+    '-webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);}' +
     '#tbk-thema:hover{border-color:rgba(0,0,0,.32)!important}' +
     '#tbk-thema:focus-visible{outline:2px solid #2b6cb0!important; outline-offset:2px!important}' +
     '#tbk-thema .z{font-size:15px!important; line-height:1!important}' +

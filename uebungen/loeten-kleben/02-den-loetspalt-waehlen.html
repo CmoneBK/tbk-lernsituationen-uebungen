@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Den Lötspalt wählen</title>
+<meta name="description" content="Spaltbreite nachschlagen, Spalt- von Fugenlöten unterscheiden und ausrechnen, wie tief der Spalt überhaupt noch etwas bringt.">
+<meta name="dauer" content="30 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .fall{border:1px solid var(--border); border-radius:12px; padding:14px 16px;
+    margin:0 0 16px; background:var(--card)}
+  .fall h3{margin:0 0 6px; font-size:1.02rem}
+  .felderreihe{display:grid; gap:12px; grid-template-columns:repeat(3,1fr); margin:10px 0 0}
+  @media (max-width:760px){ .felderreihe{grid-template-columns:1fr} }
+  .felderreihe label{display:block; font-size:13.5px; font-weight:600; margin:0 0 5px}
+  .felderreihe select, .felderreihe input{width:100%; font:inherit; font-size:14px;
+    padding:8px 9px; border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark)}
+  table.spalt td.zahl, table.spalt th.zahl{text-align:center; white-space:nowrap}
+  .normen{color:var(--muted); font-size:12.5px; line-height:1.6; margin:8px 0 0}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Löten und Kleben</p>
+    <h1>Den Lötspalt wählen</h1>
+    <p class="lead">Der Spalt ist beim Löten das, was beim Schweißen die Nahtvorbereitung
+      ist: Wird er falsch gewählt, hilft kein noch so gutes Lot.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Ausgangslage:</strong> Das Lot fließt nicht von selbst in den Spalt –
+      es wird <em>hineingesogen</em>. Diese Kapillarwirkung ist am stärksten, wenn der
+      Spalt eng ist, und sie hört auf, wenn er zu weit wird.</p>
+      <p>Daraus folgen zwei Begriffe, die in jeder Lottabelle stehen:</p>
+      <ul>
+        <li><strong>Spaltlöten (S)</strong> – Spaltbreite <em>b</em> bis 0,25&nbsp;mm.
+          Das Lot wird eingesogen; angesetzt wird es außen am Spalt.</li>
+        <li><strong>Fugenlöten (F)</strong> – Spaltbreite <em>b</em> ab 0,3&nbsp;mm.
+          Die Kapillarwirkung reicht nicht mehr; das Lot muss eingelegt oder von oben
+          zugeführt werden.</li>
+      </ul>
+      <p>Und eine Regel, die der Anschauung widerspricht: Ab einer Löttiefe
+      <em>l</em><sub>ü</sub> &gt; 5&nbsp;·&nbsp;<em>s</em> füllt sich der Spalt nicht
+      mehr zuverlässig. Mehr Tiefe bringt dann keine höhere Belastbarkeit mehr.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Die Tabelle der Lötspaltbreiten</h2>
+
+    <div class="tabellenrahmen">
+      <table class="spalt">
+        <thead><tr><th>Grundwerkstoff</th><th class="zahl" id="kopfLote" colspan="4"></th></tr>
+          <tr id="kopfzeile"></tr></thead>
+        <tbody id="spalttabelle"></tbody>
+      </table>
+    </div>
+    <p class="normen">Lötspaltbreiten in mm. Lötstoß: S = Spaltlöten
+      (<em>b</em> bis 0,25&nbsp;mm), F = Fugenlöten (<em>b</em> ab 0,3&nbsp;mm);
+      Hartlote vgl. DIN EN ISO 17672, Weichlote vgl. DIN EN ISO 9453. Ein Strich
+      heißt: Diese Paarung ist nicht vorgesehen.</p>
+
+    <h2><span class="nr">2</span>Drei Aufträge</h2>
+
+    <div id="faelle"></div>
+
+    <p>
+      <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+      <button type="button" class="knopf leise" id="btnLoesung">Rechenweg zeigen</button>
+    </p>
+    <div class="rueckmeldung" id="rueck" hidden></div>
+
+    <details id="loesungBox" hidden>
+      <summary>Lösung mit Rechenweg</summary>
+      <div id="loesungen"></div>
+    </details>
+
+    <h2><span class="nr">3</span>Übertragen</h2>
+
+    <details>
+      <summary>1. Warum wird der Spalt nicht einfach so eng wie möglich gemacht?</summary>
+      <p>Weil auch das Flussmittel hineinmuss, und weil beide Flächen nie ideal
+      parallel sind. Wird der Spalt zu eng, verdrängt das Flussmittel das Lot oder
+      bleibt selbst darin eingeschlossen – dann sitzen im Spalt Blasen statt Lot.
+      Deshalb nennt die Tabelle einen <em>Bereich</em>, keine einzelne Zahl, und
+      deshalb steht in den Gestaltungsregeln die Forderung nach
+      <strong>Parallelität der Lötflächen</strong> an zweiter Stelle.</p>
+    </details>
+
+    <details>
+      <summary>2. Muss die Fläche vorher besonders fein bearbeitet werden?</summary>
+      <p>Nein – und das überrascht viele. Die Gestaltungsregeln sagen ausdrücklich:
+      Die durch die Bearbeitung vorhandene Rautiefe darf bleiben, bei Kupferloten
+      <em>Rz</em> = 10 bis 16&nbsp;µm, bei Silberloten bis 25&nbsp;µm. Die Riefen
+      wirken sogar als kleine Kanäle. Entscheidend ist nicht die Glätte, sondern
+      dass die Fläche <em>sauber</em> ist: kein Fett, kein Zunder, keine lose
+      Oxidschicht.</p>
+    </details>
+
+    <details>
+      <summary>3. Die Verbindung hält nicht genug. Warum hilft ein tieferer Spalt
+        nicht?</summary>
+      <p>Weil sich der Spalt ab <em>l</em><sub>ü</sub> &gt; 5&nbsp;·&nbsp;<em>s</em>
+      hinten nicht mehr füllt. Das Lot kommt von außen und wird eingesogen; je
+      weiter es laufen muss, desto eher erstarrt es vorher oder schließt Luft ein.
+      Die zusätzliche Fläche ist dann gar nicht verlötet – sie zählt also nicht mit.
+      Was hilft: die Fläche <em>breiter</em> machen oder den Stoß falzen, damit die
+      Kraft über zwei Spalte statt über einen geht.</p>
+    </details>
+
+    <details>
+      <summary>4. Warum steht bei Hartmetall nur 0,3 bis 0,5&nbsp;mm?</summary>
+      <p>Weil Hartmetall und Stahl sich beim Abkühlen sehr unterschiedlich
+      zusammenziehen. Der breitere Spalt lässt eine dickere Lotschicht stehen, und
+      die kann den Unterschied durch Verformung aufnehmen – eine hauchdünne Schicht
+      würde reißen. Der Preis: 0,3 bis 0,5&nbsp;mm sind <strong>Fugenlöten</strong>,
+      das Lot muss eingelegt werden.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Erst den Werkstoff, dann das Lot, dann den Spalt –
+      und die Tiefe höchstens fünfmal die Blechdicke. Breiter schlägt tiefer.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-loeten-kleben.html">Werkzeug „Löten und Kleben“ öffnen</a>
+    </p>
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot;
+    <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Loetspaltbreiten in mm. Alle Werte aus dem Tabellenbuch. */
+var SPALT_LOTE = ["für Weichlote", "Hartlote Kupferbasis",
+                  "Hartlote Messingbasis", "Hartlote Silberbasis"];
+var SPALT = {
+  "Stahl, unlegiert":   ["0,05…0,2",  "0,05…0,15", "0,1…0,3",  "0,05…0,2"],
+  "Stahl, legiert":     ["0,1…0,25",  "0,1…0,2",   "0,1…0,35", "0,1…0,25"],
+  "Cu, Cu-Legierungen": ["0,05…0,2",  "–",         "–",        "0,05…0,25"],
+  "Hartmetall":         ["–",         "0,3…0,5",   "–",        "0,3…0,5"]
+};
+
+/* Drei Auftraege. loesung: [Spaltbreite als Text, Loetstoss, groesste Tiefe] */
+var FAELLE = [
+  {id:"a", titel:"Kupferrohr in einem Fitting",
+   text:"Ein Rohr aus Kupfer wird mit einem Silberlot in einen Fitting gelötet. "
+      + "Die Rohrwand ist 1 mm dick.",
+   werkstoff:"Cu, Cu-Legierungen", lot:3, s:1,
+   stoss:"S",
+   grund:"Der Bereich endet bei 0,25 mm – genau an der Grenze des Spaltlötens. "
+       + "Das Lot wird also eingesogen und außen angesetzt."},
+  {id:"b", titel:"Hartmetallplatte auf einem Meißelschaft",
+   text:"Eine Hartmetallplatte wird mit einem Silberlot auf den Stahlschaft "
+      + "gelötet. Die Platte ist 4 mm dick.",
+   werkstoff:"Hartmetall", lot:3, s:4,
+   stoss:"F",
+   grund:"0,3 bis 0,5 mm liegen ab der Grenze von 0,3 mm – das ist Fugenlöten. "
+       + "Das Lot muss eingelegt werden; die dickere Schicht nimmt außerdem auf, "
+       + "dass Hartmetall und Stahl sich verschieden zusammenziehen."},
+  {id:"c", titel:"Zwei Blechstreifen aus unlegiertem Stahl",
+   text:"Zwei Streifen aus unlegiertem Stahl, je 2 mm dick, werden überlappt "
+      + "und mit einem Weichlot verlötet.",
+   werkstoff:"Stahl, unlegiert", lot:0, s:2,
+   stoss:"S",
+   grund:"0,05 bis 0,2 mm liegen ganz unter 0,25 mm – Spaltlöten. "
+       + "Weichlötnähte gehören ausdrücklich auf Abscheren, nie auf Zug "
+       + "oder schälende Beanspruchung."}
+];
+
+function el(id){ return document.getElementById(id); }
+function zahl(x){ return x.toFixed(1).replace(".", ","); }
+
+function tabelleAufbauen(){
+  el("kopfLote").textContent = "Lötspaltbreite b in mm";
+  var k = "<th>&nbsp;</th>";
+  SPALT_LOTE.forEach(function(n){ k += "<th class=\"zahl\">" + n + "</th>"; });
+  el("kopfzeile").innerHTML = k;
+
+  var h = "";
+  Object.keys(SPALT).forEach(function(w){
+    h += "<tr><td><b>" + w + "</b></td>";
+    SPALT[w].forEach(function(v){ h += "<td class=\"zahl\">" + v + "</td>"; });
+    h += "</tr>";
+  });
+  el("spalttabelle").innerHTML = h;
+}
+
+function faelleAufbauen(){
+  var h = "";
+  FAELLE.forEach(function(f, i){
+    h += "<div class=\"fall\">"
+       + "<h3>" + (i + 1) + ". " + f.titel + "</h3>"
+       + "<p>" + f.text + "</p>"
+       + "<div class=\"felderreihe\">"
+       + "<div><label for=\"b" + f.id + "\">Spaltbreite b aus der Tabelle</label>"
+       + "<select id=\"b" + f.id + "\">" + breitenAuswahl() + "</select></div>"
+       + "<div><label for=\"t" + f.id + "\">Lötstoß</label>"
+       + "<select id=\"t" + f.id + "\">"
+       + "<option value=\"\">bitte wählen</option>"
+       + "<option value=\"S\">S – Spaltlöten</option>"
+       + "<option value=\"F\">F – Fugenlöten</option></select></div>"
+       + "<div><label for=\"l" + f.id + "\">größte sinnvolle Löttiefe in mm</label>"
+       + "<input type=\"number\" id=\"l" + f.id + "\" step=\"0.5\" inputmode=\"decimal\""
+       + " autocomplete=\"off\"></div>"
+       + "</div></div>";
+  });
+  el("faelle").innerHTML = h;
+}
+
+/* Alle Werte der Tabelle als Auswahl - so wird nachgeschlagen, nicht geraten. */
+function breitenAuswahl(){
+  var gesehen = {}, h = "<option value=\"\">bitte wählen</option>";
+  Object.keys(SPALT).forEach(function(w){
+    SPALT[w].forEach(function(v){
+      if(v === "–" || gesehen[v]) return;
+      gesehen[v] = true;
+      h += "<option value=\"" + v + "\">" + v + " mm</option>";
+    });
+  });
+  return h;
+}
+
+function loesungenAufbauen(){
+  var h = "";
+  FAELLE.forEach(function(f, i){
+    var b = SPALT[f.werkstoff][f.lot];
+    h += "<p><b>" + (i + 1) + ". " + f.titel + "</b><br>"
+       + "Zeile <b>" + f.werkstoff + "</b>, Spalte <b>" + SPALT_LOTE[f.lot]
+       + "</b> &rarr; <b>b = " + b + " mm</b>. " + f.grund + "<br>"
+       + "Löttiefe: l<sub>ü</sub> &le; 5 &middot; s = 5 &middot; " + zahl(f.s)
+       + " mm = <b>" + zahl(5 * f.s) + " mm</b>.</p>";
+  });
+  el("loesungen").innerHTML = h;
+}
+
+el("btnPruefen").addEventListener("click", function(){
+  var treffer = 0, offen = 0, zeilen = [];
+  FAELLE.forEach(function(f, i){
+    var b = el("b" + f.id).value, t = el("t" + f.id).value;
+    var l = parseFloat(String(el("l" + f.id).value).replace(",", "."));
+    if(!b && !t && !isFinite(l)){ offen++; return; }
+    var okB = b === SPALT[f.werkstoff][f.lot];
+    var okT = t === f.stoss;
+    var okL = isFinite(l) && Math.abs(l - 5 * f.s) < 0.001;
+    if(okB && okT && okL) treffer++;
+    zeilen.push((i + 1) + ". " + f.titel + ": "
+      + (okB ? "Spaltbreite richtig" : "Spaltbreite noch nicht") + ", "
+      + (okT ? "Lötstoß richtig" : "Lötstoß noch nicht") + ", "
+      + (okL ? "Löttiefe richtig" : "Löttiefe noch nicht"));
+  });
+  var r = el("rueck");
+  if(offen === FAELLE.length){
+    r.className = "rueckmeldung fast";
+    r.innerHTML = "<strong>Noch nichts eingetragen.</strong> Jeder Auftrag "
+      + "braucht drei Angaben: Spaltbreite, Lötstoß und Löttiefe.";
+  }else{
+    r.className = "rueckmeldung " + (treffer === FAELLE.length ? "ja"
+      : treffer ? "fast" : "nein");
+    r.innerHTML = "<strong>" + treffer + " von " + FAELLE.length
+      + " vollständig richtig."
+      + (offen ? " (" + offen + " noch offen.)" : "") + "</strong><br>"
+      + zeilen.join("<br>");
+  }
+  r.hidden = false;
+  if(treffer === FAELLE.length) el("loesungBox").hidden = false;
+});
+
+el("btnLoesung").addEventListener("click", function(){
+  el("loesungBox").hidden = false;
+  el("loesungBox").open = true;
+});
+
+tabelleAufbauen();
+faelleAufbauen();
+loesungenAufbauen();
+</script>
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/fortschritt.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

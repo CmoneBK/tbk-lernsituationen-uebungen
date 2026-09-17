@@ -266,6 +266,45 @@
   },
   {
     "typ": "uebungen",
+    "bereich": "Fertigungstechnik",
+    "kategorie": "Fügeverfahren",
+    "name": "Löten und Kleben",
+    "platz": 3,
+    "untertitel": "Vier Übungen zum Löten und Kleben – Verfahren entscheiden, Lötspalt und Lot wählen, die Klebung richtig legen.",
+    "url": "uebungen/loeten-kleben/index.html",
+    "werkzeuge": [
+      {
+        "datei": "fertigungstechnik-fuegeverfahren-loeten-kleben.html",
+        "name": "Löten und Kleben",
+        "art": "lektion"
+      },
+      {
+        "datei": "fertigungstechnik-fuegeverfahren-ueberblick.html",
+        "name": "Überblick über die Verfahren",
+        "art": "lektion"
+      }
+    ],
+    "inhalt": [
+      {
+        "titel": "Löten, Schweißen oder Kleben?",
+        "url": "uebungen/loeten-kleben/01-loeten-schweissen-oder-kleben.html"
+      },
+      {
+        "titel": "Den Lötspalt wählen",
+        "url": "uebungen/loeten-kleben/02-den-loetspalt-waehlen.html"
+      },
+      {
+        "titel": "Welches Lot?",
+        "url": "uebungen/loeten-kleben/03-welches-lot.html"
+      },
+      {
+        "titel": "Die Klebung gestalten",
+        "url": "uebungen/loeten-kleben/04-die-klebung-gestalten.html"
+      }
+    ]
+  },
+  {
+    "typ": "uebungen",
     "bereich": "Maschinenelemente",
     "kategorie": "Schrauben",
     "name": "Schraubverbindungen",
@@ -464,6 +503,36 @@
       {
         "titel": "Eigenschaften zuordnen",
         "url": "trainings/fuegeverfahren/03-eigenschaften-zuordnen.html"
+      }
+    ]
+  },
+  {
+    "typ": "trainings",
+    "bereich": "Fertigungstechnik",
+    "kategorie": "Fügeverfahren",
+    "name": "Löten und Kleben",
+    "platz": 3,
+    "untertitel": "Drei Trainings: Verfahren an einer Angabe erkennen, Lötspaltbreite nachschlagen, Flussmittel-Kennzahl lesen.",
+    "url": "trainings/loeten-kleben/index.html",
+    "werkzeuge": [
+      {
+        "datei": "fertigungstechnik-fuegeverfahren-loeten-kleben.html",
+        "name": "Löten und Kleben",
+        "art": "lektion"
+      }
+    ],
+    "inhalt": [
+      {
+        "titel": "Weich, hart oder hoch?",
+        "url": "trainings/loeten-kleben/01-weich-hart-oder-hoch.html"
+      },
+      {
+        "titel": "Spaltmaß-Schnellcheck",
+        "url": "trainings/loeten-kleben/02-spaltmass-schnellcheck.html"
+      },
+      {
+        "titel": "Flussmittel-Kennzahl",
+        "url": "trainings/loeten-kleben/03-flussmittel-kennzahl.html"
       }
     ]
   },

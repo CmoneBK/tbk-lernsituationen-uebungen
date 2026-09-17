@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Welches Lot?</title>
+<meta name="description" content="Aus Grundwerkstoff, zulässiger Temperatur und Spaltmaß das passende Lot herausfiltern – und begründen, warum die anderen ausscheiden.">
+<meta name="dauer" content="30 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .fall{border:1px solid var(--border); border-radius:12px; padding:14px 16px;
+    margin:0 0 16px; background:var(--card)}
+  .fall h3{margin:0 0 6px; font-size:1.02rem}
+  .merkmale{list-style:none; margin:8px 0 12px; padding:0;
+    display:flex; flex-wrap:wrap; gap:6px}
+  .merkmale li{font-size:12.5px; font-weight:600; padding:4px 10px;
+    border-radius:999px; border:1px solid var(--border-stark); color:var(--muted)}
+  .felderreihe{display:grid; gap:12px; grid-template-columns:1fr 1fr; margin:10px 0 0}
+  @media (max-width:640px){ .felderreihe{grid-template-columns:1fr} }
+  .felderreihe label{display:block; font-size:13.5px; font-weight:600; margin:0 0 5px}
+  .felderreihe select{width:100%; font:inherit; font-size:14px; padding:8px 9px;
+    border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark)}
+  table.lote td.zahl, table.lote th.zahl{text-align:right; white-space:nowrap}
+  .normen{color:var(--muted); font-size:12.5px; line-height:1.6; margin:8px 0 0}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Löten und Kleben</p>
+    <h1>Welches Lot?</h1>
+    <p class="lead">Drei Angaben stehen in jeder Lotzeile: Arbeitstemperatur, Lötstoß
+      und die Werkstoffe, für die das Lot vorgesehen ist. Aus diesen dreien wird
+      ausgewählt.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Ausgangslage:</strong> Ein Hartlot heißt zum Beispiel
+      <strong>Ag 145</strong>. Die Buchstaben nennen die Legierungsgruppe, die Zahl
+      unterscheidet die Lote darin. Alles Weitere steht in der Tabellenzeile:</p>
+      <ul>
+        <li><strong>Arbeitstemperatur</strong> – bei dieser Temperatur fließt das Lot.
+          Sie ist die Untergrenze für den Brenner und die Obergrenze für das Bauteil.</li>
+        <li><strong>Lötstoß</strong> – <em>S</em> für Spaltlöten
+          (<em>b</em> &lt; 0,25&nbsp;mm), <em>F</em> für Fugenlöten
+          (<em>b</em> &gt; 0,3&nbsp;mm). Ein Lot, das nur <em>S</em> trägt, ist für
+          einen weiten Spalt nicht gedacht.</li>
+        <li><strong>Werkstoffe</strong> – wofür das Lot vorgesehen ist. Steht der
+          Grundwerkstoff nicht dabei, scheidet das Lot aus, egal wie gut die
+          Temperatur passt.</li>
+      </ul>
+      <p>Für jeden Auftrag ist <em>ein</em> Lot richtig. Wähle es – und die Bedingung,
+      an der die anderen scheitern.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Die Lottabelle</h2>
+
+    <div class="tabellenrahmen">
+      <table class="lote">
+        <thead><tr><th>Kurzzeichen</th><th>Gruppe</th>
+          <th class="zahl">Arbeitstemperatur</th><th>Lötstoß</th>
+          <th>geeignet für</th></tr></thead>
+        <tbody id="lottabelle"></tbody>
+      </table>
+    </div>
+    <p class="normen">Hartlote für Schwermetalle, Auswahl, vgl.
+      DIN EN ISO 17672 (Ersatz für DIN EN 1044). Lötstoß: S = Spaltlöten
+      (<em>b</em> &lt; 0,25&nbsp;mm), F = Fugenlöten (<em>b</em> &gt; 0,3&nbsp;mm).
+      Lotzufuhr: a = angesetzt, e = eingelegt. Angaben der Hersteller sind zu
+      beachten.</p>
+
+    <h2><span class="nr">2</span>Drei Aufträge</h2>
+
+    <div id="faelle"></div>
+
+    <p>
+      <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+      <button type="button" class="knopf leise" id="btnLoesung">Lösung zeigen</button>
+    </p>
+    <div class="rueckmeldung" id="rueck" hidden></div>
+
+    <details id="loesungBox" hidden>
+      <summary>Lösung mit Begründung</summary>
+      <div id="loesungen"></div>
+    </details>
+
+    <h2><span class="nr">3</span>Übertragen</h2>
+
+    <details>
+      <summary>1. Warum ist eine <em>niedrige</em> Arbeitstemperatur oft der
+        Vorteil?</summary>
+      <p>Weil das Bauteil sie aushalten muss. Ein vergüteter Stahl verliert oberhalb
+      seiner Anlasstemperatur die Härte; ein weichgelöteter Nachbarstoß in der Nähe
+      würde wieder aufgehen. Silberhaltige Lote arbeiten schon bei 600 bis
+      700&nbsp;°C und werden auch deshalb gewählt – nicht weil sie besser wären,
+      sondern weil sie weniger Wärme ins Bauteil bringen. Kupferbasislote brauchen
+      900 bis 1100&nbsp;°C.</p>
+    </details>
+
+    <details>
+      <summary>2. In der Zeile von <em>CuP 281</em> steht: „Nicht geeignet für eisen-
+        oder nickelhaltige Grundwerkstoffe". Warum so deutlich?</summary>
+      <p>Weil Phosphor mit Eisen und Nickel spröde Phosphide bildet. Die Lötstelle
+      sieht dann gut aus und bricht unter Stoß. Bei Kupfer dagegen wirkt derselbe
+      Phosphor als Flussmittel – deshalb kommen CuP-Lote auf Kupfer sogar ohne
+      zusätzliches Flussmittel aus. Dieselbe Eigenschaft ist einmal der Vorteil und
+      einmal der Ausschlussgrund.</p>
+    </details>
+
+    <details>
+      <summary>3. Ein Lot trägt „S, F“. Was heißt das für die Fertigung?</summary>
+      <p>Dass es beides kann – und dass die Entscheidung damit beim Spalt liegt, nicht
+      beim Lot. Beim Spaltlöten wird das Lot außen <em>angesetzt</em> (a) und
+      eingesogen; beim Fugenlöten wird es <em>eingelegt</em> (e), bevor erwärmt wird.
+      Ein Lot, das nur „S“ trägt, würde bei 0,4&nbsp;mm Spalt nicht durchlaufen.</p>
+    </details>
+
+    <details>
+      <summary>4. Warum steht Aluminium in einer eigenen Gruppe?</summary>
+      <p>Weil seine Oxidschicht sich sofort neu bildet und erst bei etwa 2000&nbsp;°C
+      schmilzt – weit über dem Schmelzpunkt des Aluminiums selbst. Aluminiumlote
+      arbeiten deshalb dicht am Schmelzpunkt des Grundwerkstoffs: <b>Al 112</b> bei
+      595&nbsp;°C, während reines Aluminium bei 660&nbsp;°C schmilzt. Der
+      Temperaturspielraum beträgt wenige Zehngrad; das macht das Aluminiumlöten
+      anspruchsvoll.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Erst die Werkstoffspalte lesen, dann die Temperatur,
+      dann den Lötstoß. Wer mit der Temperatur anfängt, wählt ein Lot, das den
+      Werkstoff nicht benetzt.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-loeten-kleben.html">Werkzeug „Löten und Kleben“ öffnen</a>
+    </p>
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot;
+    <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Auswahl aus der Hartlottabelle. Alle Zahlen aus dem Tabellenbuch. */
+var LOTE = [
+  {kurz:"Ag 145",  gruppe:"AgCuZn(Sn)", temp:670,  stoss:"S",
+   werkstoffe:"Stähle, Temperguss, Kupfer, Kupferlegierungen, Nickel, Nickellegierungen"},
+  {kurz:"Ag 326",  gruppe:"AgCuZnCd",   temp:750,  stoss:"S, F",
+   werkstoffe:"Stähle, Temperguss, Kupfer, Kupferlegierungen, Nickel, Nickellegierungen"},
+  {kurz:"Ag 449",  gruppe:"AgCuZn",     temp:690,  stoss:"S",
+   werkstoffe:"Hartmetall auf Stahl, Wolfram- und Molybdän-Werkstoffe"},
+  {kurz:"Ag 463",  gruppe:"AgCuZn",     temp:790,  stoss:"S",
+   werkstoffe:"Chrom, Chrom-Nickel-Stähle"},
+  {kurz:"CuP 279", gruppe:"CuP",        temp:710,  stoss:"S, F",
+   werkstoffe:"Kupfer und nickelfreie Kupferlegierungen"},
+  {kurz:"CuP 180", gruppe:"CuP",        temp:720,  stoss:"F",
+   werkstoffe:"Cu, Fe-freie und Ni-freie Cu-Legierungen"},
+  {kurz:"Cu 470a", gruppe:"Cu",         temp:900,  stoss:"S, F",
+   werkstoffe:"Stahl, Temperguss, Cu, Ni, Cu- und Ni-Legierungen"},
+  {kurz:"Cu 141",  gruppe:"Cu",         temp:1100, stoss:"S",
+   werkstoffe:"Stähle"},
+  {kurz:"Al 112",  gruppe:"Al",         temp:595,  stoss:"S",
+   werkstoffe:"Aluminium und Al-Legierungen der Typen AlMn, AlMg, G-AlSi"}
+];
+
+var GRUENDE = [
+  ["", "bitte wählen"],
+  ["werkstoff", "Der Grundwerkstoff steht nicht in der Werkstoffspalte"],
+  ["temperatur", "Die Arbeitstemperatur liegt über der Grenze des Bauteils"],
+  ["stoss", "Das Lot ist für diesen Spalt nicht vorgesehen"]
+];
+
+var FAELLE = [
+  {id:"a", titel:"Hartmetallplatte auf Meißelschaft",
+   merkmale:["Hartmetall auf Stahl", "Spalt 0,3…0,5 mm", "Lot wird eingelegt"],
+   text:"Auf den Schaft aus Stahl wird eine Hartmetallplatte gelötet. Der Spalt "
+      + "beträgt 0,3 bis 0,5 mm, das Lot wird vorher eingelegt.",
+   lot:"Ag 449", grund:"werkstoff",
+   satz:"<b>Ag 449</b> ist das einzige Lot der Auswahl, dessen Werkstoffspalte "
+      + "„Hartmetall auf Stahl“ nennt. Bei allen anderen fehlt das Hartmetall – "
+      + "sie scheiden aus, bevor man über die Temperatur nachdenkt. Dass die Zeile "
+      + "nur „S“ trägt, der Spalt aber 0,3 bis 0,5 mm misst, ist der Grund, warum "
+      + "das Lot hier <em>eingelegt</em> wird: Die Kapillarwirkung soll es gar "
+      + "nicht erst einsaugen müssen."},
+  {id:"b", titel:"Kupferrohr in einem Fitting",
+   merkmale:["Kupfer auf Kupfer", "Spalt 0,4 mm", "kein Flussmittel gewünscht"],
+   text:"Zwei Kupferteile werden mit 0,4 mm Spalt gefügt. Das Lot soll ohne "
+      + "zusätzliches Flussmittel auskommen.",
+   lot:"CuP 180", grund:"stoss",
+   satz:"<b>CuP 180</b> trägt als einziges CuP-Lot der Auswahl ausschließlich "
+      + "<b>F</b> – Fugenlöten, und genau das ist bei 0,4 mm gefragt. "
+      + "<b>CuP 279</b> würde vom Werkstoff und von der Temperatur her ebenso "
+      + "passen, ist aber für „S, F“ ausgelegt; entscheidend ist hier der Spalt. "
+      + "Der Phosphor wirkt auf Kupfer als Flussmittel – deshalb die "
+      + "CuP-Gruppe und nicht ein Silberlot."},
+  {id:"c", titel:"Baugruppe aus Chrom-Nickel-Stahl",
+   merkmale:["X5CrNi18-10", "höchstens 800 °C", "Spalt 0,15 mm"],
+   text:"Zwei Teile aus nichtrostendem Chrom-Nickel-Stahl werden mit 0,15 mm "
+      + "Spalt gelötet. Das Bauteil darf nicht über 800 °C kommen.",
+   lot:"Ag 463", grund:"werkstoff",
+   satz:"<b>Ag 463</b> nennt in der Werkstoffspalte ausdrücklich „Chrom, "
+      + "Chrom-Nickel-Stähle“ und bleibt mit 790 °C unter der Grenze. "
+      + "<b>Cu 141</b> wäre für Stähle vorgesehen, braucht aber 1100 °C – "
+      + "zu heiß. Die Lote, die nur „Stähle, Temperguss, Kupfer …“ nennen, "
+      + "sind für den nichtrostenden Stahl nicht ausgewiesen. Der Spalt von "
+      + "0,15 mm passt zu „S“."}
+];
+
+function el(id){ return document.getElementById(id); }
+
+function tabelleAufbauen(){
+  var h = "";
+  LOTE.forEach(function(l){
+    h += "<tr><td><b>" + l.kurz + "</b></td><td>" + l.gruppe + "</td>"
+       + "<td class=\"zahl\">" + l.temp + " °C</td><td>" + l.stoss + "</td><td>"
+       + l.werkstoffe + "</td></tr>";
+  });
+  el("lottabelle").innerHTML = h;
+}
+
+function lotAuswahl(id){
+  var h = "<select id=\"" + id + "\"><option value=\"\">bitte wählen</option>";
+  LOTE.forEach(function(l){
+    h += "<option value=\"" + l.kurz + "\">" + l.kurz + " (" + l.temp + " °C, "
+       + l.stoss + ")</option>";
+  });
+  return h + "</select>";
+}
+
+function grundAuswahl(id){
+  var h = "<select id=\"" + id + "\">";
+  GRUENDE.forEach(function(g){
+    h += "<option value=\"" + g[0] + "\">" + g[1] + "</option>";
+  });
+  return h + "</select>";
+}
+
+function faelleAufbauen(){
+  var h = "";
+  FAELLE.forEach(function(f, i){
+    h += "<div class=\"fall\">"
+       + "<h3>" + (i + 1) + ". " + f.titel + "</h3>"
+       + "<ul class=\"merkmale\">"
+       + f.merkmale.map(function(m){ return "<li>" + m + "</li>"; }).join("")
+       + "</ul>"
+       + "<p>" + f.text + "</p>"
+       + "<div class=\"felderreihe\">"
+       + "<div><label for=\"l" + f.id + "\">Lot</label>" + lotAuswahl("l" + f.id) + "</div>"
+       + "<div><label for=\"g" + f.id + "\">Woran die anderen scheitern</label>"
+       + grundAuswahl("g" + f.id) + "</div>"
+       + "</div></div>";
+  });
+  el("faelle").innerHTML = h;
+}
+
+function loesungenAufbauen(){
+  var h = "";
+  FAELLE.forEach(function(f, i){
+    h += "<p><b>" + (i + 1) + ". " + f.titel + "</b><br>" + f.satz + "</p>";
+  });
+  el("loesungen").innerHTML = h;
+}
+
+el("btnPruefen").addEventListener("click", function(){
+  var treffer = 0, offen = 0, zeilen = [];
+  FAELLE.forEach(function(f, i){
+    var l = el("l" + f.id).value, g = el("g" + f.id).value;
+    if(!l && !g){ offen++; return; }
+    var okL = l === f.lot, okG = g === f.grund;
+    if(okL && okG) treffer++;
+    zeilen.push((i + 1) + ". " + f.titel + ": "
+      + (okL ? "Lot richtig" : "Lot noch nicht") + ", "
+      + (okG ? "Begründung richtig" : "Begründung noch nicht"));
+  });
+  var r = el("rueck");
+  if(offen === FAELLE.length){
+    r.className = "rueckmeldung fast";
+    r.innerHTML = "<strong>Noch nichts gewählt.</strong> Zu jedem Auftrag gehören "
+      + "das Lot und der Grund, an dem die anderen scheitern.";
+  }else{
+    r.className = "rueckmeldung " + (treffer === FAELLE.length ? "ja"
+      : treffer ? "fast" : "nein");
+    r.innerHTML = "<strong>" + treffer + " von " + FAELLE.length
+      + " vollständig richtig."
+      + (offen ? " (" + offen + " noch offen.)" : "") + "</strong><br>"
+      + zeilen.join("<br>");
+  }
+  r.hidden = false;
+  if(treffer === FAELLE.length) el("loesungBox").hidden = false;
+});
+
+el("btnLoesung").addEventListener("click", function(){
+  el("loesungBox").hidden = false;
+  el("loesungBox").open = true;
+});
+
+tabelleAufbauen();
+faelleAufbauen();
+loesungenAufbauen();
+</script>
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/fortschritt.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

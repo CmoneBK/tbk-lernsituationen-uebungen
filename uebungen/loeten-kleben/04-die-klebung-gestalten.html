@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Die Klebung gestalten</title>
+<meta name="description" content="Klebstoff auswählen, die Bruchlast rechnen und entscheiden, ob breiter oder tiefer mehr bringt – mit dem Grund dahinter.">
+<meta name="dauer" content="30 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .fall{border:1px solid var(--border); border-radius:12px; padding:14px 16px;
+    margin:0 0 16px; background:var(--card)}
+  .fall h3{margin:0 0 6px; font-size:1.02rem}
+  .felderreihe{display:grid; gap:12px; grid-template-columns:1fr 1fr; margin:10px 0 0}
+  @media (max-width:640px){ .felderreihe{grid-template-columns:1fr} }
+  .felderreihe label{display:block; font-size:13.5px; font-weight:600; margin:0 0 5px}
+  .felderreihe select, .felderreihe input{width:100%; font:inherit; font-size:14px;
+    padding:8px 9px; border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark)}
+  table.kleber td.zahl, table.kleber th.zahl{text-align:right; white-space:nowrap}
+  .normen{color:var(--muted); font-size:12.5px; line-height:1.6; margin:8px 0 0}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Löten und Kleben</p>
+    <h1>Die Klebung gestalten</h1>
+    <p class="lead">Eine Klebefläche trägt viel, solange sie geschoben wird. Die Übung
+      geht den Weg von der Anforderung über den Klebstoff bis zur Fläche – und zeigt,
+      warum die Rechnung allein nicht reicht.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Ausgangslage:</strong> Für eine Überlappungsklebung gilt</p>
+      <p class="formel"><em>F</em> = <em>&tau;</em><sub>B</sub> &middot; <em>b</em>
+        &middot; <em>l</em></p>
+      <p>mit der Zugscherfestigkeit <em>&tau;</em><sub>B</sub>, der Breite <em>b</em>
+      und der Überlappung <em>l</em>. Die Formel unterstellt, dass die Spannung über
+      die ganze Überlappung gleich groß ist. Das ist sie nicht: An den beiden Enden
+      ist sie am höchsten, in der Mitte niedrig. Deshalb steht in der Tabelle der
+      Einflussgrößen der Satz, um den es in Teil 3 geht – <em>eine zunehmende Breite
+      wirkt stärker als eine zunehmende Überlappung</em>.</p>
+      <p>Und die Grundregel darüber: <strong>auf Druck und Scherung ja, auf Zug,
+      Schälen und Biegen nein.</strong></p>
+    </div>
+
+    <h2><span class="nr">1</span>Die Klebstofftabelle</h2>
+
+    <div class="tabellenrahmen">
+      <table class="kleber">
+        <thead><tr><th>Klebstoff</th><th>Aushärten</th>
+          <th class="zahl">max. Betriebstemperatur</th>
+          <th class="zahl">Zugscherfestigkeit</th><th>Elastizität</th>
+          <th>Verwendung</th></tr></thead>
+        <tbody id="klebertabelle"></tbody>
+      </table>
+    </div>
+    <p class="normen">Richtwerte für Klebstoffe; Zugscherfestigkeit
+      <em>&tau;</em><sub>B</sub>. Die Werte sind grob – die chemische Zusammensetzung
+      unterscheidet sich von Produkt zu Produkt, genaue Angaben nennt der Hersteller.
+      Geprüft wird nach DIN EN 1465 (Zugscherversuch) und DIN 54461
+      (Biegeschälversuch).</p>
+
+    <h2><span class="nr">2</span>Zwei Aufträge</h2>
+
+    <div id="faelle"></div>
+
+    <p>
+      <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+      <button type="button" class="knopf leise" id="btnLoesung">Rechenweg zeigen</button>
+    </p>
+    <div class="rueckmeldung" id="rueck" hidden></div>
+
+    <details id="loesungBox" hidden>
+      <summary>Lösung mit Rechenweg</summary>
+      <div id="loesungen"></div>
+    </details>
+
+    <h2><span class="nr">3</span>Breiter oder tiefer?</h2>
+
+    <p>Eine Klebung hält nicht genug. Zwei Vorschläge liegen auf dem Tisch: die
+    Überlappung verdoppeln oder die Breite verdoppeln. Beide verdoppeln die Fläche,
+    beide kosten gleich viel Klebstoff.</p>
+
+    <div class="fall">
+      <div class="felderreihe">
+        <div><label for="gB">Breite b in mm</label>
+          <input type="number" id="gB" min="5" max="200" step="5" value="25"></div>
+        <div><label for="gL">Überlappung l in mm</label>
+          <input type="number" id="gL" min="5" max="100" step="5" value="10"></div>
+        <div><label for="gTau">Zugscherfestigkeit in N/mm²</label>
+          <input type="number" id="gTau" min="2" max="60" step="1" value="20"></div>
+        <div><label for="gWahl">Was bringt mehr?</label>
+          <select id="gWahl">
+            <option value="">bitte wählen</option>
+            <option value="breite">die Breite verdoppeln</option>
+            <option value="ueberlappung">die Überlappung verdoppeln</option>
+            <option value="gleich">beides gleich viel</option>
+          </select></div>
+      </div>
+    </div>
+
+    <p>
+      <button type="button" class="knopf" id="btnGe">Prüfen</button>
+    </p>
+    <div class="rueckmeldung" id="geRueck" hidden></div>
+
+    <h2><span class="nr">4</span>Übertragen</h2>
+
+    <details>
+      <summary>1. Warum ist der Zugversuch an einer Stumpfklebung nicht das
+        maßgebende Prüfverfahren?</summary>
+      <p>Weil so gut wie keine Konstruktion ihre Klebefläche auf Zug rechtwinklig zur
+      Fuge belastet – die Grundregel verbietet es ja gerade. Geprüft wird deshalb
+      nach <b>DIN EN 1465</b> im <em>Zugscherversuch</em>: Die Probe ist eine
+      Überlappung, und gemessen wird die Kraft, bei der sie abschert. Der Zugversuch
+      nach DIN EN 15870 ist die Ausnahme, nicht der Normalfall.</p>
+    </details>
+
+    <details>
+      <summary>2. Was passiert beim Schälen wirklich?</summary>
+      <p>Die Kraft greift nicht mehr auf der Fläche an, sondern auf einer Linie: an
+      der Kante, an der sich das Blech abhebt. Dort steht die ganze Kraft auf
+      wenigen Zehntelquadratmillimetern. Ist die Kante erst einmal offen, wandert
+      die Bruchlinie weiter – die Fläche dahinter reißt nacheinander auf, statt
+      gemeinsam zu tragen. Deshalb braucht es dafür ein eigenes Prüfverfahren, den
+      Biegeschälversuch nach <b>DIN 54461</b>.</p>
+    </details>
+
+    <details>
+      <summary>3. Warum steht die Vorbehandlung in einer eigenen Tabelle?</summary>
+      <p>Weil sie über die Hälfte des Ergebnisses entscheidet. Der Klebstoff hängt an
+      dem, worauf er sitzt – liegt darunter Fett, Zunder oder eine lose Oxidschicht,
+      hält die Verbindung an dieser Schicht, und die hält an nichts. Die Kennziffern
+      1 bis 10 sind die Arbeitsschritte: reinigen, entfetten, spülen, trocknen,
+      aufrauen, beizen. Je höher die geforderte Beanspruchungsstufe, desto mehr
+      davon.</p>
+    </details>
+
+    <details>
+      <summary>4. Wann ist ein <em>elastischer</em> Klebstoff die richtige Wahl,
+        obwohl er weniger aushält?</summary>
+      <p>Wenn sich die Fügeteile unterschiedlich ausdehnen. Aluminium dehnt sich rund
+      doppelt so stark wie Stahl; über einen Meter Länge und 60&nbsp;K Unterschied
+      sind das gut ein Millimeter. Eine starre Klebschicht müsste das aufnehmen und
+      reißt. Ein PUR mit „Elastizität vorhanden“ verformt sich stattdessen. Die
+      Tabelle führt die Spalte nicht umsonst.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Erst die Betriebstemperatur, dann die Festigkeit,
+      dann die Elastizität – und die Fläche breiter statt tiefer.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-loeten-kleben.html">Werkzeug „Löten und Kleben“ öffnen</a>
+    </p>
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot;
+    <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Richtwerte aus der Klebstofftabelle des Tabellenbuchs. */
+var KLEBER = [
+  {name:"Methylmethacrylat (MMA)", haerten:"0…30 °C, 1 h",
+   tempMax:80,  tauVon:6,  tauBis:30, elastisch:"gering",
+   zweck:"Metalle, Duroplaste, Keramik, Glas"},
+  {name:"Epoxidharz (EP)", haerten:"20…150 °C, 1…12 h",
+   tempMax:150, tauVon:10, tauBis:35, elastisch:"gering",
+   zweck:"Metalle, Duroplaste, Glas, Keramik, Kunststoffe, Beton, Holz"},
+  {name:"Phenolharz (PF)", haerten:"120…200 °C, 60 s",
+   tempMax:140, tauVon:20, tauBis:20, elastisch:"gering",
+   zweck:"Metalle, Duroplaste, Glas, Keramik, Kunststoffe, Holz"},
+  {name:"Polyurethan (PUR)", haerten:"20 °C, > 24 h",
+   tempMax:40,  tauVon:10, tauBis:50, elastisch:"vorhanden",
+   zweck:"Metalle, Elastomere, Kunststoffe, Holz, Glas"},
+  {name:"Polyesterharz (UP)", haerten:"25 °C, 1 h",
+   tempMax:170, tauVon:60, tauBis:60, elastisch:"gering",
+   zweck:"Metalle, Duroplaste, Keramik, Kunststoffe, Holz"},
+  {name:"Polychloroprene (CR)", haerten:"50 °C, > 24 h",
+   tempMax:110, tauVon:5,  tauBis:5,  elastisch:"vorhanden",
+   zweck:"Kontaktkleber für Metalle, Kunststoffe, Holz"},
+  {name:"Cyanacrylat", haerten:"20 °C, 40 s",
+   tempMax:120, tauVon:20, tauBis:35, elastisch:"gering",
+   zweck:"Schnellkleber für Metalle, Kunststoffe, Elastomere"},
+  {name:"Schmelzklebstoffe", haerten:"20 °C, > 30 s",
+   tempMax:60,  tauVon:2,  tauBis:5,  elastisch:"vorhanden",
+   zweck:"Werkstoffe aller Art; Klebewirkung durch Erkalten"}
+];
+
+/* Zwei Auftraege. tau ist der Wert, mit dem gerechnet wird - die untere
+   Grenze des Bereichs, denn danach wird ausgelegt. */
+var FAELLE = [
+  {id:"a", titel:"Blech auf Rahmen an einer Fahrzeugklappe",
+   text:"Ein Aluminiumblech wird auf einen Stahlrahmen geklebt. Flanschbreite "
+      + "b = 30 mm, Überlappung l = 12 mm. Die Klappe wird höchstens 40 °C warm. "
+      + "Weil Aluminium und Stahl sich verschieden ausdehnen, ist ein elastischer "
+      + "Klebstoff gefordert – und unter den elastischen der tragfähigste.",
+   b:30, l:12,
+   kleber:"Polyurethan (PUR)", tau:10,
+   grund:"Elastisch sind in der Tabelle nur drei: PUR, CR und die "
+       + "Schmelzklebstoffe. CR bringt 5 N/mm², die Schmelzklebstoffe 2 bis "
+       + "5 N/mm² – <b>PUR</b> mit 10 bis 50 N/mm² ist der tragfähigste "
+       + "unter ihnen. Seine Grenze liegt bei 40 °C und damit genau auf der "
+       + "geforderten Temperatur – viel Luft nach oben bleibt nicht. Gerechnet "
+       + "wird mit der unteren Grenze 10 N/mm²: Ausgelegt wird nach dem "
+       + "ungünstigsten Wert des Bereichs, nicht nach dem günstigsten."},
+  {id:"b", titel:"Versteifung in einem Gehäuse",
+   text:"Eine Versteifung aus Stahl wird in ein Stahlgehäuse geklebt. "
+      + "b = 40 mm, l = 15 mm. Im Betrieb werden 120 °C erreicht; "
+      + "auf Elastizität kommt es nicht an, auf Festigkeit schon.",
+   b:40, l:15,
+   kleber:"Polyesterharz (UP)", tau:60,
+   grund:"120 °C schaffen nur EP (150), PF (140), UP (170) und Cyanacrylat "
+       + "(120). Von diesen vieren hat <b>UP</b> mit 60 N/mm² die höchste "
+       + "Zugscherfestigkeit und härtet dabei schon bei 25 °C in einer Stunde "
+       + "aus – PF bräuchte 120 bis 200 °C. Gerechnet wird mit dem "
+       + "Tabellenwert 60 N/mm²."}
+];
+
+function el(id){ return document.getElementById(id); }
+function zahl(x, n){ return x.toFixed(n === undefined ? 1 : n).replace(".", ","); }
+
+function tabelleAufbauen(){
+  var h = "";
+  KLEBER.forEach(function(k){
+    h += "<tr><td><b>" + k.name + "</b></td><td>" + k.haerten + "</td>"
+       + "<td class=\"zahl\">" + k.tempMax + " °C</td>"
+       + "<td class=\"zahl\">"
+       + (k.tauVon === k.tauBis ? k.tauVon : k.tauVon + "…" + k.tauBis)
+       + " N/mm²</td><td>" + k.elastisch + "</td><td>" + k.zweck + "</td></tr>";
+  });
+  el("klebertabelle").innerHTML = h;
+}
+
+function kleberAuswahl(id){
+  var h = "<select id=\"" + id + "\"><option value=\"\">bitte wählen</option>";
+  KLEBER.forEach(function(k){
+    h += "<option value=\"" + k.name + "\">" + k.name + "</option>";
+  });
+  return h + "</select>";
+}
+
+function faelleAufbauen(){
+  var h = "";
+  FAELLE.forEach(function(f, i){
+    h += "<div class=\"fall\">"
+       + "<h3>" + (i + 1) + ". " + f.titel + "</h3>"
+       + "<p>" + f.text + "</p>"
+       + "<div class=\"felderreihe\">"
+       + "<div><label for=\"k" + f.id + "\">Klebstoff</label>"
+       + kleberAuswahl("k" + f.id) + "</div>"
+       + "<div><label for=\"f" + f.id + "\">rechnerische Bruchlast F in kN</label>"
+       + "<input type=\"number\" id=\"f" + f.id + "\" step=\"0.1\" "
+       + "inputmode=\"decimal\" autocomplete=\"off\"></div>"
+       + "</div></div>";
+  });
+  el("faelle").innerHTML = h;
+}
+
+function bruchlast(f){ return f.tau * f.b * f.l / 1000; }   /* kN */
+
+function loesungenAufbauen(){
+  var h = "";
+  FAELLE.forEach(function(f, i){
+    h += "<p><b>" + (i + 1) + ". " + f.titel + "</b><br>"
+       + f.grund + "<br>"
+       + "A = b &middot; l = " + f.b + " mm &middot; " + f.l + " mm = <b>"
+       + (f.b * f.l) + " mm²</b><br>"
+       + "F = &tau;<sub>B</sub> &middot; A = " + f.tau + " N/mm² &middot; "
+       + (f.b * f.l) + " mm² = " + (f.tau * f.b * f.l) + " N = <b>"
+       + zahl(bruchlast(f)) + " kN</b></p>";
+  });
+  el("loesungen").innerHTML = h;
+}
+
+el("btnPruefen").addEventListener("click", function(){
+  var treffer = 0, offen = 0, zeilen = [];
+  FAELLE.forEach(function(f, i){
+    var k = el("k" + f.id).value;
+    var w = parseFloat(String(el("f" + f.id).value).replace(",", "."));
+    if(!k && !isFinite(w)){ offen++; return; }
+    var okK = k === f.kleber;
+    var okF = isFinite(w) && Math.abs(w - bruchlast(f)) <= 0.3;
+    if(okK && okF) treffer++;
+    zeilen.push((i + 1) + ". " + f.titel + ": "
+      + (okK ? "Klebstoff richtig" : "Klebstoff noch nicht") + ", "
+      + (okF ? "Bruchlast richtig" : "Bruchlast noch nicht"));
+  });
+  var r = el("rueck");
+  if(offen === FAELLE.length){
+    r.className = "rueckmeldung fast";
+    r.innerHTML = "<strong>Noch nichts eingetragen.</strong> Zu jedem Auftrag "
+      + "gehören der Klebstoff und die Bruchlast.";
+  }else{
+    r.className = "rueckmeldung " + (treffer === FAELLE.length ? "ja"
+      : treffer ? "fast" : "nein");
+    r.innerHTML = "<strong>" + treffer + " von " + FAELLE.length
+      + " vollständig richtig."
+      + (offen ? " (" + offen + " noch offen.)" : "") + "</strong><br>"
+      + zeilen.join("<br>")
+      + "<br>Bei der Bruchlast zählt alles, was bis 0,3 kN daneben liegt.";
+  }
+  r.hidden = false;
+  if(treffer === FAELLE.length) el("loesungBox").hidden = false;
+});
+
+el("btnLoesung").addEventListener("click", function(){
+  el("loesungBox").hidden = false;
+  el("loesungBox").open = true;
+});
+
+el("btnGe").addEventListener("click", function(){
+  var b = parseFloat(el("gB").value) || 0;
+  var l = parseFloat(el("gL").value) || 0;
+  var tau = parseFloat(el("gTau").value) || 0;
+  var wahl = el("gWahl").value;
+  var r = el("geRueck");
+
+  if(!wahl){
+    r.className = "rueckmeldung fast";
+    r.innerHTML = "<strong>Noch nichts gewählt.</strong>";
+    r.hidden = false;
+    return;
+  }
+  var ok = wahl === "breite";
+  r.className = "rueckmeldung " + (ok ? "ja" : "nein");
+  r.innerHTML = "<strong>" + (ok ? "Richtig." : "Nicht ganz.") + "</strong> "
+    + "Rechnerisch ist beides gleich: A = b &middot; l = " + zahl(b * l, 0)
+    + " mm², verdoppelt " + zahl(2 * b * l, 0) + " mm², also F von "
+    + zahl(tau * b * l / 1000, 2) + " kN auf " + zahl(2 * tau * b * l / 1000, 2)
+    + " kN. <b>Tatsächlich bringt die Breite mehr.</b> Die Spannung ist über die "
+    + "Überlappung nicht gleich verteilt: An den beiden Enden ist sie am höchsten, "
+    + "in der Mitte niedrig. Wer die Überlappung von " + zahl(l, 0) + " mm auf "
+    + zahl(2 * l, 0) + " mm verdoppelt, vergrößert vor allem die wenig belastete "
+    + "Mitte – die Enden tragen weiter das Meiste. Die Breite dagegen vervielfacht "
+    + "genau die hoch belasteten Enden mit.";
+  r.hidden = false;
+});
+
+tabelleAufbauen();
+faelleAufbauen();
+loesungenAufbauen();
+</script>
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/fortschritt.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

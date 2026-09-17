@@ -1,0 +1,18 @@
+{
+  "titel": "Fertigungstechnik: Fügeverfahren - Löten und Kleben",
+  "platz": 3,
+  "lead": "Drei Trainings mit immer neuen Aufgaben: das Verfahren an einer einzigen Angabe der Einteilungstabelle erkennen, die Lötspaltbreite nachschlagen und zwischen Spalt- und Fugenlöten entscheiden, und das Flussmittel-Kennzeichen nach DIN EN ISO 9454-1 in beide Richtungen lesen.",
+  "untertitel": "Drei Trainings: Verfahren an einer Angabe erkennen, Lötspaltbreite nachschlagen, Flussmittel-Kennzahl lesen.",
+  "werkzeuge": [
+    {
+      "datei": "fertigungstechnik-fuegeverfahren-loeten-kleben.html",
+      "name": "Löten und Kleben",
+      "art": "lektion"
+    }
+  ],
+  "reihenfolge": [
+    "01-weich-hart-oder-hoch.html",
+    "02-spaltmass-schnellcheck.html",
+    "03-flussmittel-kennzahl.html"
+  ]
+}

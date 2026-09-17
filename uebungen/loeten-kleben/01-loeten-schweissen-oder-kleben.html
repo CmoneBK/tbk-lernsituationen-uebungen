@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Löten, Schweißen oder Kleben?</title>
+<meta name="description" content="Vier Bauteile, bei denen der Grundwerkstoff die Entscheidung vorgibt – und eine Begründung, die über „geht auch" hinausgeht.">
+<meta name="dauer" content="25 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .fall{border:1px solid var(--border); border-radius:12px; padding:14px 16px;
+    margin:0 0 16px; background:var(--card)}
+  .fall h3{margin:0 0 6px; font-size:1.02rem}
+  .merkmale{list-style:none; margin:8px 0 12px; padding:0;
+    display:flex; flex-wrap:wrap; gap:6px}
+  .merkmale li{font-size:12.5px; font-weight:600; padding:4px 10px;
+    border-radius:999px; border:1px solid var(--border-stark); color:var(--muted)}
+  .wahlpaar{display:grid; gap:12px; grid-template-columns:1fr 1fr; margin:0 0 4px}
+  @media (max-width:640px){ .wahlpaar{grid-template-columns:1fr} }
+  .wahlpaar label{display:block; font-size:13.5px; font-weight:600; margin:0 0 5px}
+  .wahlpaar select{width:100%; font:inherit; font-size:14px; padding:8px 9px;
+    border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark)}
+  .wahlpaar select:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+  .normen{color:var(--muted); font-size:12.5px; line-height:1.6; margin:8px 0 0}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Löten und Kleben</p>
+    <h1>Löten, Schweißen oder Kleben?</h1>
+    <p class="lead">Vier Bauteile. Bei jedem schließt eine Eigenschaft des
+      Grundwerkstoffs oder des Bauteils ein Verfahren aus – und genau die ist die
+      Begründung.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Ausgangslage:</strong> Alle drei Verfahren sind stoffschlüssig, alle
+      drei halten. Die Frage ist nie „geht das?", sondern: <em>Was am Bauteil
+      verbietet die anderen beiden?</em></p>
+      <p>Drei Unterschiede reichen fast immer aus:</p>
+      <ul>
+        <li><strong>Schweißen</strong> schmilzt den Grundwerkstoff. Das setzt voraus,
+          dass er schweißgeeignet ist und die Wärme verträgt.</li>
+        <li><strong>Löten</strong> lässt ihn fest. Die Verbindung ist so fest wie das
+          Lot – also deutlich schwächer – und gehört auf Abscheren.</li>
+        <li><strong>Kleben</strong> kommt ohne Wärme aus und verbindet auch, was
+          zusammen nicht schmelzbar ist. Dafür begrenzt der Klebstoff die
+          Betriebstemperatur.</li>
+      </ul>
+      <p>Wähle für jedes Bauteil das Verfahren <em>und</em> den Grund, der die anderen
+      ausschließt.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Vier Bauteile</h2>
+
+    <div id="faelle"></div>
+
+    <p>
+      <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+      <button type="button" class="knopf leise" id="btnLoesung">Lösung zeigen</button>
+    </p>
+    <div class="rueckmeldung" id="rueck" hidden></div>
+
+    <details id="loesungBox" hidden>
+      <summary>Lösung mit Begründung</summary>
+      <div id="loesungen"></div>
+    </details>
+
+    <h2><span class="nr">2</span>Was die Verfahren unterscheidet</h2>
+
+    <div class="tabellenrahmen">
+      <table>
+        <thead>
+          <tr><th>&nbsp;</th><th>Schweißen</th><th>Löten</th><th>Kleben</th></tr>
+        </thead>
+        <tbody id="vergleich"></tbody>
+      </table>
+    </div>
+
+    <p class="normen">Einteilung der Lötverfahren nach der Arbeitstemperatur
+      (Weichlöten &lt; 450&nbsp;°C, Hartlöten &gt; 450&nbsp;°C,
+      Hochtemperaturlöten &gt; 900&nbsp;°C); Hartlote vgl. DIN EN ISO 17672,
+      Weichlote vgl. DIN EN ISO 9453; Zugscherfestigkeit der Klebstoffe als
+      Richtwert.</p>
+
+    <h2><span class="nr">3</span>Übertragen</h2>
+
+    <details>
+      <summary>1. Warum wird eine Hartmetallschneide aufgelötet und nicht
+        aufgeschweißt?</summary>
+      <p>Weil Hartmetall und Stahl sich nicht gemeinsam aufschmelzen lassen, ohne dass
+      das Hartmetall zerstört wird: Es ist ein gesintertes Gefüge aus Karbiden in
+      einer Kobaltbindung und schmilzt nicht wie ein Stahl, sondern zerfällt. Beim
+      Löten bleiben beide fest; nur das Lot – zum Beispiel <b>Ag 449</b> mit 690&nbsp;°C
+      Arbeitstemperatur – wird flüssig.</p>
+    </details>
+
+    <details>
+      <summary>2. Eine Kupferleitung in der Wand wird gelötet. Warum nicht
+        geschweißt?</summary>
+      <p>Kupfer leitet die Wärme so gut, dass sich eine örtliche Schmelze nur mit
+      hohem Aufwand halten lässt, und die Rohrwand ist dünn. Vor allem aber geht es
+      um die Baustelle: Hartlöten mit der Flamme braucht eine Flasche und einen
+      Brenner, mehr nicht. Ein Spalt von 0,05 bis 0,25&nbsp;mm genügt, das Lot wird
+      eingesogen, die Verbindung ist dicht.</p>
+    </details>
+
+    <details>
+      <summary>3. Warum hält eine Klebung im Fahrzeugbau, obwohl der Klebstoff nur
+        20&nbsp;N/mm² schafft?</summary>
+      <p>Weil sie flächig trägt. Eine Schweißpunktreihe leitet die Kraft über wenige
+      Quadratmillimeter, eine Klebenaht über die ganze Flanschbreite. Bei
+      25&nbsp;mm Breite und 10&nbsp;mm Überlappung sind das schon 250&nbsp;mm² –
+      also 5&nbsp;kN je Zentimeter Naht. Entscheidend ist, dass die Fläche
+      <em>geschoben</em> wird und nicht schält.</p>
+    </details>
+
+    <details>
+      <summary>4. Wann ist Löten die falsche Wahl, obwohl es technisch ginge?</summary>
+      <p>Wenn die Verbindung auf Zug oder schälend belastet wird, oder wenn sie so
+      fest sein muss wie das Bauteil. Eine tragende Stahlkonstruktion wird
+      geschweißt, nicht gelötet – dort ist gefordert, dass die Naht mindestens so
+      viel aushält wie der Grundwerkstoff. Das leistet nur das Schweißen.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Schweißen schmilzt das Bauteil, Löten nur das Lot,
+      Kleben gar nichts. Wer weiß, was das Bauteil nicht verträgt, hat die Antwort.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-loeten-kleben.html">Werkzeug „Löten und Kleben“ öffnen</a>
+    </p>
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot;
+    <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Vier Faelle. "sperre" ist die Begruendung, die die anderen Verfahren
+   ausschliesst - sie ist der eigentliche Lerninhalt. */
+var FAELLE = [
+  {id:"a", titel:"Hartmetallschneide auf einem Drehmeißelschaft",
+   merkmale:["Hartmetall auf Stahl", "Schneide darf nicht zerfallen",
+             "Verbindung wird geschoben"],
+   text:"Auf den Stahlschaft eines Drehmeißels soll eine Hartmetallplatte "
+      + "dauerhaft aufgebracht werden. Sie sitzt in einer Tasche und wird beim "
+      + "Zerspanen gegen die Schulter gedrückt.",
+   verfahren:"hart",
+   sperre:"werkstoff",
+   satz:"<b>Hartlöten.</b> Hartmetall ist gesintert – gemeinsam aufschmelzen "
+      + "lässt es sich mit Stahl nicht, es würde zerfallen. Beim Löten bleiben "
+      + "beide fest, nur das Lot wird flüssig. In der Tabelle steht dafür "
+      + "<b>Ag 449</b> (690 °C): „Hartmetall auf Stahl“. Die Schneide wird "
+      + "gegen die Schulter gedrückt – die Lötfläche trägt also schiebend."},
+
+  {id:"b", titel:"Kupferrohr und Fitting einer Trinkwasserleitung",
+   merkmale:["Kupfer auf Kupfer", "dicht", "auf der Baustelle"],
+   text:"Ein Kupferrohr wird in einen Fitting gesteckt. Das Rohr sitzt mit "
+      + "wenigen Zehntelmillimetern Spiel im Fitting; die Verbindung muss dicht "
+      + "sein und auf der Baustelle hergestellt werden.",
+   verfahren:"hart",
+   sperre:"spalt",
+   satz:"<b>Hartlöten.</b> Der Steckspalt ist genau das, was das Löten braucht: "
+      + "Für Kupfer und Kupferlegierungen nennt die Tabelle mit Silberloten "
+      + "<b>0,05 bis 0,25 mm</b> – Spaltlöten, das Lot wird eingesogen und "
+      + "füllt den Spalt rundum. Geschweißt würde die dünne Rohrwand "
+      + "durchbrennen, geklebt hielte die Verbindung die Temperatur- und "
+      + "Druckwechsel nicht dauerhaft aus."},
+
+  {id:"c", titel:"Aluminiumblech auf Stahlblech an einer Fahrzeugklappe",
+   merkmale:["Aluminium auf Stahl", "keine Wärme", "flächig belastet"],
+   text:"Ein Außenblech aus Aluminium wird auf einen Innenrahmen aus Stahl "
+      + "gesetzt. Die Flanschbreite beträgt 25 mm, die Klappe wird im Betrieb "
+      + "nicht wärmer als 60 °C.",
+   verfahren:"kleben",
+   sperre:"paarung",
+   satz:"<b>Kleben.</b> Aluminium und Stahl bilden beim Schmelzen spröde "
+      + "intermetallische Phasen – die Paarung ist nicht schmelzschweißgeeignet. "
+      + "Der Klebstoff verbindet beide, ohne dass einer von ihnen heiß wird, und "
+      + "trägt über die ganze Flanschbreite. 60 °C schaffen fast alle "
+      + "Klebstoffe der Tabelle; erst darüber wird die Auswahl eng."},
+
+  {id:"d", titel:"Konsole aus S235JR an einen Träger",
+   merkmale:["Stahl auf Stahl", "tragend", "so fest wie das Bauteil"],
+   text:"Eine Konsole aus S235JR soll einen Rollenbahnabschnitt tragen. Gefordert "
+      + "ist, dass die Verbindung mindestens so viel aushält wie der angeschlossene "
+      + "Querschnitt.",
+   verfahren:"schweissen",
+   sperre:"festigkeit",
+   satz:"<b>Schweißen.</b> Nur beim Schweißen wird die Verbindung so fest wie der "
+      + "Grundwerkstoff – die Naht ist Grundwerkstoff. Eine Lötstelle ist so fest "
+      + "wie das Lot und damit deutlich schwächer; eine Klebung erst recht. "
+      + "S235JR ist gut schweißgeeignet, es spricht nichts dagegen."}
+];
+
+var VERFAHREN = [
+  ["", "bitte wählen"],
+  ["schweissen", "Schmelzschweißen"],
+  ["hart", "Hartlöten"],
+  ["weich", "Weichlöten"],
+  ["kleben", "Kleben"]
+];
+var SPERREN = [
+  ["", "bitte wählen"],
+  ["werkstoff", "Der Werkstoff lässt sich nicht aufschmelzen"],
+  ["paarung", "Die Werkstoffpaarung ist nicht schmelzschweißgeeignet"],
+  ["spalt", "Der vorhandene Spalt saugt das Lot von selbst ein"],
+  ["festigkeit", "Gefordert ist die Festigkeit des Grundwerkstoffs"],
+  ["temperatur", "Das Bauteil verträgt die Wärme nicht"]
+];
+
+function el(id){ return document.getElementById(id); }
+
+function auswahl(id, liste){
+  var h = "<select id=\"" + id + "\">";
+  liste.forEach(function(e){
+    h += "<option value=\"" + e[0] + "\">" + e[1] + "</option>";
+  });
+  return h + "</select>";
+}
+
+function faelleAufbauen(){
+  var h = "";
+  FAELLE.forEach(function(f, i){
+    h += "<div class=\"fall\">"
+       + "<h3>" + (i + 1) + ". " + f.titel + "</h3>"
+       + "<ul class=\"merkmale\">"
+       + f.merkmale.map(function(m){ return "<li>" + m + "</li>"; }).join("")
+       + "</ul>"
+       + "<p>" + f.text + "</p>"
+       + "<div class=\"wahlpaar\">"
+       + "<div><label for=\"v" + f.id + "\">Verfahren</label>"
+       + auswahl("v" + f.id, VERFAHREN) + "</div>"
+       + "<div><label for=\"s" + f.id + "\">Was die anderen ausschließt</label>"
+       + auswahl("s" + f.id, SPERREN) + "</div>"
+       + "</div></div>";
+  });
+  el("faelle").innerHTML = h;
+}
+
+function vergleichAufbauen(){
+  var zeilen = [
+    ["Grundwerkstoff", "wird aufgeschmolzen", "bleibt fest", "bleibt kalt"],
+    ["Festigkeit der Verbindung", "wie der Grundwerkstoff",
+     "wie das Lot", "wie der Klebstoff"],
+    ["Wärmeeinflusszone", "ja", "nein", "nein"],
+    ["ungleiche Werkstoffe", "nur eingeschränkt", "gut möglich", "am besten"],
+    ["Belastungsart", "beliebig", "auf Abscheren", "auf Abscheren oder Druck"],
+    ["Grenze nach oben", "Schweißeignung des Stahls",
+     "Arbeitstemperatur des Lots", "Betriebstemperatur des Klebstoffs"]
+  ];
+  var h = "";
+  zeilen.forEach(function(z){
+    h += "<tr><td><b>" + z[0] + "</b></td><td>" + z[1] + "</td><td>" + z[2]
+       + "</td><td>" + z[3] + "</td></tr>";
+  });
+  el("vergleich").innerHTML = h;
+}
+
+function loesungenAufbauen(){
+  var h = "";
+  FAELLE.forEach(function(f, i){
+    h += "<p><b>" + (i + 1) + ". " + f.titel + "</b><br>" + f.satz + "</p>";
+  });
+  el("loesungen").innerHTML = h;
+}
+
+el("btnPruefen").addEventListener("click", function(){
+  var treffer = 0, offen = 0, zeilen = [];
+  FAELLE.forEach(function(f, i){
+    var v = el("v" + f.id).value, s = el("s" + f.id).value;
+    if(!v || !s){ offen++; return; }
+    var okV = v === f.verfahren, okS = s === f.sperre;
+    if(okV && okS) treffer++;
+    zeilen.push((i + 1) + ". " + f.titel + ": "
+      + (okV ? "Verfahren richtig" : "Verfahren noch nicht") + ", "
+      + (okS ? "Begründung richtig" : "Begründung noch nicht"));
+  });
+  var r = el("rueck");
+  if(offen === FAELLE.length){
+    r.className = "rueckmeldung fast";
+    r.innerHTML = "<strong>Noch nichts gewählt.</strong> Für jedes Bauteil gehören "
+      + "zwei Antworten zusammen: das Verfahren und der Grund.";
+  }else{
+    r.className = "rueckmeldung " + (treffer === FAELLE.length ? "ja"
+      : treffer ? "fast" : "nein");
+    r.innerHTML = "<strong>" + treffer + " von " + FAELLE.length
+      + " vollständig richtig."
+      + (offen ? " (" + offen + " noch offen.)" : "") + "</strong><br>"
+      + zeilen.join("<br>");
+  }
+  r.hidden = false;
+  if(treffer === FAELLE.length) el("loesungBox").hidden = false;
+});
+
+el("btnLoesung").addEventListener("click", function(){
+  el("loesungBox").hidden = false;
+  el("loesungBox").open = true;
+});
+
+faelleAufbauen();
+vergleichAufbauen();
+loesungenAufbauen();
+</script>
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/fortschritt.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

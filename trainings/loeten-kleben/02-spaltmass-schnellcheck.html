@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spaltmaß-Schnellcheck</title>
+<meta name="description" content="Werkstoff und Lot sind gegeben – gesucht ist die Spaltbreite aus der Tabelle und die Entscheidung zwischen Spalt- und Fugenlöten.">
+<meta name="dauer" content="10 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .frage{font-size:19px; line-height:1.4; font-weight:700; margin:0 0 6px;
+    min-height:1.4em}
+  .frageart{font-size:13px; color:var(--muted); margin:0 0 14px}
+  .wahl{display:grid; gap:10px}
+  .wahl button{
+    font:600 15px/1.35 inherit; cursor:pointer; padding:13px 15px; text-align:left;
+    border-radius:10px; border:1px solid var(--border-stark);
+    background:var(--bg); color:var(--fg);
+  }
+  .wahl button:hover:not(:disabled){border-color:var(--accent)}
+  .wahl button:disabled{cursor:default; opacity:.6}
+  .wahl button.war{opacity:1}
+  .wahl button.war.ok{border-color:var(--ok); background:rgba(22,163,74,.14)}
+  .wahl button.war.nein{border-color:var(--bad); background:rgba(220,38,38,.12)}
+  .uhr{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:13px; color:var(--muted); margin:0 0 10px;
+    font-variant-numeric:tabular-nums}
+  .fortschritt{height:8px; border-radius:999px; background:var(--border);
+    overflow:hidden; margin:0 0 16px}
+  .fortschritt i{display:block; height:100%; background:var(--accent);
+    transition:width .2s ease}
+  .bilanz{font-size:19px; font-weight:700; margin:0 0 8px}
+  .rueckblick{list-style:none; margin:12px 0 0; padding:0}
+  .rueckblick li{display:flex; gap:10px; align-items:baseline; padding:5px 0;
+    border-top:1px solid var(--border); font-size:14px}
+  .rueckblick .marke{font-weight:700; flex:0 0 auto}
+  .rueckblick .marke.ok{color:var(--ok)}
+  .rueckblick .marke.nein{color:var(--bad)}
+  .einstellung{display:flex; flex-wrap:wrap; gap:14px; align-items:flex-end;
+    margin:0 0 4px}
+  .einstellung > div{flex:1 1 190px}
+  .einstellung label{display:block; font-size:13px; font-weight:700; margin:0 0 5px}
+  .einstellung select{width:100%; font:inherit; font-size:14px; padding:8px 9px;
+    border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark)}
+  .einstellung select:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+  .stufentext{font-size:13px; color:var(--muted); margin:8px 0 0}
+  table.spalt td.zahl, table.spalt th.zahl{text-align:center; white-space:nowrap}
+  .normen{color:var(--muted); font-size:12.5px; line-height:1.6; margin:10px 0 0}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Löten und Kleben</p>
+    <h1>Spaltmaß-Schnellcheck</h1>
+    <p class="lead">Vier Werkstoffzeilen, vier Lotspalten – und zwei Fragen, die
+      daraus folgen.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>So läuft es:</strong> Werkstoff und Lot stehen da. Gefragt ist mal
+        die <strong>Spaltbreite</strong> aus der Tabelle, mal der
+        <strong>Lötstoß</strong>, der sich daraus ergibt.</p>
+      <p><strong>S</strong> heißt Spaltlöten: <em>b</em> bis 0,25&nbsp;mm, das Lot
+        wird eingesogen und außen angesetzt. <strong>F</strong> heißt Fugenlöten:
+        <em>b</em> ab 0,3&nbsp;mm, das Lot muss eingelegt werden. Dazwischen liegt
+        der Übergang.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Durchgang</h2>
+
+    <div class="box">
+      <div class="einstellung">
+        <div>
+          <label for="stufe">Schwierigkeit</label>
+          <select id="stufe">
+            <option value="einfach">Einfach &ndash; nur die Spaltbreite</option>
+            <option value="mittel" selected>Mittel &ndash; auch der Lötstoß</option>
+          </select>
+        </div>
+        <div>
+          <label for="umfang">Wie viele Fragen?</label>
+          <select id="umfang"></select>
+        </div>
+      </div>
+      <p class="stufentext" id="stufentext"></p>
+    </div>
+
+    <div class="box">
+      <div class="uhr">
+        <span id="stand">Frage 1 von 10</span>
+        <span id="zeit">0:00</span>
+      </div>
+      <div class="fortschritt"><i id="balken" style="width:0%"></i></div>
+
+      <p class="frage" id="frage">&ndash;</p>
+      <p class="frageart" id="frageart"></p>
+
+      <div class="wahl" id="wahl"></div>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+
+      <p style="margin-top:14px">
+        <button type="button" class="knopf" id="btnWeiter" hidden>Weiter</button>
+        <button type="button" class="knopf leise" id="btnNeu">Von vorn</button>
+      </p>
+    </div>
+
+    <div id="ende" hidden>
+      <h3>Ergebnis</h3>
+      <div class="box">
+        <p class="bilanz" id="bilanz">&ndash;</p>
+        <p id="urteil"></p>
+        <div id="rueckblick"></div>
+      </div>
+    </div>
+
+    <h2><span class="nr">2</span>Die Tabelle dahinter</h2>
+
+    <div class="tabellenrahmen">
+      <table class="spalt">
+        <thead><tr id="kopfzeile"></tr></thead>
+        <tbody id="tabelle"></tbody>
+      </table>
+    </div>
+    <p class="normen">Lötspaltbreiten <em>b</em> in mm. Ein Strich heißt: Diese
+      Paarung ist nicht vorgesehen. Hartlote vgl. DIN EN ISO 17672, Weichlote
+      vgl. DIN EN ISO 9453.</p>
+
+    <h3>Weiterarbeiten</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-loeten-kleben.html">Werkzeug „Löten und Kleben“ öffnen</a>
+    </p>
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot;
+    <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Loetspaltbreiten in mm. Alle Werte aus dem Tabellenbuch. */
+var LOTE = ["für Weichlote", "Hartlote Kupferbasis",
+            "Hartlote Messingbasis", "Hartlote Silberbasis"];
+var SPALT = {
+  "Stahl, unlegiert":   ["0,05…0,2",  "0,05…0,15", "0,1…0,3",  "0,05…0,2"],
+  "Stahl, legiert":     ["0,1…0,25",  "0,1…0,2",   "0,1…0,35", "0,1…0,25"],
+  "Cu, Cu-Legierungen": ["0,05…0,2",  "–",         "–",        "0,05…0,25"],
+  "Hartmetall":         ["–",         "0,3…0,5",   "–",        "0,3…0,5"]
+};
+
+var STUFEN = {
+  einfach: {stoss:false, text:"Nur nachschlagen: In welcher Zelle steht der "
+    + "Wert, und wie heißt er?"},
+  mittel:  {stoss:true,  text:"Dazu die Frage, was der Wert bedeutet: "
+    + "Spaltlöten oder Fugenlöten?"}
+};
+
+function el(id){ return document.getElementById(id); }
+
+var runde = [], nr = 0, treffer = 0, offen = true, start = 0, uhr = null;
+
+/* Alle belegten Zellen der Tabelle. */
+function zellen(){
+  var a = [];
+  Object.keys(SPALT).forEach(function(w){
+    SPALT[w].forEach(function(v, i){
+      if(v !== "–") a.push({werkstoff:w, lot:i, wert:v});
+    });
+  });
+  return a;
+}
+
+/* Aus "0,05…0,2" die beiden Grenzen. */
+function grenzen(text){
+  var t = text.split("…");
+  return [parseFloat(t[0].replace(",", ".")), parseFloat(t[1].replace(",", "."))];
+}
+
+function loetstoss(text){
+  var g = grenzen(text);
+  return g[1] <= 0.25 ? "S" : g[0] >= 0.3 ? "F" : "S/F";
+}
+
+function mischen(liste){
+  var a = liste.slice();
+  for(var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+function umfangFuellen(){
+  var feld = el("umfang"), da = zellen().length, vorher = Number(feld.value) || 0;
+  feld.textContent = "";
+  for(var n = 5; n <= da; n++){
+    var o = document.createElement("option");
+    o.value = String(n);
+    o.textContent = n + (n === da ? " (alle)" : "");
+    feld.appendChild(o);
+  }
+  feld.value = String(Math.min(Math.max(vorher || 10, 5), da));
+}
+
+function zeitText(ms){
+  var s = Math.floor(ms / 1000);
+  return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2);
+}
+
+function uhrLaufen(){
+  if(uhr) clearInterval(uhr);
+  start = Date.now();
+  uhr = setInterval(function(){
+    el("zeit").textContent = zeitText(Date.now() - start);
+  }, 500);
+}
+
+window.TBK_WETTKAMPF = { neu: function(){ neuerDurchgang(); }, ergebnisAn: "ende" };
+
+function neuerDurchgang(){
+  umfangFuellen();
+  el("stufentext").textContent = STUFEN[el("stufe").value].text;
+  var mitStoss = STUFEN[el("stufe").value].stoss;
+  runde = mischen(zellen()).slice(0, Number(el("umfang").value)).map(function(z){
+    var o = {werkstoff:z.werkstoff, lot:z.lot, wert:z.wert};
+    o.art = mitStoss && Math.random() < 0.4 ? "stoss" : "breite";
+    return o;
+  });
+  nr = 0;
+  treffer = 0;
+  el("ende").hidden = true;
+  el("rueckblick").textContent = "";
+  uhrLaufen();
+  zeigen();
+}
+
+function zeigen(){
+  var a = runde[nr];
+  offen = true;
+
+  el("stand").textContent = "Frage " + (nr + 1) + " von " + runde.length;
+  el("balken").style.width = (100 * nr / runde.length) + "%";
+  el("frage").textContent = a.werkstoff + " – " + LOTE[a.lot];
+
+  var w = el("wahl");
+  w.textContent = "";
+
+  if(a.art === "breite"){
+    el("frageart").textContent = "Welche Lötspaltbreite b nennt die Tabelle?";
+    /* Drei andere Werte aus der Tabelle als Ablenkung - so wird wirklich
+       nachgeschlagen und nicht nach Gefuehl geraten. */
+    var andere = mischen(zellen().filter(function(z){ return z.wert !== a.wert; }))
+      .map(function(z){ return z.wert; });
+    var gesehen = {}, auswahl = [a.wert];
+    andere.forEach(function(v){
+      if(auswahl.length >= 4 || gesehen[v] || v === a.wert) return;
+      gesehen[v] = true; auswahl.push(v);
+    });
+    a.wahl = mischen(auswahl);
+    a.richtig = a.wert;
+  }else{
+    el("frageart").textContent = "Die Tabelle nennt b = " + a.wert
+      + " mm. Spaltlöten oder Fugenlöten?";
+    a.wahl = ["S – Spaltlöten, das Lot wird eingesogen",
+              "F – Fugenlöten, das Lot wird eingelegt",
+              "S/F – der Bereich reicht über die Grenze hinaus"];
+    a.richtig = a.wahl[{S:0, F:1, "S/F":2}[loetstoss(a.wert)]];
+  }
+
+  a.wahl.forEach(function(x){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.textContent = a.art === "breite" ? x + " mm" : x;
+    b.addEventListener("click", function(){ antwort(x, b); });
+    w.appendChild(b);
+  });
+
+  el("rueck").hidden = true;
+  el("btnWeiter").hidden = true;
+}
+
+function antwort(gewaehlt, knopf){
+  if(!offen) return;
+  offen = false;
+
+  var a = runde[nr];
+  var ok = gewaehlt === a.richtig;
+  if(ok) treffer++;
+  a.richtigBeantwortet = ok;
+
+  var knoepfe = el("wahl").querySelectorAll("button");
+  for(var i = 0; i < knoepfe.length; i++){
+    knoepfe[i].disabled = true;
+    if(a.wahl[i] === a.richtig) knoepfe[i].className = "war ok";
+  }
+  if(!ok) knopf.className = "war nein";
+
+  var st = loetstoss(a.wert);
+  var r = el("rueck");
+  r.hidden = false;
+  r.className = "rueckmeldung " + (ok ? "ja" : "nein");
+  r.innerHTML = "<strong>" + a.werkstoff + " mit " + LOTE[a.lot]
+    + ": b = " + a.wert + " mm.</strong> "
+    + (st === "S"
+        ? "Der Bereich endet bei höchstens 0,25 mm – Spaltlöten. Das Lot wird "
+          + "eingesogen und außen angesetzt."
+        : st === "F"
+        ? "Der Bereich beginnt bei 0,3 mm – Fugenlöten. Die Kapillarwirkung "
+          + "reicht nicht mehr, das Lot muss eingelegt werden."
+        : "Der Bereich liegt im Übergang zwischen beiden – je nach Spaltmaß "
+          + "Spalt- oder Fugenlöten.");
+
+  el("btnWeiter").hidden = false;
+  el("btnWeiter").focus();
+}
+
+function weiter(){
+  nr++;
+  if(nr < runde.length){ zeigen(); return; }
+
+  if(uhr) clearInterval(uhr);
+  el("balken").style.width = "100%";
+  el("stand").textContent = "fertig";
+  el("ende").hidden = false;
+
+  el("bilanz").textContent = treffer + " von " + runde.length + " richtig, in "
+    + zeitText(Date.now() - start) + " min.";
+
+  var anteil = treffer / runde.length;
+  el("urteil").textContent = anteil === 1
+    ? "Vollständig. Die Tabelle sitzt."
+    : (anteil >= 0.8
+       ? "Sitzt weitgehend. Unten steht, welche Zellen danebengingen."
+       : "Schlagt die Tabelle noch einmal auf: vier Zeilen, vier Spalten – "
+         + "und drei Zellen sind gar nicht belegt.");
+
+  var ul = document.createElement("ul");
+  ul.className = "rueckblick";
+  runde.forEach(function(a){
+    var li = document.createElement("li");
+    li.innerHTML = '<span class="marke ' + (a.richtigBeantwortet ? "ok" : "nein")
+      + '">' + (a.richtigBeantwortet ? "richtig" : "falsch") + "</span><span>"
+      + a.werkstoff + " – " + LOTE[a.lot] + ": " + a.wert + " mm ("
+      + loetstoss(a.wert) + ")</span>";
+    ul.appendChild(li);
+  });
+  el("rueckblick").textContent = "";
+  el("rueckblick").appendChild(ul);
+  document.dispatchEvent(new CustomEvent("tbk-durchgang-ende",
+    {detail:{richtig: treffer, gesamt: runde.length}}));
+
+  el("ende").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+function tabelle(){
+  var k = "<th>Grundwerkstoff</th>";
+  LOTE.forEach(function(n){ k += "<th class=\"zahl\">" + n + "</th>"; });
+  el("kopfzeile").innerHTML = k;
+
+  var ziel = el("tabelle");
+  ziel.textContent = "";
+  Object.keys(SPALT).forEach(function(w){
+    var tr = document.createElement("tr");
+    var h = "<td><b>" + w + "</b></td>";
+    SPALT[w].forEach(function(v){
+      h += "<td class=\"zahl\">" + v + (v === "–" ? "" : "<br><small>"
+        + loetstoss(v) + "</small>") + "</td>";
+    });
+    tr.innerHTML = h;
+    ziel.appendChild(tr);
+  });
+}
+
+el("btnWeiter").addEventListener("click", weiter);
+el("btnNeu").addEventListener("click", neuerDurchgang);
+el("stufe").addEventListener("change", neuerDurchgang);
+el("umfang").addEventListener("change", neuerDurchgang);
+
+tabelle();
+neuerDurchgang();
+</script>
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/wettkampf.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>
