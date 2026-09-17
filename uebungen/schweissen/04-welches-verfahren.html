@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Welches Verfahren?</title>
+<meta name="description" content="Vier Aufträge, vier Verfahren: Werkstoff, Dicke, Ort und Stückzahl entscheiden – und die Ordnungsnummer nach DIN EN ISO 4063 gehört dazu.">
+<meta name="dauer" content="25 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .faelle{display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(290px,1fr))}
+  .fall{border:1px solid var(--border); border-radius:12px; padding:14px 16px;
+    background:var(--card)}
+  .fall h3{margin:0 0 4px; font-size:1rem}
+  .fall .wer{font-size:13px; color:var(--muted); margin:0 0 10px}
+  .fall dl{display:grid; grid-template-columns:auto 1fr; gap:3px 10px;
+    margin:0 0 12px; font-size:13.5px}
+  .fall dt{font-weight:600; color:var(--muted)}
+  .fall dd{margin:0}
+  .fall label{display:block; font-size:13.5px; font-weight:600; margin:10px 0 5px}
+  .fall select, .fall input{width:100%; box-sizing:border-box; font:inherit;
+    font-size:14px; padding:8px 9px; border-radius:8px; color:inherit;
+    background:var(--bg); border:1px solid var(--border-stark)}
+  .fall select:focus-visible, .fall input:focus-visible{
+    outline:2px solid var(--accent); outline-offset:1px}
+  .fall .urteil{font-size:13px; font-weight:600; margin:6px 0 0}
+  .fall .urteil.ja{color:var(--ok)}
+  .fall .urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+  table.werte td:first-child{font-weight:600}
+  table.werte select{width:100%; box-sizing:border-box; font:inherit;
+    font-size:14px; padding:6px 8px; border-radius:7px; color:inherit;
+    background:var(--bg); border:1px solid var(--border-stark)}
+  td.urteil{font-size:13px; font-weight:600; white-space:nowrap}
+  td.urteil.ja{color:var(--ok)}
+  td.urteil.nein{color:var(--bad)}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Schweißen</p>
+    <h1>Welches Verfahren?</h1>
+    <p class="lead">Vier Aufträge, vier Antworten. Entschieden wird über Werkstoff,
+      Dicke, Ort und Stückzahl &ndash; nicht über Gewohnheit.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Die Lage:</strong> In der Werkstatt stehen vier Aufträge. Für jeden
+        muss ein Schweißverfahren gewählt werden. Das Tabellenbuch nennt zu jedem
+        Verfahren die Wärmequelle, den Zusatz und &ndash; das ist hier entscheidend &ndash;
+        die <strong>Anwendung</strong>: für welche Werkstoffe, welche Dicken und
+        welche Umstände es gedacht ist.</p>
+      <p>Tragt für jeden Auftrag das Verfahren ein und dazu seine
+        <strong>Ordnungsnummer</strong>. Die steht in der Tabelle der
+        Prozessnummern nach DIN EN ISO 4063 &ndash; ohne sie ist eine
+        Schweißanweisung unvollständig.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Vier Aufträge</h2>
+
+    <div class="faelle" id="faelle"></div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn1">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz1">Noch nichts gewählt.</p>
+
+    <details>
+      <summary>Lösung: warum jeweils dieses Verfahren</summary>
+      <div id="loesungen"></div>
+    </details>
+
+    <h2><span class="nr">2</span>In welcher Lage wird geschweißt?</h2>
+
+    <p>Die Schweißposition steht als Kurzzeichen in der Gabel der Bezugslinie.
+      Sie entscheidet mit darüber, was möglich ist: Was in der Wanne mühelos
+      gelingt, wird über Kopf zur Kunst. Ordnet zu.</p>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>So liegt die Naht</th><th>Kurzzeichen</th>
+          <th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>Die Naht liegt waagerecht, der Schweißer arbeitet von oben
+            in die „Wanne“ hinein &ndash; die bequemste Lage</td>
+            <td><select id="l1" data-druck="ankreuzen"></select></td>
+            <td class="urteil" id="ul1">–</td></tr>
+          <tr><td>Kehlnaht an einem stehenden Steg, waagerecht verlaufend</td>
+            <td><select id="l2" data-druck="ankreuzen"></select></td>
+            <td class="urteil" id="ul2">–</td></tr>
+          <tr><td>Die Naht verläuft senkrecht, geschweißt wird von unten
+            nach oben</td>
+            <td><select id="l3" data-druck="ankreuzen"></select></td>
+            <td class="urteil" id="ul3">–</td></tr>
+          <tr><td>Der Schweißer steht unter dem Bauteil und arbeitet nach oben</td>
+            <td><select id="l4" data-druck="ankreuzen"></select></td>
+            <td class="urteil" id="ul4">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn2">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz2">Noch nichts gewählt.</p>
+
+    <details>
+      <summary>Lösung: die Kurzzeichen der Schweißpositionen</summary>
+      <p><strong>PA</strong> ist die Wannenposition, <strong>PB</strong> die
+        Horizontalposition an der Kehlnaht, <strong>PC</strong> die Querposition,
+        <strong>PD</strong> die Horizontal-Überkopfposition, <strong>PE</strong>
+        die Überkopfposition, <strong>PF</strong> die Steigposition und
+        <strong>PG</strong> die Fallposition.</p>
+      <p>Die Richtwerte auf der Tabellenbuchseite zur Nahtplanung gelten für
+        <strong>PB</strong> beim MAG-Schweißen und für <strong>PA</strong> beim
+        MIG-Schweißen von Aluminium &ndash; also für die günstigen Lagen. In
+        Zwangslagen dauert dieselbe Naht länger.</p>
+    </details>
+
+    <h2><span class="nr">3</span>Übertragen</h2>
+
+    <details>
+      <summary>1. MAG oder MIG – der Unterschied steht im Namen. Welcher?</summary>
+      <p>Im <em>A</em> und im <em>I</em>. MAG heißt Metall-<strong>Aktiv</strong>gas:
+        Das Schutzgas enthält CO<sub>2</sub> oder O<sub>2</sub> und wirkt
+        oxidierend auf den Grundwerkstoff. MIG heißt
+        Metall-<strong>Inert</strong>gas: Argon oder Helium, keine Gasreaktion.</p>
+      <p>Daraus folgt die Anwendung: Aktivgas für unlegierte und legierte Stähle,
+        Inertgas für Aluminium, Kupfer, Nickel &ndash; und für nichtrostende
+        Cr-Ni-Stähle, bei denen eine Oxidation die Korrosionsbeständigkeit
+        kostet.</p>
+    </details>
+
+    <details>
+      <summary>2. Warum ist das Lichtbogenhandschweißen auf der Baustelle im
+        Vorteil, obwohl es langsamer ist?</summary>
+      <p>Weil es kein Schutzgas braucht. Die Umhüllung der Stabelektrode erzeugt
+        das Schutzgas selbst und legt zusätzlich eine Schlackedecke über die
+        Naht. Ein Gasstrom dagegen wird vom Wind weggeblasen &ndash; und auf einer
+        Baustelle weht es fast immer.</p>
+      <p>Dazu kommt die Ausrüstung: Ein Schweißaggregat und ein Kabel sind
+        schneller an der Stelle als eine Gasflasche samt Schlauchpaket.</p>
+    </details>
+
+    <details>
+      <summary>3. Die Zeichnung fordert „141 für die Wurzel, 131 für Füll- und
+        Decklagen“. Ist das nicht widersprüchlich?</summary>
+      <p>Nein, das ist üblich und steht so auch im Tabellenbuch. Die
+        <strong>Wurzel</strong> wird mit WIG geschweißt: ruhiger Lichtbogen,
+        genau dosierbar, kein Spritzer &ndash; und die Wurzel ist die Stelle, an der
+        ein Fehler am teuersten ist.</p>
+      <p>Die <strong>Füll- und Decklagen</strong> brauchen dagegen Leistung. Dafür
+        ist MIG schneller. Zwei Verfahren an einer Naht, jedes dort, wo es stark
+        ist.</p>
+    </details>
+
+    <details>
+      <summary>4. Woran erkennt man in der Zeichnung, dass ein Verfahren
+        vorgeschrieben ist – und nicht nur empfohlen?</summary>
+      <p>An der Angabe selbst: In der Gabel am Ende der Bezugslinie steht die
+        Prozessnummer. Steht sie da, ist sie verbindlich. Steht dort nichts,
+        entscheidet der Betrieb.</p>
+      <p>In Dokumenten wird dieselbe Angabe ausgeschrieben, zum Beispiel
+        <strong>ISO 4063-111</strong> für ein vorgeschriebenes
+        Lichtbogenhandschweißen.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Der Werkstoff entscheidet über das Gas, die Dicke
+      über die Leistung, der Ort über die Bauart. Und die Nummer nach ISO 4063
+      gehört in jede Schweißanweisung.
+    </div>
+
+    <p class="fussnote"><strong>Woher die Angaben stammen:</strong> Schweißverfahren
+      und ihre Anwendung aus der Übersicht „Schmelzschweißen, Schweißverfahren“;
+      Ordnungsnummern nach DIN EN ISO 4063 (2023-07); Schweißpositionen nach
+      DIN EN ISO 6947 (2020-02) &ndash; Tabellenbuch Metall.</p>
+
+    <p><a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-schweissen.html">Lektion Schweißen öffnen</a></p>
+
+  </main>
+
+  <footer class="wrap">
+    <p>&copy; 2026 t-bk.de &middot; <a href="https://t-bk.de/impressum/">Impressum</a>
+      &middot; <a href="https://t-bk.de/datenschutz/">Datenschutz</a></p>
+  </footer>
+
+<script>
+"use strict";
+
+function el(id){ return document.getElementById(id); }
+
+/* Die Auswahl der Verfahren - Namen und Ordnungsnummern nach
+   DIN EN ISO 4063, Anwendung nach der Verfahrensuebersicht. */
+var VERFAHREN = [
+  ["gas",  "Gasschmelzschweißen"],
+  ["hand", "Lichtbogenhandschweißen"],
+  ["mag",  "Metall-Aktivgasschweißen (MAG)"],
+  ["mig",  "Metall-Inertgasschweißen (MIG)"],
+  ["wig",  "Wolfram-Inertgasschweißen (WIG)"]
+];
+var FAELLE = [
+  {id:"a", titel:"Auftrag A – Geländer",
+   wer:"20 Stück, eigene Werkstatt",
+   daten:[["Werkstoff", "S235JR, unlegierter Baustahl"],
+          ["Dicke", "5 mm"], ["Ort", "Werkstatt, Vorrichtung"],
+          ["Stückzahl", "20"], ["Anspruch", "tragende Kehlnähte, keine Sichtnaht"]],
+   v:"mag", n:"135",
+   satz:"Unlegierter Stahl, mittlere Dicke, Serie in der Werkstatt: Das ist der "
+      + "Normalfall für das <b>MAG-Schweißen</b> (135). Das Tabellenbuch nennt "
+      + "dafür „unlegierte und legierte Stähle“ und hebt die hohe "
+      + "Abschmelzleistung hervor &ndash; bei 20 Stück zählt die."},
+
+  {id:"b", titel:"Auftrag B – Rohrleitung",
+   wer:"Einzelstück, Lebensmittelbetrieb",
+   daten:[["Werkstoff", "X5CrNi18-10, nichtrostend"],
+          ["Dicke", "1,5 mm Wandstärke"], ["Ort", "Werkstatt"],
+          ["Stückzahl", "1"], ["Anspruch", "Sichtnaht, innen glatt, kein Spritzer"]],
+   v:"wig", n:"141",
+   satz:"Dünnes Blech, nichtrostender Stahl, höchster Anspruch an die Naht: Das "
+      + "ist die Domäne des <b>WIG-Schweißens</b> (141). Die Wolframelektrode "
+      + "schmilzt nicht ab, der Zusatz wird von Hand zugeführt &ndash; damit lässt "
+      + "sich die Wärme genau dosieren. Das Tabellenbuch nennt ausdrücklich "
+      + "„hochwertige Verbindungen vor allem im Dünnblechbereich“ und "
+      + "nichtrostende Cr-Ni-Stähle."},
+
+  {id:"c", titel:"Auftrag C – Reparatur am Hallentragwerk",
+   wer:"Baustelle, 9 m Höhe",
+   daten:[["Werkstoff", "S355J2"], ["Dicke", "12 mm"],
+          ["Ort", "Baustelle, im Freien, Wind"],
+          ["Stückzahl", "1"], ["Anspruch", "Zwangslage, schlecht zugänglich"]],
+   v:"hand", n:"111",
+   satz:"Wind bläst jedes Schutzgas weg. Das <b>Lichtbogenhandschweißen</b> (111) "
+      + "erzeugt sein Schutzgas aus der Umhüllung der Stabelektrode und braucht "
+      + "keine Flasche. Das Tabellenbuch nennt genau diese beiden Punkte: "
+      + "„Schweißungen in Zwangslagen, Schweißungen auf Baustellen“."},
+
+  {id:"d", titel:"Auftrag D – Gehäusewanne",
+   wer:"Kleinserie, eigene Werkstatt",
+   daten:[["Werkstoff", "AlMg3, Aluminiumlegierung"],
+          ["Dicke", "4 mm"], ["Ort", "Werkstatt"],
+          ["Stückzahl", "8"], ["Anspruch", "dichte Stumpfnähte"]],
+   v:"mig", n:"131",
+   satz:"Aluminium verträgt kein aktives Gas &ndash; es würde oxidieren. Deshalb "
+      + "<b>MIG</b> (131) mit Argon: Metall-<i>Inert</i>gasschweißen. Das "
+      + "Tabellenbuch führt Aluminium und Aluminiumlegierungen ausdrücklich "
+      + "unter MIG, und die Richtwerte für Aluminium stehen dort unter "
+      + "derselben Überschrift."}
+];
+
+var POSITIONEN = [["PA","PA"],["PB","PB"],["PC","PC"],["PD","PD"],
+                  ["PE","PE"],["PF","PF"],["PG","PG"]];
+
+function auswahl(id, liste, ziel){
+  var s = ziel || document.createElement("select");
+  if(!ziel){ s.id = id; s.setAttribute("data-druck", "ankreuzen"); }
+  var leer = document.createElement("option");
+  leer.value = ""; leer.textContent = "bitte wählen";
+  s.appendChild(leer);
+  liste.forEach(function(p){
+    var o = document.createElement("option");
+    o.value = p[0]; o.textContent = p[1];
+    s.appendChild(o);
+  });
+  return s;
+}
+
+function urteilen(id, ok, offen){
+  var u = el(id);
+  if(offen){ u.textContent = "–"; u.className = "urteil"; return 0; }
+  u.textContent = ok ? "richtig" : "nein";
+  u.className = "urteil " + (ok ? "ja" : "nein");
+  return ok ? 1 : 0;
+}
+
+function bilanz(id, richtig, gesamt, offen){
+  el(id).textContent = offen === gesamt
+    ? "Noch nichts gewählt."
+    : richtig + " von " + gesamt + " richtig"
+      + (offen ? ", " + offen + " noch offen." : ".");
+}
+
+(function aufbauen(){
+  var wrap = el("faelle");
+  FAELLE.forEach(function(f){
+    var k = document.createElement("div");
+    k.className = "fall";
+    var h = document.createElement("h3");
+    h.textContent = f.titel;
+    k.appendChild(h);
+    var w = document.createElement("p");
+    w.className = "wer"; w.textContent = f.wer;
+    k.appendChild(w);
+
+    var dl = document.createElement("dl");
+    f.daten.forEach(function(d){
+      var dt = document.createElement("dt"); dt.textContent = d[0];
+      var dd = document.createElement("dd"); dd.textContent = d[1];
+      dl.appendChild(dt); dl.appendChild(dd);
+    });
+    k.appendChild(dl);
+
+    var lab = document.createElement("label");
+    lab.textContent = "Welches Verfahren?";
+    lab.setAttribute("for", "v" + f.id);
+    k.appendChild(lab);
+    k.appendChild(auswahl("v" + f.id, VERFAHREN));
+
+    var lab2 = document.createElement("label");
+    lab2.textContent = "Ordnungsnummer nach DIN EN ISO 4063";
+    lab2.setAttribute("for", "n" + f.id);
+    k.appendChild(lab2);
+    var inp = document.createElement("input");
+    inp.type = "text"; inp.id = "n" + f.id; inp.autocomplete = "off";
+    inp.placeholder = "drei Ziffern";
+    k.appendChild(inp);
+
+    var u = document.createElement("p");
+    u.className = "urteil"; u.id = "u" + f.id; u.textContent = "–";
+    k.appendChild(u);
+    wrap.appendChild(k);
+  });
+
+  ["l1", "l2", "l3", "l4"].forEach(function(id){
+    auswahl(id, POSITIONEN, el(id));
+  });
+
+  el("loesungen").innerHTML = FAELLE.map(function(f){
+    return "<p><strong>" + f.titel.replace(/ –.*/, "") + " &rarr; "
+      + VERFAHREN.filter(function(v){ return v[0] === f.v; })[0][1]
+      + ", Nummer " + f.n + ":</strong> " + f.satz + "</p>";
+  }).join("");
+}());
+
+el("btn1").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  FAELLE.forEach(function(f){
+    var v = el("v" + f.id).value;
+    var n = String(el("n" + f.id).value).trim();
+    if(!v || !n){ offen++; urteilen("u" + f.id, false, true); return; }
+    var gut = (v === f.v) + (n === f.n);
+    var u = el("u" + f.id);
+    u.textContent = gut === 2 ? "Verfahren und Nummer richtig"
+      : (gut === 1 ? "eines von beiden richtig" : "beides nicht");
+    u.className = "urteil " + (gut === 2 ? "ja" : "nein");
+    if(gut === 2) r++;
+  });
+  bilanz("bilanz1", r, FAELLE.length, offen);
+});
+
+el("btn2").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  [["l1", "ul1", "PA"], ["l2", "ul2", "PB"], ["l3", "ul3", "PF"],
+   ["l4", "ul4", "PE"]].forEach(function(p){
+    var v = el(p[0]).value;
+    if(!v) offen++;
+    r += urteilen(p[1], v === p[2], !v);
+  });
+  bilanz("bilanz2", r, 4, offen);
+});
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/fortschritt.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

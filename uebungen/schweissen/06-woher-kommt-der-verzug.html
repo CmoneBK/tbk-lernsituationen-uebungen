@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Woher kommt der Verzug?</title>
+<meta name="description" content="Quer-, Längs- und Winkelschrumpfung auseinanderhalten, die Schweißfolge am Lagerbock festlegen und die Gegenmaßnahmen der Ursache zuordnen.">
+<meta name="dauer" content="25 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  table.werte td:first-child{font-weight:600}
+  table.werte select{width:100%; box-sizing:border-box; font:inherit;
+    font-size:14px; padding:6px 8px; border-radius:7px; color:inherit;
+    background:var(--bg); border:1px solid var(--border-stark)}
+  td.urteil{font-size:13px; font-weight:600; white-space:nowrap}
+  td.urteil.ja{color:var(--ok)}
+  td.urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+  figure.bild{margin:0 0 16px}
+  figure.bild svg{width:100%; height:auto}
+  figure.bild figcaption{font-size:13px; color:var(--muted); margin-top:6px}
+  .folgen{display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+  .folge{border:1px solid var(--border); border-radius:12px; padding:12px 14px;
+    background:var(--card)}
+  .folge h3{margin:0 0 8px; font-size:.95rem}
+  .folge svg{width:100%; height:auto; display:block; margin:0 0 8px}
+  .folge p{margin:0; font-size:13.5px}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Schweißen</p>
+    <h1>Woher kommt der Verzug?</h1>
+    <p class="lead">Schweißgut schrumpft beim Abkühlen. Was nachgibt, wird zum
+      Verzug &ndash; was nicht nachgibt, bleibt als Spannung im Bauteil.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Die Lage:</strong> Der Lagerbock ist geschweißt, und er steht
+        nicht mehr gerade: Die Grundplatte hat sich hochgezogen, der Steg steht
+        schief, und über die Länge ist das Teil krumm geworden. Drei verschiedene
+        Ursachen &ndash; und drei verschiedene Gegenmittel.</p>
+      <p>Ordnet zunächst die Beobachtungen ihren Ursachen zu. Danach legt ihr die
+        <strong>Schweißfolge</strong> fest, und zum Schluss ordnet ihr die
+        Gegenmaßnahmen der richtigen Schrumpfung zu.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Drei Beobachtungen, drei Ursachen</h2>
+
+    <figure class="bild" id="bildVerzug"></figure>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Was am Bauteil zu sehen ist</th><th>Ursache</th>
+          <th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>Die beiden Bleche sind nach dem Schweißen näher beieinander;
+            die Baugruppe ist um 2 mm schmaler als angerissen.</td>
+            <td><select id="v1" data-druck="ankreuzen"></select></td>
+            <td class="urteil" id="uv1">–</td></tr>
+          <tr><td>Der Steg steht nicht mehr senkrecht auf der Grundplatte,
+            sondern ist zur Naht hin geneigt.</td>
+            <td><select id="v2" data-druck="ankreuzen"></select></td>
+            <td class="urteil" id="uv2">–</td></tr>
+          <tr><td>Die Grundplatte ist über ihre ganze Länge krumm geworden &ndash;
+            an den Enden hebt sie vom Tisch ab.</td>
+            <td><select id="v3" data-druck="ankreuzen"></select></td>
+            <td class="urteil" id="uv3">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn1">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz1">Noch nichts gewählt.</p>
+
+    <details>
+      <summary>Lösung: Quer-, Winkel- und Längsschrumpfung</summary>
+      <p><strong>Schmaler geworden &rarr; Querschrumpfung.</strong> Die Naht zieht
+        sich quer zu ihrer Richtung zusammen und holt die Bleche aufeinander zu.
+        Deshalb wird der Spalt vorher mit einem Vorhaltemaß größer angerissen.</p>
+      <p><strong>Steg geneigt &rarr; Winkelschrumpfung.</strong> Oben in der Naht
+        liegt mehr Schweißgut als unten an der Wurzel, also schrumpft es oben
+        stärker. Die Bleche klappen zueinander &ndash; der klassische Dachwinkel.</p>
+      <p><strong>Über die Länge krumm &rarr; Längsschrumpfung.</strong> Auch in
+        Nahtrichtung zieht sich das Schweißgut zusammen. Liegt die Naht
+        außermittig zur Schwerachse, krümmt sich das ganze Bauteil.</p>
+    </details>
+
+    <h2><span class="nr">2</span>Die Schweißfolge festlegen</h2>
+
+    <p>Der Steg soll beidseitig mit einer Kehlnaht über 400 mm angeschlossen
+      werden. Vier Vorschläge, wie das gemacht werden kann. Welcher hält den
+      Verzug am kleinsten?</p>
+
+    <div class="folgen" id="folgen"></div>
+
+    <div class="tabellenrahmen" style="margin-top:16px">
+      <table class="werte">
+        <thead><tr><th>Frage</th><th>Antwort</th><th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>Welche Folge hält den Verzug am kleinsten?</td>
+            <td><select id="f1" data-druck="ankreuzen"></select></td>
+            <td class="urteil" id="uf1">–</td></tr>
+          <tr><td>Welche ist am schlechtesten?</td>
+            <td><select id="f2" data-druck="ankreuzen"></select></td>
+            <td class="urteil" id="uf2">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn2">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz2">Noch nichts gewählt.</p>
+
+    <details>
+      <summary>Lösung: wechselseitig, in Abschnitten, von der Mitte nach außen</summary>
+      <p><strong>Folge D</strong> ist die beste: Sie schweißt <em>wechselseitig</em>,
+        also abwechselnd links und rechts &ndash; damit hebt sich die
+        Winkelschrumpfung weitgehend auf. Sie arbeitet <em>in Abschnitten</em>,
+        sodass nie ein langes Stück auf einmal schrumpft. Und sie geht
+        <em>von der Mitte nach außen</em>, damit die Querschrumpfung nach außen
+        auslaufen kann, statt sich in der Mitte einzusperren.</p>
+      <p><strong>Folge A</strong> ist die schlechteste: eine durchgehende Naht
+        ganz links, dann eine ganz rechts. Die erste Naht zieht das Teil in eine
+        Richtung, die zweite kann das nicht mehr zurückholen &ndash; das Blech ist
+        beim Schweißen der zweiten Naht längst warm und verformt.</p>
+      <p class="fussnote">In der Werkstatt heißt die abschnittsweise Folge mit
+        Rücksprung <em>Pilgerschritt</em>: Geschweißt wird ein Stück vorwärts,
+        dann wird zurückgesetzt und wieder vorwärts geschweißt.</p>
+    </details>
+
+    <h2><span class="nr">3</span>Gegenmaßnahmen zuordnen</h2>
+
+    <p>Jede Schrumpfungsart hat ihre eigenen Gegenmittel. Ordnet zu, wogegen
+      die folgenden Maßnahmen jeweils helfen.</p>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Maßnahme</th><th>Hilft gegen</th><th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>Den Spalt mit einem Vorhaltemaß größer anreißen</td>
+            <td><select id="m1" data-druck="ankreuzen"></select></td>
+            <td class="urteil" id="um1">–</td></tr>
+          <tr><td>Eine Doppel-V-Naht statt einer V-Naht wählen</td>
+            <td><select id="m2" data-druck="ankreuzen"></select></td>
+            <td class="urteil" id="um2">–</td></tr>
+          <tr><td>Die Nähte symmetrisch zur Schwerachse legen</td>
+            <td><select id="m3" data-druck="ankreuzen"></select></td>
+            <td class="urteil" id="um3">–</td></tr>
+          <tr><td>Vor dem Schweißen gegen den erwarteten Winkel vorspannen</td>
+            <td><select id="m4" data-druck="ankreuzen"></select></td>
+            <td class="urteil" id="um4">–</td></tr>
+          <tr><td>Im Pilgerschritt statt in einer durchgehenden Raupe schweißen</td>
+            <td><select id="m5" data-druck="ankreuzen"></select></td>
+            <td class="urteil" id="um5">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn3">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz3">Noch nichts gewählt.</p>
+
+    <h2><span class="nr">4</span>Übertragen</h2>
+
+    <details>
+      <summary>1. Warum hilft eine kleinere Naht gegen den Verzug – und warum
+        darf man sie trotzdem nicht beliebig klein machen?</summary>
+      <p>Weil der Verzug aus der Wärme kommt, und die Wärme aus dem Schweißgut.
+        Der Nahtquerschnitt wächst mit dem Quadrat der Dicke: Von a = 4 auf
+        a = 6 verdoppelt sich der Draht fast. Jede Dicke, die nicht gebraucht
+        wird, ist doppelt bezahlt &ndash; einmal in Draht, einmal in Verzug.</p>
+      <p>Die Grenze setzt die Belastung. Eine Naht, die zu dünn ist, hält nicht &ndash;
+        und eine zu dünne Kehlnaht kühlt außerdem so schnell ab, dass die
+        Wärmeeinflusszone aufhärtet.</p>
+    </details>
+
+    <details>
+      <summary>2. Wäre es nicht einfacher, das fertige Teil hinterher
+        zu richten?</summary>
+      <p>Manchmal ja &ndash; Flammrichten ist ein anerkanntes Verfahren. Aber es
+        bringt wieder Wärme ein, also wieder Eigenspannungen, und es braucht
+        Erfahrung: Wer an der falschen Stelle wärmt, macht es schlimmer.</p>
+      <p>Vor allem ist es teuer. Eine durchdachte Schweißfolge kostet nichts
+        außer einem Gedanken vorher; Richten kostet Zeit, Gas und oft eine
+        zweite Messung.</p>
+    </details>
+
+    <details>
+      <summary>3. Das Bauteil ist nach dem Schweißen maßhaltig – ist dann alles
+        in Ordnung?</summary>
+      <p>Nicht unbedingt. Was nicht als Verzug sichtbar wird, steckt als
+        <strong>Eigenspannung</strong> im Bauteil. Sie zeigt sich später: beim
+        Zerspanen, wenn eine Seite abgenommen wird und das Teil sich verzieht,
+        oder im Betrieb unter zusätzlicher Last.</p>
+      <p>Deshalb wird bei anspruchsvollen Schweißkonstruktionen vor der
+        Endbearbeitung spannungsarm geglüht &ndash; und deshalb steht in einem
+        Arbeitsplan das Schweißen <em>vor</em> dem Schlichten, nie danach.</p>
+    </details>
+
+    <details>
+      <summary>4. Woher weiß man vorher, wie viel Vorhaltemaß nötig ist?</summary>
+      <p>Aus Erfahrung, aus Versuchen am ersten Stück &ndash; und aus den
+        Allgemeintoleranzen für Schweißkonstruktionen. Die Norm gibt vier
+        Genauigkeitsgrade A bis D vor; sie sagen, wie viel Abweichung ohne
+        besondere Angabe zulässig ist.</p>
+      <p>Bei einem Längenmaß über 400 bis 1000 mm sind das im Grad B
+        &plusmn;3 mm, im Grad D &plusmn;9 mm. Wer enger fertigen will, muss es
+        in die Zeichnung schreiben &ndash; und dann auch dafür sorgen.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Quer zieht zusammen, längs krümmt, im Winkel
+      klappt es zu. Wenig Wärme, symmetrisch verteilt, in kurzen Abschnitten und
+      von der Mitte nach außen &ndash; das ist die halbe Miete.
+    </div>
+
+    <p class="fussnote"><strong>Woher die Angaben stammen:</strong> Arten des
+      Verzugs und ihre Gegenmittel wie in der Lektion „Schweißen“;
+      Allgemeintoleranzen für Schweißkonstruktionen nach DIN EN ISO 13920
+      (2023-08) &ndash; Tabellenbuch Metall.</p>
+
+    <p><a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-schweissen.html">Lektion Schweißen öffnen</a></p>
+
+  </main>
+
+  <footer class="wrap">
+    <p>&copy; 2026 t-bk.de &middot; <a href="https://t-bk.de/impressum/">Impressum</a>
+      &middot; <a href="https://t-bk.de/datenschutz/">Datenschutz</a></p>
+  </footer>
+
+<script>
+"use strict";
+
+var NS = "http://www.w3.org/2000/svg";
+function el(id){ return document.getElementById(id); }
+function sv(name, attr, eltern){
+  var e = document.createElementNS(NS, name);
+  for(var k in attr) if(attr.hasOwnProperty(k)) e.setAttribute(k, attr[k]);
+  if(eltern) eltern.appendChild(e);
+  return e;
+}
+
+/* Dieselben drei Arten wie in der Lektion Schweissen. */
+var ARTEN = [
+  ["quer",   "Querschrumpfung"],
+  ["winkel", "Winkelschrumpfung"],
+  ["laengs", "Längsschrumpfung"]
+];
+
+/* Vier Schweissfolgen am beidseitig angeschlossenen Steg. */
+var FOLGEN = [
+  {id:"A", name:"Folge A",
+   text:"Erst die ganze Naht links in einem Zug, dann die ganze Naht rechts.",
+   striche:[{seite:"l", von:0, bis:1, nr:1}, {seite:"r", von:0, bis:1, nr:2}]},
+  {id:"B", name:"Folge B",
+   text:"Links in vier Abschnitten hintereinander, dann rechts ebenso.",
+   striche:[{seite:"l", von:0, bis:0.25, nr:1}, {seite:"l", von:0.25, bis:0.5, nr:2},
+            {seite:"l", von:0.5, bis:0.75, nr:3}, {seite:"l", von:0.75, bis:1, nr:4}]},
+  {id:"C", name:"Folge C",
+   text:"Wechselseitig, aber jede Seite in einem Zug von links nach rechts.",
+   striche:[{seite:"l", von:0, bis:1, nr:1}, {seite:"r", von:0, bis:1, nr:2}]},
+  {id:"D", name:"Folge D",
+   text:"Wechselseitig, in vier Abschnitten, von der Mitte nach außen.",
+   striche:[{seite:"l", von:0.5, bis:0.75, nr:1}, {seite:"r", von:0.5, bis:0.75, nr:2},
+            {seite:"l", von:0.25, bis:0.5, nr:3}, {seite:"r", von:0.25, bis:0.5, nr:4}]}
+];
+
+function folgeZeichnen(svg, f){
+  svg.textContent = "";
+  var g = sv("g", {}, svg);
+  var x = 20, y = 90, b = 220, t = 14;
+  /* Steg von oben gesehen: ein Band, links und rechts die Nahtseiten */
+  sv("rect", {x:x, y:y - t / 2, width:b, height:t, fill:"none",
+    stroke:"currentColor", "stroke-width":2}, g);
+  f.striche.forEach(function(s){
+    var x1 = x + s.von * b, x2 = x + s.bis * b;
+    var yy = s.seite === "l" ? y - t / 2 - 9 : y + t / 2 + 9;
+    sv("line", {x1:x1 + 3, y1:yy, x2:x2 - 3, y2:yy, stroke:"currentColor",
+      "stroke-width":6, "stroke-linecap":"butt"}, g);
+    var tt = sv("text", {x:(x1 + x2) / 2, y:yy + (s.seite === "l" ? -8 : 16),
+      "text-anchor":"middle", "font-size":12, fill:"currentColor"}, g);
+    tt.textContent = String(s.nr);
+  });
+  var u = sv("text", {x:x + b / 2, y:y + 48, "text-anchor":"middle",
+    "font-size":12, fill:"currentColor"}, g);
+  u.textContent = "Steg von oben, Zahlen = Reihenfolge";
+}
+
+function fuellen(sel, liste){
+  var leer = document.createElement("option");
+  leer.value = ""; leer.textContent = "bitte wählen";
+  sel.appendChild(leer);
+  liste.forEach(function(p){
+    var o = document.createElement("option");
+    o.value = p[0]; o.textContent = p[1];
+    sel.appendChild(o);
+  });
+}
+
+function urteilen(id, ok, offen){
+  var u = el(id);
+  if(offen){ u.textContent = "–"; u.className = "urteil"; return 0; }
+  u.textContent = ok ? "richtig" : "nein";
+  u.className = "urteil " + (ok ? "ja" : "nein");
+  return ok ? 1 : 0;
+}
+
+function bilanz(id, richtig, gesamt, offen){
+  el(id).textContent = offen === gesamt
+    ? "Noch nichts gewählt."
+    : richtig + " von " + gesamt + " richtig"
+      + (offen ? ", " + offen + " noch offen." : ".");
+}
+
+(function aufbauen(){
+  ["v1", "v2", "v3", "m1", "m2", "m3", "m4", "m5"].forEach(function(id){
+    fuellen(el(id), ARTEN);
+  });
+  var wahl = FOLGEN.map(function(f){ return [f.id, f.name]; });
+  fuellen(el("f1"), wahl);
+  fuellen(el("f2"), wahl);
+
+  var wrap = el("folgen");
+  FOLGEN.forEach(function(f){
+    var k = document.createElement("div");
+    k.className = "folge";
+    var h = document.createElement("h3");
+    h.textContent = f.name;
+    k.appendChild(h);
+    var svg = document.createElementNS(NS, "svg");
+    svg.setAttribute("viewBox", "0 0 260 150");
+    svg.setAttribute("role", "img");
+    svg.setAttribute("aria-label", f.name + ": " + f.text);
+    k.appendChild(svg);
+    folgeZeichnen(svg, f);
+    var p = document.createElement("p");
+    p.textContent = f.text;
+    k.appendChild(p);
+    wrap.appendChild(k);
+  });
+
+  /* Der Verzug am Lagerbock, dreimal derselbe Steg auf der Platte. */
+  var ziel = el("bildVerzug");
+  var svg = sv("svg", {viewBox:"0 0 640 190", role:"img",
+    "aria-label":"Drei Arten des Verzugs am geschweißten Lagerbock: "
+      + "Querschrumpfung, Winkelschrumpfung und Längsschrumpfung"}, ziel);
+  var f = document.createElement("figcaption");
+  f.innerHTML = "Dreimal derselbe Lagerbock, dreimal eine andere Schrumpfung. "
+    + "Gestrichelt: wie das Teil liegen sollte.";
+  ziel.appendChild(f);
+
+  [0, 1, 2].forEach(function(n){
+    var g = sv("g", {}, svg);
+    var x = 30 + n * 210, y = 120, b = 150, t = 14;
+    /* Sollzustand gestrichelt */
+    sv("rect", {x:x, y:y, width:b, height:t, fill:"none", stroke:"currentColor",
+      "stroke-width":1, "stroke-dasharray":"6 4", opacity:"0.6"}, g);
+    if(n === 0){
+      /* Querschrumpfung: das Teil ist schmaler geworden */
+      sv("rect", {x:x + 9, y:y, width:b - 18, height:t, fill:"none",
+        stroke:"currentColor", "stroke-width":2}, g);
+      sv("rect", {x:x + b / 2 - 7, y:y - 50, width:14, height:50, fill:"none",
+        stroke:"currentColor", "stroke-width":2}, g);
+    }else if(n === 1){
+      /* Winkelschrumpfung: der Steg steht schief */
+      sv("rect", {x:x, y:y, width:b, height:t, fill:"none",
+        stroke:"currentColor", "stroke-width":2}, g);
+      sv("polygon", {points:
+        (x + b / 2 - 7) + "," + y + " " + (x + b / 2 + 7) + "," + y + " "
+        + (x + b / 2 + 21) + "," + (y - 48) + " " + (x + b / 2 + 7) + "," + (y - 48),
+        fill:"none", stroke:"currentColor", "stroke-width":2}, g);
+    }else{
+      /* Laengsschrumpfung: die Platte ist krumm */
+      var d = "M " + x + " " + (y - 10);
+      for(var i = 1; i <= 20; i++){
+        var xx = x + i * b / 20;
+        var f2 = -10 + 20 * Math.sin(Math.PI * i / 20);
+        d += " L " + xx.toFixed(1) + " " + (y + f2).toFixed(1);
+      }
+      for(var j = 20; j >= 0; j--){
+        var x2 = x + j * b / 20;
+        var f3 = -10 + 20 * Math.sin(Math.PI * j / 20);
+        d += " L " + x2.toFixed(1) + " " + (y + f3 + t).toFixed(1);
+      }
+      sv("path", {d:d + " Z", fill:"none", stroke:"currentColor",
+        "stroke-width":2}, g);
+      sv("rect", {x:x + b / 2 - 7, y:y - 48, width:14, height:48, fill:"none",
+        stroke:"currentColor", "stroke-width":2}, g);
+    }
+    var be = sv("text", {x:x + b / 2, y:y + 46, "text-anchor":"middle",
+      "font-size":13, fill:"currentColor"}, g);
+    be.textContent = ["schmaler geworden", "Steg geneigt", "über die Länge krumm"][n];
+  });
+}());
+
+el("btn1").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  [["v1", "uv1", "quer"], ["v2", "uv2", "winkel"], ["v3", "uv3", "laengs"]]
+    .forEach(function(p){
+      var v = el(p[0]).value;
+      if(!v) offen++;
+      r += urteilen(p[1], v === p[2], !v);
+    });
+  bilanz("bilanz1", r, 3, offen);
+});
+
+el("btn2").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  [["f1", "uf1", "D"], ["f2", "uf2", "A"]].forEach(function(p){
+    var v = el(p[0]).value;
+    if(!v) offen++;
+    r += urteilen(p[1], v === p[2], !v);
+  });
+  bilanz("bilanz2", r, 2, offen);
+});
+
+el("btn3").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  [["m1", "um1", "quer"], ["m2", "um2", "winkel"], ["m3", "um3", "laengs"],
+   ["m4", "um4", "winkel"], ["m5", "um5", "laengs"]].forEach(function(p){
+    var v = el(p[0]).value;
+    if(!v) offen++;
+    r += urteilen(p[1], v === p[2], !v);
+  });
+  bilanz("bilanz3", r, 5, offen);
+});
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/fortschritt.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

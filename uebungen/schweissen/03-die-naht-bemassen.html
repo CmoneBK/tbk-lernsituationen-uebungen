@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Die Naht bemaßen</title>
+<meta name="description" content="a5 4 × 40 (30) auseinandernehmen und selbst bilden – Nahtdicke, Stückelung, a und z, dazu Draht und Zeit aus dem Tabellenbuch.">
+<meta name="dauer" content="25 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/schweissnaht.js"></script>
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  table.werte td:first-child{font-weight:600}
+  table.werte input, table.werte select{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:6px 8px; border-radius:7px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  td.urteil{font-size:13px; font-weight:600; white-space:nowrap}
+  td.urteil.ja{color:var(--ok)}
+  td.urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+  figure.bild{margin:0 0 18px}
+  figure.bild svg{width:100%; height:auto}
+  figure.bild figcaption{font-size:13px; color:var(--muted); margin-top:6px}
+  .dreieck{display:grid; gap:16px; grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    align-items:center}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Schweißen</p>
+    <h1>Die Naht bemaßen</h1>
+    <p class="lead">Vor dem Symbol steht, wie dick. Dahinter, wie oft und wie lang.
+      Vier Zahlen &ndash; und daraus folgen Draht, Zeit und Kosten.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Die Lage:</strong> Am Steg einer Konsole steht in der Zeichnung
+        <strong>a5&nbsp;4&nbsp;&times;&nbsp;40&nbsp;(30)</strong>. Die Werkstatt
+        muss daraus vier Dinge ablesen und eines ausrechnen: wie viel Naht das
+        insgesamt ist.</p>
+      <p>Danach geht es umgekehrt: Aus einer Forderung wird ein Eintrag. Und zum
+        Schluss die Frage, die in der Kalkulation zählt &ndash; wie viel Draht und
+        wie viel Zeit.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Den Eintrag lesen</h2>
+
+    <figure class="bild" id="bildEintrag"></figure>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Gesucht</th><th>Eintrag</th><th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>Nahtdicke a in mm</td>
+            <td><input type="number" id="z1" step="0.1" inputmode="decimal"></td>
+            <td class="urteil" id="u1">–</td></tr>
+          <tr><td>Anzahl der Einzelnähte n</td>
+            <td><input type="number" id="z2" step="1" inputmode="numeric"></td>
+            <td class="urteil" id="u2">–</td></tr>
+          <tr><td>Länge einer Einzelnaht l in mm</td>
+            <td><input type="number" id="z3" step="1" inputmode="numeric"></td>
+            <td class="urteil" id="u3">–</td></tr>
+          <tr><td>Abstand e in mm</td>
+            <td><input type="number" id="z4" step="1" inputmode="numeric"></td>
+            <td class="urteil" id="u4">–</td></tr>
+          <tr><td>geschweißte Länge insgesamt in mm</td>
+            <td><input type="number" id="z5" step="1" inputmode="numeric"></td>
+            <td class="urteil" id="u5">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn1">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz1">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: was in dem Eintrag steht</summary>
+      <p><strong>a5</strong> &ndash; die Nahtdicke der Kehlnaht, gemessen als Höhe des
+        gleichschenkligen Dreiecks: <strong>5 mm</strong>. Sie steht
+        <em>vor</em> dem Symbol.</p>
+      <p><strong>4 &times; 40</strong> &ndash; vier Einzelnähte von je 40 mm Länge.
+        <strong>(30)</strong> &ndash; dazwischen jeweils 30 mm Abstand. Beides steht
+        <em>hinter</em> dem Symbol.</p>
+      <p>Geschweißt wird also 4 &middot; 40 mm = <strong>160 mm</strong>. Die Strecke,
+        über die sich das verteilt, ist länger: 160 mm Naht + 3 &middot; 30 mm Lücke
+        = 250 mm. Die Lücken zählen für den Draht nicht mit &ndash; für die Länge des
+        Anschlusses schon.</p>
+    </details>
+
+    <h2><span class="nr">2</span>a oder z &ndash; welche Zahl steht da?</h2>
+
+    <p>Eine Kehlnaht lässt sich auf zwei Arten bemaßen. In den Nahtquerschnitt
+      wird ein gleichschenkliges Dreieck gelegt:</p>
+
+    <div class="dreieck">
+      <figure class="bild" id="bildAZ"></figure>
+      <div>
+        <p><strong>a</strong> ist die <em>Höhe</em> dieses Dreiecks &ndash; der kürzeste
+          Weg von der Wurzel zur Oberfläche.<br>
+          <strong>z</strong> ist die <em>Schenkellänge</em> &ndash; also, wie weit die
+          Naht an jedem Blech hochreicht.</p>
+        <p>Weil die Schenkel im rechten Winkel zueinander stehen, folgt der
+          Zusammenhang aus dem Dreieck selbst:</p>
+        <p style="font-size:1.05rem"><strong>a = z &middot; cos 45° &asymp; 0,7 &middot; z</strong>
+          &nbsp;&nbsp;bzw.&nbsp;&nbsp;<strong>z = a &middot; &radic;2 &asymp; 1,4 &middot; a</strong></p>
+        <p class="fussnote">Beide Angaben meinen dieselbe Naht. Verwechselt man sie,
+          wird die Naht um rund 40 % zu dick oder zu dünn.</p>
+      </div>
+    </div>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Gegeben</th><th>Gesucht</th><th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>a = 5 mm &rarr; z in mm</td>
+            <td><input type="number" id="az1" step="0.1" inputmode="decimal"></td>
+            <td class="urteil" id="uaz1">–</td></tr>
+          <tr><td>z = 8 mm &rarr; a in mm</td>
+            <td><input type="number" id="az2" step="0.1" inputmode="decimal"></td>
+            <td class="urteil" id="uaz2">–</td></tr>
+          <tr><td>Welche Zahl ist bei derselben Naht größer?</td>
+            <td><select id="az3" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="a">a</option>
+              <option value="z">z</option>
+              <option value="gleich">beide sind gleich</option>
+            </select></td>
+            <td class="urteil" id="uaz3">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn2">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz2">Noch nichts eingetragen.</p>
+
+    <h2><span class="nr">3</span>Den Eintrag selbst bilden</h2>
+
+    <p>Gefordert ist: eine <strong>Doppel-Kehlnaht</strong> mit der Nahtdicke
+      <strong>4 mm</strong>, je Seite <strong>fünf</strong> Einzelnähte von
+      <strong>25 mm</strong> Länge, dazwischen <strong>15 mm</strong> Abstand.
+      Schreibt den Eintrag so, wie er in der Zeichnung steht.</p>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Gesucht</th><th>Eintrag</th><th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>Der Eintrag am Symbol</td>
+            <td><input type="text" id="e1" autocomplete="off"
+              placeholder="z. B. a3 2 × 20 (10)"></td>
+            <td class="urteil" id="ue1">–</td></tr>
+          <tr><td>Wie viele Linien hat das Sinnbild?</td>
+            <td><select id="e2" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="voll">nur die Bezugs-Volllinie</option>
+              <option value="beide">Volllinie und Strichlinie</option>
+            </select></td>
+            <td class="urteil" id="ue2">–</td></tr>
+          <tr><td>geschweißte Länge insgesamt, beide Seiten, in mm</td>
+            <td><input type="number" id="e3" step="1" inputmode="numeric"></td>
+            <td class="urteil" id="ue3">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn3">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz3">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: a4 5 × 25 (15)</summary>
+      <p>Die Nahtdicke steht vor dem Symbol, die Stückelung dahinter:
+        <strong>a4&nbsp;5&nbsp;&times;&nbsp;25&nbsp;(15)</strong>.</p>
+      <p>Weil beide Seiten dieselbe Naht bekommen, steht das
+        <strong>kombinierte Grundsymbol</strong> über und unter der
+        Bezugs-Volllinie &ndash; eine Strichlinie gibt es dann nicht. Die Angabe
+        gilt für beide Seiten und wird nur einmal geschrieben.</p>
+      <p>Je Seite sind das 5 &middot; 25 mm = 125 mm, zusammen
+        <strong>250 mm</strong>.</p>
+    </details>
+
+    <h2><span class="nr">4</span>Was das kostet</h2>
+
+    <p>Zurück zur ersten Naht: <strong>a5</strong>, geschweißte Länge
+      <strong>160 mm</strong>, MAG-Schweißen eines unlegierten Stahls in Position
+      PB. Das Tabellenbuch nennt für diese Nahtdicke den Schweißzusatz je Meter
+      und die Hauptnutzungszeit je Meter. Schlagt beides nach und rechnet um.</p>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Gesucht</th><th>Eintrag</th><th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>Schweißzusatz je Meter in g/m</td>
+            <td><input type="number" id="k1" step="1" inputmode="numeric"></td>
+            <td class="urteil" id="uk1">–</td></tr>
+          <tr><td>Hauptnutzungszeit je Meter in min/m</td>
+            <td><input type="number" id="k2" step="0.1" inputmode="decimal"></td>
+            <td class="urteil" id="uk2">–</td></tr>
+          <tr><td>Draht für 160 mm Naht in g</td>
+            <td><input type="number" id="k3" step="0.1" inputmode="decimal"></td>
+            <td class="urteil" id="uk3">–</td></tr>
+          <tr><td>Zeit für 160 mm Naht in min</td>
+            <td><input type="number" id="k4" step="0.01" inputmode="decimal"></td>
+            <td class="urteil" id="uk4">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn4">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz4">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: 34,4 g und 0,42 min</summary>
+      <p>Für die Kehlnaht <strong>a = 5 mm</strong> steht in der Tabelle:
+        Schweißzusatz <strong>215 g/m</strong>, Hauptnutzungszeit
+        <strong>2,6 min/m</strong>. Beides gilt je <em>Meter</em> Naht.</p>
+      <p>160 mm sind 0,16 m:<br>
+        Draht = 215 g/m &middot; 0,16 m = <strong>34,4 g</strong><br>
+        Zeit = 2,6 min/m &middot; 0,16 m = <strong>0,42 min</strong></p>
+      <p class="fussnote">Das ist reine Nahtzeit. Heften, Umspannen, Schlacke
+        entfernen und Prüfen kommen hinzu &ndash; bei einer unterbrochenen Naht mit
+        vier Ansätzen fällt das stärker ins Gewicht als bei einer durchgehenden.</p>
+    </details>
+
+    <h2><span class="nr">5</span>Übertragen</h2>
+
+    <details>
+      <summary>1. Wäre eine durchgehende Naht über dieselben 250 mm besser?</summary>
+      <p>Sie wäre stärker &ndash; und teurer. 250 mm statt 160 mm heißt rund 56 % mehr
+        Draht und mehr Zeit. Ob sich das lohnt, entscheidet die Belastung: Wo die
+        Naht nur halten muss, was sie hält, ist die unterbrochene günstiger.</p>
+      <p>Wo sie dicht sein muss, gibt es keine Wahl. Eine unterbrochene Naht ist
+        nie dicht &ndash; und in jeder Lücke steht Wasser.</p>
+    </details>
+
+    <details>
+      <summary>2. Warum wächst der Draht so viel schneller als die Nahtdicke?</summary>
+      <p>Weil der Nahtquerschnitt mit dem <em>Quadrat</em> der Dicke wächst. Von
+        a = 3 auf a = 6 verdoppelt sich die Dicke, aber der Draht geht von 90 g/m
+        auf 300 g/m &ndash; mehr als das Dreifache.</p>
+      <p>Deshalb ist eine zu dick geschweißte Naht nicht nur unnötig, sondern
+        richtig teuer. Und sie bringt mehr Wärme ein, also mehr Verzug.</p>
+    </details>
+
+    <details>
+      <summary>3. In der Zeichnung steht „z6“. Wie dick wird die Naht?</summary>
+      <p>z = 6 mm ist die Schenkellänge. Die Nahtdicke ist
+        a = 0,7 &middot; 6 mm &asymp; <strong>4,2 mm</strong>.</p>
+      <p>Wer z mit a verwechselt und auf a = 6 mm geht, schweißt eine Naht, die
+        rund doppelt so viel Draht braucht &ndash; und der Bauteil zieht sich
+        entsprechend stärker.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Vor dem Symbol steht die Dicke, dahinter die
+      Stückelung: n &times; l (e). Gerechnet wird mit der geschweißten Länge
+      n &middot; l &ndash; die Lücken kosten keinen Draht.
+    </div>
+
+    <p class="fussnote"><strong>Woher die Angaben stammen:</strong> Bemaßung der
+      Schweißnähte nach DIN EN ISO 2553 (2022-07); Schweißzusatz und
+      Hauptnutzungszeit aus der Tabelle „Nahtplanung, Einstell- und
+      Leistungswerte beim Schweißen“ für das MAG-Schweißen unlegierter Stähle in
+      Position PB &ndash; Tabellenbuch Metall.</p>
+
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+      Maßgebend sind Norm und Tabellenbuch.</p>
+
+    <p><a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-schweissen.html">Lektion Schweißen öffnen</a></p>
+
+  </main>
+
+  <footer class="wrap">
+    <p>&copy; 2026 t-bk.de &middot; <a href="https://t-bk.de/impressum/">Impressum</a>
+      &middot; <a href="https://t-bk.de/datenschutz/">Datenschutz</a></p>
+  </footer>
+
+<script>
+"use strict";
+
+var NS = "http://www.w3.org/2000/svg";
+function el(id){ return document.getElementById(id); }
+function wert(id){
+  var e = el(id);
+  return e ? parseFloat(String(e.value).replace(",", ".")) : NaN;
+}
+function sv(name, attr, eltern){
+  var e = document.createElementNS(NS, name);
+  for(var k in attr) if(attr.hasOwnProperty(k)) e.setAttribute(k, attr[k]);
+  if(eltern) eltern.appendChild(e);
+  return e;
+}
+
+function urteilen(id, ok, offen){
+  var u = el(id);
+  if(offen){ u.textContent = "–"; u.className = "urteil"; return 0; }
+  u.textContent = ok ? "richtig" : "nein";
+  u.className = "urteil " + (ok ? "ja" : "nein");
+  return ok ? 1 : 0;
+}
+
+function bilanz(id, richtig, gesamt, offen){
+  el(id).textContent = offen === gesamt
+    ? "Noch nichts eingetragen."
+    : richtig + " von " + gesamt + " richtig"
+      + (offen ? ", " + offen + " noch offen." : ".");
+}
+
+function bild(zielId, breite, hoehe, label, unterschrift){
+  var ziel = el(zielId);
+  ziel.textContent = "";
+  var svg = sv("svg", {viewBox:"0 0 " + breite + " " + hoehe, role:"img",
+    "aria-label": label}, ziel);
+  if(unterschrift){
+    var f = document.createElement("figcaption");
+    f.innerHTML = unterschrift;
+    ziel.appendChild(f);
+  }
+  return svg;
+}
+
+/* Das Sinnbild des Eintrags, um den es in Teil 1 geht. */
+(function eintragZeichnen(){
+  var svg = bild("bildEintrag", 460, 150,
+    "Sinnbild einer unterbrochenen Kehlnaht mit dem Eintrag a5 4 mal 40 in "
+    + "Klammern 30 an der Bezugslinie",
+    "Der Eintrag am Steg der Konsole. Vor dem Symbol die Nahtdicke, dahinter "
+    + "die Stückelung.");
+  schweissSinnbild(svg, {x:210, y:55, zielX:80, zielY:110, laenge:180,
+    pfeilseite:{art:"kehl", mass:"a5", hinten:"4 × 40 (30)"}});
+}());
+
+/* Das Dreieck im Nahtquerschnitt - a ist die Hoehe, z der Schenkel. */
+(function azZeichnen(){
+  var svg = bild("bildAZ", 300, 230,
+    "Nahtquerschnitt einer Kehlnaht mit eingelegtem gleichschenkligem Dreieck; "
+    + "a ist die Höhe, z die Schenkellänge",
+    "Dasselbe Dreieck, zwei Maße: a misst die Höhe, z den Schenkel.");
+  var g = sv("g", {}, svg);
+  var x = 40, y = 170, t = 20, b = 220, m = x + 95;
+  /* Grundplatte und Steg */
+  sv("rect", {x:x, y:y, width:b, height:t, fill:"none", stroke:"currentColor",
+    "stroke-width":2}, g);
+  sv("rect", {x:m, y:y - 110, width:t, height:110, fill:"none",
+    stroke:"currentColor", "stroke-width":2}, g);
+  /* die Naht */
+  var s = 62;
+  sv("polygon", {points: m + "," + y + " " + (m - s) + "," + y + " "
+    + m + "," + (y - s), fill:"currentColor", opacity:"0.9"}, g);
+  /* z: der Schenkel, senkrecht am Steg */
+  sv("line", {x1:m - 10, y1:y, x2:m - 10, y2:y - s, stroke:"currentColor",
+    "stroke-width":1}, g);
+  [[m - 10, y], [m - 10, y - s]].forEach(function(p){
+    sv("line", {x1:p[0] - 5, y1:p[1], x2:p[0] + 5, y2:p[1],
+      stroke:"currentColor", "stroke-width":1}, g);
+  });
+  var tz = sv("text", {x:m - 16, y:y - s / 2, "text-anchor":"end",
+    "font-size":15, fill:"currentColor", "font-style":"italic"}, g);
+  tz.textContent = "z";
+  /* a: die Hoehe, senkrecht auf der Hypotenuse. Die Linie laeuft ueber die
+     Hypotenuse hinaus ins Freie - dort steht die Beschriftung, ohne auf der
+     Masslinie des z zu liegen. */
+  var hx = m - s / 2, hy = y - s / 2;
+  sv("line", {x1:m, y1:y, x2:hx - 16, y2:hy - 16, stroke:"currentColor",
+    "stroke-width":1}, g);
+  var ta = sv("text", {x:hx - 22, y:hy - 20, "text-anchor":"end",
+    "font-size":15, fill:"currentColor", "font-style":"italic"}, g);
+  ta.textContent = "a";
+}());
+
+/* ---------- Teil 1 ---------- */
+
+el("btn1").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  [["z1", "u1", 5], ["z2", "u2", 4], ["z3", "u3", 40], ["z4", "u4", 30],
+   ["z5", "u5", 160]].forEach(function(f){
+    var v = wert(f[0]);
+    var leer = !isFinite(v); if(leer) offen++;
+    r += urteilen(f[1], Math.abs(v - f[2]) < 0.01, leer);
+  });
+  bilanz("bilanz1", r, 5, offen);
+});
+
+/* ---------- Teil 2 ---------- */
+
+el("btn2").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  var z = wert("az1");
+  var leerZ = !isFinite(z); if(leerZ) offen++;
+  r += urteilen("uaz1", Math.abs(z - 5 * Math.SQRT2) <= 0.2, leerZ);
+
+  var a = wert("az2");
+  var leerA = !isFinite(a); if(leerA) offen++;
+  r += urteilen("uaz2", Math.abs(a - 8 / Math.SQRT2) <= 0.2, leerA);
+
+  var g = el("az3").value;
+  if(!g) offen++;
+  r += urteilen("uaz3", g === "z", !g);
+
+  bilanz("bilanz2", r, 3, offen);
+});
+
+/* ---------- Teil 3 ---------- */
+
+/* Tolerant vergleichen: Leerzeichen weg, x wie mal, Komma wie Punkt. */
+function normal(s){
+  return String(s).toLowerCase()
+    .replace(/×/g, "x").replace(/\*/g, "x")
+    .replace(/\s+/g, "").replace(/,/g, ".");
+}
+
+el("btn3").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  var e1 = String(el("e1").value).trim();
+  if(!e1) offen++;
+  r += urteilen("ue1", normal(e1) === "a45x25(15)", !e1);
+
+  var e2 = el("e2").value;
+  if(!e2) offen++;
+  r += urteilen("ue2", e2 === "voll", !e2);
+
+  var e3 = wert("e3");
+  var leer3 = !isFinite(e3); if(leer3) offen++;
+  r += urteilen("ue3", Math.abs(e3 - 250) < 0.01, leer3);
+
+  bilanz("bilanz3", r, 3, offen);
+});
+
+/* ---------- Teil 4 ---------- */
+
+/* Richtwerte fuer das MAG-Schweissen unlegierter Staehle, Position PB -
+   Tabellenbuch, Nahtplanung und Leistungswerte. Fuer a = 5 mm. */
+var ZUSATZ_A5 = 215;     /* g je Meter Naht */
+var ZEIT_A5   = 2.6;     /* min je Meter Naht */
+var LAENGE_M  = 0.16;    /* 160 mm */
+
+el("btn4").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  [["k1", "uk1", ZUSATZ_A5, 0.5],
+   ["k2", "uk2", ZEIT_A5, 0.05],
+   ["k3", "uk3", ZUSATZ_A5 * LAENGE_M, 0.5],
+   ["k4", "uk4", ZEIT_A5 * LAENGE_M, 0.02]].forEach(function(f){
+    var v = wert(f[0]);
+    var leer = !isFinite(v); if(leer) offen++;
+    r += urteilen(f[1], Math.abs(v - f[2]) <= f[3], leer);
+  });
+  bilanz("bilanz4", r, 4, offen);
+});
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/fortschritt.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

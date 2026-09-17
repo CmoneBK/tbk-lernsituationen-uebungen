@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Schweißgeeignet?</title>
+<meta name="description" content="Drei Stähle, drei Kohlenstoffäquivalente: rechnen, beurteilen und entscheiden, ob vorgewärmt werden muss – und wo die Formel nichts mehr sagt.">
+<meta name="dauer" content="25 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  table.werte td:first-child{font-weight:600}
+  table.werte input, table.werte select{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:6px 8px; border-radius:7px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  td.urteil{font-size:13px; font-weight:600; white-space:nowrap}
+  td.urteil.ja{color:var(--ok)}
+  td.urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+  .formel{background:var(--bg); border:1px solid var(--border); border-radius:10px;
+    padding:12px 14px; margin:14px 0; font-size:1.05rem; text-align:center}
+  table.stoffe{width:100%; border-collapse:collapse; font-size:14px}
+  table.stoffe th, table.stoffe td{border:1px solid var(--border); padding:6px 9px;
+    text-align:right}
+  table.stoffe th:first-child, table.stoffe td:first-child{text-align:left;
+    font-weight:600}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Schweißen</p>
+    <h1>Schweißgeeignet?</h1>
+    <p class="lead">Nicht jeder Stahl verträgt die Wärme. Eine Zahl sagt, wie
+      vorsichtig man sein muss &ndash; und ein Werkstoff zeigt, wo sie aufhört zu
+      gelten.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Die Lage:</strong> Für einen geschweißten Lagerbock stehen drei
+        Stähle zur Wahl. Alle drei lassen sich schweißen &ndash; aber nicht alle drei
+        gleich einfach. Wie viel Aufwand nötig ist, sagt das
+        <strong>Kohlenstoffäquivalent CEV</strong>.</p>
+      <p>Rechnet es für jeden Stahl aus, beurteilt die Schweißeignung und
+        entscheidet, ob vorgewärmt werden muss.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Das Kohlenstoffäquivalent rechnen</h2>
+
+    <p>Kohlenstoff macht Stahl hart &ndash; und beim schnellen Abkühlen nach dem
+      Schweißen spröde. Andere Legierungselemente wirken in dieselbe Richtung,
+      nur schwächer. Das <strong>Kohlenstoffäquivalent</strong> rechnet sie in
+      eine einzige Zahl um, als wären sie Kohlenstoff:</p>
+
+    <div class="formel">CEV = C + Mn/6 + (Cr + Mo + V)/5 + (Ni + Cu)/15</div>
+
+    <p>Die Legierungsanteile stehen in Massenprozent. Drei Stähle, alle Werte in %:</p>
+
+    <div class="tabellenrahmen">
+      <table class="stoffe">
+        <thead><tr><th>Stahl</th><th>C</th><th>Mn</th><th>Cr + Mo + V</th>
+          <th>Ni + Cu</th></tr></thead>
+        <tbody>
+          <tr><td>S235JR</td><td>0,17</td><td>1,40</td><td>0</td><td>0</td></tr>
+          <tr><td>S355J2</td><td>0,20</td><td>1,60</td><td>0</td><td>0</td></tr>
+          <tr><td>42CrMo4</td><td>0,42</td><td>0,75</td><td>1,10</td><td>0</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Und so wird die Zahl gelesen:</p>
+
+    <div class="tabellenrahmen">
+      <table class="stoffe">
+        <thead><tr><th>CEV</th><th>Schweißeignung</th><th>Vorwärmen</th></tr></thead>
+        <tbody>
+          <tr><td>bis 0,45</td><td style="text-align:left">gut schweißgeeignet</td>
+            <td style="text-align:left">nicht nötig</td></tr>
+          <tr><td>über 0,45 bis 0,60</td>
+            <td style="text-align:left">bedingt schweißgeeignet</td>
+            <td style="text-align:left">meist nötig</td></tr>
+          <tr><td>über 0,60</td><td style="text-align:left">nur mit Sorgfalt</td>
+            <td style="text-align:left">immer nötig</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tabellenrahmen" style="margin-top:16px">
+      <table class="werte">
+        <thead><tr><th>Stahl</th><th>CEV</th><th>Schweißeignung</th>
+          <th>Vorwärmen</th><th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>S235JR</td>
+            <td><input type="number" id="c1" step="0.01" inputmode="decimal"></td>
+            <td><select id="b1" data-druck="ankreuzen"></select></td>
+            <td><select id="v1" data-druck="ankreuzen"></select></td>
+            <td class="urteil" id="u1">–</td></tr>
+          <tr><td>S355J2</td>
+            <td><input type="number" id="c2" step="0.01" inputmode="decimal"></td>
+            <td><select id="b2" data-druck="ankreuzen"></select></td>
+            <td><select id="v2" data-druck="ankreuzen"></select></td>
+            <td class="urteil" id="u2">–</td></tr>
+          <tr><td>42CrMo4</td>
+            <td><input type="number" id="c3" step="0.01" inputmode="decimal"></td>
+            <td><select id="b3" data-druck="ankreuzen"></select></td>
+            <td><select id="v3" data-druck="ankreuzen"></select></td>
+            <td class="urteil" id="u3">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn1">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz1">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: 0,40 – 0,47 – 0,77</summary>
+      <p><strong>S235JR:</strong> 0,17 + 1,40/6 = 0,17 + 0,23 =
+        <strong>0,40</strong>. Unter 0,45 &ndash; gut schweißgeeignet, Vorwärmen nicht
+        nötig. Das ist der Grund, warum der Baustahl S235 im Stahlbau überall
+        auftaucht.</p>
+      <p><strong>S355J2:</strong> 0,20 + 1,60/6 = 0,20 + 0,27 =
+        <strong>0,47</strong>. Knapp über 0,45 &ndash; bedingt schweißgeeignet. Bei
+        dünnen Blechen geht es meist ohne, bei dicken wird vorgewärmt: Dickes
+        Material leitet die Wärme schneller ab, das Gefüge kühlt schneller.</p>
+      <p><strong>42CrMo4:</strong> 0,42 + 0,75/6 + 1,10/5 = 0,42 + 0,13 + 0,22 =
+        <strong>0,77</strong>. Deutlich über 0,60 &ndash; nur mit Sorgfalt. Ohne
+        Vorwärmen härtet die Wärmeeinflusszone auf und reißt.</p>
+    </details>
+
+    <h2><span class="nr">2</span>Wo die Formel nichts mehr sagt</h2>
+
+    <p>Der vierte Werkstoff im Schrank ist <strong>X5CrNi18-10</strong> &ndash; der
+      nichtrostende Stahl, aus dem die Abtriebswelle ist. Seine Anteile:
+      C&nbsp;0,05&nbsp;%, Mn&nbsp;2,0&nbsp;%, Cr&nbsp;18&nbsp;%,
+      Ni&nbsp;9&nbsp;%.</p>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Frage</th><th>Antwort</th><th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>Was ergibt die Formel, wenn man sie trotzdem anwendet?</td>
+            <td><input type="number" id="x1" step="0.01" inputmode="decimal"></td>
+            <td class="urteil" id="ux1">–</td></tr>
+          <tr><td>Und was folgt daraus?</td>
+            <td><select id="x2" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="a">Der Stahl ist nicht schweißbar.</option>
+              <option value="b">Der Stahl muss besonders hoch vorgewärmt werden.</option>
+              <option value="c">Die Zahl sagt hier nichts – die Formel gilt für un- und niedriglegierte Stähle.</option>
+            </select></td>
+            <td class="urteil" id="ux2">–</td></tr>
+          <tr><td>Wird X5CrNi18-10 vorgewärmt?</td>
+            <td><select id="x3" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="ja">ja, wie bei 42CrMo4</option>
+              <option value="nein">nein – die Wärme wird im Gegenteil klein gehalten</option>
+            </select></td>
+            <td class="urteil" id="ux3">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn2">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz2">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: die Formel ist hier die falsche</summary>
+      <p>Eingesetzt ergibt sie 0,05 + 2,0/6 + 18/5 + 9/15 = <strong>4,58</strong> &ndash;
+        eine Zahl weit jenseits jeder Skala. Wer sie ernst nimmt, hielte den Stahl
+        für unschweißbar. Das Gegenteil ist der Fall: Austenitische nichtrostende
+        Stähle sind <strong>gut schweißbar</strong>.</p>
+      <p>Der Grund: Das Kohlenstoffäquivalent beschreibt die
+        <em>Aufhärtung</em> beim Abkühlen &ndash; also die Umwandlung in Martensit.
+        Ein austenitischer Stahl macht diese Umwandlung gar nicht mit. Die Formel
+        misst etwas, das dort nicht passiert.</p>
+      <p><strong>Vorgewärmt wird deshalb nicht.</strong> Im Gegenteil: Die
+        eingebrachte Wärme wird klein gehalten und die Zwischenlagentemperatur
+        begrenzt &ndash; zu viel Wärme über zu lange Zeit schadet der
+        Korrosionsbeständigkeit und begünstigt Heißrisse.</p>
+      <p class="fussnote">Für nichtrostende Stähle gilt ein eigener Teil der
+        Regelwerksreihe zum Schweißen; das Kohlenstoffäquivalent nach EN 1011-2
+        ist für ferritische Stähle gedacht.</p>
+    </details>
+
+    <h2><span class="nr">3</span>Übertragen</h2>
+
+    <details>
+      <summary>1. Warum wird der Lagerbock geschweißt, die Welle darin aber nicht
+        angeschweißt?</summary>
+      <p>Weil die Welle aus 42CrMo4 ist &ndash; ein Vergütungsstahl mit CEV 0,77. Man
+        könnte ihn schweißen, aber nur mit Vorwärmen, kontrollierter Abkühlung und
+        anschließender Wärmebehandlung. Und genau die würde die Vergütung
+        zerstören, wegen der man den Stahl überhaupt gewählt hat.</p>
+      <p>Deshalb wird die Welle <em>gelagert</em>, nicht verschweißt: Der Bock aus
+        S235JR nimmt die Kräfte auf, die Welle bleibt, wie sie vergütet wurde.</p>
+    </details>
+
+    <details>
+      <summary>2. S355J2 liegt mit 0,47 nur knapp über der Grenze. Ist das
+        Vorwärmen dann wirklich nötig?</summary>
+      <p>Das entscheidet nicht die Zahl allein, sondern drei Dinge zusammen: das
+        Kohlenstoffäquivalent, die <strong>Blechdicke</strong> und der
+        <strong>Wasserstoffgehalt</strong> des Zusatzes. Dickes Material leitet
+        die Wärme in drei Richtungen ab und kühlt dadurch schneller &ndash; dieselbe
+        Naht härtet stärker auf.</p>
+      <p>Faustregel für die Werkstatt: bei 10 mm und mehr vorwärmen, bei dünnem
+        Blech meist nicht. Verbindlich ist das Schweißverfahrensblatt.</p>
+    </details>
+
+    <details>
+      <summary>3. Was passiert eigentlich, wenn man ohne Vorwärmen schweißt,
+        obwohl es nötig wäre?</summary>
+      <p>Die Wärmeeinflusszone kühlt zu schnell ab und wird hart und spröde. In
+        dieses harte Gefüge wandert Wasserstoff aus dem Lichtbogen &ndash; und unter
+        der verbleibenden Eigenspannung entsteht ein Riss. Oft nicht sofort,
+        sondern Stunden später. Deshalb heißt er <em>Kaltriss</em>.</p>
+      <p>Das ist der Grund, warum eine Sichtprüfung direkt nach dem Schweißen
+        nicht reicht: Die geforderte Wartezeit vor der Prüfung steht nicht
+        zufällig im Regelwerk.</p>
+    </details>
+
+    <details>
+      <summary>4. Warum steht im Kurznamen S235JR hinten ein „JR“ – und hat das
+        mit dem Schweißen zu tun?</summary>
+      <p>JR nennt die <strong>Kerbschlagarbeit</strong>: 27 J, geprüft bei
+        Raumtemperatur. J0 wäre dieselbe Arbeit bei 0 °C, J2 bei −20 °C.</p>
+      <p>Mit dem Schweißen hat das mittelbar zu tun: Eine Schweißnaht bringt Kerben
+        und Eigenspannungen ins Bauteil. Wo es kalt wird und schlagartig belastet
+        werden kann, reicht JR nicht &ndash; dann steht J2 in der Zeichnung, wie beim
+        S355J2 hier.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Das Kohlenstoffäquivalent sagt, wie stark ein Stahl
+      beim Abkühlen aufhärtet. Unter 0,45 ist es unkritisch, über 0,60 wird
+      vorgewärmt. Bei austenitischen nichtrostenden Stählen sagt es gar nichts &ndash;
+      dort ist zu <em>viel</em> Wärme das Problem.
+    </div>
+
+    <p class="fussnote"><strong>Woher die Angaben stammen:</strong> Kohlenstoffäquivalent
+      CEV nach EN 1011-2, Grenzwerte und Legierungsanteile wie in der Lektion
+      „Schweißen“; Werkstoffbezeichnungen nach DIN EN 10027-1 &ndash; Tabellenbuch
+      Metall.</p>
+
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+      Maßgebend sind Norm, Tabellenbuch und das Schweißverfahrensblatt des
+      Betriebs.</p>
+
+    <p><a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-schweissen.html">Lektion Schweißen öffnen</a></p>
+
+  </main>
+
+  <footer class="wrap">
+    <p>&copy; 2026 t-bk.de &middot; <a href="https://t-bk.de/impressum/">Impressum</a>
+      &middot; <a href="https://t-bk.de/datenschutz/">Datenschutz</a></p>
+  </footer>
+
+<script>
+"use strict";
+
+function el(id){ return document.getElementById(id); }
+function wert(id){
+  var e = el(id);
+  return e ? parseFloat(String(e.value).replace(",", ".")) : NaN;
+}
+
+/* Die drei Staehle mit ihren Anteilen in Prozent. Dieselben Zahlen wie in
+   der Lektion Schweissen. */
+var STAEHLE = [
+  {id:"1", name:"S235JR",  c:0.17, mn:1.40, cr:0,    ni:0},
+  {id:"2", name:"S355J2",  c:0.20, mn:1.60, cr:0,    ni:0},
+  {id:"3", name:"42CrMo4", c:0.42, mn:0.75, cr:1.10, ni:0}
+];
+
+/* CEV nach EN 1011-2. */
+function cev(s){ return s.c + s.mn / 6 + s.cr / 5 + s.ni / 15; }
+
+var URTEIL = [["gut", "gut schweißgeeignet"],
+              ["bedingt", "bedingt schweißgeeignet"],
+              ["sorgfalt", "nur mit Sorgfalt"]];
+var VORWAERMEN = [["nein", "nicht nötig"], ["meist", "meist nötig"],
+                  ["immer", "immer nötig"]];
+
+function stufe(x){ return x <= 0.45 ? 0 : (x <= 0.60 ? 1 : 2); }
+
+function fuellen(sel, liste){
+  var leer = document.createElement("option");
+  leer.value = ""; leer.textContent = "bitte wählen";
+  sel.appendChild(leer);
+  liste.forEach(function(p){
+    var o = document.createElement("option");
+    o.value = p[0]; o.textContent = p[1];
+    sel.appendChild(o);
+  });
+}
+
+function urteilen(id, ok, offen){
+  var u = el(id);
+  if(offen){ u.textContent = "–"; u.className = "urteil"; return 0; }
+  u.textContent = ok ? "richtig" : "nein";
+  u.className = "urteil " + (ok ? "ja" : "nein");
+  return ok ? 1 : 0;
+}
+
+function bilanz(id, richtig, gesamt, offen){
+  el(id).textContent = offen === gesamt
+    ? "Noch nichts eingetragen."
+    : richtig + " von " + gesamt + " richtig"
+      + (offen ? ", " + offen + " noch offen." : ".");
+}
+
+(function aufbauen(){
+  STAEHLE.forEach(function(s){
+    fuellen(el("b" + s.id), URTEIL);
+    fuellen(el("v" + s.id), VORWAERMEN);
+  });
+}());
+
+el("btn1").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  STAEHLE.forEach(function(s){
+    var c = wert("c" + s.id), b = el("b" + s.id).value, v = el("v" + s.id).value;
+    if(!isFinite(c) || !b || !v){ offen++; urteilen("u" + s.id, false, true); return; }
+    var soll = cev(s), st = stufe(soll);
+    var gut = (Math.abs(c - soll) <= 0.02)
+            + (b === URTEIL[st][0]) + (v === VORWAERMEN[st][0]);
+    var u = el("u" + s.id);
+    u.textContent = gut === 3 ? "alle drei richtig" : gut + " von 3 richtig";
+    u.className = "urteil " + (gut === 3 ? "ja" : "nein");
+    if(gut === 3) r++;
+  });
+  bilanz("bilanz1", r, STAEHLE.length, offen);
+});
+
+el("btn2").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  /* Dieselbe Formel, angewandt auf X5CrNi18-10 - eine Zahl ohne Aussage. */
+  var soll = 0.05 + 2.0 / 6 + 18 / 5 + 9 / 15;
+  var x = wert("x1");
+  var leer = !isFinite(x); if(leer) offen++;
+  r += urteilen("ux1", Math.abs(x - soll) <= 0.05, leer);
+
+  var a = el("x2").value;
+  if(!a) offen++;
+  r += urteilen("ux2", a === "c", !a);
+
+  var b = el("x3").value;
+  if(!b) offen++;
+  r += urteilen("ux3", b === "nein", !b);
+
+  bilanz("bilanz2", r, 3, offen);
+});
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/fortschritt.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

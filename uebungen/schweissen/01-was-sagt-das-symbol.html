@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Was sagt das Symbol?</title>
+<meta name="description" content="Vier Sinnbilder von der Zeichnung einer geschweißten Konsole lesen: Nahtart, Seite und Zusatzzeichen – und was das für die Werkstatt heißt.">
+<meta name="dauer" content="25 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/schweissnaht.js"></script>
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .faelle{display:grid; gap:18px; grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+  .fall{border:1px solid var(--border); border-radius:12px; padding:14px 16px;
+    background:var(--card)}
+  .fall h3{margin:0 0 10px; font-size:1rem}
+  .fall svg{width:100%; height:auto; display:block; margin:0 0 12px}
+  .fall label{display:block; font-size:13.5px; font-weight:600; margin:10px 0 5px}
+  .fall select{width:100%; font:inherit; font-size:14px; padding:8px 9px;
+    border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark)}
+  .fall select:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+  .fall .urteil{font-size:13px; font-weight:600; margin:6px 0 0}
+  .fall .urteil.ja{color:var(--ok)}
+  .fall .urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+  table.werte td:first-child{font-weight:600}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Schweißen</p>
+    <h1>Was sagt das Symbol?</h1>
+    <p class="lead">Vier Sinnbilder, vier Nähte &ndash; und vier Dinge, die der Schweißer
+      daraus wissen muss, bevor er den Brenner anstellt.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Die Lage:</strong> Auf der Zeichnung einer geschweißten Konsole
+        stehen vier Sinnbilder. Gemalt wird eine Naht in der Zeichnung nicht &ndash;
+        sie wird <em>angegeben</em>. Wer die Angabe nicht liest, schweißt auf der
+        falschen Seite, mit der falschen Dicke oder an der falschen Stelle.</p>
+      <p>Lest für jedes Sinnbild drei Dinge ab: welche <strong>Naht</strong> gemeint
+        ist, auf welcher <strong>Seite</strong> sie liegt und was das
+        <strong>Zusatzzeichen</strong> fordert. Das Tabellenbuch gehört dazu.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Vier Sinnbilder lesen</h2>
+
+    <div class="faelle" id="faelle"></div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn1">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz1">Noch nichts gewählt.</p>
+
+    <details>
+      <summary>Lösung: was die vier Sinnbilder sagen</summary>
+      <div id="loesungen"></div>
+    </details>
+
+    <h2><span class="nr">2</span>Was das für die Werkstatt heißt</h2>
+
+    <p>Eine Angabe in der Zeichnung ist erst dann gelesen, wenn klar ist, was sie
+      in der Werkstatt verursacht. Tragt ein, was jeweils folgt.</p>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Die Angabe sagt &hellip;</th><th>&hellip; und das heißt</th>
+          <th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>ringsum verlaufende Naht</td>
+            <td><select id="f1" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="a">Das Teil muss mindestens einmal gedreht werden.</option>
+              <option value="b">Die Naht läuft ohne Absetzen um den ganzen Anschluss.</option>
+              <option value="c">Die Naht wird erst auf der Baustelle geschweißt.</option>
+            </select></td>
+            <td class="urteil" id="uf1">–</td></tr>
+          <tr><td>Symbol an der Bezugs-Strichlinie</td>
+            <td><select id="f2" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="a">Die Naht liegt dort, wohin der Pfeil zeigt.</option>
+              <option value="b">Die Naht liegt auf der anderen Seite &ndash; das Teil muss gewendet werden.</option>
+              <option value="c">Die Naht wird nur geheftet.</option>
+            </select></td>
+            <td class="urteil" id="uf2">–</td></tr>
+          <tr><td>Baustellennaht</td>
+            <td><select id="f3" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="a">Sie wird in der Werkstatt vorbereitet, aber erst am Aufstellort geschweißt.</option>
+              <option value="b">Sie darf beim Transport aufreißen.</option>
+              <option value="c">Sie braucht keine Nahtvorbereitung.</option>
+            </select></td>
+            <td class="urteil" id="uf3">–</td></tr>
+          <tr><td>kombiniertes Grundsymbol, ohne Strichlinie</td>
+            <td><select id="f4" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="a">Es fehlt eine Angabe &ndash; die Zeichnung ist unvollständig.</option>
+              <option value="b">Beide Seiten bekommen dieselbe Naht; eine Strichlinie ist dann überflüssig.</option>
+              <option value="c">Die Naht darf wahlweise auf einer der beiden Seiten liegen.</option>
+            </select></td>
+            <td class="urteil" id="uf4">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn2">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz2">Noch nichts gewählt.</p>
+
+    <h2><span class="nr">3</span>Übertragen</h2>
+
+    <details>
+      <summary>1. Warum wird die Naht nicht einfach gezeichnet?</summary>
+      <p>Weil eine Naht im Schnitt gezeichnet werden müsste, um etwas auszusagen &ndash;
+        und ein Bauteil hat oft zwanzig davon. Zwanzig Schnitte wären unlesbar
+        und teuer.</p>
+      <p>Das Sinnbild sagt dasselbe in drei Strichen, und es sagt mehr: Nahtart,
+        Seite, Dicke, Länge, Verfahren, Güte. Eine gezeichnete Naht sagt davon
+        nur die Form.</p>
+    </details>
+
+    <details>
+      <summary>2. Zwei Sinnbilder unterscheiden sich nur durch die Linie, an der das
+        Symbol steht. Ist das nicht zu wenig Unterschied für etwas so Wichtiges?</summary>
+      <p>Der Einwand ist berechtigt &ndash; genau hier passieren die meisten Lesefehler.
+        Deshalb hat die Norm eine feste Regel: Die <strong>durchgezogene</strong>
+        Linie meint immer die Pfeilseite, die <strong>gestrichelte</strong> immer
+        die Gegenseite. Ob die gestrichelte oben oder unten liegt, ändert nichts.</p>
+      <p>Wer unsicher ist, geht über das Bauteil: Der Pfeil zeigt auf eine Stelle.
+        Liegt die Naht dort, wo der Pfeil hinzeigt? Dann Volllinie.</p>
+    </details>
+
+    <details>
+      <summary>3. Woran erkennt man, ob eine Kehlnaht mit a oder mit z bemaßt ist?</summary>
+      <p>Am Buchstaben vor der Zahl. <strong>a</strong> ist die Höhe des
+        gleichschenkligen Dreiecks, das in den Nahtquerschnitt passt,
+        <strong>z</strong> die Länge seiner Schenkel. Bei gleicher Naht ist z
+        also immer die größere Zahl.</p>
+      <p>Verwechselt man beides, wird die Naht entweder zu dünn oder unnötig
+        dick. Rund: <em>a</em> &asymp; 0,7 &middot; <em>z</em>.</p>
+    </details>
+
+    <details>
+      <summary>4. Auf der Zeichnung steht nur „a4“ – ohne Angabe zur Länge. Wie lang
+        wird die Naht?</summary>
+      <p>Durchgehend, über die ganze Länge des Anschlusses. Eine Angabe hinter dem
+        Symbol gibt es nur, wenn die Naht <em>unterbrochen</em> sein soll.</p>
+      <p>Das ist die teuerste Variante &ndash; und oft die richtige: Eine unterbrochene
+        Naht spart Draht und Zeit, aber jede Unterbrechung ist eine Kerbe und
+        eine Stelle, an der Feuchtigkeit stehen bleibt.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Drei Fragen an jedes Sinnbild &ndash; welche Naht,
+      welche Seite, was steht sonst noch dran? Die erste beantwortet das
+      Grundsymbol, die zweite die Linie, die dritte das Zusatzzeichen.
+    </div>
+
+    <p class="fussnote"><strong>Woher die Angaben stammen:</strong> Symbole für
+      Schweißen und Löten nach DIN EN ISO 2553 (2022-07), Tabellenbuch Metall
+      &ndash; Lage der Symbole in Zeichnungen, Grundsymbole, kombinierte
+      Grundsymbole und Zusatzsymbole.</p>
+
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
+      Maßgebend sind Norm und Tabellenbuch.</p>
+
+    <p><a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-schweissen.html">Lektion Schweißen öffnen</a></p>
+
+  </main>
+
+  <footer class="wrap">
+    <p>&copy; 2026 t-bk.de &middot; <a href="https://t-bk.de/impressum/">Impressum</a>
+      &middot; <a href="https://t-bk.de/datenschutz/">Datenschutz</a></p>
+  </footer>
+
+<script>
+"use strict";
+
+/* Vier Sinnbilder von der Zeichnung einer geschweißten Konsole. Gezeichnet
+   wird mit assets/schweissnaht.js; die Formen stehen im Tabellenbuch. */
+var FAELLE = [
+  {id:"a", titel:"Sinnbild A – am Anschluss der Grundplatte",
+   bild:{pfeilseite:{art:"kehl", mass:"a4"}, ringsum:true},
+   naht:"kehl", seite:"pfeil", zusatz:"ringsum",
+   satz:"Eine <b>Kehlnaht</b> mit der Nahtdicke a = 4 mm. Das Symbol steht an "
+      + "der <b>Bezugs-Volllinie</b>, also liegt die Naht auf der Pfeilseite. "
+      + "Der kleine Kreis am Knick heißt <b>ringsum</b>: Die Naht läuft ohne "
+      + "Absetzen um den ganzen Anschluss herum."},
+
+  {id:"b", titel:"Sinnbild B – an der Rippe",
+   bild:{gegenseite:{art:"kehl", mass:"a5"}},
+   naht:"kehl", seite:"gegen", zusatz:"keins",
+   satz:"Wieder eine <b>Kehlnaht</b>, jetzt mit a = 5 mm &ndash; aber das Symbol "
+      + "steht an der <b>Bezugs-Strichlinie</b>. Die Naht liegt damit auf der "
+      + "<b>Gegenseite</b>: Das Teil muss zum Schweißen gewendet werden. Genau "
+      + "das ist der Unterschied, den man in der Arbeitsplanung sehen muss."},
+
+  {id:"c", titel:"Sinnbild C – am Steg",
+   bild:{kombi:"dkehl", mass:"a3", hinten:"4 × 40 (30)"},
+   naht:"dkehl", seite:"beide", zusatz:"keins",
+   satz:"Ein <b>kombiniertes Grundsymbol</b>: zwei Dreiecke, eines über und "
+      + "eines unter der Volllinie. Das ist eine <b>Doppel-Kehlnaht</b> &ndash; "
+      + "beide Seiten bekommen dieselbe Naht, eine Strichlinie braucht es "
+      + "deshalb nicht. Hinter dem Symbol steht die Stückelung: 4 Einzelnähte "
+      + "von je 40 mm, mit 30 mm Abstand. Zusammen 160 mm Naht je Seite."},
+
+  {id:"d", titel:"Sinnbild D – am Stumpfstoß des Untergurts",
+   bild:{pfeilseite:{art:"v", zusatz:"gegenlage"}, baustelle:true},
+   naht:"v", seite:"pfeil", zusatz:"baustelle",
+   satz:"Eine <b>V-Naht</b> mit dem Halbkreis der <b>Gegenlage</b>: Nach dem "
+      + "Schweißen wird die Wurzel von hinten ausgearbeitet und eine zweite "
+      + "Lage gesetzt. Das Fähnchen am Knick heißt <b>Baustellennaht</b> &ndash; "
+      + "geschweißt wird erst am Aufstellort, nicht in der Werkstatt."}
+];
+
+var NAHT_WAHL = [
+  ["kehl", "Kehlnaht"], ["dkehl", "Doppel-Kehlnaht"], ["v", "V-Naht"],
+  ["i", "I-Naht"], ["hv", "HV-Naht"], ["y", "Y-Naht"]
+];
+var SEITE_WAHL = [
+  ["pfeil", "Pfeilseite"], ["gegen", "Gegenseite"], ["beide", "beide Seiten"]
+];
+var ZUSATZ_WAHL = [
+  ["keins", "kein Zusatzzeichen"], ["ringsum", "ringsum verlaufend"],
+  ["baustelle", "Baustellennaht"], ["gegenlage", "Gegenlage"]
+];
+
+function el(id){ return document.getElementById(id); }
+
+function auswahl(id, liste){
+  var s = document.createElement("select");
+  s.id = id;
+  s.setAttribute("data-druck", "ankreuzen");
+  var leer = document.createElement("option");
+  leer.value = ""; leer.textContent = "bitte wählen";
+  s.appendChild(leer);
+  liste.forEach(function(p){
+    var o = document.createElement("option");
+    o.value = p[0]; o.textContent = p[1];
+    s.appendChild(o);
+  });
+  return s;
+}
+
+function urteilen(id, ok, offen){
+  var u = el(id);
+  if(offen){ u.textContent = "–"; u.className = "urteil"; return 0; }
+  u.textContent = ok ? "richtig" : "nein";
+  u.className = "urteil " + (ok ? "ja" : "nein");
+  return ok ? 1 : 0;
+}
+
+function bilanz(id, richtig, gesamt, offen){
+  el(id).textContent = offen === gesamt
+    ? "Noch nichts gewählt."
+    : richtig + " von " + gesamt + " richtig"
+      + (offen ? ", " + offen + " noch offen." : ".");
+}
+
+(function aufbauen(){
+  var wrap = el("faelle");
+  FAELLE.forEach(function(f){
+    var k = document.createElement("div");
+    k.className = "fall";
+    var h = document.createElement("h3");
+    h.textContent = f.titel;
+    k.appendChild(h);
+
+    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    svg.setAttribute("viewBox", "0 0 320 150");
+    svg.setAttribute("role", "img");
+    svg.setAttribute("aria-label", "Sinnbild einer Schweißnaht an der Konsole, "
+      + f.titel.replace(/^Sinnbild /, "Zeichen "));
+    k.appendChild(svg);
+    var o = {};
+    for(var s in f.bild) if(f.bild.hasOwnProperty(s)) o[s] = f.bild[s];
+    o.x = 150; o.y = 55; o.zielX = 55; o.zielY = 105; o.laenge = 140;
+    schweissSinnbild(svg, o);
+
+    [["Welche Naht?", "n" + f.id, NAHT_WAHL],
+     ["Auf welcher Seite?", "s" + f.id, SEITE_WAHL],
+     ["Welches Zusatzzeichen?", "z" + f.id, ZUSATZ_WAHL]].forEach(function(p){
+      var lab = document.createElement("label");
+      lab.textContent = p[0];
+      lab.setAttribute("for", p[1]);
+      k.appendChild(lab);
+      k.appendChild(auswahl(p[1], p[2]));
+    });
+    var u = document.createElement("p");
+    u.className = "urteil"; u.id = "u" + f.id; u.textContent = "–";
+    k.appendChild(u);
+    wrap.appendChild(k);
+  });
+
+  el("loesungen").innerHTML = FAELLE.map(function(f){
+    return "<p><strong>" + f.titel.replace(/ –.*/, "") + ":</strong> " + f.satz + "</p>";
+  }).join("");
+}());
+
+el("btn1").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  FAELLE.forEach(function(f){
+    var n = el("n" + f.id).value, s = el("s" + f.id).value, z = el("z" + f.id).value;
+    if(!n || !s || !z){ offen++; urteilen("u" + f.id, false, true); return; }
+    var gut = (n === f.naht) + (s === f.seite) + (z === f.zusatz);
+    var u = el("u" + f.id);
+    u.textContent = gut === 3 ? "alle drei richtig" : gut + " von 3 richtig";
+    u.className = "urteil " + (gut === 3 ? "ja" : "nein");
+    if(gut === 3) r++;
+  });
+  bilanz("bilanz1", r, FAELLE.length, offen);
+});
+
+el("btn2").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  [["f1", "uf1", "b"], ["f2", "uf2", "b"], ["f3", "uf3", "a"],
+   ["f4", "uf4", "b"]].forEach(function(p){
+    var v = el(p[0]).value;
+    if(!v) offen++;
+    r += urteilen(p[1], v === p[2], !v);
+  });
+  bilanz("bilanz2", r, 4, offen);
+});
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/fortschritt.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

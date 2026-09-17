@@ -271,6 +271,51 @@
     ]
   },
   {
+    "typ": "uebungen",
+    "bereich": "Fertigungstechnik",
+    "kategorie": "Fügeverfahren",
+    "name": "Schweißen",
+    "url": "uebungen/schweissen/index.html",
+    "werkzeuge": [
+      {
+        "datei": "fertigungstechnik-fuegeverfahren-schweissen.html",
+        "name": "Schweißen",
+        "art": "lektion"
+      },
+      {
+        "datei": "fertigungstechnik-fuegeverfahren-ueberblick.html",
+        "name": "Überblick über die Verfahren",
+        "art": "lektion"
+      }
+    ],
+    "inhalt": [
+      {
+        "titel": "Was sagt das Symbol?",
+        "url": "uebungen/schweissen/01-was-sagt-das-symbol.html"
+      },
+      {
+        "titel": "Pfeilseite oder Gegenseite?",
+        "url": "uebungen/schweissen/02-pfeilseite-oder-gegenseite.html"
+      },
+      {
+        "titel": "Die Naht bemaßen",
+        "url": "uebungen/schweissen/03-die-naht-bemassen.html"
+      },
+      {
+        "titel": "Welches Verfahren?",
+        "url": "uebungen/schweissen/04-welches-verfahren.html"
+      },
+      {
+        "titel": "Schweißgeeignet?",
+        "url": "uebungen/schweissen/05-schweissgeeignet.html"
+      },
+      {
+        "titel": "Woher kommt der Verzug?",
+        "url": "uebungen/schweissen/06-woher-kommt-der-verzug.html"
+      }
+    ]
+  },
+  {
     "typ": "trainings",
     "bereich": "Fertigungstechnik",
     "kategorie": "Zerspanung",

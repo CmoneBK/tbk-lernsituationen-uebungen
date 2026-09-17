@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pfeilseite oder Gegenseite?</title>
+<meta name="description" content="Vier Bauteile, vier Sinnbilder – und die Frage, welches zu welchem gehört. Die häufigste Verwechslung beim Lesen von Schweißangaben.">
+<meta name="dauer" content="20 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/schweissnaht.js"></script>
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .reihe{display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+  .karte2{border:1px solid var(--border); border-radius:12px; padding:12px 14px;
+    background:var(--card)}
+  .karte2 h3{margin:0 0 8px; font-size:.95rem}
+  .karte2 svg{width:100%; height:auto; display:block}
+  .karte2 label{display:block; font-size:13px; font-weight:600; margin:10px 0 5px}
+  .karte2 select{width:100%; font:inherit; font-size:14px; padding:7px 9px;
+    border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark)}
+  .karte2 select:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+  .karte2 .urteil{font-size:13px; font-weight:600; margin:6px 0 0}
+  .karte2 .urteil.ja{color:var(--ok)}
+  .karte2 .urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+  table.werte td:first-child{font-weight:600}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Schweißen</p>
+    <h1>Pfeilseite oder Gegenseite?</h1>
+    <p class="lead">Dasselbe Symbol, eine andere Linie &ndash; und die Naht liegt auf der
+      anderen Seite des Bauteils. Hier passieren die meisten Lesefehler.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Die Lage:</strong> Ein Steg steht auf einer Grundplatte. Er kann
+        links, rechts oder auf beiden Seiten angeschweißt sein &ndash; und die Naht
+        kann durchgehen oder unterbrochen sein. Vier Bauteile, vier Sinnbilder.</p>
+      <p>Der <strong>Pfeil</strong> zeigt in allen vier Sinnbildern auf dieselbe
+        Stelle: auf die <em>linke</em> Flanke des Stegs. Was sich unterscheidet,
+        ist nur die Linie, an der das Symbol steht.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Die vier Sinnbilder</h2>
+
+    <div class="reihe" id="sinnbilder"></div>
+
+    <h2><span class="nr">2</span>Welches Sinnbild gehört zu welchem Bauteil?</h2>
+
+    <p>Die Bauteile sind von der Seite gezeichnet, geschnitten. Schwarz ist die
+      Naht. Der kleine Pfeil zeigt, worauf die Pfeillinie des Sinnbilds zeigt.</p>
+
+    <div class="reihe" id="bauteile"></div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn1">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz1">Noch nichts gewählt.</p>
+
+    <details>
+      <summary>Lösung: welches zu welchem gehört</summary>
+      <div id="loesungen"></div>
+    </details>
+
+    <h2><span class="nr">3</span>Der Pfeil zeigt woanders hin</h2>
+
+    <p>Jetzt dasselbe Bauteil &ndash; die Naht liegt <strong>rechts</strong> am Steg.
+      Aber der Konstrukteur hat die Pfeillinie einmal auf die linke und einmal
+      auf die rechte Flanke gesetzt. Welches Sinnbild ist jeweils richtig?</p>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Der Pfeil zeigt auf &hellip;</th><th>Das Symbol steht &hellip;</th>
+          <th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>die rechte Flanke &ndash; dort, wo die Naht liegt</td>
+            <td><select id="p1" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="voll">an der Bezugs-Volllinie</option>
+              <option value="strich">an der Bezugs-Strichlinie</option>
+            </select></td>
+            <td class="urteil" id="up1">–</td></tr>
+          <tr><td>die linke Flanke &ndash; die Naht liegt gegenüber</td>
+            <td><select id="p2" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="voll">an der Bezugs-Volllinie</option>
+              <option value="strich">an der Bezugs-Strichlinie</option>
+            </select></td>
+            <td class="urteil" id="up2">–</td></tr>
+          <tr><td>egal welche Flanke &ndash; die Naht liegt auf beiden Seiten</td>
+            <td><select id="p3" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="voll">an der Bezugs-Volllinie</option>
+              <option value="strich">an der Bezugs-Strichlinie</option>
+              <option value="kombi">als kombiniertes Grundsymbol, über und unter der Volllinie</option>
+            </select></td>
+            <td class="urteil" id="up3">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn2">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz2">Noch nichts gewählt.</p>
+
+    <details>
+      <summary>Lösung: worauf der Pfeil zeigt, entscheidet</summary>
+      <p>Die Regel steht nicht am Bauteil, sondern am Sinnbild: <strong>Was an der
+        durchgezogenen Linie steht, liegt dort, wohin der Pfeil zeigt.</strong> Der
+        Pfeil darf auf jede der beiden Flanken zeigen &ndash; er legt damit nur fest,
+        welche Seite „Pfeilseite“ heißt.</p>
+      <p>Zeigt er auf die Flanke mit der Naht, steht das Symbol an der Volllinie.
+        Zeigt er auf die andere, steht es an der Strichlinie. Beides ist richtig
+        und meint dasselbe Bauteil &ndash; nur gelesen wird es unterschiedlich.</p>
+      <p>Bei beidseitiger Naht ist die Frage hinfällig: Dann steht das kombinierte
+        Grundsymbol über und unter der Volllinie, und es gibt keine Strichlinie
+        mehr.</p>
+    </details>
+
+    <h2><span class="nr">4</span>Übertragen</h2>
+
+    <details>
+      <summary>1. Warum legt man den Pfeil nicht einfach immer auf die Seite mit
+        der Naht?</summary>
+      <p>Weil die Zeichnung an dieser Stelle oft keinen Platz hat. Auf einer engen
+        Baugruppe zeigt der Pfeil dorthin, wo er noch hinpasst &ndash; und die Angabe
+        wandert an die Strichlinie.</p>
+      <p>Dazu kommt: An einem Stoß mit <em>zwei verschiedenen</em> Nähten braucht
+        man beide Linien ohnehin. Dann steht an der Volllinie die eine, an der
+        Strichlinie die andere.</p>
+    </details>
+
+    <details>
+      <summary>2. Was kostet es, wenn die Seite falsch gelesen wird?</summary>
+      <p>Bei einer Kehlnaht am Steg oft nur eine Umspannung &ndash; ärgerlich, aber
+        reparabel. Schlimmer wird es, wenn die falsche Seite nicht zugänglich ist:
+        Dann steht das Teil fertig geschweißt da und die geforderte Naht lässt
+        sich nicht mehr legen.</p>
+      <p>Und das Teuerste: Eine Naht auf der falschen Seite trägt die Last nicht
+        so, wie die Konstruktion es vorsieht. Das fällt erst im Betrieb auf.</p>
+    </details>
+
+    <details>
+      <summary>3. Wie erkennt man die Strichlinie sicher, wenn die Zeichnung
+        klein kopiert ist?</summary>
+      <p>An der Lücke. Die Bezugs-Strichlinie ist eine schmale Strichlinie mit
+        deutlich sichtbaren Lücken; die Volllinie hat keine. Wer sie im Ausdruck
+        nicht auseinanderhalten kann, darf nicht raten &ndash; dann muss die Zeichnung
+        größer her.</p>
+      <p>Ein zweiter Anhaltspunkt: Die Strichlinie gibt es nur, wenn eine
+        Gegenseite angegeben ist. Steht nur <em>ein</em> Symbol da und keine zweite
+        Linie, ist es die Pfeilseite.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Durchgezogen heißt „dort, wo der Pfeil hinzeigt“.
+      Gestrichelt heißt „auf der anderen Seite“. Wo die gestrichelte Linie liegt,
+      über oder unter der durchgezogenen, ändert nichts daran.
+    </div>
+
+    <p class="fussnote"><strong>Woher die Angaben stammen:</strong> Lage der Symbole
+      für Schweißen und Löten in Zeichnungen nach DIN EN ISO 2553 (2022-07),
+      Tabellenbuch Metall.</p>
+
+    <p><a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-schweissen.html">Lektion Schweißen öffnen</a></p>
+
+  </main>
+
+  <footer class="wrap">
+    <p>&copy; 2026 t-bk.de &middot; <a href="https://t-bk.de/impressum/">Impressum</a>
+      &middot; <a href="https://t-bk.de/datenschutz/">Datenschutz</a></p>
+  </footer>
+
+<script>
+"use strict";
+
+var NS = "http://www.w3.org/2000/svg";
+function el(id){ return document.getElementById(id); }
+function sv(name, attr, eltern){
+  var e = document.createElementNS(NS, name);
+  for(var k in attr) if(attr.hasOwnProperty(k)) e.setAttribute(k, attr[k]);
+  if(eltern) eltern.appendChild(e);
+  return e;
+}
+
+/* Die vier Sinnbilder. Der Pfeil zeigt in allen vier auf dieselbe Stelle -
+   nur die Linie, an der das Symbol steht, wechselt. */
+var BILDER = [
+  {id:"A", bild:{pfeilseite:{art:"kehl", mass:"a4"}},
+   satz:"Symbol an der <b>Volllinie</b>: Die Naht liegt dort, wohin der Pfeil "
+      + "zeigt &ndash; also links am Steg."},
+  {id:"B", bild:{gegenseite:{art:"kehl", mass:"a4"}},
+   satz:"Symbol an der <b>Strichlinie</b>: Die Naht liegt auf der Gegenseite &ndash; "
+      + "also rechts am Steg, obwohl der Pfeil nach links zeigt."},
+  {id:"C", bild:{kombi:"dkehl", mass:"a4"},
+   satz:"<b>Kombiniertes Grundsymbol</b>, über und unter der Volllinie: Beide "
+      + "Seiten bekommen dieselbe Kehlnaht. Eine Strichlinie gibt es nicht."},
+  {id:"D", bild:{pfeilseite:{art:"kehl", mass:"a4", hinten:"3 × 30 (20)"}},
+   satz:"Symbol an der <b>Volllinie</b> mit Stückelung: links am Steg, aber "
+      + "nicht durchgehend &ndash; 3 Einzelnähte von je 30 mm, 20 mm Abstand."}
+];
+
+/* Die vier Bauteile - dieselbe Stelle, verschieden geschweißt. */
+var TEILE = [
+  {id:"1", titel:"Bauteil 1", naht:"links",  loesung:"A",
+   text:"durchgehende Naht links am Steg"},
+  {id:"2", titel:"Bauteil 2", naht:"rechts", loesung:"B",
+   text:"durchgehende Naht rechts am Steg"},
+  {id:"3", titel:"Bauteil 3", naht:"beide",  loesung:"C",
+   text:"Nähte auf beiden Seiten"},
+  {id:"4", titel:"Bauteil 4", naht:"links-unterbrochen", loesung:"D",
+   text:"unterbrochene Naht links am Steg"}
+];
+
+function bauteilZeichnen(svg, art){
+  svg.textContent = "";
+  var g = sv("g", {}, svg);
+  var x = 30, y = 110, t = 18, b = 200, m = x + b / 2;
+  /* Grundplatte und Steg, im Schnitt */
+  sv("rect", {x:x, y:y, width:b, height:t, fill:"none", stroke:"currentColor",
+    "stroke-width":2}, g);
+  sv("rect", {x:m - t / 2, y:y - 70, width:t, height:70, fill:"none",
+    stroke:"currentColor", "stroke-width":2}, g);
+
+  function kehle(links, teil){
+    var a = 17, vx = links ? -1 : 1;
+    var x1 = m + vx * t / 2;
+    if(teil){
+      /* unterbrochen: nur ein Stück, angedeutet durch eine Lücke */
+      sv("polygon", {points: x1 + "," + y + " " + (x1 + vx * a) + "," + y
+        + " " + x1 + "," + (y - a), fill:"currentColor", opacity:"0.35"}, g);
+      sv("polygon", {points: x1 + "," + (y - 2) + " " + (x1 + vx * a * 0.6)
+        + "," + (y - 2) + " " + x1 + "," + (y - a * 0.6),
+        fill:"currentColor"}, g);
+    }else{
+      sv("polygon", {points: x1 + "," + y + " " + (x1 + vx * a) + "," + y
+        + " " + x1 + "," + (y - a), fill:"currentColor"}, g);
+    }
+  }
+  if(art === "links" || art === "beide") kehle(true, false);
+  if(art === "links-unterbrochen") kehle(true, true);
+  if(art === "rechts" || art === "beide") kehle(false, false);
+
+  /* Der Pfeil zeigt immer auf die linke Flanke des Stegs. */
+  var zx = m - t / 2 - 3, zy = y - 34;
+  sv("line", {x1:zx - 55, y1:zy - 30, x2:zx, y2:zy, stroke:"currentColor",
+    "stroke-width":1}, g);
+  var dx = 55, dy = 30, l = Math.sqrt(dx * dx + dy * dy);
+  var bx = zx - 9 * dx / l, by = zy - 9 * dy / l;
+  sv("polygon", {points: zx + "," + zy + " "
+    + (bx - 1.55 * dy / l) + "," + (by + 1.55 * dx / l) + " "
+    + (bx + 1.55 * dy / l) + "," + (by - 1.55 * dx / l),
+    fill:"currentColor"}, g);
+  /* Der Hinweis beginnt links am Rand und laeuft nach rechts - mit
+     "end" stand er vorher zur Haelfte ausserhalb des Bildes. */
+  var t2 = sv("text", {x:8, y:zy - 36, "text-anchor":"start",
+    "font-size":12, fill:"currentColor"}, g);
+  t2.textContent = "hierhin zeigt der Pfeil";
+}
+
+function urteilen(id, ok, offen){
+  var u = el(id);
+  if(offen){ u.textContent = "–"; u.className = "urteil"; return 0; }
+  u.textContent = ok ? "richtig" : "nein";
+  u.className = "urteil " + (ok ? "ja" : "nein");
+  return ok ? 1 : 0;
+}
+
+function bilanz(id, richtig, gesamt, offen){
+  el(id).textContent = offen === gesamt
+    ? "Noch nichts gewählt."
+    : richtig + " von " + gesamt + " richtig"
+      + (offen ? ", " + offen + " noch offen." : ".");
+}
+
+(function aufbauen(){
+  var wrap = el("sinnbilder");
+  BILDER.forEach(function(b){
+    var k = document.createElement("div");
+    k.className = "karte2";
+    var h = document.createElement("h3");
+    h.textContent = "Sinnbild " + b.id;
+    k.appendChild(h);
+    var svg = document.createElementNS(NS, "svg");
+    svg.setAttribute("viewBox", "0 0 300 130");
+    svg.setAttribute("role", "img");
+    svg.setAttribute("aria-label", "Sinnbild " + b.id
+      + " einer Kehlnaht am Steg, Pfeil auf die linke Flanke");
+    k.appendChild(svg);
+    var o = {};
+    for(var s in b.bild) if(b.bild.hasOwnProperty(s)) o[s] = b.bild[s];
+    o.x = 145; o.y = 50; o.zielX = 50; o.zielY = 95; o.laenge = 135;
+    schweissSinnbild(svg, o);
+    wrap.appendChild(k);
+  });
+
+  var wt = el("bauteile");
+  TEILE.forEach(function(t){
+    var k = document.createElement("div");
+    k.className = "karte2";
+    var h = document.createElement("h3");
+    h.textContent = t.titel;
+    k.appendChild(h);
+    var svg = document.createElementNS(NS, "svg");
+    svg.setAttribute("viewBox", "0 0 260 140");
+    svg.setAttribute("role", "img");
+    svg.setAttribute("aria-label", t.titel + ": Steg auf Grundplatte, " + t.text);
+    k.appendChild(svg);
+    bauteilZeichnen(svg, t.naht);
+
+    var lab = document.createElement("label");
+    lab.textContent = "Welches Sinnbild gehört dazu?";
+    lab.setAttribute("for", "w" + t.id);
+    k.appendChild(lab);
+    var s = document.createElement("select");
+    s.id = "w" + t.id;
+    s.setAttribute("data-druck", "ankreuzen");
+    var leer = document.createElement("option");
+    leer.value = ""; leer.textContent = "bitte wählen";
+    s.appendChild(leer);
+    BILDER.forEach(function(b){
+      var o = document.createElement("option");
+      o.value = b.id; o.textContent = "Sinnbild " + b.id;
+      s.appendChild(o);
+    });
+    k.appendChild(s);
+    var u = document.createElement("p");
+    u.className = "urteil"; u.id = "uw" + t.id; u.textContent = "–";
+    k.appendChild(u);
+    wt.appendChild(k);
+  });
+
+  el("loesungen").innerHTML = TEILE.map(function(t){
+    var b = BILDER.filter(function(x){ return x.id === t.loesung; })[0];
+    return "<p><strong>" + t.titel + " &rarr; Sinnbild " + t.loesung
+      + ":</strong> " + b.satz + "</p>";
+  }).join("");
+}());
+
+el("btn1").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  TEILE.forEach(function(t){
+    var v = el("w" + t.id).value;
+    if(!v) offen++;
+    r += urteilen("uw" + t.id, v === t.loesung, !v);
+  });
+  bilanz("bilanz1", r, TEILE.length, offen);
+});
+
+el("btn2").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  [["p1", "up1", "voll"], ["p2", "up2", "strich"], ["p3", "up3", "kombi"]]
+    .forEach(function(p){
+      var v = el(p[0]).value;
+      if(!v) offen++;
+      r += urteilen(p[1], v === p[2], !v);
+    });
+  bilanz("bilanz2", r, 3, offen);
+});
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/fortschritt.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>
