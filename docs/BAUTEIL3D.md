@@ -144,10 +144,27 @@ auf eine Kugel daneben. Deshalb gibt es drei Gestalten:
 | Raupe | `von`, `bis`, `r` | eine Kante — sieht aus wie die Naht |
 | Ring | `ring: {mitte, radius, achse}`, `r` | eine Rundnaht |
 
-**Mehrere Marken dürfen dieselbe `id` tragen.** Eine Doppel-Kehlnaht hat zwei
-Raupen, eine umlaufende Rippennaht vier; gemeldet wird trotzdem einmal
-dieselbe id, und `markeStand` färbt alle zusammen. So zerfällt eine Naht
-nicht in Teilantworten.
+**Mehrere Marken dürfen dieselbe `id` tragen** — `markeStand` färbt dann alle
+zusammen. Der Lagerbock nutzt das nicht mehr: Dort trägt jede Raupe eine
+eigene Kennung (`"C.3"`) und nennt daneben die Naht, zu der sie gehört
+(`naht: "C"`). Die Marke selbst kommt als zweites Argument in `onWahl`
+zurück, die Seite braucht also keine Nachschlagetabelle.
+
+### Eine Naht besteht aus Teilstücken
+
+Eine Doppel-Kehlnaht liegt auf beiden Flanken, eine umlaufende Naht geht als
+geschlossene Schleife einmal herum — sechs Raupen bei der Rippe des
+Lagerbocks. Wer eine davon anklickt, hat **eine Stelle** getroffen, nicht die
+Naht. Deshalb zählt in der Lernsituation erst der vollständige Satz: Jedes
+getroffene Stück bleibt grün stehen, die Zeile über dem Modell sagt „3 von 6
+gefunden“, und die Erklärung zur Angabe erscheint erst, wenn keines mehr
+fehlt.
+
+Das ist der Grund, warum man den Bock drehen muss: Die Rückseite ist von vorn
+nicht zu sehen, und ohne sie wird keine Doppelkehlnaht vollständig.
+
+Bewertet wird das weiterhin in der Seite, nicht im Baustein — der meldet nur,
+was getroffen wurde.
 
 Unter dem Zeiger hebt sich die Marke hervor. Ohne das wäre bei Kanten nicht
 zu sehen, was anklickbar ist — sie liegen ja am Bauteil.
@@ -163,9 +180,10 @@ sein, und Drehen gehört zur Aufgabe.
 ### Mehr Stellen als Antworten
 
 Gibt es genau so viele Marken wie Lösungen, ist die letzte durch Ausschluss
-zu haben. Deshalb trägt der Lagerbock 24 Kanten für fünf Angaben: An jeder
-Kehle *könnte* geschweißt werden, und am Anschlag liegen drei nebeneinander,
-von denen nur eine in der Zeichnung steht. Wer eine Kante ohne Angabe trifft,
+zu haben. Deshalb trägt der Lagerbock 28 anklickbare Kanten für fünf Angaben:
+17 gehören zu einer Naht, 11 zu keiner. An jeder Kehle *könnte* geschweißt
+werden, und am Anschlag liegen drei nebeneinander, von denen nur eine in der
+Zeichnung steht. Wer eine Kante ohne Angabe trifft,
 bekommt nicht „falsche Naht“ zu hören, sondern „hier wird gar nicht
 geschweißt“ — das ist etwas anderes.
 

@@ -232,7 +232,10 @@
       <h3>Und wo liegt die Naht?</h3>
       <p class="sub">Das Sinnbild sagt, <em>welche</em> Naht. Am Modell steht
         die andere H&auml;lfte der Frage: <em>wo</em>. Dreht den Bock und klickt
-        die Stelle an, die zur gesuchten Angabe geh&ouml;rt.</p>
+        <strong>alle</strong> Kanten an, an denen die gesuchte Naht liegt. Eine
+        Doppelkehlnaht hat zwei Flanken, eine umlaufende Naht geht einmal
+        herum &ndash; erst wenn kein St&uuml;ck mehr fehlt, ist die Angabe
+        gefunden.</p>
       <p class="gesucht" id="gesucht3d">&ndash;</p>
       <div class="buehne" id="buehneStellen"></div>
       <p class="rueck3d" id="rueck3d" hidden></p>
@@ -1404,6 +1407,9 @@ function teileListe(){
    die umlaufende Rippennaht C vier. Sie tragen dieselbe id, und der Baustein
    meldet sie als eine Antwort.
    ========================================================================== */
+/* Welche Kennungen sind Loesungen? Alles Uebrige ist Ablenkung. */
+function istNaht(id){ return "ABCDE".indexOf(id) >= 0 && id.length === 1; }
+
 var NAHT_R = 2.6;                        /* Raupendicke in mm */
 /* Eine Kehlnaht liegt IN der Ecke und beruehrt beide Flaechen. Eine Raupe,
    deren Mitte genau auf der Kante sitzt, steckt zur Haelfte im Werkstoff -
@@ -1418,12 +1424,25 @@ var BXV = BX + NV;                       /* davor */
 var AL = M.platteL / 2 - M.anschlagX;    /* Anschlag, blechseitige Flanke */
 var AZ2 = M.anschlagZ / 2;
 
-function kante(id, name, a, b){
-  return {id:id, name:name, von:a, bis:b, r:NAHT_R};
+/* Jede Raupe traegt eine eigene Kennung ("C.3"), damit sich jedes Stueck
+   fuer sich anklicken und einfaerben laesst. Zu welcher Naht es gehoert,
+   sagt das Feld "naht" - bei den Ablenkern bleibt es leer. */
+var kantenZaehler = {};
+function kante(naht, name, a, b, r){
+  kantenZaehler[naht] = (kantenZaehler[naht] || 0) + 1;
+  return {id:naht + "." + kantenZaehler[naht], naht:istNaht(naht) ? naht : null,
+          gruppe:naht, name:name, von:a, bis:b, r:r || NAHT_R};
+}
+function ring(naht, name, mitte, radius, r){
+  kantenZaehler[naht] = (kantenZaehler[naht] || 0) + 1;
+  return {id:naht + "." + kantenZaehler[naht], naht:istNaht(naht) ? naht : null,
+          gruppe:naht, name:name,
+          ring:{mitte:mitte, radius:radius, achse:"z"}, r:r || NAHT_R};
 }
 
 function markenListe(){
   var m = [];
+  kantenZaehler = {};
 
   /* --- A: Doppel-Kehlnaht, beide Flanken des Stehblechs ---------------- */
   [BZ, -BZ].forEach(function(z){
@@ -1433,9 +1452,8 @@ function markenListe(){
 
   /* --- B: Rundnaht am Stutzen, vorn und hinten ------------------------- */
   [M.blechD / 2 + NV, -(M.blechD / 2 + NV)].forEach(function(z){
-    m.push({id:"B", name:"Stumpfstoß am Rohrstutzen",
-      ring:{mitte:{x:0, y:M.rohrY, z:z},
-            radius:M.rohrD / 2 + NV, achse:"z"}, r:NAHT_R});
+    m.push(ring("B", "Stumpfstoß am Rohrstutzen",
+      {x:0, y:M.rohrY, z:z}, M.rohrD / 2 + NV));
   });
 
   /* --- C und D: die Rippen --------------------------------------------- */
@@ -1504,16 +1522,12 @@ function markenListe(){
     {x:BX, y:M.platteD + M.blechH, z:0}));
   /* Die Stirnflaechen des Stutzens - dort stoesst nichts an */
   [M.rohrL / 2, -M.rohrL / 2].forEach(function(z){
-    m.push({id:"xStutzenEnde", name:"Stirnfläche des Rohrstutzens",
-      ring:{mitte:{x:0, y:M.rohrY, z:z}, radius:(M.rohrD + M.rohrDi) / 4,
-            achse:"z"}, r:NAHT_R * 0.7});
+    m.push(ring("xStutzenEnde", "Stirnfläche des Rohrstutzens",
+      {x:0, y:M.rohrY, z:z}, (M.rohrD + M.rohrDi) / 4, NAHT_R * 0.7));
   });
 
   return m;
 }
-
-/* Welche ids sind Loesungen? Alles Uebrige ist Ablenkung. */
-function istNaht(id){ return "ABCDE".indexOf(id) >= 0 && id.length === 1; }
 
 var BLICK = {abstand:430, hoch:0.42, dreh:0.62};
 var MITTE = {x:0, y:55, z:0};
@@ -1589,9 +1603,22 @@ function montageAufbauen(){
 }
 
 /* ------------------------------------------------------- Stellen anklicken */
-/* Die Reihenfolge wird gemischt, damit nicht A, B, C, D, E abgeklappert
-   wird - gefragt ist die Stelle, nicht das Alphabet. */
+/* Die Aufgabe: alle Teilstuecke einer Naht finden.
+
+   Die Reihenfolge der fuenf Angaben wird gemischt, damit nicht A, B, C, D, E
+   abgeklappert wird - gefragt ist die Stelle, nicht das Alphabet.
+
+   Eine Naht ist selten ein einziges Stueck. Die Doppel-Kehlnaht A liegt auf
+   beiden Flanken des Blechs, die umlaufende Rippennaht C geht als Schleife
+   um die Rippe - sechs Raupen. Wer nur eine davon anklickt, hat die Naht
+   nicht gefunden, sondern eine Stelle davon.
+
+   Deshalb zaehlt hier erst der vollstaendige Satz. Jedes getroffene Stueck
+   bleibt gruen stehen; die Zeile darueber sagt, wie viele noch fehlen. Das
+   heisst auch: Den Bock muss man drehen, denn die Rueckseite ist von vorn
+   nicht zu sehen. */
 var stellenFolge = [], stellenNr = 0, stellenTreffer = 0, stellenOffen = true;
+var teileDerNaht = [], gefundeneTeile = [], ohneFehler = true;
 
 function stellenAufbauen(){
   var karte = el("karteStellen");
@@ -1602,8 +1629,8 @@ function stellenAufbauen(){
     marken: markenListe(),
     blick: {abstand:BLICK.abstand, hoch:0.68, dreh:BLICK.dreh},
     mitte: MITTE,
-    beschreibung: "Derselbe Lagerbock mit f\u00fcnf markierten Nahtstellen zum "
-      + "Anklicken",
+    beschreibung: "Derselbe Lagerbock mit allen Kanten, an denen geschweißt "
+      + "werden könnte, zum Anklicken",
     onWahl: stelleGewaehlt
   });
   if(!szeneStellen){ karte.hidden = true; return; }
@@ -1635,53 +1662,98 @@ function stellenVonVorn(){
 
 function stelleFragen(){
   if(stellenNr >= stellenFolge.length){
-    el("gesucht3d").innerHTML = "<b>Fertig:</b> " + stellenTreffer + " von "
-      + stellenFolge.length + " auf Anhieb getroffen.";
+    el("gesucht3d").innerHTML = "<b>Fertig.</b> " + stellenTreffer + " von "
+      + stellenFolge.length + " Nähten ohne Fehlgriff gefunden.";
     stellenOffen = false;
     return;
   }
   stellenOffen = true;
+  ohneFehler = true;
+  gefundeneTeile = [];
+  var soll = stellenFolge[stellenNr];
+  teileDerNaht = markenListe()
+    .filter(function(m){ return m.naht === soll; })
+    .map(function(m){ return m.id; });
+  /* Die Stuecke der laufenden Aufgabe stehen wieder auf offen - auch die,
+     die in einem frueheren Anlauf schon gruen waren. */
+  teileDerNaht.forEach(function(id){ szeneStellen.markeStand(id, "offen"); });
+  standZeigen();
+}
+
+function standZeigen(){
   var naht = NAEHTE.filter(function(n){
     return n.id === stellenFolge[stellenNr]; })[0];
+  var ganz = teileDerNaht.length;
+  var da = gefundeneTeile.length;
   el("gesucht3d").innerHTML = "Gesucht ist <b>" + naht.titel + "</b> "
-    + "(Angabe " + naht.id + ") \u2013 wo liegt diese Naht am Bock? "
-    + "<span class=\"fussnote\">" + (stellenNr + 1) + " von "
+    + "(Angabe " + naht.id + ") – klickt <b>alle</b> Teilstücke dieser "
+    + "Naht an. <span class=\"fussnote\">" + da + " von " + ganz
+    + " gefunden &middot; Aufgabe " + (stellenNr + 1) + " von "
     + stellenFolge.length + "</span>";
 }
 
-function stelleGewaehlt(id){
+function stelleGewaehlt(id, marke){
   if(!stellenOffen) return;
   var soll = stellenFolge[stellenNr];
   var naht = NAEHTE.filter(function(n){ return n.id === soll; })[0];
   var r = el("rueck3d");
 
-  if(id === soll){
-    stellenTreffer++;
-    stellenOffen = false;
+  /* --- getroffen ---------------------------------------------------- */
+  if(marke.naht === soll){
+    if(gefundeneTeile.indexOf(id) >= 0){
+      r.className = "rueck3d ja";
+      r.innerHTML = "<b>Das Stück hattest du schon.</b> Es fehlen noch "
+        + (teileDerNaht.length - gefundeneTeile.length) + ".";
+      r.hidden = false;
+      return;
+    }
+    gefundeneTeile.push(id);
     szeneStellen.markeStand(id, "richtig");
+
+    if(gefundeneTeile.length < teileDerNaht.length){
+      var fehlt = teileDerNaht.length - gefundeneTeile.length;
+      standZeigen();
+      r.className = "rueck3d ja";
+      r.innerHTML = "<b>Ein Stück der Naht.</b> "
+        + (fehlt === 1 ? "Eines fehlt noch"
+                       : "Es fehlen noch " + fehlt)
+        + " – denk an die Rückseite.";
+      r.hidden = false;
+      return;
+    }
+
+    /* Vollstaendig. */
+    stellenOffen = false;
+    if(ohneFehler) stellenTreffer++;
+    standZeigen();
     r.className = "rueck3d ja";
-    r.innerHTML = "<b>Getroffen.</b> " + naht.titel + " \u2013 " + naht.satz;
+    r.innerHTML = "<b>Vollständig.</b> " + naht.titel + " besteht aus "
+      + teileDerNaht.length + " Teilstück"
+      + (teileDerNaht.length === 1 ? "" : "en") + ". " + naht.satz;
     r.hidden = false;
     stellenNr++;
     window.setTimeout(function(){
       r.hidden = true;
       stelleFragen();
-    }, 2200);
-  }else{
-    var falsch = NAEHTE.filter(function(n){ return n.id === id; })[0];
-    szeneStellen.markeStand(id, "falsch");
-    r.className = "rueck3d nein";
-    r.innerHTML = istNaht(id)
-      ? "<b>Das ist " + (falsch ? falsch.titel : "eine andere Naht")
-        + ".</b> Gesucht war " + naht.titel + " \u2013 such weiter."
-      : "<b>Hier wird gar nicht geschwei\u00dft.</b> Die Zeichnung gibt f\u00fcr "
-        + "diese Kante keine Angabe \u2013 gesucht war "
-        + naht.titel + ".";
-    r.hidden = false;
-    window.setTimeout(function(){
-      szeneStellen.markeStand(id, "offen");
-    }, 1400);
+    }, 3200);
+    return;
   }
+
+  /* --- danebengegriffen --------------------------------------------- */
+  ohneFehler = false;
+  var falsch = marke.naht
+    ? NAEHTE.filter(function(n){ return n.id === marke.naht; })[0] : null;
+  szeneStellen.markeStand(id, "falsch");
+  r.className = "rueck3d nein";
+  r.innerHTML = falsch
+    ? "<b>Das gehört zu " + falsch.titel + ".</b> Gesucht ist "
+      + naht.titel + " – such weiter."
+    : "<b>Hier wird gar nicht geschweißt.</b> Die Zeichnung gibt für "
+      + "diese Kante keine Angabe – gesucht ist " + naht.titel + ".";
+  r.hidden = false;
+  window.setTimeout(function(){
+    szeneStellen.markeStand(id, "offen");
+  }, 1400);
 }
 
 if(document.readyState === "loading"){

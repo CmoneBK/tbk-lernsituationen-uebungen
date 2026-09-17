@@ -90,15 +90,32 @@ async function main() {
   const marken = w.markenListe();
 
   p('sechs Teile', teile.length === 6, teile.length + '');
-  p('jede Nahtangabe hat eine Marke',
-    w.NAEHTE.every((n) => marken.some((m) => m.id === n.id)),
+  /* Jede Raupe traegt eine eigene Kennung ("C.3") und nennt daneben die
+     Naht, zu der sie gehoert. Angeklickt wird das Stueck, gemeint ist die
+     Naht - und gefunden ist sie erst, wenn alle Stuecke angeklickt sind. */
+  p('jede Nahtangabe hat mindestens ein Teilstück',
+    w.NAEHTE.every((n) => marken.some((m) => m.naht === n.id)),
     w.NAEHTE.map((n) => n.id).join(''));
+  p('jedes Teilstück hat eine eigene Kennung',
+    new Set(marken.map((m) => m.id)).size === marken.length,
+    marken.length - new Set(marken.map((m) => m.id)).size + ' doppelt');
+
+  /* Das ist der Kern der Aufgabe: Wer A anklickt, hat die Vorderseite - die
+     Rueckseite fehlt noch. Waere jede Naht ein einziges Stueck, gaebe es
+     nichts zu drehen. */
+  const stuecke = {};
+  marken.forEach((m) => { if (m.naht) stuecke[m.naht] = (stuecke[m.naht] || 0) + 1; });
+  const einzeln = w.NAEHTE.filter((n) => (stuecke[n.id] || 0) < 2).map((n) => n.id);
+  p('die Doppel- und Umlaufnähte bestehen aus mehreren Teilstücken',
+    einzeln.length <= 1,
+    'nur ein Stück: ' + einzeln.join(', '));
+  p('die umlaufende Naht C ist eine geschlossene Schleife',
+    stuecke.C >= 6, stuecke.C + ' Teilstücke');
 
   /* Es muss mehr anzuklicken geben als Lösungen: An jeder Kehle KÖNNTE
      geschweißt werden, und die Aufgabe ist gerade, die richtige zu finden.
      Gäbe es nur fünf Stellen, wäre die fünfte durch Ausschluss zu haben. */
-  const loesung = marken.filter((m) => w.istNaht(m.id));
-  const ablenkung = marken.filter((m) => !w.istNaht(m.id));
+  const ablenkung = marken.filter((m) => !m.naht);
   p('es gibt Kanten ohne Schweißangabe', ablenkung.length > 0,
     ablenkung.length + ' von ' + marken.length);
   p('und mehr anklickbare Stellen als Angaben',
@@ -119,9 +136,9 @@ async function main() {
   });
   p('am Anschlag sind mehrere Stellen zu unterscheiden',
     amAnschlag.length >= 3, amAnschlag.length + ' Stellen');
-  p('und nur eine davon ist die Naht',
-    amAnschlag.filter((m) => w.istNaht(m.id)).length === 1,
-    amAnschlag.map((m) => m.id).join(', '));
+  p('und nur eine davon gehört zur Angabe E',
+    amAnschlag.filter((m) => m.naht).length === 1,
+    amAnschlag.map((m) => m.id + (m.naht ? '=' + m.naht : '')).join(', '));
 
   /* Angeklickt werden Kanten, keine Kugeln: Wer auf eine Naht zeigen soll,
      soll auf die Naht zeigen koennen. */
@@ -223,6 +240,15 @@ async function main() {
     }
   }
   p('keine zwei Antworten liegen aufeinander', !zuNah.length, zuNah.join(', '));
+
+  /* Die Rueckmeldung "gefunden" haengt am vollstaendigen Satz, nicht am
+     ersten Treffer. Das steht in der Seite und nicht im Baustein - der
+     Baustein bewertet nichts. */
+  p('die Aufgabe sammelt die Teilstücke der gesuchten Naht',
+    /teileDerNaht = markenListe\(\)[\s\S]{0,120}m\.naht === soll/.test(roh0));
+  p('und meldet erst vollständig, wenn keines mehr fehlt',
+    /gefundeneTeile\.length < teileDerNaht\.length/.test(roh0)
+    && /Vollst\\u00e4ndig|Vollständig/.test(roh0));
 
   /* Die Zeichnung fuehrt ihre Maße als eigene Konstanten - sie entsteht in
      einem Skriptblock, der vor der Liste M läuft und deshalb nicht auf sie
