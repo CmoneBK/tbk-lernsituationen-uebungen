@@ -1,10 +1,12 @@
 {
-  "titel": "Fertigungstechnik: Fügeverfahren - Überblick",
+  "titel": "Fertigungstechnik: Fügeverfahren - Die Verfahren im Überblick",
+  "platz": 1,
   "lead": "Drei Trainings zum Überblick: das Wirkprinzip auf einen Blick erkennen, die Fachbegriffe sicher haben, die Eigenschaften der Verfahren auseinanderhalten.",
+  "untertitel": "Drei Trainings zum Überblick: Wirkprinzip erkennen, Fachbegriffe sichern, die Eigenschaften der Verfahren auseinanderhalten.",
   "werkzeuge": [
     {
       "datei": "fertigungstechnik-fuegeverfahren-ueberblick.html",
-      "name": "Fügeverfahren im Überblick",
+      "name": "Überblick über die Verfahren",
       "art": "lektion"
     }
   ],

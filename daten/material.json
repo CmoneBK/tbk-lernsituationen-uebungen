@@ -4,6 +4,8 @@
     "bereich": "Fertigungstechnik",
     "kategorie": "Zerspanung",
     "name": "Die Abtriebswelle fertigen",
+    "platz": 2,
+    "untertitel": "Nichtrostender Stahl, Zunderhaut, Kegel und Passfedernut – und eine Rautiefe, die der zulässige Eckenradius nicht mehr hergibt.",
     "url": "lernsituationen/abtriebswelle/index.html",
     "werkzeuge": [
       {
@@ -49,6 +51,8 @@
     "bereich": "Fertigungstechnik",
     "kategorie": "Zerspanung",
     "name": "Die Antriebswelle fertigen",
+    "platz": 1,
+    "untertitel": "Ein Einzelteil aus 42CrMo4, vom Auftrag bis zum Arbeitsplan: Schnittdaten, Werkzeuge, Vorschübe, Passungen, Prüfschritte.",
     "url": "lernsituationen/antriebswelle/index.html",
     "werkzeuge": [
       {
@@ -94,11 +98,13 @@
     "bereich": "Fertigungstechnik",
     "kategorie": "Fügeverfahren",
     "name": "Der Gehäusedeckel",
+    "platz": 1,
+    "untertitel": "Ein Bauteil, fünf Verbindungen, fünf verschiedene Antworten – von der Anforderung über die Verfahrenswahl bis zur Abnahme.",
     "url": "lernsituationen/gehaeusedeckel/index.html",
     "werkzeuge": [
       {
         "datei": "fertigungstechnik-fuegeverfahren-ueberblick.html",
-        "name": "Fügeverfahren im Überblick",
+        "name": "Überblick über die Verfahren",
         "art": "lektion"
       },
       {
@@ -114,6 +120,8 @@
     "bereich": "Maschinenelemente",
     "kategorie": "Schrauben",
     "name": "Konsole am Förderband",
+    "platz": 1,
+    "untertitel": "Eine Rollenbahn wird verlängert: Kräfte an der Verbindung, Schraubenwahl, Montageplan und Abnahme bis zum Prüfprotokoll.",
     "url": "lernsituationen/konsole-am-foerderband/index.html",
     "werkzeuge": [
       {
@@ -129,6 +137,8 @@
     "bereich": "Fertigungstechnik",
     "kategorie": "Fügeverfahren",
     "name": "Der Lagerbock",
+    "platz": 2,
+    "untertitel": "Der Bock für die Abtriebswelle: Schweißangaben lesen, Werkstoff prüfen, Verfahren wählen, Verzug beherrschen, Zeit und Draht rechnen.",
     "url": "lernsituationen/lagerbock/index.html",
     "werkzeuge": [
       {
@@ -149,6 +159,8 @@
     "bereich": "Fertigungstechnik",
     "kategorie": "Zerspanung",
     "name": "Planung eines Drehprozesses",
+    "platz": 1,
+    "untertitel": "Sieben Übungen an der Spannwelle – von der Kontur über Schnittdaten und Vorschub bis zum Prüfschritt im Arbeitsplan.",
     "url": "uebungen/drehprozess/index.html",
     "werkzeuge": [
       {
@@ -222,12 +234,14 @@
     "typ": "uebungen",
     "bereich": "Fertigungstechnik",
     "kategorie": "Fügeverfahren",
-    "name": "Überblick",
+    "name": "Die Verfahren im Überblick",
+    "platz": 1,
+    "untertitel": "Vier Übungen zu den drei Wirkprinzipien: wo die Kraft übergeht, was wozu passt und woran Verbindungen scheitern.",
     "url": "uebungen/fuegeverfahren/index.html",
     "werkzeuge": [
       {
         "datei": "fertigungstechnik-fuegeverfahren-ueberblick.html",
-        "name": "Fügeverfahren im Überblick",
+        "name": "Überblick über die Verfahren",
         "art": "lektion"
       }
     ],
@@ -255,6 +269,8 @@
     "bereich": "Maschinenelemente",
     "kategorie": "Schrauben",
     "name": "Schraubverbindungen",
+    "platz": 1,
+    "untertitel": "Sechs Übungen rund um die Schraubverbindung – von der Bezeichnung über das Anziehdrehmoment bis zur Querkraft.",
     "url": "uebungen/schraubverbindungen/index.html",
     "werkzeuge": [
       {
@@ -295,6 +311,8 @@
     "bereich": "Fertigungstechnik",
     "kategorie": "Fügeverfahren",
     "name": "Schweißen",
+    "platz": 2,
+    "untertitel": "Sechs Übungen rund um die Schweißnaht – vom Sinnbild über die Bemaßung bis zu Verfahren, Schweißeignung und Verzug.",
     "url": "uebungen/schweissen/index.html",
     "werkzeuge": [
       {
@@ -340,6 +358,8 @@
     "bereich": "Fertigungstechnik",
     "kategorie": "Zerspanung",
     "name": "Planung eines Drehprozesses",
+    "platz": 1,
+    "untertitel": "Jedes Training übt einen Griff ins Tabellenbuch: Verfahren, Schnittdaten, Werkzeug, Vorschub, Zeit und Messmittel.",
     "url": "trainings/drehprozess/index.html",
     "werkzeuge": [
       {
@@ -421,12 +441,14 @@
     "typ": "trainings",
     "bereich": "Fertigungstechnik",
     "kategorie": "Fügeverfahren",
-    "name": "Überblick",
+    "name": "Die Verfahren im Überblick",
+    "platz": 1,
+    "untertitel": "Drei Trainings zum Überblick: Wirkprinzip erkennen, Fachbegriffe sichern, die Eigenschaften der Verfahren auseinanderhalten.",
     "url": "trainings/fuegeverfahren/index.html",
     "werkzeuge": [
       {
         "datei": "fertigungstechnik-fuegeverfahren-ueberblick.html",
-        "name": "Fügeverfahren im Überblick",
+        "name": "Überblick über die Verfahren",
         "art": "lektion"
       }
     ],
@@ -450,6 +472,8 @@
     "bereich": "Maschinenelemente",
     "kategorie": "Schrauben",
     "name": "Schraubverbindungen",
+    "platz": 1,
+    "untertitel": "Wiederholung mit Rückmeldung – Begriffe, Rechenwege, Schnittdarstellung und das Nachschlagen im Tabellenbuch.",
     "url": "trainings/schraubverbindungen/index.html",
     "werkzeuge": [
       {
@@ -494,6 +518,8 @@
     "bereich": "Fertigungstechnik",
     "kategorie": "Fügeverfahren",
     "name": "Schweißen",
+    "platz": 2,
+    "untertitel": "Fünf Trainings mit immer neuen Aufgaben: Symbole, Pfeilseite, a und z umrechnen, Fachbegriffe und Ordnungsnummern.",
     "url": "trainings/schweissen/index.html",
     "werkzeuge": [
       {

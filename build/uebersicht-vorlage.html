@@ -98,7 +98,7 @@
     grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
   }
   a.card{
-    display:flex; flex-direction:column; justify-content:center; gap:3px;
+    display:flex; flex-direction:column; justify-content:flex-start; gap:5px;
     min-height:64px;
     background:var(--card); border:1px solid var(--border); border-radius:12px;
     padding:16px 18px; text-decoration:none; color:inherit; box-shadow:var(--shadow);
@@ -106,6 +106,10 @@
   }
   a.card:hover{transform:translateY(-3px); border-color:var(--accent)}
   .kartenname{font-weight:600; font-size:15px}
+  /* Der Untertitel sagt, was die Karte bringt. Er steht unter dem Namen und
+     bleibt einzeilig schmal genug, dass alle Karten einer Reihe gleich hoch
+     bleiben. */
+  .kartensub{font-size:12.5px; color:var(--muted); line-height:1.45}
   /* Nur Pakete tragen eine Stückzahl - einzelne Seiten bleiben ohne. */
   .anzahl{font-size:12px; font-weight:600; color:var(--muted)}
   .leer{color:var(--muted); padding:40px 0; text-align:center}

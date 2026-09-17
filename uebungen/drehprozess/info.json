@@ -1,6 +1,8 @@
 {
   "titel": "Fertigungstechnik: Zerspanung - Planung eines Drehprozesses",
+  "platz": 1,
   "lead": "Sieben Übungen an der Spannwelle: die Kontur in Drehverfahren zerlegen, Schnittgeschwindigkeit und Drehzahl bestimmen, das Werkzeug über seine Bezeichnung auswählen, den Vorschub zur geforderten Rautiefe rechnen, die Hauptnutzungszeit bestimmen, Passungen auf Toleranzmitte schlichten und die Prüfschritte in den Arbeitsplan setzen.",
+  "untertitel": "Sieben Übungen an der Spannwelle – von der Kontur über Schnittdaten und Vorschub bis zum Prüfschritt im Arbeitsplan.",
   "werkzeuge": [
     {
       "datei": "fertigungstechnik-zerspanung-drehprozess-planen.html",

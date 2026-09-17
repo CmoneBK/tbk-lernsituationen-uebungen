@@ -15,9 +15,11 @@
  *   lernsituationen/<ls>/   Lernsituation  - index.html ist HANDGESCHRIEBEN
  *   <typ>/<datei>.html      Einzelstueck ohne Paket
  *
- * Ein Paket beschreibt sich in info.json (titel, lead, werkzeuge, reihenfolge).
- * Eine Lernsituation darf dieselbe Datei nutzen, braucht sie aber nicht - ihr
- * Titel steht im <title> ihrer index.html.
+ * Ein Paket beschreibt sich in info.json (titel, lead, platz, werkzeuge,
+ * reihenfolge). "reihenfolge" ordnet die Seiten IM Paket, "platz" die Karte
+ * des Pakets in der Uebersicht. Eine Lernsituation darf dieselbe Datei
+ * nutzen, braucht sie aber nicht - ihr Titel steht im <title> ihrer
+ * index.html.
  *
  * Aufruf:
  *   node build/build.mjs            erzeugen und fehlende Bausteine nachtragen
@@ -216,6 +218,12 @@ async function seiteLesen(datei, { imPaket = false, baukasten = false } = {}) {
     // Bildungsgaenge, fuer die die Seite nicht vorgesehen ist. Uebersicht und
     // Paketseite blenden sie dann aus.
     bgOhne: metaWert(text, 'bg-ohne'),
+    /* Wo die Karte in ihrer Gruppe steht. Alphabetisch waere fachlich oft
+       falsch: Ein Ueberblick gehoert vor das einzelne Verfahren, und die
+       Antriebswelle kommt vor der Abtriebswelle, obwohl das Alphabet es
+       andersherum sieht. Pakete sagen es in info.json ("platz"), einzelne
+       Seiten in einem <meta name="platz">. */
+    platz: Number(metaWert(text, 'platz')) || 0,
     url: rel,
     geaendert,
   };
@@ -265,6 +273,29 @@ function paketReihenfolge(dateien, vorgabe = []) {
   return [...vorgabe.filter((f) => dateien.includes(f)), ...rest];
 }
 
+/* Der Untertitel der Karte. Er sagt in einer Zeile, was die Seite bringt -
+   ein Name allein ("Ueberblick") laesst raten. Der lead darf laenger sein:
+   Er steht als Einleitung auf der Paketseite, wo Platz ist. Auf der Karte
+   waere er eine Wand, und eine doppelt hohe Karte reisst eine Luecke ins
+   Gitter. Deshalb eine eigene, kurze Fassung in info.json. */
+const UNTERTITEL_MAX = 140;
+
+function untertitelVon(info, seite, wo) {
+  const kurz = (info.untertitel ?? '').trim();
+  if (kurz) {
+    if (kurz.length > UNTERTITEL_MAX) {
+      warnen(posix.join(wo, 'info.json'), `Untertitel ist ${kurz.length} Zeichen `
+        + `lang - hoechstens ${UNTERTITEL_MAX}, sonst wird die Karte zu hoch`);
+    }
+    return kurz;
+  }
+  const ersatz = (info.lead ?? seite?.beschreibung ?? '').trim();
+  warnen(posix.join(wo, 'info.json'), ersatz
+    ? 'ohne "untertitel" - die Karte zeigt den lead und wird hoch'
+    : 'ohne "untertitel" - die Karte bleibt ohne Untertitel');
+  return ersatz;
+}
+
 async function typSammeln(typ) {
   const basis = join(WURZEL, typ.id);
   if (!existsSync(basis)) return [];
@@ -276,7 +307,8 @@ async function typSammeln(typ) {
     // a) Einzelstueck direkt im Typ-Ordner
     if (e.isFile() && e.name.toLowerCase().endsWith('.html')) {
       const s = await seiteLesen(join(basis, e.name), { baukasten: typ.paket });
-      eintraege.push({ typ: typ.id, ...titelZerlegen(s.titel), ...s, werkzeuge: [], inhalt: [] });
+      eintraege.push({ typ: typ.id, ...titelZerlegen(s.titel), ...s,
+        untertitel: s.beschreibung, werkzeuge: [], inhalt: [] });
       continue;
     }
     if (!e.isDirectory()) continue;
@@ -300,9 +332,15 @@ async function typSammeln(typ) {
       for (const f of dateien) {
         await seiteLesen(join(ordner, f), { imPaket: true, baukasten: true });
       }
+      if (!info.platz) {
+        warnen(posix.join(typ.id, e.name, 'info.json'),
+          'ohne "platz" – die Karte landet hinter den eingeordneten');
+      }
       eintraege.push({
         typ: typ.id, ...titelZerlegen(info.titel ?? s.titel), ...s,
+        platz: Number(info.platz) || 0,
         beschreibung: info.lead ?? s.beschreibung,
+        untertitel: untertitelVon(info, s, posix.join(typ.id, e.name)),
         werkzeuge: info.werkzeuge ?? [],
         inhalt: [],
         unterseiten: dateien.length,
@@ -313,6 +351,10 @@ async function typSammeln(typ) {
     // c) Uebungs- oder Trainingspaket: Uebersicht wird erzeugt
     if (!info.titel) {
       warnen(posix.join(typ.id, e.name, 'info.json'), 'ohne "titel" – Ordnername wird verwendet');
+    }
+    if (!info.platz) {
+      warnen(posix.join(typ.id, e.name, 'info.json'),
+        'ohne "platz" – die Karte landet hinter den eingeordneten');
     }
     if (!dateien.length) {
       warnen(posix.join(typ.id, e.name), 'Paket ohne Inhalt – erscheint nicht in der Übersicht');
@@ -328,7 +370,9 @@ async function typSammeln(typ) {
     eintraege.push({
       typ: typ.id,
       ...titelZerlegen(info.titel ?? normWs(e.name.replace(/[-_]+/g, ' '))),
+      platz: Number(info.platz) || 0,
       beschreibung: info.lead ?? '',
+      untertitel: untertitelVon(info, null, posix.join(typ.id, e.name)),
       url: posix.join(typ.id, e.name, 'index.html'),
       ordner,
       werkzeuge: info.werkzeuge ?? [],
@@ -446,7 +490,7 @@ function karteHtml(e, typ) {
   // Filterskript in der Uebersicht nur einen Vergleich braucht. Bei einem Paket
   // gehoeren die Titel der enthaltenen Uebungen dazu - sonst findet die Suche
   // nach "Drehmoment" das Paket nicht, in dem die Aufgabe steckt.
-  const suche = [e.name, e.bereich, e.kategorie, e.beschreibung,
+  const suche = [e.name, e.bereich, e.kategorie, e.untertitel, e.beschreibung,
                  ...e.inhalt.map((i) => i.titel)]
     .filter(Boolean).join(' ').toLowerCase();
 
@@ -469,7 +513,9 @@ function karteHtml(e, typ) {
          ` data-typ="${escHtml(e.typ)}" data-thema="${escHtml(themaSchluessel(e))}"` +
          ` data-suche="${escHtml(suche)}"` +
          (ohne ? ` data-bg-ohne="${escHtml(ohne)}"` : '') + zahlen + '>' +
-         `<span class="kartenname">${escHtml(e.name)}</span>${zusatz}</a>`;
+         `<span class="kartenname">${escHtml(e.name)}</span>` +
+         (e.untertitel ? `<span class="kartensub">${escHtml(e.untertitel)}</span>` : '') +
+         `${zusatz}</a>`;
 }
 
 /* Dieselben Schluessel wie in assets/bildungsgang.js. Hier wird nur gezaehlt,
@@ -485,9 +531,17 @@ function bgOhneGemeinsam(e) {
   return listen[0].filter((k) => listen.every((l) => l.includes(k))).join(' ');
 }
 
+/* Erst der vergebene Platz, dann alles Uebrige alphabetisch dahinter. So
+   steht der Ueberblick eines Themas links, und wer keinen Platz bekommen
+   hat, faellt nicht heraus, sondern ans Ende. */
+function nachPlatz(a, b) {
+  const pa = a.platz || Infinity, pb = b.platz || Infinity;
+  return pa !== pb ? pa - pb : a.name.localeCompare(b.name, 'de');
+}
+
 function gitterHtml(eintraege, typ, einzug) {
   const karten = eintraege
-    .sort((a, b) => a.name.localeCompare(b.name, 'de'))
+    .sort(nachPlatz)
     .map((e) => einzug + '  ' + karteHtml(e, typ))
     .join('\n');
   return `${einzug}<div class="grid">\n${karten}\n${einzug}</div>`;
@@ -671,6 +725,7 @@ ziele.push([join(WURZEL, 'index.html'), await vorlageFuellen('uebersicht-vorlage
 ziele.push([join(WURZEL, 'daten', 'material.json'), JSON.stringify(
   alle.map((e) => ({
     typ: e.typ, bereich: e.bereich, kategorie: e.kategorie, name: e.name,
+    platz: e.platz, untertitel: e.untertitel ?? '',
     url: e.url, werkzeuge: e.werkzeuge,
     inhalt: e.inhalt.map((i) => ({ titel: i.titel, url: posix.join(dirname(e.url).split('\\').join('/'), i.datei) })),
   })), null, 2) + '\n']);

@@ -1,6 +1,8 @@
 {
   "titel": "Fertigungstechnik: Fügeverfahren - Schweißen",
+  "platz": 2,
   "lead": "Sechs Übungen rund um die Schweißnaht – vom Sinnbild in der Zeichnung über die Bemaßung bis zur Wahl des Verfahrens, zur Schweißeignung des Stahls und zum Verzug.",
+  "untertitel": "Sechs Übungen rund um die Schweißnaht – vom Sinnbild über die Bemaßung bis zu Verfahren, Schweißeignung und Verzug.",
   "werkzeuge": [
     {
       "datei": "fertigungstechnik-fuegeverfahren-schweissen.html",

@@ -57,18 +57,32 @@
 
     <div class="box auftrag">
       <p><strong>Worum es geht:</strong> Zwei Platten werden mit einer
-        Sechskantschraube und einer Mutter verspannt. Gesucht sind zwei Zahlen:
-        die <strong>nötige Länge</strong> und die <strong>Normlänge</strong>, die
-        man dafür kauft.</p>
+        Sechskantschraube und einer Mutter verspannt. Gesucht sind zwei Zahlen
+        und eine Entscheidung: die <strong>nötige Länge</strong>, die
+        <strong>Normlänge</strong>, die man dafür kauft, und
+        <strong>welche Schraube</strong> das sein kann.</p>
+      <p>Denn die Länge allein reicht nicht. Eine Schraube mit Schaft trägt
+        das Gewinde nur über die letzten <em>b</em> Millimeter &ndash; der glatte
+        Schaft davor darf nicht bis in die Mutter reichen. Und kurz gibt es sie
+        gar nicht: <strong>ISO 4014 beginnt je nach Größe erst bei 30 bis
+        80&nbsp;mm</strong>. Passt eines von beidem nicht, nimmt man die
+        <strong>Vollgewindeschraube ISO 4017</strong>.</p>
+      <p>Wer beides nachrechnet, macht dabei eine Beobachtung: Solange die
+        Länge im Bereich der Tabelle liegt, reicht das Gewinde <em>immer</em>
+        &ndash; die Norm legt <em>b</em> genau dafür aus. Die Falle liegt am
+        unteren Ende: Dort steht die Schraube mit Schaft schlicht nicht mehr in
+        der Tabelle, und wer den Längenbereich überliest, bestellt eine, die es
+        nicht gibt.</p>
       <p>Die Länge <em>l</em> einer Sechskantschraube wird <strong>ohne Kopf</strong>
         gemessen. Sie muss reichen für: Klemmlänge, Scheibe, Mutter und ein Stück
         Überstand. Gekauft wird danach die nächste Länge aus der Normreihe &ndash;
         dazwischen gibt es nichts.</p>
       <p>Tabellenbuch und Taschenrechner gehören dazu. Bei der nötigen Länge
-        zählt alles, was <strong>bis 0,6 mm daneben</strong> liegt; die Normlänge
-        muss stimmen.</p>
+        zählt alles, was <strong>bis 0,6 mm daneben</strong> liegt; Normlänge und
+        Schraubenart müssen stimmen.</p>
       <p class="normen">Es gilt durchweg: Sechskantschraube mit Schaft
-        DIN EN ISO 4014 &middot; metrisches ISO-Regelgewinde DIN 13-1 &middot;
+        DIN EN ISO 4014 oder mit Vollgewinde DIN EN ISO 4017 &middot;
+        metrisches ISO-Regelgewinde DIN 13-1 &middot;
         Sechskantmutter Typ 1 DIN EN ISO 4032 &middot; flache Scheibe mit Fase,
         normale Reihe, DIN EN ISO 7090. Das Tabellenbuch führt daneben weitere
         Arten &ndash; welche gemeint ist, entscheidet über Höhe, Dicke und
@@ -92,6 +106,13 @@
         </label>
         <label class="feld">gewählte Normlänge in mm
           <input type="number" id="aWahl" step="1" inputmode="numeric" autocomplete="off">
+        </label>
+        <label class="feld">welche Schraube
+          <select id="aArt">
+            <option value="">bitte wählen</option>
+            <option value="4014">mit Schaft, ISO 4014</option>
+            <option value="4017">Vollgewinde, ISO 4017</option>
+          </select>
         </label>
       </div>
 
@@ -165,7 +186,8 @@
     </details>
 
     <div class="merksatz">
-      <strong>Merksatz:</strong> Klemmlänge + Scheibe + Mutter + zwei Gänge,
+      <strong>Merksatz:</strong> Erst rechnen, dann aufrunden, dann prüfen, ob
+      das Gewinde hinkommt. Klemmlänge + Scheibe + Mutter + zwei Gänge,
       dann aufrunden. Die Länge zählt ohne Kopf &ndash; außer beim Senkkopf.
     </div>
 
@@ -204,17 +226,34 @@
      h  Scheibendicke, flache Scheibe mit Fase DIN EN ISO 7090
      Normlaengen, Sechskantschraube mit Schaft DIN EN ISO 4014 */
 var SCHRAUBEN = {
-  M6:  {P:1.00, m:5.2,  h:1.6},
-  M8:  {P:1.25, m:6.8,  h:1.6},
-  M10: {P:1.50, m:8.4,  h:2.0},
-  M12: {P:1.75, m:10.8, h:2.5},
-  M16: {P:2.00, m:14.8, h:3.0},
-  M20: {P:2.50, m:18.0, h:3.0}
+  M6:  {d:6,  P:1.00, m:5.2,  h:1.6, lVon:30, lBis:60,  vVon:8,  vBis:60},
+  M8:  {d:8,  P:1.25, m:6.8,  h:1.6, lVon:35, lBis:80,  vVon:10, vBis:80},
+  M10: {d:10, P:1.50, m:8.4,  h:2.0, lVon:40, lBis:100, vVon:12, vBis:100},
+  M12: {d:12, P:1.75, m:10.8, h:2.5, lVon:50, lBis:120, vVon:25, vBis:120},
+  M16: {d:16, P:2.00, m:14.8, h:3.0, lVon:65, lBis:160, vVon:30, vBis:150},
+  M20: {d:20, P:2.50, m:18.0, h:3.0, lVon:80, lBis:200, vVon:40, vBis:150}
 };
 var GROESSEN = ["M6","M8","M10","M12","M16","M20"];
-/* Normlängenreihe der Sechskantschrauben ISO 4014. */
+/* Normlängenreihe der Sechskantschrauben mit Schaft ISO 4014. */
 var NENNLAENGEN = [12,16,20,25,30,35,40,45,50,55,60,65,70,80,90,100,
                    110,120,130,140,150,160,180,200];
+/* Die Vollgewindeschraube ISO 4017 gibt es auch in den kurzen Stufen -
+   genau dort, wo es die Schraube mit Schaft noch nicht gibt. */
+var NENNLAENGEN_VOLL = [2,3,4,5,6,8,10,12,16,20,25,30,35,40,45,50,55,60,
+                        65,70,80,90,100,110,120,130,140,150,160,180,200];
+
+/* Gewindelänge b der Schraube mit Schaft, ISO 4014:
+   b = 2d + 6 für l < 125 · b = 2d + 12 für l = 125…200 · b = 2d + 25 darüber. */
+function gewindelaenge(d, l){
+  return 2 * d + (l < 125 ? 6 : l <= 200 ? 12 : 25);
+}
+
+function naechste(reihe, ab){
+  for(var i = 0; i < reihe.length; i++){
+    if(reihe[i] >= ab - 0.001) return reihe[i];
+  }
+  return null;
+}
 var TOLERANZ = 0.6;       /* Millimeter */
 
 function el(id){ return document.getElementById(id); }
@@ -231,13 +270,31 @@ function rechne(groesse, t1, t2, mitScheibe){
   var g = SCHRAUBEN[groesse];
   var scheibe = mitScheibe ? g.h : 0;
   var ueberstand = 2 * g.P;
-  var noetig = t1 + t2 + scheibe + g.m + ueberstand;
-  var wahl = null;
-  for(var i = 0; i < NENNLAENGEN.length; i++){
-    if(NENNLAENGEN[i] >= noetig - 0.001){ wahl = NENNLAENGEN[i]; break; }
-  }
-  return {g:g, klemm:t1 + t2, scheibe:scheibe, mutter:g.m,
-          ueberstand:ueberstand, noetig:noetig, wahl:wahl};
+  var klemm = t1 + t2;
+  var noetig = klemm + scheibe + g.m + ueberstand;
+
+  /* Die Länge allein entscheidet noch nicht. Eine Schraube mit Schaft
+     trägt das Gewinde nur über die letzten b Millimeter; der glatte Schaft
+     davor darf nicht bis in die Mutter reichen. Und kurz gibt es sie gar
+     nicht: ISO 4014 fängt je nach Größe erst bei 30 bis 80 mm an. Passt
+     eines von beidem nicht, ist die Vollgewindeschraube ISO 4017 dran. */
+  var lSchaft = naechste(NENNLAENGEN, noetig);
+  var b = lSchaft === null ? 0 : gewindelaenge(g.d, lSchaft);
+  var schaft = lSchaft === null ? 0 : Math.max(0, lSchaft - b);
+  var imBereich = lSchaft !== null && lSchaft >= g.lVon && lSchaft <= g.lBis;
+  var gewindeReicht = lSchaft !== null && schaft <= klemm + scheibe + 0.001;
+  var mitSchaft = imBereich && gewindeReicht;
+
+  var lVoll = naechste(NENNLAENGEN_VOLL, noetig);
+  var vollMoeglich = lVoll !== null && lVoll >= g.vVon && lVoll <= g.vBis;
+
+  return {g:g, klemm:klemm, scheibe:scheibe, mutter:g.m,
+          ueberstand:ueberstand, noetig:noetig,
+          lSchaft:lSchaft, b:b, schaft:schaft,
+          imBereich:imBereich, gewindeReicht:gewindeReicht,
+          mitSchaft:mitSchaft, vollMoeglich:vollMoeglich,
+          art:mitSchaft ? "4014" : "4017",
+          wahl:mitSchaft ? lSchaft : lVoll};
 }
 
 /* ---------- Der Durchlauf ---------- */
@@ -266,7 +323,7 @@ function neueAufgabe(){
     t2 = dicke();
     mitScheibe = Math.random() < 0.7;
     l = rechne(groesse, t1, t2, mitScheibe);
-  } while(!l.wahl);
+  } while(!l.wahl || (!l.mitSchaft && !l.vollMoeglich));
 
   aufgabe = {groesse:groesse, t1:t1, t2:t2, mitScheibe:mitScheibe, loesung:l};
 
@@ -290,6 +347,7 @@ function neueAufgabe(){
   gemeldet = false;
   el("aNoetig").value = "";
   el("aWahl").value = "";
+  el("aArt").value = "";
   el("rueck").hidden = true;
   el("weg").hidden = true;
   el("aNoetig").focus();
@@ -321,10 +379,32 @@ function wegBauen(){
       + zahl(l.mutter, 1) + " + " + zahl(l.ueberstand, 1) + " = <b>"
       + zahl(l.noetig, 1) + " mm</b>"
     + "<span class=\"schritt\">3. Aufrunden auf die Normreihe</span>"
-    + "Die nächste Länge der Reihe ist <b>" + l.wahl + " mm</b>."
+    + "Die nächste Länge der Reihe ist <b>" + (l.lSchaft || "–") + " mm</b>."
     + buch("Die Normlängen stehen in der Maßtabelle der Sechskantschrauben "
         + "DIN EN ISO 4014. Zwischenlängen gibt es nicht - aufgerundet wird "
-        + "immer.");
+        + "immer.")
+    + "<span class=\"schritt\">4. Reicht das Gewinde?</span>"
+    + "Gewindelänge b = 2 &middot; d + " + (l.lSchaft < 125 ? "6" : "12") + " = 2 &middot; "
+      + zahl(g.d, 0) + " + " + (l.lSchaft < 125 ? "6" : "12") + " = <b>" + zahl(l.b, 0)
+      + " mm</b><br>"
+    + "glatter Schaft = l &minus; b = " + (l.lSchaft || 0) + " &minus; " + zahl(l.b, 0)
+      + " = <b>" + zahl(l.schaft, 1) + " mm</b><br>"
+    + "Er darf höchstens bis an die Mutter reichen, also ≤ Klemmlänge + Scheibe = "
+      + zahl(l.klemm + l.scheibe, 1) + " mm &ndash; "
+      + (l.gewindeReicht ? "<b>passt</b>." : "<b>zu lang</b>.") + "<br>"
+    + "ISO 4014 gibt es für " + aufgabe.groesse + " von " + g.lVon + " bis "
+      + g.lBis + " mm &ndash; " + (l.imBereich ? "<b>drin</b>." : "<b>nicht drin</b>.")
+    + buch("b steht in der Maßtabelle der Sechskantschrauben DIN EN ISO 4014, "
+        + "zusammen mit dem Längenbereich l. Die Regel darunter: b = 2d + 6 "
+        + "für l < 125 mm, b = 2d + 12 für l = 125 bis 200 mm.")
+    + "<span class=\"schritt\">5. Welche Schraube</span>"
+    + (l.mitSchaft
+        ? "Beides passt: <b>Sechskantschraube mit Schaft DIN EN ISO 4014 × "
+          + l.wahl + " mm</b>."
+        : "Damit fällt die Schraube mit Schaft aus. Genommen wird die "
+          + "<b>Vollgewindeschraube DIN EN ISO 4017 × " + l.wahl + " mm</b> – "
+          + "sie trägt das Gewinde bis unter den Kopf und gibt es auch in den "
+          + "kurzen Stufen.");
 }
 
 el("btnPruefen").addEventListener("click", function(){
@@ -332,36 +412,47 @@ el("btnPruefen").addEventListener("click", function(){
   var l = aufgabe.loesung;
   var noetig = parseFloat(String(el("aNoetig").value).replace(",", "."));
   var wahl = parseFloat(String(el("aWahl").value).replace(",", "."));
+  var art = el("aArt").value;
   var r = el("rueck");
 
-  if(!isFinite(noetig) && !isFinite(wahl)){
+  if(!isFinite(noetig) && !isFinite(wahl) && !art){
     r.className = "rueckmeldung fast";
-    r.innerHTML = "<strong>Noch nichts eingetragen.</strong> Beide Felder ausfüllen "
-      + "&ndash; oder den Rechenweg zeigen lassen.";
+    r.innerHTML = "<strong>Noch nichts eingetragen.</strong> Alle drei Felder "
+      + "ausfüllen &ndash; oder den Rechenweg zeigen lassen.";
     r.hidden = false;
     return;
   }
 
   var okNoetig = isFinite(noetig) && Math.abs(noetig - l.noetig) <= TOLERANZ;
   var okWahl = isFinite(wahl) && wahl === l.wahl;
+  var okArt = art === l.art;
+  var treffer = (okNoetig ? 1 : 0) + (okWahl ? 1 : 0) + (okArt ? 1 : 0);
+  var alles = treffer === 3;
   versuche++;
-  if(okNoetig && okWahl) richtig++;
-  rundeMelden(okNoetig && okWahl);
+  if(alles) richtig++;
+  rundeMelden(alles);
 
-  r.className = "rueckmeldung " + (okNoetig && okWahl ? "ja" : (okNoetig || okWahl ? "fast" : "nein"));
+  r.className = "rueckmeldung " + (alles ? "ja" : (treffer ? "fast" : "nein"));
   r.innerHTML = "<strong>"
-    + (okNoetig && okWahl ? "Beides richtig."
-       : okNoetig || okWahl ? "Halb richtig." : "Noch nicht.")
+    + (alles ? "Alles richtig." : treffer ? treffer + " von 3 stimmen." : "Noch nicht.")
     + "</strong> "
     + "Nötig sind <strong>" + zahl(l.noetig, 1) + " mm</strong> "
     + (okNoetig ? "&ndash; getroffen. "
        : "&ndash; du hattest " + (isFinite(noetig) ? zahl(noetig, 1) : "nichts") + ". ")
     + "Gewählt wird <strong>" + l.wahl + " mm</strong> "
-    + (okWahl ? "&ndash; getroffen."
-       : "&ndash; du hattest " + (isFinite(wahl) ? zahl(wahl, 0) : "nichts") + ".");
+    + (okWahl ? "&ndash; getroffen. "
+       : "&ndash; du hattest " + (isFinite(wahl) ? zahl(wahl, 0) : "nichts") + ". ")
+    + "Und zwar "
+    + (l.art === "4014"
+        ? "eine <strong>Schraube mit Schaft (ISO 4014)</strong>"
+        : "eine <strong>Vollgewindeschraube (ISO 4017)</strong>, weil "
+          + (!l.imBereich
+              ? "es die Schraube mit Schaft in dieser Länge nicht gibt"
+              : "der glatte Schaft sonst bis in die Mutter reichen würde"))
+    + (okArt ? " &ndash; getroffen." : " &ndash; das war es nicht.");
   r.hidden = false;
 
-  if(!(okNoetig && okWahl)){
+  if(!alles){
     el("weg").innerHTML = wegBauen();
     el("weg").hidden = false;
   }

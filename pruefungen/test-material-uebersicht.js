@@ -123,9 +123,85 @@ async function main() {
       sichtbar().length + ' von ' + karten.length);
   }
 
+  reihenfolgePruefen(d);
+
   w.close();
   console.log('\n' + (fehler ? fehler + ' Befunde' : 'alles gruen'));
   process.exit(fehler ? 1 : 0);
+}
+
+/* ---------------------------------------------------------------------
+   Die Reihenfolge der Karten.
+
+   Alphabetisch ist fachlich oft falsch: Der Ueberblick ueber die
+   Fuegeverfahren gehoert vor das einzelne Verfahren, und die Antriebswelle
+   kommt vor der Abtriebswelle, obwohl das Alphabet es andersherum sieht.
+   Jedes Paket sagt in info.json, an welchen Platz es gehoert; der Build
+   sortiert danach und schreibt den Platz nach daten/material.json.
+   --------------------------------------------------------------------- */
+function reihenfolgePruefen(d) {
+  console.log('\nDie Reihenfolge der Karten');
+  const alle = JSON.parse(
+    fs.readFileSync(path.join(BASIS, 'daten', 'material.json'), 'utf8'));
+
+  const ohne = alle.filter((e) => !e.platz);
+  p('jede Karte hat einen Platz', ohne.length === 0,
+    ohne.map((e) => e.url).join(', '));
+
+  /* Ein Name allein laesst raten, wovon die Seite handelt - "Ueberblick"
+     unter der Ueberschrift FUEGEVERFAHREN war zu wenig. Zu lang darf er
+     auch nicht sein: Eine doppelt hohe Karte reisst eine Luecke ins Gitter. */
+  const MAX = 140;
+  const stumm = alle.filter((e) => !(e.untertitel || '').trim());
+  p('jede Karte hat einen Untertitel', stumm.length === 0,
+    stumm.map((e) => e.url).join(', '));
+  const lang = alle.filter((e) => (e.untertitel || '').length > MAX);
+  p('und keiner ist laenger als ' + MAX + ' Zeichen', lang.length === 0,
+    lang.map((e) => e.url + ' (' + e.untertitel.length + ')').join(', '));
+
+  const sichtbarOhne = [...d.querySelectorAll('a.card')]
+    .filter((a) => !a.querySelector('.kartensub'));
+  p('und die Uebersicht zeigt ihn auch', sichtbarOhne.length === 0,
+    sichtbarOhne.map((a) => a.getAttribute('href')).join(', '));
+
+  /* In einer Gruppe darf weder ein Name noch ein Platz zweimal vorkommen -
+     sonst steht "Ueberblick" neben "Ueberblick", und welcher vorn landet,
+     entscheidet der Zufall der Ordnernamen. */
+  const gruppen = new Map();
+  alle.forEach((e) => {
+    const k = [e.typ, e.bereich, e.kategorie].join(' / ');
+    if (!gruppen.has(k)) gruppen.set(k, []);
+    gruppen.get(k).push(e);
+  });
+  const doppelt = [];
+  for (const [k, g] of gruppen) {
+    const namen = g.map((e) => e.name);
+    const plaetze = g.map((e) => e.platz);
+    namen.forEach((n, i) => {
+      if (namen.indexOf(n) !== i) doppelt.push(k + ': "' + n + '" zweimal');
+    });
+    plaetze.forEach((x, i) => {
+      if (plaetze.indexOf(x) !== i) doppelt.push(k + ': Platz ' + x + ' zweimal');
+    });
+  }
+  p('kein Name und kein Platz doppelt in derselben Gruppe',
+    doppelt.length === 0, doppelt.join('; '));
+
+  /* Und die erzeugte Startseite zeigt sie auch in dieser Reihenfolge. */
+  const platzVon = new Map(alle.map((e) => [e.url, e.platz]));
+  const verdreht = [];
+  [...d.querySelectorAll('.grid')].forEach((gitter) => {
+    const folge = [...gitter.querySelectorAll('a.card')]
+      .map((a) => platzVon.get(a.getAttribute('href')));
+    for (let i = 1; i < folge.length; i++) {
+      if (folge[i - 1] > folge[i]) {
+        verdreht.push(folge.join(' vor ') + ' in '
+          + (gitter.closest('.bereich') || {}).dataset?.bereich);
+      }
+    }
+  });
+  p('die Startseite ordnet die Karten danach', verdreht.length === 0,
+    verdreht.join('; '));
 }
 
 main();

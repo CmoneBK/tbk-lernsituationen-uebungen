@@ -175,8 +175,10 @@
 
       <div class="rueckmeldung" id="lRueck"></div>
 
-      <p class="fussnote">Normlängen nach ISO 4014 &middot; Mutterhöhe nach ISO 4032 &middot;
-        Scheibe nach ISO 7089 &middot; Überstand: zwei Gewindegänge.
+      <p class="fussnote">Sechskantschraube mit Schaft DIN EN ISO 4014 &middot;
+        metrisches ISO-Regelgewinde DIN 13-1 &middot; Sechskantmutter Typ 1
+        DIN EN ISO 4032 &middot; flache Scheibe mit Fase, normale Reihe,
+        DIN EN ISO 7090 &middot; Überstand: zwei Gewindegänge.
         Schlag die Werte ruhig gegen dein Tabellenbuch gegen.</p>
     </div>
 
@@ -264,7 +266,11 @@
       Schlüsselweite aus dem Tabellenbuch (<em>Metrische Gewinde</em>), die
       Bezeichnung nach <em>Bezeichnung von Schrauben</em>. Kopfhöhe k,
       Mutterhöhe m, Scheibendicke und die Längenreihe stammen aus den
-      Maßtabellen der Normen ISO 4014, ISO 4032 und ISO 7089.</p>
+      Maßtabellen der Normen DIN EN ISO 4014, DIN EN ISO 4032 und
+      DIN EN ISO 7090. Das Tabellenbuch führt daneben weitere Scheiben:
+      ISO 7092 ist die kleine Reihe, ISO 7091 die Produktklasse C mit 100 HV
+      &ndash; die ist nur bis Festigkeitsklasse 6.8 vorgesehen und passt
+      deshalb nicht zu einer 8.8-Schraube.</p>
 
     <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den Unterricht.
       Maßgebend sind Norm und Tabellenbuch.</p>
@@ -281,11 +287,10 @@
 
 /* Metrisches ISO-Regelgewinde mit den Maßen, die für die Längenwahl zählen.
    m  = Mutterhöhe ISO 4032
-   sW = Scheibendicke ISO 7089
+   sW = Scheibendicke ISO 7090 (flache Scheibe mit Fase, normale Reihe)
    b  = Gewindelänge ISO 4014 für l <= 125 mm (2d + 6)
    Zahlen wie im Werkzeug "Maschinenelemente: Schrauben - Schraubverbindungen". */
 var SCHRAUBEN = {
-  M4:  {d:4,  P:0.70, s:7,  k:2.8,  m:3.2,  sW:0.8},
   M5:  {d:5,  P:0.80, s:8,  k:3.5,  m:4.7,  sW:1.0},
   M6:  {d:6,  P:1.00, s:10, k:4.0,  m:5.2,  sW:1.6},
   M8:  {d:8,  P:1.25, s:13, k:5.3,  m:6.8,  sW:1.6},
@@ -295,7 +300,8 @@ var SCHRAUBEN = {
   M20: {d:20, P:2.50, s:30, k:12.5, m:18.0, sW:3.0},
   M24: {d:24, P:3.00, s:36, k:15.0, m:21.5, sW:4.0}
 };
-var GROESSEN = ["M4","M5","M6","M8","M10","M12","M16","M20","M24"];
+/* Ohne M4: Die flache Scheibe mit Fase (ISO 7090) gibt es erst ab M5. */
+var GROESSEN = ["M5","M6","M8","M10","M12","M16","M20","M24"];
 var NORMLAENGEN = [10,12,16,20,25,30,35,40,45,50,55,60,65,70,80,90,100,110,120];
 
 var TEXTE = {

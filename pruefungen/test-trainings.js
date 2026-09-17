@@ -26,6 +26,7 @@ const ANTWORTEN = {
   '04-reicht-die-laenge.html': (w, d) => {
     d.getElementById('aNoetig').value = String(w.aufgabe.loesung.noetig);
     d.getElementById('aWahl').value = String(w.aufgabe.loesung.wahl);
+    d.getElementById('aArt').value = w.aufgabe.loesung.art;
   },
   '05-klasse-und-zahl.html': (w, d) => {
     const a = w.aufgabe;

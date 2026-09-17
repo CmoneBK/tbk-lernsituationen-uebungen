@@ -1,6 +1,8 @@
 {
   "titel": "Fertigungstechnik: Zerspanung - Die Antriebswelle fertigen",
+  "platz": 1,
   "lead": "Ein Einzelteil aus 42CrMo4, vom Auftrag bis zum Arbeitsplan: Kontur lesen, Werkstoff nachschlagen, Schnittdaten und Drehzahlen bestimmen, Werkzeuge auswählen, Vorschübe rechnen, Passungen auf Toleranzmitte schlichten, Prüfschritte und Hauptnutzungszeit festhalten.",
+  "untertitel": "Ein Einzelteil aus 42CrMo4, vom Auftrag bis zum Arbeitsplan: Schnittdaten, Werkzeuge, Vorschübe, Passungen, Prüfschritte.",
   "werkzeuge": [
     {
       "datei": "fertigungstechnik-zerspanung-drehprozess-planen.html",

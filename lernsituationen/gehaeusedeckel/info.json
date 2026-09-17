@@ -1,10 +1,12 @@
 {
   "titel": "Fertigungstechnik: Fügeverfahren - Der Gehäusedeckel",
+  "platz": 1,
   "lead": "Ein Bauteil, fünf Verbindungen, fünf verschiedene Antworten: Anforderungen aus dem Auftragsgespräch ziehen, Prinzip und Verfahren begründet wählen, die Verschraubung nachweisen, Montage und Abnahme planen.",
+  "untertitel": "Ein Bauteil, fünf Verbindungen, fünf verschiedene Antworten – von der Anforderung über die Verfahrenswahl bis zur Abnahme.",
   "werkzeuge": [
     {
       "datei": "fertigungstechnik-fuegeverfahren-ueberblick.html",
-      "name": "Fügeverfahren im Überblick",
+      "name": "Überblick über die Verfahren",
       "art": "lektion"
     },
     {

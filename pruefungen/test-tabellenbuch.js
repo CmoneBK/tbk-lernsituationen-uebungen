@@ -242,6 +242,35 @@ async function main() {
     p('Reicht die Länge?: Normlängenreihe wie ISO 4014',
       w.NENNLAENGEN.join(',') === TB.sechskantschraube_4014._nennlaengen.join(','),
       w.NENNLAENGEN.join(','));
+    p('Reicht die Länge?: Normlängenreihe wie ISO 4017',
+      w.NENNLAENGEN_VOLL.join(',') === TB.sechskantschraube_4017._nennlaengen.join(','),
+      w.NENNLAENGEN_VOLL.join(','));
+
+    /* Der Längenbereich entscheidet, ob es die Schraube mit Schaft
+       überhaupt gibt - deshalb steht er hier Größe für Größe. */
+    const bereiche = [];
+    for (const g of Object.keys(w.SCHRAUBEN)) {
+      const z = w.SCHRAUBEN[g], s = TB.sechskantschraube_4014[g];
+      if (z.lVon !== s.lVon || z.lBis !== s.lBis) {
+        bereiche.push(g + ': l = ' + z.lVon + '…' + z.lBis
+          + ' statt ' + s.lVon + '…' + s.lBis);
+      }
+      const v = TB.sechskantschraube_4017.lVonBis[g];
+      if (!v) bereiche.push(g + ': ISO 4017 nicht nachgeschlagen');
+      else if (z.vVon !== v[0] || z.vBis !== v[1]) {
+        bereiche.push(g + ': ISO 4017 l = ' + z.vVon + '…' + z.vBis
+          + ' statt ' + v[0] + '…' + v[1]);
+      }
+      /* b aus der Regel muss die Zahl der Maßtabelle treffen. */
+      const b = w.gewindelaenge(z.d, 100);
+      if (b !== s.b) bereiche.push(g + ': b = ' + b + ' statt ' + s.b);
+    }
+    p('Reicht die Länge?: Längenbereiche und Gewindelänge b',
+      !bereiche.length, bereiche.join(' · '));
+    p('Reicht die Länge?: die Regel für b steht so im Buch',
+      /2d \+ 6/.test(TB.sechskantschraube_4014._gewindelaenge)
+      && w.gewindelaenge(10, 124) === 26 && w.gewindelaenge(10, 125) === 32,
+      TB.sechskantschraube_4014._gewindelaenge);
   }
 
   {

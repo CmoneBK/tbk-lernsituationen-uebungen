@@ -1,6 +1,8 @@
 {
   "titel": "Fertigungstechnik: Zerspanung - Die Abtriebswelle fertigen",
+  "platz": 2,
   "lead": "Ein Teil, bei dem sich die Regeln gegenseitig im Weg stehen: nichtrostender Stahl der Gruppe M, Gesenkschmiedeteil mit Zunderhaut, Kegel, Innenbohrung, Passfedernut – und eine Rautiefe, die sich mit dem zulässigen Eckenradius nicht mehr drehen lässt. Am Ende steht ein Arbeitsplan mit einer begründeten Rückfrage an die Konstruktion.",
+  "untertitel": "Nichtrostender Stahl, Zunderhaut, Kegel und Passfedernut – und eine Rautiefe, die der zulässige Eckenradius nicht mehr hergibt.",
   "werkzeuge": [
     {
       "datei": "fertigungstechnik-zerspanung-drehprozess-planen.html",

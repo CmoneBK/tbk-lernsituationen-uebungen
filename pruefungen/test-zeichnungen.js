@@ -38,29 +38,18 @@ const KEINE_ZEICHNUNG = new Set([
      zeigt, warum die Rautiefe am Quadrat des Vorschubs haengt, und
      stellt kein Bauteil dar. */
   'bildRillen',
-]);
-
-/* Aufgedeckt am 16.09.2026, als die Pruefung gelernt hat, die Reiter aus der
-   Seite zu lesen statt aus einer festen Liste. Diese Bilder standen in Reitern,
-   die nie geprueft wurden. Sie sehen aus wie technische Zeichnungen, halten die
-   Regeln aber noch nicht ein - jedes einzeln nachzuarbeiten ist eine eigene
-   Aufgabe. Bis dahin meldet sich die Pruefung bei jedem Lauf. */
-const NOCH_OFFEN = new Set([
-  /* Lektion Fuegeverfahren im Ueberblick */
-  'svgUeF', 'svgUeK', 'svgUeS', 'svg-kraft', 'svg-form', 'svg-stoff',
-  'svg-sonder',
-  /* Lektion Schweissen */
-  'svg-verfahren', 'svgNaht', 'fertigungstechnik/naehte/bild0',
-  /* Lektion Messen und Pruefen */
-  'svgKette', 'svgZehner',
-  /* Die Nahtbilder der Schweiss-Lektion tragen keine eigene id;
-     angesprochen werden sie deshalb ueber ihren vollen Namen. */
-  'fertigungstechnik/naehte/bild1', 'fertigungstechnik/naehte/bild2',
-  'fertigungstechnik/naehte/bild3', 'fertigungstechnik/naehte/bild4',
-  'fertigungstechnik/naehte/bild5',
-  /* Lektion Schraubverbindungen */
+  /* Die Messkette in der Prueftechnik: gerundete Kaesten mit Text und
+     Pfeilen dazwischen - ein Flussbild vom Bauteil bis zur Anzeige. Es
+     stellt kein Bauteil dar, sondern eine Reihenfolge. */
+  'svgKette',
+  /* Die Zehnerregel: Balken ueber einer logarithmischen Kostenachse. */
+  'svgZehner',
+  /* Wohin das Anziehdrehmoment geht: eine farbige Anteilsleiste mit
+     Prozentzahlen. Die "N.m" darin sind Rechenergebnisse, keine Masse. */
   'svgMomente',
 ]);
+
+
 
 /* Wo der Unterschied der beiden Linienbreiten die Frage selbst ist, wird er
    ueberzeichnet - aber im Verhaeltnis 2:1. */
@@ -718,11 +707,6 @@ async function main() {
         const kennung = svg.id || (rahmen && rahmen.id) || ('bild' + i);
         const voll = datei.split('-')[0] + '/' + r + '/' + kennung;
         if (KEINE_ZEICHNUNG.has(kennung) || KEINE_ZEICHNUNG.has(voll)) return;
-        if (NOCH_OFFEN.has(kennung) || NOCH_OFFEN.has(voll)) {
-          console.log('  offen  ' + voll + ': sieht aus wie eine Zeichnung, '
-            + 'ist aber noch keine');
-          return;
-        }
         pruefe(svg, voll, datei);
       });
     }
