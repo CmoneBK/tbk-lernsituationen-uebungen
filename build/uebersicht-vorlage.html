@@ -62,6 +62,18 @@
   .chip:hover{border-color:var(--accent)}
   .chip[aria-pressed="true"]{background:var(--accent); border-color:var(--accent); color:var(--accent-fg)}
   .chip .n{opacity:.7; font-weight:500; margin-left:6px}
+  /* Die Themenauswahl steht neben der Suche - eine Liste statt einer
+     zweiten Knopfreihe: Die Leiste bleibt einzeilig, und die Liste trägt
+     auch dann noch, wenn später zehn Themen dastehen. */
+  .thema-wahl{
+    font:inherit; font-size:14px; padding:7px 10px; border-radius:999px;
+    background:var(--chip); color:var(--fg); border:1px solid var(--border);
+    cursor:pointer; max-width:100%;
+  }
+  .thema-wahl:hover{border-color:var(--accent)}
+  .thema-wahl[data-gewaehlt="ja"]{
+    background:var(--accent); border-color:var(--accent); color:var(--accent-fg);
+  }
   .suche{
     flex:1 1 200px; min-width:160px; font:inherit; font-size:15px;
     background:var(--chip); color:var(--fg);
@@ -121,6 +133,10 @@
       <button type="button" class="chip" data-filter="lernsituationen" aria-pressed="false">Lernsituationen</button>
       <button type="button" class="chip" data-filter="uebungen" aria-pressed="false">&Uuml;bungen</button>
       <button type="button" class="chip" data-filter="trainings" aria-pressed="false">Trainings</button>
+      <select class="thema-wahl" id="tbk-thema" aria-label="Nach Thema filtern">
+        <option value="alle">Alle Themen</option>
+{{THEMEN}}
+      </select>
       <input type="search" class="suche" id="tbk-suche" placeholder="Suchen &hellip;" aria-label="Material durchsuchen" autocomplete="off">
     </div>
   </div>
@@ -138,9 +154,13 @@
 
 <script>
 /* Filter und Suche: rein clientseitig, ohne Abhaengigkeiten. Sichtbar bleibt
-   eine Karte, wenn Typ UND Suchbegriff passen; anschliessend werden leer
-   gewordene Gruppen, Bereiche und Abschnitte ausgeblendet, damit keine
-   Ueberschrift ohne Inhalt stehen bleibt. */
+   eine Karte, wenn Art UND Thema UND Suchbegriff passen; anschliessend werden
+   leer gewordene Gruppen, Bereiche und Abschnitte ausgeblendet, damit keine
+   Ueberschrift ohne Inhalt stehen bleibt.
+
+   Gezaehlt wird ueber Kreuz: Die Zahl an "Uebungen" gilt fuer das gewaehlte
+   Thema, die Zahl hinter einem Thema fuer die gewaehlte Art. So sieht man
+   vorher, was ein Klick bringt. */
 (function () {
   var karten     = [].slice.call(document.querySelectorAll('a.card'));
   var gruppen    = [].slice.call(document.querySelectorAll('.gruppe'));
@@ -148,8 +168,10 @@
   var abschnitte = [].slice.call(document.querySelectorAll('section.typ'));
   var chips      = [].slice.call(document.querySelectorAll('.chip'));
   var suche      = document.getElementById('tbk-suche');
+  var wahl       = document.getElementById('tbk-thema');
   var leer       = document.getElementById('tbk-leer');
   var typ = 'alle';
+  var thema = 'alle';
 
   chips.forEach(function (c) {
     if (c.dataset.filter === 'alle') return;
@@ -160,14 +182,36 @@
      passen - sonst steht dort "6 Uebungen", wo nur drei zu sehen sind. */
   function zahlenNachziehen(bg) {
     var B = window.tbkBildungsgang;
+    function zaehle(pruef) {
+      return karten.filter(function (k) {
+        return (!B || B.gilt(k, bg)) && pruef(k);
+      }).length;
+    }
+
     chips.forEach(function (c) {
       if (c.dataset.filter === 'alle') return;
-      var n = karten.filter(function (k) {
-        return k.dataset.typ === c.dataset.filter && (!B || B.gilt(k, bg));
-      }).length;
-      c.hidden = !n;
+      var n = zaehle(function (k) {
+        return k.dataset.typ === c.dataset.filter
+            && (thema === 'alle' || k.dataset.thema === thema);
+      });
+      /* Der gewaehlte Knopf bleibt stehen, auch wenn nichts uebrig ist -
+         sonst verschwindet unter der Hand, was man gerade angeklickt hat. */
+      c.hidden = !n && c.dataset.filter !== typ;
       c.querySelector('.n').textContent = n;
     });
+
+    /* Dasselbe fuer die Themenliste. Leere Themen werden ausgegraut, nicht
+       entfernt: Eine Liste, die beim Tippen springt, trifft niemand. */
+    [].slice.call(wahl.options).forEach(function (o) {
+      if (o.value === 'alle') return;
+      if (!o.dataset.name) o.dataset.name = o.textContent;
+      var n = zaehle(function (k) {
+        return k.dataset.thema === o.value && (typ === 'alle' || k.dataset.typ === typ);
+      });
+      o.textContent = o.dataset.name + ' (' + n + ')';
+      o.disabled = !n && o.value !== thema;
+    });
+    wahl.dataset.gewaehlt = thema === 'alle' ? 'nein' : 'ja';
 
     karten.forEach(function (k) {
       var feld = k.querySelector('.anzahl');
@@ -197,6 +241,7 @@
       /* Was der Bildungsplan nicht hergibt, steht hier gar nicht erst. */
       var passt = (!B || B.gilt(k, bg)) &&
                   (typ === 'alle' || k.dataset.typ === typ) &&
+                  (thema === 'alle' || k.dataset.thema === thema) &&
                   (!q || k.dataset.suche.indexOf(q) !== -1);
       k.hidden = !passt;
       if (passt) treffer++;
@@ -223,6 +268,10 @@
     });
   });
   suche.addEventListener('input', anwenden);
+  wahl.addEventListener('change', function () {
+    thema = wahl.value;
+    anwenden();
+  });
 
   /* Der Bildungsgang gilt fuer die ganze Seite t-bk.de - hier wird er
      gewaehlt, in den Uebungen wirkt er weiter. */

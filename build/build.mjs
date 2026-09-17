@@ -396,6 +396,51 @@ async function vorlageFuellen(name, ersatz) {
 
 /* ---------- Haupt-Uebersicht ---------- */
 
+/* Das Thema einer Karte: die Unterkategorie, sonst der Bereich. Der
+   Schluessel traegt beides, damit zwei Bereiche dieselbe Unterkategorie
+   haben duerfen - "Schrauben" unter Maschinenelemente waere etwas anderes
+   als "Schrauben" unter Fertigungstechnik. */
+const UMLAUTE = { 'ä': 'ae', 'ö': 'oe', 'ü': 'ue', 'ß': 'ss' };
+const schluessel = (s) => String(s).toLowerCase()
+  .replace(/[äöüß]/g, (z) => UMLAUTE[z])
+  .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+
+const themaSchluessel = (e) => schluessel(e.bereich + '-' + (e.kategorie || ''));
+const themaName = (e) => e.kategorie || e.bereich;
+
+/* Die Einträge der Themenauswahl - in derselben Reihenfolge wie die
+   Abschnitte darunter, damit das Auge dasselbe findet. Die Bereiche werden
+   zu Gruppen: Unter "Fertigungstechnik" stehen Fügeverfahren und
+   Zerspanung, unter "Maschinenelemente" die Schrauben. */
+function themenHtml(alle, ordnung) {
+  const zeilen = [];
+  for (const bereich of sortiert(ordnung.bereiche, alle.map((e) => e.bereich))) {
+    const drin = alle.filter((e) => e.bereich === bereich);
+    const vorgabe = ordnung.kategorien.get(bereich) ?? [];
+    /* Erst, was unter dem Bereich selbst haengt - dann die Unterkategorien. */
+    const gruppen = drin.some((e) => !e.kategorie) ? [''] : [];
+    for (const k of sortiert(vorgabe, drin.map((e) => e.kategorie).filter(Boolean))) {
+      gruppen.push(k);
+    }
+    const eintraege = [];
+    const gesehen = new Set();
+    for (const kat of gruppen) {
+      const e = drin.find((x) => (x.kategorie || '') === kat);
+      if (!e) continue;
+      const s = themaSchluessel(e);
+      if (gesehen.has(s)) continue;
+      gesehen.add(s);
+      eintraege.push(`          <option value="${escHtml(s)}">`
+        + `${escHtml(themaName(e))}</option>`);
+    }
+    if (!eintraege.length) continue;
+    zeilen.push(`        <optgroup label="${escHtml(bereich)}">`);
+    zeilen.push(...eintraege);
+    zeilen.push('        </optgroup>');
+  }
+  return zeilen.join('\n');
+}
+
 function karteHtml(e, typ) {
   // data-suche buendelt alles Durchsuchbare in Kleinschreibung, damit das
   // Filterskript in der Uebersicht nur einen Vergleich braucht. Bei einem Paket
@@ -421,7 +466,8 @@ function karteHtml(e, typ) {
 
   const ohne = bgOhneGemeinsam(e);
   return `<a class="card" href="${escHtml(e.url)}"` +
-         ` data-typ="${escHtml(e.typ)}" data-suche="${escHtml(suche)}"` +
+         ` data-typ="${escHtml(e.typ)}" data-thema="${escHtml(themaSchluessel(e))}"` +
+         ` data-suche="${escHtml(suche)}"` +
          (ohne ? ` data-bg-ohne="${escHtml(ohne)}"` : '') + zahlen + '>' +
          `<span class="kartenname">${escHtml(e.name)}</span>${zusatz}</a>`;
 }
@@ -618,6 +664,7 @@ for (const typ of TYPEN.filter((t) => t.paket)) {
 // Startseite des Materialbereichs
 ziele.push([join(WURZEL, 'index.html'), await vorlageFuellen('uebersicht-vorlage.html', {
   inhalt: uebersichtInhalt(alle, ordnung),
+  felder: { THEMEN: themenHtml(alle, ordnung) },
 })]);
 
 // Bestand als Liste, fuer weitere Auswertungen
