@@ -108,8 +108,14 @@ async function main() {
   /* Am Anschlag liegen mehrere Kehlen nebeneinander - dort entscheidet
      sich, ob jemand die Angabe gelesen hat oder geraten. */
   const amAnschlag = marken.filter((m) => {
-    const x = [m.von, m.bis].filter(Boolean).map((e) => e.x);
-    return x.length === 2 && Math.min.apply(null, x) > M.platteL / 2 - 20;
+    if (!m.von) return false;
+    /* Am Anschlag heisst: im Fussabdruck des Anschlags. Die Spitze der
+       rechten Rippe liegt zufaellig auf derselben Hoehe in x - sie steht
+       aber in der Blechebene, weit hinter dem Anschlag. */
+    const x = Math.min(m.von.x, m.bis.x);
+    const z = (m.von.z + m.bis.z) / 2;
+    return x > M.platteL / 2 - M.anschlagX - 4
+      && Math.abs(z - M.anschlagZM) <= M.anschlagZ / 2 + 4;
   });
   p('am Anschlag sind mehrere Stellen zu unterscheiden',
     amAnschlag.length >= 3, amAnschlag.length + ' Stellen');
@@ -217,6 +223,37 @@ async function main() {
     }
   }
   p('keine zwei Antworten liegen aufeinander', !zuNah.length, zuNah.join(', '));
+
+  /* Die Zeichnung fuehrt ihre Maße als eigene Konstanten - sie entsteht in
+     einem Skriptblock, der vor der Liste M läuft und deshalb nicht auf sie
+     zugreifen kann. Damit die beiden nicht auseinanderlaufen, werden sie
+     hier gegeneinander gehalten. Genau das ist schon passiert: Im Modell
+     war der Anschlag 8 mm dick, in der Zeichnung stand 6. */
+  const zeichnung = {};
+  const block = /var PL = [\s\S]*?var AX = [^;]*;/.exec(roh0);
+  if (block) {
+    const re = /\b([A-Z]{2,4}) = (\d+(?:\.\d+)?)/g;
+    let treffer;
+    while ((treffer = re.exec(block[0])) !== null) {
+      zeichnung[treffer[1]] = Number(treffer[2]);
+    }
+  }
+  p('die Zeichnung führt ihre Maße als Konstanten',
+    Object.keys(zeichnung).length >= 14,
+    Object.keys(zeichnung).length + ' gefunden');
+
+  const gleich = [
+    ['PL', 'platteL'], ['PT', 'platteT'], ['PD', 'platteD'],
+    ['BB', 'blechB'], ['BH', 'blechH'], ['BD', 'blechD'],
+    ['RD', 'rohrD'], ['RDI', 'rohrDi'], ['RL', 'rohrL'], ['RY', 'rohrY'],
+    ['KX', 'rippeX'], ['KY', 'rippeY'], ['KD', 'rippeD'],
+    ['AX', 'anschlagX'], ['AY', 'anschlagY'], ['AZ', 'anschlagZ'],
+    ['AZM', 'anschlagZM'],
+  ];
+  const drift = gleich.filter(([z, m]) => zeichnung[z] !== M[m])
+    .map(([z, m]) => z + ' = ' + zeichnung[z] + ' gegen ' + m + ' = ' + M[m]);
+  p('Zeichnung und Modell nennen dieselben Maße', !drift.length,
+    drift.join(' · '));
 
   /* Die Teileliste der Seite und die Maße müssen dasselbe sagen. */
   const roh = fs.readFileSync(path.join(BASIS, LS), 'utf8');

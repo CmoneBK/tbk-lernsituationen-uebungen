@@ -821,7 +821,7 @@ function bilanz(id, richtig, gesamt, offen, wort){
   var BB = 120, BH = 100, BD = 10;
   var RD = 60, RDI = 40, RL = 40, RY = 67;
   var KX = 22, KY = 53, KD = 8;
-  var AX = 6, AY = 38, AZ = 45;
+  var AX = 6, AY = 38, AZ = 34, AZM = 28;  /* Anschlag, AZM = Tiefenlage */
 
   /* --- Massstab und Nullpunkte ----------------------------------------- */
   var s = 1.6;
@@ -875,7 +875,7 @@ function bilanz(id, richtig, gesamt, offen, wort){
     var x0 = vx(v * BB / 2), x1 = vx(v * (BB / 2 + KX));
     kasten(g, Math.min(x0, x1), dy(-KD / 2), KX * s, KD * s);
   });
-  kasten(g, vx(PL / 2 - AX), dy(-AZ / 2), AX * s, AZ * s);
+  kasten(g, vx(PL / 2 - AX), dy(AZM - AZ / 2), AX * s, AZ * s);
   achse(g, LINKS - 16, RECHTS + 16, dy(0));
   linie(g, MX, dy(-PT / 2) - 16, MX, dy(PT / 2) + 16, SCHMAL,
     {strich:"12 2 2 2"});
@@ -930,7 +930,8 @@ function bilanz(id, richtig, gesamt, offen, wort){
   massV(g, dy(-RL / 2), dy(RL / 2), LINKS - 56, RL + "", vx(-RD / 2), true);
   massV(g, dy(-KD / 2), dy(KD / 2), RECHTS + 28, KD + "",
     vx(BB / 2 + KX), false);
-  massV(g, dy(-AZ / 2), dy(AZ / 2), RECHTS + 58, AZ + "", RECHTS, false);
+  massV(g, dy(AZM - AZ / 2), dy(AZM + AZ / 2), RECHTS + 58, AZ + "",
+    RECHTS, false);
 
   /* ======================================================================
      4  DIE FUENF SCHWEISSANGABEN
@@ -966,7 +967,7 @@ function bilanz(id, richtig, gesamt, offen, wort){
 
   /* D - unterbrochene Kehlnaht an der rechten Rippe */
   angabe({x:RK, y:vy(0) + 100, zielX:vx(BB / 2 + KX / 2), zielY:vy(PD),
-          laenge:164, nachLinks:false,
+          laenge:164, nachLinks:false, ringsum:true,
           pfeilseite:{art:"kehl", mass:"a3", hinten:"3 × 30 (30)"}}, "D");
 
   /* E - Kehlnaht auf der Gegenseite am Anschlag */
@@ -1046,11 +1047,20 @@ var NAEHTE = [
    satz:"<b>Kehlnaht</b> a = 3 mm auf der <b>Pfeilseite</b>, umlaufend um die "
       + "ganze Rippe. Durchgehend, weil keine Stückelung dahintersteht."},
   {id:"D", titel:"Rippe rechts",
-   bild:{pfeilseite:{art:"kehl", mass:"a3", hinten:"3 × 30 (30)"}},
+   /* Auch hier der Kreis am Knick: D laeuft denselben Weg wie C, einmal um
+      die Rippe herum - nur unterbrochen. Ohne den Kreis staende die
+      Stueckelung 3 x 30 (30) auf einer Strecke, die es nicht gibt: Sie
+      braucht 3 x 30 + 2 x 30 = 150 mm Weg, und 150 mm ist genau die
+      umlaufende Laenge. */
+   bild:{pfeilseite:{art:"kehl", mass:"a3", hinten:"3 × 30 (30)"},
+         ringsum:true},
    naht:"kehl", seite:"pfeil",
-   satz:"Dieselbe <b>Kehlnaht</b> a = 3 mm, aber <b>unterbrochen</b>: drei "
-      + "Einzelnähte von je 30 mm, dazwischen 30 mm Abstand. Zusammen 90 mm "
-      + "statt 150 &ndash; und genau darum geht es in Teil 6."},
+   satz:"Dieselbe <b>Kehlnaht</b> a = 3 mm, ebenfalls <b>umlaufend</b> "
+      + "&ndash; aber <b>unterbrochen</b>: drei Einzelnähte von je 30 mm, "
+      + "dazwischen 30 mm Abstand. Drei Nähte und zwei Lücken ergeben "
+      + "3 &times; 30 + 2 &times; 30 = 150 mm Weg, also genau den Umlauf "
+      + "&ndash; geschweißt werden davon 90 mm statt 150. Genau darum geht "
+      + "es in Teil 6."},
   {id:"E", titel:"Anschlagwinkel",
    bild:{gegenseite:{art:"kehl", mass:"a3"}},
    naht:"kehl", seite:"gegen",
@@ -1321,7 +1331,8 @@ var M = {
      dahinter ist noch Platz fuer den Anschlag. */
   rohrY:67,                      /* Hoehe der Stutzenachse ueber Null */
   rippeX:22, rippeY:53, rippeD:8,
-  anschlagX:8, anschlagY:38, anschlagZ:45
+  anschlagX:6, anschlagY:38, anschlagZ:34,
+  anschlagZM:28,                 /* Tiefenlage: vorn auf der Platte */
 };
 
 /* Die Rippen liegen in derselben Ebene wie das Stehblech und stossen an
@@ -1372,7 +1383,7 @@ function teileListe(){
     {id:"winkel", name:"Anschlag am Plattenende", form:"quader",
      masse:{x:M.anschlagX, y:M.anschlagY, z:M.anschlagZ},
      lage:{x:M.platteL / 2 - M.anschlagX / 2,
-           y:M.platteD + M.anschlagY / 2, z:0},
+           y:M.platteD + M.anschlagY / 2, z:M.anschlagZM},
      von:{x:74, y:36}}
   ];
 }
@@ -1427,7 +1438,7 @@ function markenListe(){
             radius:M.rohrD / 2 + NV, achse:"z"}, r:NAHT_R});
   });
 
-  /* --- C und D: die Rippen, je vier Raupen ----------------------------- */
+  /* --- C und D: die Rippen --------------------------------------------- */
   [["C", -1, "Rippe links, umlaufend"],
    ["D",  1, "Rippe rechts, unterbrochen"]].forEach(function(pp){
     var id = pp[0], v = pp[1], name = pp[2];
@@ -1441,17 +1452,38 @@ function markenListe(){
     });
   });
 
+  /* C und D tragen beide den Kreis am Knick: umlaufend. Eine umlaufende
+     Naht ist eine geschlossene Schleife - sie geht an der Rippenspitze und
+     oben am Blech ueber die 8 mm Stirndicke auf die andere Flanke. Ohne
+     diese beiden kurzen Stuecke waeren es vier getrennte Raupen und keine
+     Schleife; anklicken muss man sie also auch koennen.
+
+     In der Rechnung in Teil 6 bleiben sie aussen vor: 2 x 8 mm neben
+     150 mm Nahtlaenge sind Rundungsrauschen, und in der Werkstatt rechnet
+     niemand die Ecken einzeln. */
+  [["C", -1, "Rippe links, umlaufend"],
+   ["D",  1, "Rippe rechts, unterbrochen"]].forEach(function(pp){
+    var id = pp[0], v = pp[1], name = pp[2];
+    /* an der Spitze, auf der Platte */
+    m.push(kante(id, name, {x:v * (BX + M.rippeX), y:PO, z:KZ},
+      {x:v * (BX + M.rippeX), y:PO, z:-KZ}));
+    /* oben am Blech */
+    m.push(kante(id, name, {x:v * BXV, y:M.platteD + M.rippeY, z:KZ},
+      {x:v * BXV, y:M.platteD + M.rippeY, z:-KZ}));
+  });
+
   /* --- E: der Anschlag, blechseitige Flanke ---------------------------- */
   m.push(kante("E", "Anschlag, Gegenseite",
-    {x:AL - NV, y:PO, z:-AZ2}, {x:AL - NV, y:PO, z:AZ2}));
+    {x:AL - NV, y:PO, z:M.anschlagZM - AZ2},
+    {x:AL - NV, y:PO, z:M.anschlagZM + AZ2}));
 
   /* --- Und die Kanten, an denen NICHT geschweisst wird ----------------- */
   /* Am Anschlag seine beiden Stirnseiten: Sie sehen aus wie E und sind es
      nicht - genau hier wird die Angabe gelesen oder geraten. */
   [1, -1].forEach(function(v){
     m.push(kante("xAnschlagStirn", "Stirnseite des Anschlags",
-      {x:AL, y:PO, z:v * (AZ2 + NV)},
-      {x:M.platteL / 2, y:PO, z:v * (AZ2 + NV)}));
+      {x:AL, y:PO, z:M.anschlagZM + v * (AZ2 + NV)},
+      {x:M.platteL / 2, y:PO, z:M.anschlagZM + v * (AZ2 + NV)}));
   });
   /* Die Stirnseiten des Stehblechs auf der Platte */
   [-1, 1].forEach(function(v){
