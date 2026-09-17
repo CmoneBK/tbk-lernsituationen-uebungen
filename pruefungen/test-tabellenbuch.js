@@ -334,30 +334,40 @@ async function main() {
       beforeParse(w) { w.Element.prototype.scrollIntoView = function () {}; },
     });
     await fertig(dom.window);
-    const text = (dom.window.document.getElementById('aufgabe') || {}).textContent || '';
+    const dd = dom.window.document;
+    const lies = (id) => (dd.getElementById(id) || {}).textContent || '';
+
+    /* Die Normen stehen duenn unter der Aufgabe, nicht im Satz: Mitten im
+       Text unterbrechen vier Normnummern den Lesefluss. */
+    p('die Aufgabe steht da', lies('aufgabe').length > 40, lies('aufgabe'));
+    p('die Normen stehen unter der Aufgabe, nicht darin',
+      lies('normen').length > 20 && lies('aufgabe').indexOf('DIN') === -1,
+      lies('aufgabe'));
 
     /* Die Normen, die das Material selbst als Quelle angibt. */
-    const SOLL = [
-      ['das Regelgewinde', 'DIN 13-1'],
+    [['das Regelgewinde', 'DIN 13-1'],
       ['die Sechskantschraube', 'DIN EN ISO 4014'],
       ['die Sechskantmutter', 'DIN EN ISO 4032'],
-    ];
-    p('die Aufgabe steht da', text.length > 40, text.slice(0, 60));
-    SOLL.forEach(([was, norm]) => {
-      p('die Aufgabe nennt fuer ' + was + ' die ' + norm,
-        text.indexOf(norm) !== -1, text);
+    ].forEach(([was, norm]) => {
+      p('die Zeile nennt fuer ' + was + ' die ' + norm,
+        lies('normen').indexOf(norm) !== -1, lies('normen'));
     });
+
     /* Die Scheibe kommt nur in einem Teil der Aufgaben vor - dann aber mit
-       Norm. Also so lange wuerfeln, bis eine mit Scheibe dabei ist. */
-    let mitScheibe = /Scheibe/.test(text) && !/ohne<\/strong> Scheibe/.test(
-      dom.window.document.getElementById('aufgabe').innerHTML);
-    for (let i = 0; i < 40 && !mitScheibe; i++) {
-      dom.window.neueAufgabe && dom.window.neueAufgabe();
-      const h = dom.window.document.getElementById('aufgabe').innerHTML;
-      mitScheibe = /DIN EN ISO 7090/.test(h);
+       Norm, und ohne Scheibe darf sie auch nicht dastehen. */
+    let mitScheibe = false, ohneStimmt = true;
+    for (let i = 0; i < 60; i++) {
+      const auf = lies('aufgabe'), norm = lies('normen');
+      if (/<strong>mit<\/strong> Scheibe/.test(dd.getElementById('aufgabe').innerHTML)) {
+        if (/DIN EN ISO 7090/.test(norm)) mitScheibe = true;
+      } else if (/DIN EN ISO 7090/.test(norm)) {
+        ohneStimmt = false;
+      }
+      if (mitScheibe && !ohneStimmt) break;
+      if (auf && dom.window.neueAufgabe) dom.window.neueAufgabe();
     }
-    p('eine Aufgabe mit Scheibe nennt die DIN EN ISO 7090', mitScheibe,
-      dom.window.document.getElementById('aufgabe').textContent);
+    p('eine Aufgabe mit Scheibe nennt die DIN EN ISO 7090', mitScheibe);
+    p('eine Aufgabe ohne Scheibe nennt sie nicht', ohneStimmt);
     dom.window.close();
   }
 

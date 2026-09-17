@@ -14,6 +14,14 @@
     padding:14px 16px; margin:0 0 16px; font-size:16px; line-height:1.7;
   }
   .aufgabe strong{font-size:17px}
+  /* Die Normen der beteiligten Teile: unter dem Text, nicht darin. Mitten
+     im Satz unterbrechen vier Normnummern den Lesefluss. */
+  .normen{
+    color:var(--muted); font-size:12.5px; line-height:1.6;
+    margin:10px 0 0; padding:0 2px;
+  }
+  /* Die Zeile unter der Aufgabenkachel rueckt an sie heran. */
+  #normen{margin:-10px 0 16px}
   .zaehler{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
     font-size:13px; color:var(--muted); margin:0 0 10px}
   .rechenweg{
@@ -49,17 +57,9 @@
 
     <div class="box auftrag">
       <p><strong>Worum es geht:</strong> Zwei Platten werden mit einer
-        <strong>Sechskantschraube DIN EN ISO 4014</strong> und einer
-        <strong>Sechskantmutter DIN EN ISO 4032</strong> verspannt, das Gewinde
-        ist metrisches <strong>ISO-Regelgewinde nach DIN 13-1</strong>. Gesucht
-        sind zwei Zahlen: die <strong>nötige Länge</strong> und die
-        <strong>Normlänge</strong>, die man dafür kauft.</p>
-      <p>Die Normen stehen bei jeder Aufgabe dabei, und das hat einen Grund:
-        Das Tabellenbuch führt mehrere Mutter- und Scheibenarten nebeneinander
-        und neben dem Regelgewinde das Feingewinde. Wer die falsche Zeile
-        nachschlägt, rechnet mit einer anderen Höhe, Dicke oder Steigung
-        &ndash; und die Aufgabe geht daneben, ohne dass man den Fehler
-        sieht.</p>
+        Sechskantschraube und einer Mutter verspannt. Gesucht sind zwei Zahlen:
+        die <strong>nötige Länge</strong> und die <strong>Normlänge</strong>, die
+        man dafür kauft.</p>
       <p>Die Länge <em>l</em> einer Sechskantschraube wird <strong>ohne Kopf</strong>
         gemessen. Sie muss reichen für: Klemmlänge, Scheibe, Mutter und ein Stück
         Überstand. Gekauft wird danach die nächste Länge aus der Normreihe &ndash;
@@ -67,6 +67,12 @@
       <p>Tabellenbuch und Taschenrechner gehören dazu. Bei der nötigen Länge
         zählt alles, was <strong>bis 0,6 mm daneben</strong> liegt; die Normlänge
         muss stimmen.</p>
+      <p class="normen">Es gilt durchweg: Sechskantschraube mit Schaft
+        DIN EN ISO 4014 &middot; metrisches ISO-Regelgewinde DIN 13-1 &middot;
+        Sechskantmutter Typ 1 DIN EN ISO 4032 &middot; flache Scheibe mit Fase,
+        normale Reihe, DIN EN ISO 7090. Das Tabellenbuch führt daneben weitere
+        Arten &ndash; welche gemeint ist, entscheidet über Höhe, Dicke und
+        Steigung.</p>
     </div>
 
     <h2><span class="nr">1</span>Aufgaben</h2>
@@ -78,6 +84,7 @@
       </div>
 
       <p class="aufgabe" id="aufgabe">&ndash;</p>
+      <p class="normen" id="normen"></p>
 
       <div class="felder">
         <label class="feld">nötige Länge in mm
@@ -263,21 +270,21 @@ function neueAufgabe(){
 
   aufgabe = {groesse:groesse, t1:t1, t2:t2, mitScheibe:mitScheibe, loesung:l};
 
-  /* Die Norm steht bei jeder Art dabei. Das Tabellenbuch fuehrt mehrere
-     Mutter- und Scheibenarten nebeneinander und neben dem Regelgewinde das
-     Feingewinde - ohne Norm weiss niemand, welche Zeile gilt. */
   el("aufgabe").innerHTML =
     "Zwei Platten von <strong>" + zahl(t1, 0) + " mm</strong> und <strong>"
-    + zahl(t2, 0) + " mm</strong> werden verspannt &ndash; mit einer "
-    + "Sechskantschraube <strong>" + groesse + "</strong> nach "
-    + "<strong>DIN EN ISO 4014</strong>, metrisches ISO-Regelgewinde "
-    + "<strong>DIN 13-1</strong>, und einer Sechskantmutter "
-    + "<strong>DIN EN ISO 4032</strong>"
-    + (mitScheibe
-        ? ", <strong>mit</strong> flacher Scheibe <strong>DIN EN ISO 7090"
-          + "</strong> unter der Mutter"
-        : ", <strong>ohne</strong> Scheibe")
+    + zahl(t2, 0) + " mm</strong> werden mit einer Sechskantschraube <strong>"
+    + groesse + "</strong> und einer Sechskantmutter verspannt"
+    + (mitScheibe ? ", <strong>mit</strong> Scheibe unter der Mutter"
+                  : ", <strong>ohne</strong> Scheibe")
     + ". Gefordert sind zwei Gewindegänge Überstand.";
+
+  /* Die Normen darunter, duenn. Im Satz selbst unterbrechen vier
+     Normnummern den Lesefluss - hier stehen sie da, wo man sie beim
+     Nachschlagen sucht. Die Scheibe nur, wenn eine gefordert ist. */
+  el("normen").innerHTML =
+    "Sechskantschraube DIN EN ISO 4014 &middot; Regelgewinde DIN 13-1 "
+    + "&middot; Sechskantmutter DIN EN ISO 4032"
+    + (mitScheibe ? " &middot; flache Scheibe DIN EN ISO 7090" : "");
 
   el("stand").textContent = "Aufgabe " + nr;
   gemeldet = false;
