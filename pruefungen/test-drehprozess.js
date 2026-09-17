@@ -992,11 +992,19 @@ console.log('\nDie Uebung zu den Passungen');
     passungen.some((x) => x.es < 0) && passungen.some((x) => x.ei > 0),
     passungen.map((x) => x.art).join(', '));
 
-  /* Der Durchmesser 18 liegt genau auf der Bereichsgrenze - es gilt die
-     untere Zeile. Das ist die Falle der Uebung. */
-  const n6 = passungen.filter((x) => x.klasse === 'n6')[0];
-  p('der Ø18 nimmt die Zeile ueber 10 bis 18',
-    n6 && /10 bis 18/.test(n6.bereich), n6 ? n6.bereich : 'kein n6');
+  /* Die Falle der Uebung: Ein Durchmesser, der genau auf einer
+     Bereichsgrenze liegt, nimmt die UNTERE Zeile - deshalb heisst sie
+     "ueber ... bis ...".
+
+     Getragen wird die Falle vom Ø30 g6. Frueher war es der Ø18 n6; der
+     musste weichen, weil Ø18 in der Ringtabelle auf Seite 287 nicht steht
+     und die Welle eine Sicherungsringnut darauf trug. Von den
+     Wellendurchmessern jener Tabelle sind nur 10, 30 und 50 zugleich
+     ISO-Bereichsgrenzen - Ø30 ist der einzige, der hierher passt. */
+  const grenze = passungen.filter((x) => x.nennmass === 30)[0];
+  p('der Ø30 nimmt die Zeile ueber 18 bis 30',
+    grenze && /18 bis 30/.test(grenze.bereich),
+    grenze ? grenze.bereich : 'kein Ø30');
 
   passungen.forEach((x) => {
     d.getElementById('a_' + x.id + '_es').value = String(x.es);

@@ -42,8 +42,8 @@
     <div class="box auftrag">
       <p><strong>Die Lage:</strong> Auf der Spannwelle stehen drei verschiedene
         Rautiefen: <strong>Rz 10</strong> als allgemeine Angabe im Schriftfeld,
-        <strong>Rz 6,3</strong> am Ø18 und <strong>Rz 4</strong> am
-        Führungssitz Ø22.</p>
+        <strong>Rz 6,3</strong> am Ø20 und <strong>Rz 4</strong> am
+        Führungssitz Ø30.</p>
       <p>Drei Forderungen, drei Vorschübe &ndash; und drei verschiedene
         Antworten auf die Frage, ob überhaupt geschlichtet werden muss.</p>
     </div>
@@ -91,13 +91,13 @@
         wäre 0,25 mm. Aber das ist die <em>allgemeine</em> Rautiefe der
         Zeichnung, und der Schruppvorgang liefert sie nicht: Beim Schruppen
         liegt f zwischen 0,25 und 0,6 mm, und daraus wird selbst mit
-        r<sub>ε</sub> = 0,8 mm eine Rautiefe von 10 bis 56 µm. Am Bund Ø26 wird
+        r<sub>ε</sub> = 0,8 mm eine Rautiefe von 10 bis 56 µm. Am Bund Ø34 wird
         deshalb mit dem kleinsten Schruppvorschub gearbeitet &ndash; oder
         zusätzlich geschlichtet, wenn die Fläche es verlangt.</p>
     </details>
 
     <h2><span class="nr">2</span>Was ein kleinerer Eckenradius kostet</h2>
-    <p>Derselbe Führungssitz Ø22 mit Rz 4, aber ein Werkzeug mit
+    <p>Derselbe Führungssitz Ø30 mit Rz 4, aber ein Werkzeug mit
       <strong>r<sub>ε</sub> = 0,4 mm</strong> &ndash; die Hälfte.</p>
 
     <div class="tabellenrahmen">
@@ -108,7 +108,7 @@
             <td><input type="number" id="gF" step="0.01" inputmode="decimal"
               autocomplete="off"></td>
             <td class="urteil" id="ugF">–</td></tr>
-          <tr><td>Umdrehungen für die 34 mm des Ø22 bei r<sub>ε</sub> = 0,8 mm</td>
+          <tr><td>Umdrehungen für die 34 mm des Ø30 bei r<sub>ε</sub> = 0,8 mm</td>
             <td><input type="number" id="gU4" step="1" inputmode="decimal"
               autocomplete="off"></td>
             <td class="urteil" id="ugU4">–</td></tr>
@@ -266,7 +266,7 @@
     </details>
 
     <details>
-      <summary>4. Am Bund Ø26 steht nur Rz 10. Lohnt ein Schlichtgang trotzdem?</summary>
+      <summary>4. Am Bund Ø34 steht nur Rz 10. Lohnt ein Schlichtgang trotzdem?</summary>
       <p>Für die Oberfläche nicht &ndash; Rz 10 ist die allgemeine Rautiefe, die
         an keiner Funktionsfläche liegt. Der Bund trägt hier weder ein Lager
         noch eine Dichtung.</p>
@@ -310,7 +310,7 @@
 var R_ECKE = 0.8;           /* groesster genormter Eckenradius, den die
                                Kontur zulaesst - siehe R_ENG unten */
 var R_KLEIN = 0.4;           /* die Haelfte davon, Teil 2 */
-var L_SITZ = 34;             /* Länge des Ø22, aus der Zeichnung */
+var L_SITZ = 34;             /* Länge des Ø30, aus der Zeichnung */
 /* Die engste Innenrundung der Kontur: die R1 am kleinen Absatz zwischen
    Durchmesser 18 und 22. Nicht die R1,6 am Bund.
 
@@ -321,9 +321,9 @@ var L_SITZ = 34;             /* Länge des Ø22, aus der Zeichnung */
 var R_ENG = 1.0;
 
 var FORDERUNGEN = [
-  {name:"Führungssitz Ø22 – die Funktionsfläche", rz:4},
-  {name:"Ø18 links – der Zapfen", rz:6.3},
-  {name:"Bund Ø26 – allgemeine Rautiefe der Zeichnung", rz:10}
+  {name:"Führungssitz Ø30 – die Funktionsfläche", rz:4},
+  {name:"Ø20 links – der Zapfen", rz:6.3},
+  {name:"Bund Ø34 – allgemeine Rautiefe der Zeichnung", rz:10}
 ];
 
 function el(id){ return document.getElementById(id); }
@@ -358,11 +358,13 @@ function bilanz(id, richtig, gesamt, offen){
   /* Radien und Benennungen gehoeren mit ins Bild: Teil 3 fragt nach der
      engsten Innenrundung der Kontur, und die stand bis dahin nur im
      Loesungstext. Wer sie ablesen soll, muss sie finden koennen. */
-  var o = {s:5.8, rauheiten:true, bezeichnungen:true, radien:true};
+  var o = {s:5.8, masse:true, masseUnten:true, bezeichnungen:true,
+           rauheiten:true, radien:true, zentrierbohrungen:true,
+           einzelheiten:true};
   var g = wellenGroesse(WELLE, o);
   var svg = bild("bildWelle", g.breite, g.hoehe,
     "Die Spannwelle mit Rautiefen, Rundungen und Freistich",
-    "Rz 4 am Führungssitz Ø22, Rz 6,3 am Ø18, sonst Rz 10. Die Rundungen "
+    "Rz 4 am Führungssitz Ø30, Rz 6,3 am Ø20, sonst Rz 10. Die Rundungen "
     + "R1 und R1,6 sitzen an den beiden Absätzen, der Gewindefreistich "
     + "DIN 76 – A vor dem Gewinde.");
   o.x = g.x; o.y = g.y;
@@ -445,7 +447,7 @@ el("btn2").addEventListener("click", function(){
 (function teil3(){
   el("loesung3").innerHTML =
     '<p>Die R1,6 am Bund ist <em>nicht</em> die engste Stelle. Das ist die '
-    + '<strong>R1</strong> am kleinen Absatz zwischen Ø18 und Ø22 – sie '
+    + '<strong>R1</strong> am kleinen Absatz zwischen Ø20 und Ø30 – sie '
     + 'fällt weniger auf, gilt aber trotzdem.</p>'
     + '<p>r<sub>ε</sub> &le; 1,0 &minus; 0,1 = <strong>0,9 mm</strong>. '
     + 'Die nächstkleinere genormte Größe ist <strong>0,8 mm</strong> – '

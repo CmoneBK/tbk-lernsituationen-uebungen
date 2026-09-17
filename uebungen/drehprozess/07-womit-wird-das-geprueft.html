@@ -211,7 +211,7 @@
     </details>
 
     <details>
-      <summary>2. Der Messschieber zeigt 21,99. Ist der Ø22 g6 in
+      <summary>2. Der Messschieber zeigt 21,99. Ist der Ø30 g6 in
         Ordnung?</summary>
       <p><strong>Die Frage lässt sich so nicht beantworten.</strong> Die
         Toleranz ist 13 µm breit, der Messschieber liest in Schritten von
@@ -302,12 +302,16 @@ function bilanz(id, richtig, gesamt, offen){
 
 /* Die Welle mit ihren Maßen - um sie geht es. */
 (function zeichnung(){
-  var g = wellenGroesse(WELLE, {s:5.8, masse:true});
+  var o = {s:5.8, masse:true, masseUnten:true, bezeichnungen:true,
+           rauheiten:true, radien:true, zentrierbohrungen:true,
+           einzelheiten:true};
+  var g = wellenGroesse(WELLE, o);
   var svg = bild("bildWelle", g.breite, g.hoehe,
     "Die Spannwelle mit Maßen und Toleranzangaben",
     "Spannwelle aus C25E. Zwei Maße tragen ein ISO-Kurzzeichen, die "
     + "übrigen gelten nach Allgemeintoleranz.");
-  zeichneWelle(svg, WELLE, {x:g.x, y:g.y, s:5.8, masse:true});
+  o.x = g.x; o.y = g.y;
+  zeichneWelle(svg, WELLE, o);
 }());
 
 var MESSMITTEL = [
@@ -351,7 +355,7 @@ var MASSE = (function(){
             mitte: (hoechst + mindest) / 2,
             herkunft: "ISO-Kurzzeichen " + t.klasse};
   });
-  [[26, "Bund Ø26"], [90, "Gesamtlänge 90"], [6, "Nut A bei 6"]]
+  [[34, "Bund Ø34"], [90, "Gesamtlänge 90"], [6, "Nut A bei 6"]]
     .forEach(function(m, i){
       var ab = allgemeinM(m[0]);
       aus.push({id: "a" + i, text: m[1], kurzzeichen: false, nennmass: m[0],
@@ -422,10 +426,10 @@ var ABLAUF = [
    grund:"Solange das Aufmaß noch da ist, lässt sich der Schlichtgang "
      + "planen. Fehlt es, hat der Schlichtmeißel nichts mehr wegzunehmen - "
      + "und das merkt man sonst erst, wenn das Maß zu klein ist."},
-  {nr:5, pruefen:false, was:"Kontur schlichten: Ø22 g6, Ø18 n6",
+  {nr:5, pruefen:false, was:"Kontur schlichten: Ø30 g6, Ø20 n6",
    grund:"Jetzt die Oberfläche und die Passmaße. Gezielt wird auf die "
      + "Toleranzmitte."},
-  {nr:6, pruefen:true, was:"Ø22 g6 und Ø18 n6 mit der Bügelmessschraube prüfen",
+  {nr:6, pruefen:true, was:"Ø30 g6 und Ø20 n6 mit der Bügelmessschraube prüfen",
    grund:"Direkt nach dem Schlichten, solange nachgeschlichtet werden kann. "
      + "Der Messschieber taugt hier nicht: Seine Ablesung ist gröber als die "
      + "ganze Toleranz."},

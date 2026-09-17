@@ -181,6 +181,12 @@ function wellenGroesse(w, o){
   /* Der Einzelheitkreis steht auf der Mantellinie und ragt halb darueber
      hinaus; der Buchstabe daneben. */
   if(o.einzelheiten)  oben = Math.max(oben, 2.2 * s + 26);
+
+  /* Die Schnittlinie einer Passfedernut reicht unter die Masskette, und
+     unter ihr stehen noch Pfeil und Buchstabe. */
+  var schnitt = (w.laengsnuten || []).some(function(n){
+    return n.schnittMarke;
+  });
   /* Die Zentrierbohrungen haengen unter dem Teil, am Rand. */
   if(o.zentrierbohrungen && w.zentrierbohrungen){
     unten = Math.max(unten, 46);
@@ -197,6 +203,10 @@ function wellenGroesse(w, o){
         + Math.max(0, (w.masse.oben || []).length - 1) * 20 + 30);
     }
   }
+
+  /* Die Schnittlinie wird immer gezeichnet, wenn die Nut eine Marke hat -
+     auch in Bildern ohne Masse. Der Platz muss also immer da sein. */
+  if(schnitt) unten += 34;
 
   /* Die Erklaerebenen haengen an ihrem eigenen Durchmesser, nicht am
      groessten. Eine Benennung am duennen Zapfen braucht deshalb weniger
@@ -308,10 +318,18 @@ function zeichneWelle(svg, w, o){
           BREIT);
   }
 
-  /* Eine Innenbohrung. In der Ansicht ist sie eine verdeckte Kante:
-     schmale Strichlinie, DIN ISO 128-50. Geschnitten wird nicht - eine
-     Welle stellt man im Längsschnitt nicht geschnitten dar. */
+  /* Eine Innenbohrung. Sie kommt vor der Passfedernut an die Reihe: Ihr
+     Teilschnitt kann bis hinter die Nut reichen, und die Nut fragt danach,
+     ob sie schon darin liegt.
+
+     Mit `ausbruch` wird sie im Teilschnitt gezeigt: Eine verdeckte Kante
+     darf nicht bemaßt werden (Seite 80), und ohne Maß ist eine Bohrung
+     wertlos. Im Schnitt sind ihre Wände Körperkanten - breite Volllinien -
+     und verdeckte Kanten werden dort gar nicht dargestellt (Seite 76).
+
+     Ohne `ausbruch` bleibt sie die schmale Strichlinie der Ansicht. */
   (w.bohrungen || []).forEach(function(b){
+    if(b.ausbruch){ bohrungAusbruch(svg, g, m, w, b); return; }
     [true, false].forEach(function(oben){
       linie(g, m.x(b.von), m.y(b.d, oben), m.x(b.bis), m.y(b.d, oben),
             SCHMAL, {strich:"6 3"});
@@ -341,12 +359,36 @@ function zeichneWelle(svg, w, o){
      Teilschnitt, dessen Bruchlinie eine durchgezogene Freihandlinie ist
      (Seite 75). Ohne ihn sieht die Nut aus wie eine Stufe. */
   (w.laengsnuten || []).forEach(function(n){
-    laengsnutAusbruch(svg, g, m, w, n);
+    /* Liegt die Nut schon in einem Bohrungsausbruch, braucht sie keinen
+       eigenen - sie ist dort bereits geschnitten dargestellt. */
+    var drin = (w.bohrungen || []).some(function(b){
+      return b.ausbruch && b.ausbruchBis !== undefined
+          && n.von >= b.von && n.bis <= b.ausbruchBis;
+    });
+    if(!drin) laengsnutAusbruch(svg, g, m, w, n);
+    /* Hinter der Schnittebene liegt die andere Haelfte der Nut, und ihre
+       Flanke schneidet die Mantelflaeche: eine sichtbare Kante bei der
+       Sehne ueber der halben Nutbreite. Sie ist eine reale geometrische
+       Durchdringung und damit eine BREITE Vollinie (Seite 73). Gezeichnet
+       wird sie nach der Schraffur, sonst liegt sie darunter. */
+    var rr = n.d / 2, halb = n.breite / 2;
+    if(halb < rr){
+      var dk = 2 * Math.sqrt(rr * rr - halb * halb);
+      if(dk > n.d - 2 * n.tiefe){
+        linie(g, m.x(n.von), m.y(dk, true), m.x(n.bis), m.y(dk, true), BREIT);
+      }
+    }
     /* Die Schnittebene des Querschnitts - Seite 75 - und der Blickpfeil
        zur Teilansicht - Seite 73. Sie stehen an verschiedenen Stellen der
        Nut, sonst liegen Buchstabe auf Buchstabe. */
     if(n.schnittMarke){
-      schnittebene(g, m, w, n.von + (n.bis - n.von) * 0.68, n.schnittMarke);
+      /* Wie tief die Masskette reicht - dieselbe Staffelung wie in
+         `wellenMasse`, damit die Schnittlinie darunter endet. */
+      var stufen = o.masse
+        ? 26 + Math.max(0, wellenLaengsmasse(w, o.masseUnten).length - 1) * 20
+        : 10;
+      schnittebene(g, m, w, n.von + (n.bis - n.von) * 0.68, n.schnittMarke,
+                   stufen + 12);
     }
     if(n.ansichtMarke){
       blickpfeil(g, m, w, n.von + (n.bis - n.von) * 0.22, n.ansichtMarke);
@@ -366,16 +408,100 @@ function zeichneWelle(svg, w, o){
   return g;
 }
 
+/* Der Teilschnitt an einer Innenbohrung.
+
+   Er reicht ein Stück über den Bohrungsgrund hinaus, damit man sieht, dass
+   die Bohrung dort endet. Begrenzt wird er rechts von einer durchgezogenen
+   Freihandlinie (Seite 75); die Schnittfläche zwischen Bohrungswand und
+   Kontur ist schraffiert (Seite 77).
+
+   Die Kontur folgt den Abschnitten der Welle - eine Bohrung liegt oft
+   unter mehreren Durchmessern. */
+function bohrungAusbruch(svg, g, m, w, b){
+  /* Wie weit der Schnitt reicht. Endet eine Passfedernut spaeter als die
+     Bohrung, wird bis hinter sie geschnitten: Zwei sich ueberlappende
+     Ausbrueche mit zwei Bruchlinien liest niemand. */
+  var bis = b.bis + Math.max(4, (b.bis - b.von) * 0.15);
+  (w.laengsnuten || []).forEach(function(n){
+    if(n.von <= b.bis && n.bis + 5 > bis) bis = n.bis + 5;
+  });
+  bis = Math.min(w.laenge, bis);
+  b.ausbruchBis = bis;          /* damit die Nut ihren eigenen weglaesst */
+
+  /* Dasselbe Muster wie der Ausbruch an der Nut: Seite 75 - bei einem
+     Einzelteil werden ALLE Schnittflaechen in gleicher Richtung und in
+     gleichem Abstand schraffiert. Zwei Muster hiessen: zwei Teile. */
+  var muster = schraffur(svg, "ausbruch-" + w.id, 45);
+
+  /* Die Kontur kommt aus `wellenKontur` - damit ist die Passfedernut als
+     Hohlraum schon darin, ohne dass hier zweite Geometrie entsteht.
+
+     Wichtig sind die beiden Enden: Die Punktfolge hat selten einen Punkt
+     genau bei `von` oder bei `bis`. Fehlen sie, springt das Vieleck von
+     der letzten Ecke schraeg zur Achse - und die Schraffur fuellt den
+     Bereich zwischen Kontur und Bruchlinie nur zur Haelfte. */
+  function kontur(oben){
+    var p = [[m.x(b.von), m.y(konturDurchmesser(w, b.von), oben)]];
+    wellenKontur(w, oben).forEach(function(k){
+      if(k.x <= b.von || k.x >= bis) return;
+      p.push([m.x(k.x), m.y(k.r * 2, oben)]);
+    });
+    p.push([m.x(bis), m.y(konturDurchmesser(w, bis), oben)]);
+    return p;
+  }
+
+  [true, false].forEach(function(oben){
+    var p = kontur(oben).concat([
+      [m.x(bis), m.achse],
+      [m.x(b.bis), m.achse],
+      [m.x(b.bis), m.y(b.d, oben)],
+      [m.x(b.von), m.y(b.d, oben)]
+    ]);
+    svgEl("polygon", {points: p.map(function(q){
+        return q[0].toFixed(1) + "," + q[1].toFixed(1); }).join(" "),
+      fill: muster, stroke: "none"}, g);
+    /* Die Bohrungswand - im Schnitt eine Koerperkante. */
+    linie(g, m.x(b.von), m.y(b.d, oben), m.x(b.bis), m.y(b.d, oben), BREIT);
+  });
+  /* Der Bohrungsgrund. */
+  linie(g, m.x(b.bis), m.y(b.d, true), m.x(b.bis), m.y(b.d, false), BREIT);
+
+  /* Die Bruchlinie. Sie reicht genau von der oberen zur unteren Kontur -
+     nicht weiter. Eine Bruchlinie, die ueber das Teil hinaussteht, begrenzt
+     nichts mehr; und die Schraffur liegt ausschliesslich zwischen Kontur
+     und Bruchlinie und fuellt diesen Bereich ganz aus. Deshalb der
+     Durchmesser AN DER SCHNITTSTELLE, nicht der groesste der Welle. */
+  var dBis = konturDurchmesser(w, bis);
+  var yo = m.y(dBis, true), yu = m.y(dBis, false);
+  svgEl("path", {d: bruchlinie(m.x(bis), yo, yu - yo), fill: "none",
+    stroke: "currentColor", "stroke-width": SCHMAL}, g);
+  return g;
+}
+
+/* Der Durchmesser der Kontur an einer Stelle. Gebraucht fuer Bruchlinien:
+   Sie duerfen nicht ueber das Teil hinausstehen. */
+function konturDurchmesser(w, mm){
+  var d = 0;
+  w.abschnitte.forEach(function(a){
+    if(mm < a.von || mm > a.bis) return;
+    var dd = abschnittRadius(a, mm) * 2;
+    if(dd > d) d = dd;
+  });
+  return d || wellenGroesstDurchmesser(w);
+}
+
 /* Eine Schnittebene kennzeichnen - Tabellenbuch Seite 75.
 
    Die Schnittlinie ist eine BREITE Strich-Punktlinie quer über das Teil.
    An ihren Enden stehen Pfeile aus breiten Volllinien, die die
    Blickrichtung angeben; ihr Schenkelwinkel beträgt 30 Grad. Daneben der
    Großbuchstabe, mit dem der Schnitt selbst überschrieben wird. */
-function schnittebene(g, m, w, mm, marke){
+function schnittebene(g, m, w, mm, marke, tiefer){
   var gd = wellenGroesstDurchmesser(w);
   var x = m.x(mm);
-  var yo = m.y(gd, true) - 10, yu = m.y(gd, false) + 10;
+  /* Nach unten reicht die Schnittlinie ueber die Masskette hinaus - sonst
+     liegt ihr Pfeil auf der ersten Masslinie und der Buchstabe im Mass. */
+  var yo = m.y(gd, true) - 10, yu = m.y(gd, false) + (tiefer || 10);
   /* Dasselbe Strichbild wie die Mittellinie - der Unterschied ist die
      Breite, nicht das Muster: schmale Strich-Punktlinie fuer die Achse,
      breite fuer die Schnittlinie (Seite 75). */
@@ -421,14 +547,20 @@ function blickpfeil(g, m, w, mm, marke){
    Der Teilbereich wird mit einer schmalen Vollinie eingekreist und mit
    einem Großbuchstaben versehen. Derselbe Buchstabe steht am
    vergrößerten Bild, dazu der Vergrößerungsmaßstab. */
-function einzelheitKreis(g, m, w, mm, d, marke){
+function einzelheitKreis(g, m, w, mm, d, marke, ab, hoch){
   var x = m.x(mm), y = m.y(d, true);
   var r = Math.max(13, 2.2 * m.s);
   svgEl("circle", {cx: x, cy: y, r: r, fill: "none",
     stroke: "currentColor", "stroke-width": SCHMAL}, g);
   /* Der Buchstabe steht ueber dem Kreis, nicht daneben: Daneben liegt die
-     Mantellinie, und Text auf Geometrie ist der haeufigste Lesefehler. */
-  txt(g, x + r + 8, y - r - 9, marke, {fett: true, groesse: 13});
+     Mantellinie, und Text auf Geometrie ist der haeufigste Lesefehler.
+
+     Wohin genau, sagt die Nut selbst (`markeAb`, `markeHoch`) - rund um
+     einen Absatz liegen Masshilfslinien, und die stehen auf jeder Welle
+     woanders. Nachgemessen wird mit test-beschriftung.js. */
+  txt(g, x + (ab === undefined ? r + 8 : ab),
+         y - (hoch === undefined ? r + 9 : hoch),
+      marke, {fett: true, groesse: 13});
   return g;
 }
 
@@ -436,7 +568,8 @@ function einzelheitKreis(g, m, w, mm, d, marke){
 function wellenEinzelheiten(g, m, w){
   var e = svgEl("g", {}, g);
   (w.nuten || []).forEach(function(n){
-    einzelheitKreis(e, m, w, n.bei + n.breite / 2, n.d, n.marke);
+    einzelheitKreis(e, m, w, n.bei + n.breite / 2, n.d, n.marke,
+                    n.markeAb, n.markeHoch);
   });
   return e;
 }
@@ -518,14 +651,32 @@ function massDurchmesser(g, m, o){
 }
 
 /* Welche Längenmaße unter dem Teil stehen. Im Regelfall die von links
-   gemessenen; mit `alleUnten` auch die von rechts - dann nach Spannweite
-   geordnet, damit das kurze Maß nah am Teil liegt und die Maßlinien sich
-   nicht kreuzen. */
+   gemessenen; mit `alleUnten` auch die von rechts.
+
+   Die Reihenfolge ist keine Kosmetik. Wer nur nach Spannweite staffelt,
+   bekommt Maßhilfslinien, die kreuz und quer über die Zeichnung laufen:
+   Ein Maß von links und eines von rechts landen dann in benachbarten
+   Stufen an ganz verschiedenen Stellen. Deshalb wird erst nach
+   Bezugskante gruppiert und innerhalb der Gruppe nach Spannweite:
+
+     1. Maße zwischen zwei inneren Stellen - sie sind kurz und liegen am
+        nächsten am Teil,
+     2. alles von der linken Stirnfläche aus,
+     3. alles von der rechten.
+
+   So entstehen drei saubere Treppen statt einer Zickzacklinie. */
 function wellenLaengsmasse(w, alleUnten){
   var u = (w.masse.unten || []).slice();
   if(!alleUnten) return u;
-  return u.concat(w.masse.oben || []).sort(function(a, b){
-    return (a.bis - a.von) - (b.bis - b.von);
+  var alle = u.concat(w.masse.oben || []);
+  function gruppe(z){
+    if(z.von === 0) return 1;
+    if(z.bis === w.laenge) return 2;
+    return 0;
+  }
+  return alle.sort(function(a, b){
+    return gruppe(a) - gruppe(b)
+        || (a.bis - a.von) - (b.bis - b.von);
   });
 }
 
@@ -590,7 +741,10 @@ function hinweislinie(g0, x0, y0, ab, hoch, text, o){
   if(o.vorn) breite += o.vorn;
   linie(g, x1, y1, x1 + ri * breite, y1, SCHMAL);
   var tx = x1 + ri * 3 + (o.vorn ? ri * o.vorn : 0);
-  if(text) txt(g, tx, y1 - 4, text,
+  /* Sechs Punkte ueber der Bezugslinie, nicht vier: Die Unterlaenge der
+     Schrift zaehlt mit, und bei kleinem Massstab sass der Text sonst auf
+     der Linie. Nachgemessen. */
+  if(text) txt(g, tx, y1 - 6, text,
                {anker: ri < 0 ? "end" : "start", groesse: gr});
   return {x: x1, y: y1, ri: ri, textX: tx, g: g};
 }

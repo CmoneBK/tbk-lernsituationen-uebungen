@@ -236,19 +236,22 @@ WELLEN.mitnehmerwelle = {
 
   laenge: 106,
   abschnitte: [
-    {von: 0,  bis: 18,  d: 26, name: "Zapfen links"},
+    {von: 0,  bis: 18,  d: 25, name: "Zapfen links"},
     {von: 18, bis: 56,  d: 32, name: "Lagersitz"},
     {von: 56, bis: 68,  d: 36, name: "Bund"},
     {von: 68, bis: 106, d: 24, name: "Gewindezapfen"}
   ],
   gewinde: {bezeichnung: "M24×2 – 6g", von: 75, bis: 106, P: 2,
             d: 24, d3: 24 - 1.2268 * 2},
-  /* Ø26 steht in der Auswahl auf Seite 287 nicht (17, 20, 25, 30 …).
-     Die Masze sind deshalb nicht aus dem Buch belegt - `ungedeckt` sagt
-     das, und die Einzelheit traegt dann keine Toleranzklassen. */
+  /* Nut nach DIN 471, Tabellenbuch Seite 287: Bei d1 = 25 sind d2 = 23,9,
+     m = 1,3 und n mindestens 1,7. Die Tiefe folgt: (25 − 23,9) / 2. */
   nuten: [
-    {marke: "A", bei: 7, breite: 1.3, tiefe: 0.5, d: 26,
-     ungedeckt: "Ø26 fehlt in der Auswahl des Tabellenbuchs (Seite 287)"}
+    {marke: "A", bei: 7, breite: 1.3, tiefe: 0.55, d: 25,
+     d2: 23.9, nMin: 1.7, breiteToleranz: "H13", d2Toleranz: "h12",
+     /* Nach links und hoeher: rechts steht die Rautiefe, auf halber Hoehe
+        laeuft die Masshilfslinie des Ø32 vorbei. Nachgemessen. */
+     markeAb: -20, markeHoch: 42,
+     ring: "Sicherungsring DIN 471 – 25 × 1,2"}
   ],
   /* DIN 509 – E 0,8 × 0,3: die Größe der Reihe 1 für Durchmesser über
      18 bis 80 mm, und Reihe 1 ist zu bevorzugen (Seite 119). Am Absatz
@@ -256,11 +259,11 @@ WELLEN.mitnehmerwelle = {
      damit die Grenze für den Eckenradius. */
   freistiche: [
     {norm: "DIN 509 – E 0,8 × 0,3", bei: 18, r: 0.8, tiefe: 0.3,
-     t2: 0.2, f: 2.5, schulter: "Ø26 auf Ø32", ab: -40, hoch: 72}
+     t2: 0.2, f: 2.5, schulter: "Ø25 auf Ø32", ab: -40, hoch: 72}
   ],
   rundungen: [{bei: 56, r: 1.6, ab: -14, hoch: 44}],
   kleinsterInnenradius: 0.8,
-  woher: "Freistich DIN 509 – E 0,8 × 0,3 am Absatz Ø26 auf Ø32",
+  woher: "Freistich DIN 509 – E 0,8 × 0,3 am Absatz Ø25 auf Ø32",
   /* DIN 76-1: Bei P = 2 mm sind r = 1,0 mm, d_g = d − 3 = 21 mm und
      g1 = 4,5 bis g2 = 7 mm. Gewählt ist 7 mm - vier Millimeter, wie hier
      vorher standen, wären unter der Mindestlänge. */
@@ -273,7 +276,7 @@ WELLEN.mitnehmerwelle = {
   flaechen: [
     {id: "stirn_links", name: "linke Stirnfläche", bei: 0, art: "stirn",
      verfahren: "abstechdrehen"},
-    {id: "mantel_26",   name: "Ø26 links", von: 0, bis: 18, d: 26,
+    {id: "mantel_26",   name: "Ø25 links", von: 0, bis: 18, d: 25,
      art: "mantel", verfahren: "laengsrunddrehen", rz: 6.3},
     {id: "nut_a",       name: "Nut A", bei: 7, art: "nut",
      verfahren: "einstechdrehen"},
@@ -293,10 +296,10 @@ WELLEN.mitnehmerwelle = {
 
   masse: {
     unten: [
-      {von: 0, bis: 7,   text: "7",   an: [26, 26]},
-      {von: 0, bis: 18,  text: "18",  an: [26, 26]},
-      {von: 0, bis: 56,  text: "56",  an: [26, 32]},
-      {von: 0, bis: 106, text: "106", an: [26, 24]}
+      {von: 0, bis: 7,   text: "7",   an: [25, 25]},
+      {von: 0, bis: 18,  text: "18",  an: [25, 25]},
+      {von: 0, bis: 56,  text: "56",  an: [25, 32]},
+      {von: 0, bis: 106, text: "106", an: [25, 24]}
     ],
     oben: [
       {von: 75, bis: 106, text: "31", an: [24, 24]},
@@ -308,7 +311,7 @@ WELLEN.mitnehmerwelle = {
       {von: 68, bis: 106, text: "38", an: [36, 24]}
     ],
     durchmesser: [
-      {d: 26, text: "Ø26", seite: "links", versatz: 26, vonMm: 0},
+      {d: 25, text: "Ø25", seite: "links", versatz: 26, vonMm: 0},
       {d: 32, text: "Ø32", seite: "links", versatz: 52, vonMm: 18},
       {d: 36, text: "Ø36", seite: "mitte", versatz: 62, ab: -34},
       {d: 24, text: "M24×2 – 6g", seite: "rechts", versatz: 42, vonMm: 106}
@@ -320,7 +323,7 @@ WELLEN.mitnehmerwelle = {
      wennOhneMasse: true}
   ],
   rauheiten: [
-    {x: 12, d: 26, text: "Rz 6,3"},
+    {x: 12, d: 25, text: "Rz 6,3"},
     {x: 36, d: 32, text: "Rz 4"}
   ],
   allgemeineRautiefe: 10
@@ -344,20 +347,28 @@ WELLEN.spannwelle = {
 
   laenge: 90,
   abschnitte: [
-    {von: 0,  bis: 14, d: 18, name: "Zapfen links"},
-    {von: 14, bis: 48, d: 22, name: "Führungssitz"},
-    {von: 48, bis: 58, d: 26, name: "Bund"},
+    {von: 0,  bis: 14, d: 20, name: "Zapfen links"},
+    {von: 14, bis: 48, d: 30, name: "Führungssitz"},
+    {von: 48, bis: 58, d: 34, name: "Bund"},
     {von: 58, bis: 90, d: 16, name: "Gewindezapfen"}
   ],
   gewinde: {bezeichnung: "M16×1,5 – 6g", von: 61.5, bis: 90, P: 1.5,
             d: 16, d3: 16 - 1.2268 * 1.5},
-  /* Ø18 und Ø22 stehen in der Auswahl auf Seite 287 nicht (17, 20, 25 …).
-     Siehe die Mitnehmerwelle: gekennzeichnet statt geraten. */
+  /* Nuten nach DIN 471, Tabellenbuch Seite 287. Die beiden sitzen auf
+     verschiedenen Durchmessern und sind deshalb verschieden breit und
+     tief - je eine eigene Einzelheit.
+       Ø20: d2 = 19,   m = 1,3, n min = 1,5  ->  Tiefe 0,5
+       Ø30: d2 = 28,6, m = 1,6, n min = 2,1  ->  Tiefe 0,7 */
   nuten: [
-    {marke: "A", bei: 6,  breite: 1.3, tiefe: 0.5, d: 18,
-     ungedeckt: "Ø18 fehlt in der Auswahl des Tabellenbuchs (Seite 287)"},
-    {marke: "B", bei: 43, breite: 1.3, tiefe: 0.5, d: 22,
-     ungedeckt: "Ø22 fehlt in der Auswahl des Tabellenbuchs (Seite 287)"}
+    {marke: "A", bei: 6,  breite: 1.3, tiefe: 0.5, d: 20,
+     d2: 19,   nMin: 1.5, breiteToleranz: "H13", d2Toleranz: "h11",
+     /* Hoeher als ueblich: Auf halber Hoehe laeuft die Masshilfslinie des
+        Ø30 g6 vorbei. Nachgemessen. */
+     markeAb: 10, markeHoch: 42,
+     ring: "Sicherungsring DIN 471 – 20 × 1,2"},
+    {marke: "B", bei: 43, breite: 1.6, tiefe: 0.7, d: 30,
+     d2: 28.6, nMin: 2.1, breiteToleranz: "H13", d2Toleranz: "h12",
+     ring: "Sicherungsring DIN 471 – 30 × 1,5"}
   ],
   freistiche: [],
   /* `ab` und `hoch` setzen die Hinweislinien in die Luecken zwischen den
@@ -367,39 +378,45 @@ WELLEN.spannwelle = {
   rundungen: [{bei: 14, r: 1,   ab: -20, hoch: 56},
               {bei: 48, r: 1.6, ab: -16, hoch: 48}],
   kleinsterInnenradius: 1,
-  woher: "Rundung R1 am Absatz Ø18 auf Ø22",
+  woher: "Rundung R1 am Absatz Ø20 auf Ø30",
   /* DIN 76-1: Bei P = 1,5 mm sind r = 0,8 mm, d_g = d − 2,3 = 13,7 mm
      und g1 = 3,2 bis g2 = 5,2 mm. Die 3,5 mm liegen im Bereich. */
   gewindefreistich: {norm: "DIN 76 – A", von: 58, bis: 61.5,
                      r: 0.8, dg: 13.7, P: 1.5},
   zentrierbohrungen: {links: "ISO 6411 – A2/4,25",
                       rechts: "ISO 6411 – A2,5/5,3", art: "darf"},
-  rohteil: {d: 28, laenge: 96},
+  rohteil: {d: 36, laenge: 96},
 
   /* Zwei Passungen, absichtlich von anderer Art als bei der
      Antriebswelle: g6 ist eine Spielpassung, n6 eine Übermasspassung.
-     Der Ø18 liegt genau auf der Bereichsgrenze - die Zeile "über 10 bis
-     18" gilt, nicht die darüber. Das ist der Ablesefehler, um den es in
-     der Übung geht. */
+
+     Der Ø30 liegt genau auf der Bereichsgrenze - die Zeile "über 18 bis
+     30" gilt, nicht die darüber. Das ist der Ablesefehler, um den es in
+     der Übung geht. (Die falsche Zeile "über 30 bis 50" gäbe -9 / -25.)
+
+     Warum gerade Ø30: Von allen Wellendurchmessern der Ringtabelle auf
+     Seite 287 sind nur 10, 30 und 50 zugleich Grenzen der
+     ISO-Nennmassbereiche. Die Nut braucht einen genormten Ring, die Übung
+     braucht die Bereichsgrenze - Ø30 erfüllt beides. */
   toleranzen: [
-    {flaeche: "mantel_22", nennmass: 22, klasse: "g6", es: -7, ei: -20},
-    {flaeche: "mantel_18", nennmass: 18, klasse: "n6", es: 23, ei: 12}
+    {flaeche: "mantel_30", nennmass: 30, klasse: "g6", es: -7, ei: -20},
+    {flaeche: "mantel_20", nennmass: 20, klasse: "n6", es: 28, ei: 15}
   ],
 
   flaechen: [
     {id: "stirn_links", name: "linke Stirnfläche", bei: 0, art: "stirn",
      verfahren: "abstechdrehen"},
-    {id: "mantel_18",   name: "Ø18 links", von: 0, bis: 14, d: 18,
+    {id: "mantel_20",   name: "Ø20 links", von: 0, bis: 14, d: 20,
      art: "mantel", verfahren: "laengsrunddrehen", rz: 6.3},
     {id: "nut_a",       name: "Nut A", bei: 6, art: "nut",
      verfahren: "einstechdrehen"},
     {id: "schulter_14", name: "Schulter bei 14", bei: 14, art: "schulter",
      verfahren: "querplandrehen"},
-    {id: "mantel_22",   name: "Führungssitz Ø22", von: 14, bis: 48, d: 22,
+    {id: "mantel_30",   name: "Führungssitz Ø30", von: 14, bis: 48, d: 30,
      art: "mantel", verfahren: "laengsrunddrehen", rz: 4},
     {id: "nut_b",       name: "Nut B", bei: 43, art: "nut",
      verfahren: "einstechdrehen"},
-    {id: "bund_26",     name: "Bund Ø26", von: 48, bis: 58, d: 26,
+    {id: "bund_34",     name: "Bund Ø34", von: 48, bis: 58, d: 34,
      art: "mantel", verfahren: "laengsrunddrehen", rz: 10},
     {id: "freistich",   name: "Freistich DIN 76 – A", bei: 59.7, art: "nut",
      verfahren: "einstechdrehen"},
@@ -411,20 +428,20 @@ WELLEN.spannwelle = {
 
   masse: {
     unten: [
-      {von: 0, bis: 6,  text: "6",  an: [18, 18]},
-      {von: 0, bis: 14, text: "14", an: [18, 18]},
-      {von: 0, bis: 48, text: "48", an: [18, 22]},
-      {von: 0, bis: 90, text: "90", an: [18, 16]}
+      {von: 0, bis: 6,  text: "6",  an: [20, 20]},
+      {von: 0, bis: 14, text: "14", an: [20, 20]},
+      {von: 0, bis: 48, text: "48", an: [20, 30]},
+      {von: 0, bis: 90, text: "90", an: [20, 16]}
     ],
     oben: [
       {von: 61.5, bis: 90, text: "28,5", an: [16, 16]},
-      {von: 58,   bis: 90, text: "32",   an: [26, 16]},
-      {von: 43,   bis: 90, text: "47",   an: [22, 16]}
+      {von: 58,   bis: 90, text: "32",   an: [34, 16]},
+      {von: 43,   bis: 90, text: "47",   an: [30, 16]}
     ],
     durchmesser: [
-      {d: 18, text: "Ø18 n6", seite: "links", versatz: 26, vonMm: 0},
-      {d: 22, text: "Ø22 g6", seite: "links", versatz: 52, vonMm: 14},
-      {d: 26, text: "Ø26", seite: "mitte", versatz: 53, ab: -34},
+      {d: 20, text: "Ø20 n6", seite: "links", versatz: 26, vonMm: 0},
+      {d: 30, text: "Ø30 g6", seite: "links", versatz: 52, vonMm: 14},
+      {d: 34, text: "Ø34", seite: "mitte", versatz: 53, ab: -34},
       /* Der Gewindezapfen wird über die Gewindebezeichnung bemaßt - sie
          enthält den Außendurchmesser. Ein zusätzliches "Ø16" wäre
          dasselbe Maß ein zweites Mal, und das verbietet DIN ISO 129-1. */
@@ -432,13 +449,15 @@ WELLEN.spannwelle = {
     ]
   },
   bezeichnungen: [
-    {x: 59.7,  d: 15, text: "DIN 76 – A",   ab: -12, hoch: 46},
+    /* Hoeher und nach rechts: Der Bund ist jetzt Ø34, und darunter waere
+       die Benennung im Werkstoff gelandet. */
+    {x: 59.7,  d: 15, text: "DIN 76 – A",   ab: 24,  hoch: 90},
     {x: 76,    d: 16, text: "M16×1,5 – 6g", ab: 20,  hoch: 26,
      wennOhneMasse: true}
   ],
   rauheiten: [
-    {x: 10, d: 18, text: "Rz 6,3"},
-    {x: 30, d: 22, text: "Rz 4"}
+    {x: 10, d: 20, text: "Rz 6,3"},
+    {x: 30, d: 30, text: "Rz 4"}
   ],
   /* Die Angabe im Schriftfeld: Sie gilt für jede Fläche ohne eigenes
      Zeichen - hier der Bund Ø26 und die beiden Stirnflächen. */
@@ -505,8 +524,11 @@ WELLEN.abtriebswelle = {
                     Teilansicht und bekommt einen Blickpfeil. */
                  schnittMarke: "A", ansichtMarke: "B",
                  norm: "Passfeder DIN 6885-1 – A – 10 × 8 × 32"}],
-  /* Eine Sacklochbohrung von links, als verdeckte Kante gezeichnet. */
-  bohrungen: [{von: 0, bis: 40, d: 18, norm: "Ø18 H7, 40 tief"}],
+  /* Eine Sacklochbohrung von links. Sie wird im Teilschnitt gezeigt, nicht
+     als verdeckte Kante: Eine verdeckte Kante darf nicht bemaßt werden
+     (Seite 80), und ohne Maß ist eine Bohrung wertlos. */
+  bohrungen: [{von: 0, bis: 40, d: 18, ausbruch: true,
+               norm: "Ø18 H7, 40 tief"}],
   freistiche: [],
   rundungen: [{bei: 30, r: 0.3, ab: -16, hoch: 44},
               {bei: 78, r: 1.6, ab: -16, hoch: 58},
@@ -560,6 +582,9 @@ WELLEN.abtriebswelle = {
 
   masse: {
     unten: [
+      /* Die Tiefe der Bohrung - im Teilschnitt sichtbar und damit
+         bemassbar. */
+      {von: 0, bis: 40,  text: "40",  an: [18, 18]},
       {von: 0, bis: 30,  text: "30",  an: [28, 28]},
       /* Die Passfedernut braucht ihre Lage, nicht nur ihre Länge. */
       {von: 0, bis: 38,  text: "38",  an: [28, 36]},
@@ -578,14 +603,14 @@ WELLEN.abtriebswelle = {
       {d: 42, text: "Ø42",    seite: "mitte",  versatz: 84, ab: -40},
       {d: 34, text: "Ø34",    seite: "rechts", versatz: 34, vonMm: 130,
        ab: -30},
-      {d: 24, text: "M24×3 – 6g", seite: "rechts", versatz: 78, vonMm: 165}
+      {d: 24, text: "M24×3 – 6g", seite: "rechts", versatz: 78, vonMm: 165},
+      /* Mitten im Teilschnitt, zwischen den beiden Bohrungswaenden. */
+      /* `ab` schiebt die Maszzahl aus der Mitte - sonst liegt sie auf der
+         Mittellinie, und das verbietet DIN ISO 129-1. */
+      {d: 18, text: "Ø18 H7", seite: "mitte", versatz: 20, ab: -30}
     ]
   },
   bezeichnungen: [
-    /* Die Hinweislinie beginnt auf der verdeckten Kante der Bohrung und
-       laeuft nach rechts aus dem Werkstoff heraus - links stuende sie in
-       der Angabe "Rz 6,3" des Zapfens. Nachgemessen, nicht geschaetzt. */
-    {x: 30,  d: 18, text: "Ø18 H7, 40 tief",     ab: 20,  hoch: 56},
     /* Seite 80: Der Kegel bekommt sein Sinnbild, nicht das Wort. Es zeigt
        in Richtung der Verjüngung - hier nach rechts, von Ø38 auf Ø34. */
     /* Nach rechts, damit das Sinnbild VOR der Zahl steht - so zeigt es

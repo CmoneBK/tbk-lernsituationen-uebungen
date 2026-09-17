@@ -124,7 +124,7 @@
 
     <figure class="bild" id="bildWelle"></figure>
 
-    <p>Der Führungssitz <strong>Ø22</strong> soll mit <strong>Rz 4</strong>
+    <p>Der Führungssitz <strong>Ø30</strong> soll mit <strong>Rz 4</strong>
       geschlichtet werden. Die Frage ist, ob das Werkzeug in die Kontur
       passt &ndash; also: <strong>Wo ist die engste Innenrundung?</strong></p>
     <p>Sehen Sie die ganze Zeichnung durch, nicht nur den größten Absatz.
@@ -176,7 +176,7 @@
         Bund. Damit wäre r<sub>ε</sub> &le; 1,5 mm erlaubt, also 1,2 mm.
         <strong>Das ist die falsche Stelle.</strong></p>
       <p>Die engste Innenrundung der Kontur ist die <strong>R1</strong> am
-        kleinen Absatz zwischen Ø18 und Ø22. Sie fällt weniger auf, weil der
+        kleinen Absatz zwischen Ø20 und Ø30. Sie fällt weniger auf, weil der
         Absatz kleiner ist &ndash; maßgeblich ist trotzdem sie. Daraus folgt:</p>
       <p>r<sub>ε</sub> &le; 1,0 &minus; 0,1 = <strong>0,9 mm</strong>
         &nbsp;&rarr;&nbsp; genormt <strong>0,8 mm</strong></p>
@@ -403,15 +403,18 @@ function bilanz(id, richtig, gesamt, offen){
 
 /* Die Welle, damit die Kontur zur Hand ist. */
 (function zeichnung(){
-  /* Mit `radien`: Die Unterschrift nennt R1 und R1,6 - dann muessen sie
-     auch im Bild stehen. */
-  var g = wellenGroesse(WELLE, {s:5.6, bezeichnungen:true, radien:true});
+  /* Vollstaendig bemasst - die Unterschrift nennt R1 und R1,6, und die
+     Zeichnung zeigt alles Uebrige gleich mit. */
+  var o = {s:5.6, masse:true, masseUnten:true, bezeichnungen:true,
+           rauheiten:true, radien:true, zentrierbohrungen:true,
+           einzelheiten:true};
+  var g = wellenGroesse(WELLE, o);
   var svg = bild("bildWelle", g.breite, g.hoehe,
     "Die Spannwelle mit Benennungen",
-    "Der Führungssitz Ø22 ist der längste Abschnitt; am Übergang zum Bund "
+    "Der Führungssitz Ø30 ist der längste Abschnitt; am Übergang zum Bund "
     + "sitzt die Rundung R1,6, am kleinen Absatz die R1.");
-  zeichneWelle(svg, WELLE,
-    {x:g.x, y:g.y, s:5.6, bezeichnungen:true, radien:true});
+  o.x = g.x; o.y = g.y;
+  zeichneWelle(svg, WELLE, o);
 }());
 
 /* ---------- Teil 1 ---------- */

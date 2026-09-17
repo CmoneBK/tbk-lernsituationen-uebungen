@@ -168,6 +168,17 @@ Beides prüft `pruefungen/test-drehprozess.js` unter „Vollstaendig bemasst“ 
 einer Verschmelzungsstruktur über die Maßketten — fehlendes Glied und
 geschlossener Zug fallen im selben Durchlauf auf.
 
+**Verdeckte Kanten werden nicht bemaßt** (Seite 80). Was man bemaßen will,
+muss man sichtbar machen — also einen Ausbruch legen, nicht die Strichlinie
+bemaßen. Die Bohrung Ø18 H7 der Abtriebswelle ist das Beispiel dafür.
+
+**Maßhilfslinien schießen nicht kreuz und quer.** Die Längenmaße stehen
+gruppiert: erst Maße zwischen zwei inneren Stellen, dann alles von der
+linken Stirnfläche, dann alles von der rechten — innerhalb jeder Gruppe nach
+Spannweite (`wellenLaengsmasse()`). Wer nur nach Spannweite staffelt, setzt
+ein Maß von links neben eines von rechts, und die Hilfslinien laufen quer
+über das Bild.
+
 **Was quer zur Achse liegt, braucht einen eigenen Riss.** Breite und Tiefe
 einer Passfedernut sind im Seitenriss nicht einzutragen; dafür gibt es
 `zeichneNutQuerschnitt()`. Sicherungsringnuten sind zu klein für die Ansicht
@@ -285,9 +296,24 @@ Mittellinie wird nicht bemaßt; verdeckte Geometrie möglichst nicht bemaßen.
   Grundschraffur ohne Rücksicht auf den Werkstoff, für Beschriftungen
   unterbrochen.
 * Der Teilschnitt an einer Passfedernut geht über die **ganze Länge** der
-  Passfeder. Damit ist die Nut eindeutig als Nut zu lesen; die
-  Durchdringungslinie steht dort, wo man sie wirklich sieht — als Umriss
-  der Nut in der Draufsicht.
+  Passfeder. Damit ist die Nut eindeutig als Nut zu lesen.
+* **Hinter der Schnittebene** liegt die andere Hälfte der Nut. Ihre Flanke
+  schneidet die Mantelfläche — diese Kante ist sichtbar und begrenzt die
+  Nutöffnung nach oben. Sie liegt bei der Sehne über der halben Nutbreite
+  und ist als Durchdringung eine **breite** Vollinie.
+* Zwei Regeln für jeden Ausbruch, und beide gelten ohne Ausnahme:
+  * Die **Freihandlinie geht nicht über die Kontur hinaus.** Sie reicht
+    genau vom oberen zum unteren Umriss — maßgebend ist der Durchmesser
+    **an der Schnittstelle**, nicht der größte der Welle
+    (`konturDurchmesser()`).
+  * Die **Schraffur liegt nur zwischen Kontur und Freihandlinie** und füllt
+    diesen Bereich **vollständig**. Die Fläche wird deshalb aus den echten
+    Konturpunkten gebaut, mit ausdrücklichen Punkten an beiden Enden —
+    fehlen sie, springt das Vieleck schräg zur Achse und füllt nur die
+    Hälfte.
+* Überlappen sich zwei Ausbrüche (Bohrung und Nut liegen dicht
+  beieinander), wird **ein** durchgehender Teilschnitt daraus. Zwei
+  Bruchlinien, die sich kreuzen, liest niemand.
 
 ### 6.9 Einzelheiten und Schnitte kennzeichnen — Seiten 74 und 75
 

@@ -310,7 +310,10 @@ function auswahlfeld(id, beschriftung, werte){
    Fläche gefragt ist. Sie ist der Gegenstand, ueber den geredet wird; wer
    die Reihenfolge begruenden soll, muss die Nuten sehen koennen. */
 function welleZeigen(markiert){
-  var g = wellenGroesse(WELLE, {s:5.4, bezeichnungen:true});
+  var o = {s:5.4, masse:true, masseUnten:true, bezeichnungen:true,
+           rauheiten:true, radien:true, zentrierbohrungen:true,
+           einzelheiten:true};
+  var g = wellenGroesse(WELLE, o);
   var svg = bild("bildAufgabe", g.breite, g.hoehe,
     markiert ? "Die Antriebswelle, eine Fläche hervorgehoben"
              : "Die Antriebswelle mit Benennungen",

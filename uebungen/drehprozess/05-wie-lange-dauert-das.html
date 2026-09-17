@@ -349,8 +349,8 @@ function bilanz(id, richtig, gesamt, offen){
 function abschnitt(d){
   return WELLE.abschnitte.filter(function(a){ return a.d === d; })[0];
 }
-var L_SITZ = abschnitt(22).bis - abschnitt(22).von;
-var L_ZAPFEN = abschnitt(18).bis - abschnitt(18).von;
+var L_SITZ = abschnitt(30).bis - abschnitt(30).von;
+var L_ZAPFEN = abschnitt(20).bis - abschnitt(20).von;
 
 /* Die vier Vorgaenge, fuer die gerechnet wird. `weg` ist der Fall aus der
    Bildtafel des Tabellenbuchs, `grund` sagt, welcher es ist und warum. */
@@ -362,27 +362,27 @@ var VORGAENGE = [
    grund:"Querplandrehen am Vollzylinder: Die Schneide läuft von außen bis "
      + "zur Mitte, also den halben Durchmesser weit. Kein Überlauf - dahinter "
      + "ist nichts mehr. Die Drehzahl kommt aus d<sub>m</sub> = d/2."},
-  {id:"schrupp", name:"Führungssitz Ø22 schruppen",
-   d: 28, dn: 28, vc: VC.schruppen, f: 0.4, i: 1,
+  {id:"schrupp", name:"Führungssitz Ø30 schruppen",
+   d: WELLE.rohteil.d, dn: WELLE.rohteil.d, vc: VC.schruppen, f: 0.4, i: 1,
    L: L_SITZ + LA,
    wegText:"L = l + l<sub>a</sub> = " + zahl(L_SITZ, 0) + " + " + LA,
    grund:"Längsrunddrehen mit Ansatz: Am Ende steht der Bund, also kein "
-     + "Überlauf. Gerechnet wird mit dem Rohteildurchmesser Ø28 - dort ist "
+     + "Überlauf. Gerechnet wird mit dem Rohteildurchmesser Ø36 - dort ist "
      + "die Schnittgeschwindigkeit am größten."},
-  {id:"schlicht", name:"Führungssitz Ø22 schlichten",
-   d: 22, dn: 22, vc: VC.schlichten, f: vorschub(4, R_ECKE), i: 1,
+  {id:"schlicht", name:"Führungssitz Ø30 schlichten",
+   d: 30, dn: 30, vc: VC.schlichten, f: vorschub(4, R_ECKE), i: 1,
    L: L_SITZ + LA,
    wegText:"L = l + l<sub>a</sub> = " + zahl(L_SITZ, 0) + " + " + LA,
-   grund:"Derselbe Weg, aber am Fertigdurchmesser Ø22 und mit dem "
+   grund:"Derselbe Weg, aber am Fertigdurchmesser Ø30 und mit dem "
      + "Schlichtvorschub für Rz 4."},
   {id:"nut", name:"Nut A einstechen",
-   d: 18, dn: 18, vc: VC.stechen, f: 0.08, i: 1,
+   d: WELLE.nuten[0].d, dn: WELLE.nuten[0].d, vc: VC.stechen, f: 0.08, i: 1,
    L: WELLE.nuten[0].tiefe + LA,
    wegText:"L = l + l<sub>a</sub> = " + zahl(WELLE.nuten[0].tiefe, 1)
      + " + " + LA,
    grund:"Einstechen: Der Weg ist die Einstechtiefe, hier 0,5 mm auf den "
      + "Radius. Der Anlaufweg ist größer als der Einstich selbst."},
-  {id:"abstech", name:"Werkstück abstechen (Ø28)",
+  {id:"abstech", name:"Werkstück abstechen (Ø36)",
    d: WELLE.rohteil.d, dn: WELLE.rohteil.d, vc: VC.stechen, f: 0.08, i: 1,
    L: WELLE.rohteil.d / 2 + LA,
    wegText:"L = l + l<sub>a</sub> = " + (WELLE.rohteil.d / 2) + " + " + LA,
@@ -396,12 +396,16 @@ function sekunden(v){ return v.L * v.i / (n(v) * v.f) * 60; }
 
 /* Die Welle mit ihren Maßen - die Längen der Vorgänge stehen darin. */
 (function zeichnung(){
-  var g = wellenGroesse(WELLE, {s:5.8, masse:true});
+  var o = {s:5.8, masse:true, masseUnten:true, bezeichnungen:true,
+           rauheiten:true, radien:true, zentrierbohrungen:true,
+           einzelheiten:true};
+  var g = wellenGroesse(WELLE, o);
   var svg = bild("bildWelle", g.breite, g.hoehe,
     "Die Spannwelle mit Maßen",
-    "Spannwelle aus C25E, Rohteil Ø28 × 96 mm. Die Längen der Abschnitte "
+    "Spannwelle aus C25E, Rohteil Ø36 × 96 mm. Die Längen der Abschnitte "
     + "stehen unter dem Teil.");
-  zeichneWelle(svg, WELLE, {x:g.x, y:g.y, s:5.8, masse:true});
+  o.x = g.x; o.y = g.y;
+  zeichneWelle(svg, WELLE, o);
 }());
 
 /* ---------- Teil 1: die Vorschubwege ---------- */

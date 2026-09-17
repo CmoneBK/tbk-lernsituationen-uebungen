@@ -75,7 +75,7 @@
     <div class="box auftrag">
       <p><strong>Die Lage:</strong> Auf dem Tisch liegt die Fertigungszeichnung
         der <strong>Spannwelle</strong> aus C25E. Sie soll aus Rundmaterial
-        Ø28 × 96 mm gedreht werden. Bevor irgendeine Schnittgeschwindigkeit
+        Ø36 × 96 mm gedreht werden. Bevor irgendeine Schnittgeschwindigkeit
         nachgeschlagen wird, ist die erste Frage zu klären: Welche Fläche
         entsteht durch welches Drehverfahren?</p>
       <p>Denn daraus folgt alles Weitere &ndash; das Werkzeug, die Spalte in
@@ -182,7 +182,7 @@
 
     <details>
       <summary>2. Die Nut A liegt 6 mm von der Stirnfläche entfernt, mitten auf
-        dem Ø18. Warum wird sie nicht vor dem Schlichten eingestochen?</summary>
+        dem Ø20. Warum wird sie nicht vor dem Schlichten eingestochen?</summary>
       <p>Weil das Schlichtwerkzeug danach über sie hinwegfahren müsste. An jeder
         Nutkante verlässt die Schneide den Werkstoff und trifft ihn gleich
         wieder &ndash; ein unterbrochener Schnitt im Kleinen. Das ist genau die
@@ -194,7 +194,7 @@
     </details>
 
     <details>
-      <summary>3. Der Bund Ø26 trägt nur Rz 10, der Führungssitz Ø22 dagegen
+      <summary>3. Der Bund Ø34 trägt nur Rz 10, der Führungssitz Ø30 dagegen
         Rz 4. Was heißt das für den Arbeitsplan?</summary>
       <p>Rz 10 ist die allgemeine Rautiefe der Zeichnung &ndash; was
         geschruppt ist, reicht dort. Der Bund braucht also
@@ -263,7 +263,7 @@ var FLAECHEN = [
      + "Stangenmaterial. Danach hält das Werkstück nicht mehr - deshalb ist "
      + "Abstechen immer der letzte Drehvorgang. Ihre Zentrierbohrung kommt "
      + "nach dem Umspannen dazu."},
-  {name:"Ø18 links", fordert:"Rz 6,3",
+  {name:"Ø20 links", fordert:"Rz 6,3",
    soll:"Längsrunddrehen, Schlichten",
    grund:"Eine zylindrische Mantelfläche entsteht beim Längsrunddrehen. Rz 6,3 "
      + "ist mit Schruppvorschüben nicht zu erreichen, also wird sie "
@@ -279,14 +279,14 @@ var FLAECHEN = [
    grund:"Auch ein Absatz steht senkrecht zur Achse - dieselbe Bewegung wie "
      + "bei der Stirnfläche. Die Rundung an seinem Fuß fährt das Werkzeug mit "
      + "seiner Schneidenecke aus; sie ist die engste Innenrundung der Welle."},
-  {name:"Führungssitz Ø22", fordert:"Rz 4",
+  {name:"Führungssitz Ø30", fordert:"Rz 4",
    soll:"Längsrunddrehen, Schlichten",
    grund:"Der längste Abschnitt und der genaueste. Ohne Schlichten ist Rz 4 "
      + "nicht zu machen."},
   {name:"Nut B bei 43 mm", fordert:"Breite 1,3 mm, Einzelheit B (4:1)",
    soll:"Einstechdrehen",
    grund:"Wie Nut A: quer einstechen, Breite gleich Schneidenbreite."},
-  {name:"Bund Ø26", fordert:"Rz 10 (allgemein), R1,6 am Übergang",
+  {name:"Bund Ø34", fordert:"Rz 10 (allgemein), R1,6 am Übergang",
    soll:"Längsrunddrehen, Schruppen",
    grund:"Rz 10 ist die allgemeine Rautiefe. Was geschruppt ist, reicht hier - "
      + "ein Schlichtgang wäre verschenkte Zeit."},
@@ -316,7 +316,7 @@ var ABLAUF = [
    grund:"Erst das Volumen weg, mit großer Schnitttiefe und großem Vorschub. "
      + "Das Schlichtaufmaß bleibt stehen."},
   {nr:4, was:"Flächen mit Rz 6,3 und Rz 4 schlichten",
-   grund:"Jetzt die Oberfläche. Der Bund Ø26 bleibt aus - Rz 10 ist schon "
+   grund:"Jetzt die Oberfläche. Der Bund Ø34 bleibt aus - Rz 10 ist schon "
      + "erreicht."},
   {nr:5, was:"Gewindefreistich und Nuten A und B einstechen",
    grund:"Nach dem Schlichten: Ein Schlichtwerkzeug, das über eine Nut läuft, "
@@ -336,17 +336,20 @@ function el(id){ return document.getElementById(id); }
 /* Die Zeichnung: einmal mit Maßen, damit alles Genannte im Bild zu finden
    ist. */
 (function zeichnung(){
-  /* Mit Maßen, ohne Benennungen: Beide Ebenen zusammen drängeln sich - die
-     Hinweislinien laufen in die Maßhilfslinien. Welche Fläche gemeint ist,
-     sagt die Tabelle darunter. */
-  var o = {s:6.2, masse:true};
+  /* Vollstaendig bemasst. Die alte Begruendung - Benennungen und Masze
+     draengelten sich - ist seit `masseUnten` erledigt: Ueber dem Teil
+     steht keine Masskette mehr. */
+  var o = {s:6.2, masse:true, masseUnten:true, bezeichnungen:true,
+           rauheiten:true, radien:true, zentrierbohrungen:true,
+           einzelheiten:true};
   var g = wellenGroesse(WELLE, o);
   var svg = bild("bildWelle", g.breite, g.hoehe,
     "Fertigungszeichnung der Spannwelle mit Maßen",
-    "Spannwelle aus C25E, Rohteil Ø28 × 96 mm. Die Nuten A und B sind "
+    "Spannwelle aus C25E, Rohteil Ø36 × 96 mm. Die Nuten A und B sind "
     + "1,3 mm breit; die Einzelheiten dazu stehen auf der Zeichnung im "
     + "Maßstab 4:1.");
-  zeichneWelle(svg, WELLE, {x:g.x, y:g.y, s:o.s, masse:true});
+  o.x = g.x; o.y = g.y;
+  zeichneWelle(svg, WELLE, o);
 }());
 
 /* ---------- Teil 2: jeder Fläche ihr Verfahren ---------- */

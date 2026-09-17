@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Auf welches Maß wird geschlichtet?</title>
-<meta name="description" content="Ø22 g6 und Ø18 n6: Grenzabmaße ablesen, Grenzmaße und Mittenmaß rechnen – und vier gemessene Teile beurteilen. Gutteil, Nacharbeit oder Ausschuss.">
+<meta name="description" content="Ø30 g6 und Ø20 n6: Grenzabmaße ablesen, Grenzmaße und Mittenmaß rechnen – und vier gemessene Teile beurteilen. Gutteil, Nacharbeit oder Ausschuss.">
 <meta name="dauer" content="25 min">
 <link rel="stylesheet" href="../../assets/uebung.css">
 <style>
@@ -47,11 +47,11 @@
     <div class="box auftrag">
       <p><strong>Die Lage:</strong> Zwei Flächen der <strong>Spannwelle</strong>
         tragen ein ISO-Kurzzeichen: der Führungssitz
-        <span class="kurz">Ø22 g6</span> und der Zapfen
-        <span class="kurz">Ø18 n6</span>. Auf dem Ø22 soll eine Buchse
-        gleiten, auf dem Ø18 sitzt ein Ring fest.</p>
+        <span class="kurz">Ø30 g6</span> und der Zapfen
+        <span class="kurz">Ø20 n6</span>. Auf dem Ø30 soll eine Buchse
+        gleiten, auf dem Ø20 sitzt ein Ring fest.</p>
       <p>Bevor geschlichtet wird, muss feststehen, <em>auf welches Maß</em>
-        gezielt wird &ndash; und das ist weder 22 noch 18.</p>
+        gezielt wird &ndash; und das ist weder 30 noch 20.</p>
       <p><strong>Das Tabellenbuch gehört aufgeschlagen daneben.</strong></p>
     </div>
 
@@ -60,8 +60,8 @@
     <figure class="bild" id="bildWelle"></figure>
 
     <p>Schlagt die Grenzabmaße im Auszug für das System Einheitsbohrung nach.
-      Achtet auf den <strong>Nennmaßbereich</strong>: Die Zeilen gehen über 6
-      bis 10, über 10 bis 18, über 18 bis 30 mm.</p>
+      Achtet auf den <strong>Nennmaßbereich</strong>: Die Zeilen gehen über 10
+      bis 18, über 18 bis 30, über 30 bis 50 mm.</p>
 
     <div class="tabellenrahmen">
       <table class="werte">
@@ -80,13 +80,15 @@
       <summary>Lösung und die Falle mit der Bereichsgrenze</summary>
       <div id="loesung1"></div>
       <div class="merksatz">
-        <strong>Der Ø18 liegt genau auf der Grenze.</strong> Es gilt die Zeile
-        „über 10 bis 18&ldquo;, nicht „über 18 bis 30&ldquo;. Die Grenze gehört
+        <strong>Der Ø30 liegt genau auf der Grenze.</strong> Es gilt die Zeile
+        „über 18 bis 30&ldquo;, nicht „über 30 bis 50&ldquo;. Die Grenze gehört
         immer zur <em>unteren</em> Zeile &ndash; genau deshalb steht dort
         „bis&ldquo; und hier „über&ldquo;.
       </div>
-      <p>Ein Griff in die falsche Zeile kostet beim n6 vier Mikrometer. Das
-        klingt nach nichts, ist aber ein Drittel der ganzen Toleranz.</p>
+      <p>Ein Griff in die falsche Zeile kostet beim g6 zwei Mikrometer oben
+        und fünf unten. Das klingt nach nichts, ist aber ein Drittel der
+        ganzen Toleranz &ndash; und es verschiebt das Zielmaß, auf das ihr
+        gleich schlichtet.</p>
     </details>
 
     <h2><span class="nr">2</span>Grenzmaße und Zielmaß</h2>
@@ -284,12 +286,16 @@ function kurz(p){
 
 /* Die Welle mit ihren Maßen - die Kurzzeichen stehen darin. */
 (function zeichnung(){
-  var g = wellenGroesse(WELLE, {s:5.8, masse:true});
+  var o = {s:5.8, masse:true, masseUnten:true, bezeichnungen:true,
+           rauheiten:true, radien:true, zentrierbohrungen:true,
+           einzelheiten:true};
+  var g = wellenGroesse(WELLE, o);
   var svg = bild("bildWelle", g.breite, g.hoehe,
     "Die Spannwelle mit Maßen und Toleranzangaben",
-    "Spannwelle aus C25E. Zwei Maße tragen ein ISO-Kurzzeichen: Ø22 g6 am "
-    + "Führungssitz und Ø18 n6 am Zapfen links.");
-  zeichneWelle(svg, WELLE, {x:g.x, y:g.y, s:5.8, masse:true});
+    "Spannwelle aus C25E. Zwei Maße tragen ein ISO-Kurzzeichen: Ø30 g6 am "
+    + "Führungssitz und Ø20 n6 am Zapfen links.");
+  o.x = g.x; o.y = g.y;
+  zeichneWelle(svg, WELLE, o);
 }());
 
 /* ---------- Teil 1: die Grenzabmaße ---------- */
