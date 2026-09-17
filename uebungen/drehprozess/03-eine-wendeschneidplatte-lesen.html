@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Eine Wendeschneidplatte lesen</title>
 <meta name="description" content="Die Bezeichnung nach DIN ISO 1832 Stelle für Stelle zerlegen – und aus den Anforderungen der Spannwelle umgekehrt eine Bezeichnung bilden.">
-<meta name="dauer" content="25 min">
+<meta name="dauer" content="35 min">
 <link rel="stylesheet" href="../../assets/uebung.css">
 <style>
   /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
@@ -118,6 +118,72 @@
         Skala: eher hart und verschleißfest als zäh &ndash; passend zum
         Schlichten, wo wenig Span und gleichmäßiger Schnitt herrschen.</p>
       <p>Zusammen: eine <strong>Schlichtplatte für Stahl</strong>.</p>
+    </details>
+
+    <details>
+      <summary>Stelle 3: Was das <strong>G</strong> bedeutet &ndash; und wann
+        die Toleranzklasse überhaupt zählt</summary>
+      <p>Die Toleranzklasse gibt drei zulässige Abweichungen an: für den
+        Innenkreis <strong>d</strong> &ndash; das ist die Plattengröße &ndash;,
+        für das Prüfmaß <strong>m</strong>, das sagt, wo die Schneidenecke
+        liegt, und für die <strong>Plattendicke s</strong>.</p>
+
+      <div class="tabellenrahmen">
+        <table class="werte">
+          <thead><tr><th>Klasse</th><th>d</th><th>m</th><th>s</th>
+            <th>hergestellt</th></tr></thead>
+          <tbody>
+            <tr><td>F</td><td>±0,013</td><td>±0,005</td><td>±0,025</td>
+              <td>rundum geschliffen</td></tr>
+            <tr><td>E</td><td>±0,025</td><td>±0,025</td><td>±0,025</td>
+              <td>rundum geschliffen</td></tr>
+            <tr><td>G</td><td>±0,025</td><td>±0,025</td><td>±0,13</td>
+              <td>Umfang geschliffen, Dicke wie gesintert</td></tr>
+            <tr><td>M</td><td>±0,05 … 0,15</td><td>±0,08 … 0,20</td><td>±0,13</td>
+              <td>wie gesintert &ndash; der Normalfall beim Drehen</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="fussnote">Angaben in mm. Zwei Zahlen heißen: der Wert hängt von
+        der Plattengröße ab. <strong>E</strong> und <strong>G</strong>
+        unterscheiden sich nur in der Dicke.</p>
+
+      <p><strong>Warum <em>m</em> das wichtigste Maß ist.</strong> Es legt fest,
+        wo die Schneidenecke sitzt, wenn die Platte im Sitz liegt. Was davon in
+        radialer Richtung ankommt, geht <strong>doppelt</strong> in den
+        Durchmesser. Mit M kann der Durchmesser beim Wenden auf die nächste Ecke
+        um einige Zehntel springen, mit G nur um Hundertstel.</p>
+
+      <p><strong>Wann sie zählt.</strong> Nicht dafür, <em>ob</em> eine enge
+        Toleranz erreichbar ist &ndash; ein g6 dreht man auch mit M-Platten.
+        Sondern für eine einzige Frage: <em>Darf ich nach dem Wenden sofort
+        weiterfahren?</em> Bei M lautet die Antwort: erstes Teil messen,
+        Korrektur setzen, dann weiter. Bei den geschliffenen Klassen darf man
+        durchlaufen. Das lohnt, wo jedes Einmessen Taktzeit kostet &ndash;
+        Langdrehautomat, Mehrspindler, mannlose Schicht &ndash; und wo ein
+        Probeteil gleich Ausschuss ist.</p>
+
+      <p><strong>Wann sie fast egal ist.</strong> Häufiger als der andere Fall,
+        und aus drei Gründen:</p>
+      <ul>
+        <li>Wenn die Maschine <strong>ohnehin misst</strong>:
+          Werkzeugmesstaster, Voreinstellgerät, Messung nach dem Prozess mit
+          automatischer Korrektur. Dann zählt nicht die Toleranz der Platte,
+          sondern dass der Plattensitz sauber und das Anzugsmoment richtig ist
+          &ndash; also, dass sie <em>wiederholbar</em> gleich sitzt.</li>
+        <li>Weil der <strong>Verschleiß</strong> über eine Standzeit das Maß
+          meist stärker verschiebt als jede Plattentoleranz. Wer eng fertigt,
+          korrigiert sowieso laufend.</li>
+        <li>Weil beim Drehen nur <strong>eine</strong> Schneide im Eingriff ist.
+          Scharf wird die Klasse beim <strong>Fräsen</strong>, wo alle Platten
+          eines Messerkopfs in einer Ebene liegen müssen, und bei
+          <strong>Profilwerkzeugen</strong> &ndash; Gewinde-, Stech- und
+          Kopierplatten, bei denen die fertige Kontur in der Platte steckt.</li>
+      </ul>
+
+      <p>Für unsere Platte heißt <strong>G</strong> damit: genauer, als der
+        Auftrag verlangt. Der Vorteil zahlt sich erst aus, wenn viele Teile
+        hintereinander laufen. Bei einem Einzelstück wird ohnehin gemessen.</p>
     </details>
 
     <h2><span class="nr">2</span>Taugt sie für die Welle?</h2>
@@ -276,7 +342,115 @@
         richtig: zäher, verträgt den unterbrochenen Schnitt in der Walzhaut.</p>
     </details>
 
-    <h2><span class="nr">4</span>Übertragen</h2>
+    <h2><span class="nr">4</span>Negativ oder positiv?</h2>
+    <p>Stelle 2 ist die einzige, bei der die Zeichnung nichts vorgibt. Sie
+      entscheidet nicht über ein Maß, sondern über die <strong>Kräfte</strong>
+      &ndash; und darüber, wie viele Schneiden eine Platte hat.</p>
+
+    <div class="box">
+      <p><strong>0° heißt nicht „keine Freifläche&ldquo;.</strong> Eine
+        <strong>N</strong>-Platte hat an sich keinen Freiwinkel: Ihre Flanken
+        stehen senkrecht auf der Auflagefläche. Den Freiwinkel am Werkstück
+        bringt erst der Halter, der die Platte nach unten neigt. Genau deshalb
+        lässt sie sich <strong>wenden</strong> &ndash; oben wie unten sitzen
+        brauchbare Schneiden.</p>
+      <p>Bei einer positiven Platte (<strong>C</strong> = 7°,
+        <strong>P</strong> = 11°) ist der Freiwinkel an der Platte geschliffen.
+        Sie liegt flach im Halter, und nur die Oberseite trägt Schneiden.</p>
+    </div>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th></th><th>N &ndash; 0°, negativ</th>
+          <th>C 7° / P 11° &ndash; positiv</th></tr></thead>
+        <tbody>
+          <tr><td>Schneiden je Platte</td><td>doppelt so viele</td>
+            <td>halb so viele</td></tr>
+          <tr><td>Schnittkraft</td><td>höher</td><td>niedriger</td></tr>
+          <tr><td>Schneidkeil</td><td>stumpf, stützt sich ab</td>
+            <td>schlank, schneidet leichter</td></tr>
+          <tr><td>braucht</td><td>steife Maschine, genug Leistung</td>
+            <td>kommt mit wenig aus</td></tr>
+          <tr><td>Werkstück</td><td>kurz und dick, gut abgestützt</td>
+            <td>schlank, dünnwandig, lang ausgespannt</td></tr>
+          <tr><td>typisch</td><td>Schruppen</td>
+            <td>Schlichten, schlanke Zapfen, nichtrostender Stahl, Aluminium</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>Die Grenzen liegen nach beiden Seiten: Ist der <strong>wirksame</strong>
+      Freiwinkel am Werkstück zu klein, reibt die Freifläche &ndash; es bilden
+      sich Aufbauschneiden und die Oberfläche wird rau. Ist er zu groß, wird der
+      Keil dünn und die Schneidkante bröckelt aus. Beide Bilder stehen in der
+      Tabelle zur Optimierung des Drehprozesses.</p>
+
+    <p>Drei Fälle. Welche Grundform?</p>
+
+    <div class="tabellenrahmen">
+      <table class="werte">
+        <thead><tr><th>Fall</th><th>Grundform</th><th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>Schruppen der Spannwelle in <strong>Werkstatt A</strong>:
+            stabile CNC-Drehmaschine, kurz im Futter gespannt, zusätzlich durch
+            die Reitstockspitze gestützt</td>
+            <td><select id="f1" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="neg">negativ (N)</option>
+              <option value="pos">positiv (C oder P)</option>
+            </select></td>
+            <td class="urteil" id="uf1">–</td></tr>
+          <tr><td>Dasselbe Schruppen in <strong>Werkstatt B</strong>: ältere
+            konventionelle Maschine, lang ausgespannt im Futter, ohne
+            Spitze</td>
+            <td><select id="f2" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="neg">negativ (N)</option>
+              <option value="pos">positiv (C oder P)</option>
+            </select></td>
+            <td class="urteil" id="uf2">–</td></tr>
+          <tr><td>Schlichten der Abtriebswelle aus dem nichtrostenden
+            X5CrNi18-10</td>
+            <td><select id="f3" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="neg">negativ (N)</option>
+              <option value="pos">positiv (C oder P)</option>
+            </select></td>
+            <td class="urteil" id="uf3">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn4">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz4">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: einmal negativ, zweimal positiv</summary>
+      <p><strong>1 &ndash; negativ.</strong> Schruppen am dicken Ende, steife
+        Maschine, kurz gespannt und gestützt: Hier ist alles da, was die höhere
+        Schnittkraft aufnimmt. Bezahlt wird sie mit dem, worauf es beim
+        Schruppen ankommt &ndash; doppelt so vielen Schneiden je Platte, und die
+        Schneide wird hier schnell stumpf.</p>
+      <p><strong>2 &ndash; positiv.</strong> Gleiche Arbeit, andere Bedingungen:
+        Was an Steifigkeit fehlt, muss man an Schnittkraft einsparen. Lang
+        ausgespannt ohne Spitze biegt die Passivkraft das Werkstück von der
+        Schneide weg &ndash; die Welle wird in der Mitte dicker als an den
+        Enden, und bei zu viel Kraft fängt sie an zu rattern. Es ist dieselbe
+        Zeile der Bedingungstabelle, die in Übung&nbsp;2 den unteren Grenzwert
+        für v<sub>c</sub> ergeben hat.</p>
+      <p><strong>3 &ndash; positiv.</strong> Nicht wegen der Maschine, sondern
+        wegen des Werkstoffs. Austenitischer nichtrostender Stahl ist zäh und
+        verfestigt sich unter der Schneide: Was einmal gequetscht statt
+        geschnitten wurde, ist beim nächsten Schnitt härter. Eine scharfe,
+        positive Schneide trennt, statt zu drücken.</p>
+      <p>Der Preis ist jedes Mal derselbe: halb so viele Schneiden je Platte.
+        Positiv ist also nicht „besser&ldquo;, sondern die Wahl, wenn Kraft zum
+        Problem wird.</p>
+    </details>
+
+    <h2><span class="nr">5</span>Übertragen</h2>
 
     <details>
       <summary>1. Warum haben Schruppplatten meist einen größeren Eckenwinkel
@@ -292,14 +466,14 @@
 
     <details>
       <summary>2. Was heißt „negative Grundform" für die Schnittkräfte?</summary>
-      <p>Eine negative Platte steht senkrecht im Halter; der Freiwinkel entsteht
-        erst durch die Neigung des Halters. Sie drückt stärker in den Werkstoff
-        &ndash; die Schnittkraft ist höher, und die Maschine braucht mehr
-        Leistung.</p>
       <p>Das Tabellenbuch stellt es als Skala dar: von der positiven Grundform
         über die negative doppelseitige zur negativen einseitigen nehmen
-        <strong>Schnittkraft, Schnitttiefe und Vorschub zu</strong>. Wer eine
-        schwache Maschine hat oder ein dünnes Werkstück, wählt positiv.</p>
+        <strong>Schnittkraft, Schnitttiefe und Vorschub zu</strong>. Die
+        negative Platte steht senkrecht im Halter und drückt stärker in den
+        Werkstoff; die Maschine braucht mehr Leistung.</p>
+      <p>Wer eine schwache Maschine hat oder ein dünnes Werkstück, wählt
+        positiv &ndash; und nimmt dafür in Kauf, dass nur die Oberseite der
+        Platte Schneiden trägt.</p>
     </details>
 
     <details>
@@ -330,12 +504,14 @@
 
     <div class="merksatz">
       <strong>Merksatz:</strong> Stelle 1 sagt, wie stabil die Ecke ist. Stelle
-      2 sagt, wie leicht sie schneidet. Stelle 7 mal 0,1 sagt, wie glatt die
-      Fläche wird. Alles andere ist Zubehör.
+      2 sagt, wie viel Kraft es kostet. Stelle 7 mal 0,1 sagt, wie glatt die
+      Fläche wird. Und Stelle 3 sagt nicht, wie genau das Werkstück wird,
+      sondern ob man nach dem Wenden ohne Messen weiterfahren darf.
     </div>
 
     <p class="fussnote"><strong>Woher die Angaben stammen:</strong> Bezeichnung
-      von Wendeschneidplatten nach DIN ISO 1832 (2017-06), Auswahl der
+      von Wendeschneidplatten, Toleranzklassen und Normal-Freiwinkel nach
+      DIN ISO 1832 (2017-06), Auswahl der
       Plattengeometrie und der Grundform aus der Fertigungsplanung beim Drehen
       &ndash; Tabellenbuch Metall.</p>
 
@@ -491,6 +667,22 @@ el("btn3").addEventListener("click", function(){
   if(!k) offen++;
   r += urteilen("ub7", k === "12", !k);
   bilanz("bilanz3", r, 4, offen);
+});
+
+/* ---------- Teil 4 ---------- */
+
+/* Werkstatt A und B sind dieselben zwei Faelle wie in Uebung 2: dort
+   entscheiden sie ueber den Grenzwert von v_c, hier ueber die Grundform.
+   Der dritte Fall ist die Abtriebswelle aus X5CrNi18-10. */
+el("btn4").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  [["f1", "uf1", "neg"], ["f2", "uf2", "pos"], ["f3", "uf3", "pos"]]
+    .forEach(function(f){
+      var v = el(f[0]).value;
+      if(!v) offen++;
+      r += urteilen(f[1], v === f[2], !v);
+    });
+  bilanz("bilanz4", r, 3, offen);
 });
 </script>
 

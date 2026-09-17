@@ -1937,5 +1937,68 @@ console.log('\nVollstaendig bemasst - und nicht doppelt');
   fenster.close();
 }
 
+console.log('\nDie Wendeschneidplatte: was in der Uebung steht, steht auch im Buch');
+{
+  const TB = BUCH.plattenbezeichnung;
+  if (!TB) {
+    console.log('  ohne   daten.json kennt die Plattenbezeichnung noch nicht');
+  } else {
+    const name = '03-eine-wendeschneidplatte-lesen.html';
+    const voll = path.join(BASIS, 'uebungen/drehprozess', name);
+    const dom = new JSDOM(mitAssets(fs.readFileSync(voll, 'utf8')), {
+      runScripts: 'dangerously',
+      url: 'https://t-bk.de/unterrichtsmaterial/uebungen/drehprozess/' + name,
+      beforeParse(w2) { w2.Element.prototype.scrollIntoView = function () {}; },
+    });
+    const dd = dom.window.document;
+
+    /* "±0,05 … 0,15" wird zu [0.05, 0.15], "±0,013" zu [0.013]. */
+    const zahlen = (s) => (String(s).match(/[0-9]+,[0-9]+/g) || [])
+      .map((x) => Number(x.replace(',', '.')));
+    const liste = (v) => (Array.isArray(v) ? v : [v]);
+
+    /* Die Toleranztabelle - die einzige, deren erste Spalte "Klasse" heisst. */
+    const tol = [...dd.querySelectorAll('table.werte')]
+      .find((t) => /Klasse/.test((t.querySelector('th') || {}).textContent || ''));
+    p('die Toleranztabelle steht in der Uebung', !!tol);
+    if (tol) {
+      [...tol.querySelectorAll('tbody tr')].forEach((tr) => {
+        const z = [...tr.children].map((td) => td.textContent.trim());
+        const buch = TB.toleranzklassen[z[0]];
+        p('Toleranzklasse ' + z[0] + ' kennt das Buch', !!buch);
+        if (!buch) return;
+        ['d', 'm', 's'].forEach((was, i) => {
+          const ist = zahlen(z[i + 1]), soll = liste(buch[was]);
+          p('Klasse ' + z[0] + ', ' + was + ' wie auf Seite 340',
+            ist.length === soll.length
+              && ist.every((x, k) => Math.abs(x - soll[k]) < 1e-9),
+            z[i + 1] + ' statt ' + soll.join(' … '));
+        });
+      });
+    }
+
+    /* Die Freiwinkel, die im Text stehen. */
+    const text = dd.body.textContent.replace(/\s+/g, ' ');
+    [['N', 0], ['C', 7], ['P', 11]].forEach(([b, grad]) => {
+      p('Freiwinkel ' + b + ' ist im Buch ' + grad + '°',
+        TB.normal_freiwinkel[b] === grad, String(TB.normal_freiwinkel[b]));
+      p('die Uebung nennt die ' + grad + '° dazu',
+        new RegExp('(^|[^0-9])' + grad + '°').test(text));
+    });
+
+    /* Und Teil 4 rechnet: einmal negativ, zweimal positiv. */
+    const w4 = dom.window;
+    dd.getElementById('f1').value = 'neg';
+    dd.getElementById('f2').value = 'pos';
+    dd.getElementById('f3').value = 'pos';
+    dd.getElementById('btn4').dispatchEvent(
+      new w4.MouseEvent('click', { bubbles: true }));
+    p('Teil 4 nimmt die richtige Wahl an',
+      /3 von 3 richtig/.test(dd.getElementById('bilanz4').textContent),
+      dd.getElementById('bilanz4').textContent);
+    dom.window.close();
+  }
+}
+
 console.log(fehler ? '\n' + fehler + ' Befunde' : '\nalles gruen');
 process.exit(fehler ? 1 : 0);
