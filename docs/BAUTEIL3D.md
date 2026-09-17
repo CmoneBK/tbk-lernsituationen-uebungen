@@ -80,7 +80,7 @@ Richtung, aus der das Teil einfährt.
 
 | Form | Maße | Bemerkung |
 | --- | --- | --- |
-| `quader` | `{x, y, z}` | |
+| `quader` | `{x, y, z}`, wahlweise `loch: {d, x, y}` | Durchbruch längs z, Lage ab Mitte |
 | `rohr` | `{d, di, l}` | `achse: "x"\|"y"\|"z"`; `di: 0` ergibt einen Vollzylinder |
 | `keil` | `{x, y, z}` | rechtwinkliges Dreieck in xy, über z ausgezogen; Katheten auf +x und +y |
 | `winkel` | `{x, y, z, s}` | L-Profil, Schenkeldicke `s` |
@@ -170,12 +170,19 @@ eigenen Farbraum.
 * die Lernsituation fällt sauber zurück und bleibt bearbeitbar,
 * **die Geometrie stimmt mit dem überein, was die Seite lehrt.**
 
-Der letzte Punkt ist der wichtigste. Beim Lagerbock heißt das: Naht A ist eine
-Doppel-Kehlnaht von 2 × 180 mm, also muss das Stehblech 180 mm lang sein.
-Naht C läuft mit 250 mm um die Rippe, also gilt
-2 · (85 + 40) = 250 für ihre Katheten. Wer das Modell nachmisst, findet die
-Zahlen aus Teil 6 wieder — sonst widerspricht sich die Seite, und das merkt
-niemand von selbst.
+Der letzte Punkt ist der wichtigste. Die Prüfung schreibt die Zahlen nicht
+selbst hin, sondern **liest sie aus der Seite** und rechnet nach, ob sie aus
+der Geometrie folgen. Beim Lagerbock: Naht A ist eine Doppel-Kehlnaht über
+die Breite des Stehblechs, also 2 · 120 = 240 mm. Naht C läuft umlaufend um
+die Rippe, also 2 · (53 + 22) = 150 mm, dazu die unterbrochene Naht D mit
+3 · 30 = 90 mm — zusammen die 240 mm, die in Teil 6 stehen. Und die
+Vorderansicht wird aus denselben Zahlen gezeichnet.
+
+Das ist keine Formsache. Genau hier ist schon einmal etwas
+auseinandergelaufen: Die Teileliste nannte das Stehblech 120 mm breit, Teil 6
+rechnete mit 2 × 180 mm. Wer das Modell nach der einen Zahl baut, bekommt ein
+Bauteil, das der Zeichnung widerspricht — und niemand merkt es, bis jemand
+beides nebeneinanderlegt.
 
 ---
 
