@@ -1,0 +1,16 @@
+{
+  "titel": "Fertigungstechnik: Fügeverfahren - Der Lagerbock",
+  "lead": "Die Abtriebswelle ist gedreht – jetzt fehlt der Bock, der sie trägt: fünf Schweißangaben lesen, den Werkstoff prüfen, Verfahren und Nahtvorbereitung wählen, die Schweißfolge gegen den Verzug legen und am Ende Draht, Zeit und Abnahme festhalten.",
+  "werkzeuge": [
+    {
+      "datei": "fertigungstechnik-fuegeverfahren-schweissen.html",
+      "name": "Schweißen",
+      "art": "lektion"
+    },
+    {
+      "datei": "fertigungstechnik-fuegeverfahren-ueberblick.html",
+      "name": "Überblick über die Verfahren",
+      "art": "lektion"
+    }
+  ]
+}

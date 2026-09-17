@@ -219,6 +219,81 @@ async function main() {
     w.close();
   }
 
+  /* ---------- 3. Die Lernsituation ---------- */
+
+  console.log('\nDie Lernsituation Lagerbock, Teil fuer Teil');
+  {
+    const { d, w, laut } = await seite('lernsituationen/lagerbock/index.html');
+    p('die Lernsituation laedt ohne Fehler', laut.length === 0, laut[0]);
+    p('der Lagerbock ist gezeichnet', d.querySelectorAll('#bildBock svg').length === 1);
+    p('fuenf Nahtkarten mit Sinnbild',
+      d.querySelectorAll('#naehte .naht svg').length === 5);
+    p('fuenf Zeilen in der Tabelle',
+      d.querySelectorAll('#tabNaehte tr').length === 5);
+
+    [['A', 'dkehl', 'beide'], ['B', 'v', 'pfeil'], ['C', 'kehl', 'pfeil'],
+      ['D', 'kehl', 'pfeil'], ['E', 'kehl', 'gegen']].forEach(([id, n, s]) => {
+      setz(d, 'n' + id, n); setz(d, 's' + id, s);
+    });
+    knopf(d, w, 'btn1');
+    p('Teil 2: die fuenf Angaben werden angenommen', alles(stand(d, 'bilanz1'), 5),
+      stand(d, 'bilanz1'));
+
+    setz(d, 'w1', '0.40'); setz(d, 'w2', 'nein');
+    setz(d, 'w3', '0.77'); setz(d, 'w4', 'b');
+    knopf(d, w, 'btn2');
+    p('Teil 3: Werkstoff und Vorwaermen', alles(stand(d, 'bilanz2'), 4),
+      stand(d, 'bilanz2'));
+
+    setz(d, 'v1', 'mag'); setz(d, 'v2', '135');
+    setz(d, 'v3', 'b'); setz(d, 'v4', 'PB');
+    knopf(d, w, 'btn3');
+    p('Teil 4: Verfahren, Nummer und Position', alles(stand(d, 'bilanz3'), 4),
+      stand(d, 'bilanz3'));
+
+    setz(d, 'n1', 'v'); setz(d, 'n2', '50'); setz(d, 'n3', '2'); setz(d, 'n4', 'b');
+    knopf(d, w, 'btn4');
+    p('Teil 5: Nahtvorbereitung und Schweissfolge', alles(stand(d, 'bilanz4'), 4),
+      stand(d, 'bilanz4'));
+
+    setz(d, 'r1', '140'); setz(d, 'r2', '90'); setz(d, 'r3', '81');
+    setz(d, 'r4', '1.23'); setz(d, 'r5', '324');
+    knopf(d, w, 'btn5');
+    p('Teil 6: Draht und Zeit', alles(stand(d, 'bilanz5'), 5), stand(d, 'bilanz5'));
+
+    setz(d, 'p1', 'c'); setz(d, 'p2', 'B'); setz(d, 'p3', 'a'); setz(d, 'p4', 'b');
+    knopf(d, w, 'btn6');
+    p('Teil 7: Nennmassbereich, Genauigkeitsgrad und Pruefung',
+      alles(stand(d, 'bilanz6'), 4), stand(d, 'bilanz6'));
+
+    /* Die Zahlen der Lernsituation gegen das Buch. */
+    if (BUCH) {
+      const roh = fs.readFileSync(path.join(BASIS,
+        'lernsituationen/lagerbock/index.html'), 'utf8');
+      const zeile = (a) => BUCH.richtwerte_mag.zeilen.filter((z) => z.a === a)[0];
+      const hol = (name) => {
+        const m = new RegExp('(?:var|,)\\s+' + name + '\\s*=\\s*([\\d.]+)').exec(roh);
+        return m ? Number(m[1]) : null;
+      };
+      p('der Zusatz fuer a = 4 steht so im Buch', hol('G_A4') === zeile(4).zusatz_g_m,
+        hol('G_A4') + ' statt ' + zeile(4).zusatz_g_m);
+      p('die Zeit fuer a = 4 steht so im Buch', hol('T_A4') === zeile(4).zeit_min_m,
+        hol('T_A4') + ' statt ' + zeile(4).zeit_min_m);
+      p('der Zusatz fuer a = 3 steht so im Buch', hol('G_A3') === zeile(3).zusatz_g_m,
+        hol('G_A3') + ' statt ' + zeile(3).zusatz_g_m);
+      p('die Zeit fuer a = 3 steht so im Buch', hol('T_A3') === zeile(3).zeit_min_m,
+        hol('T_A3') + ' statt ' + zeile(3).zeit_min_m);
+      /* Die geforderten 2 mm auf 180 mm sind Genauigkeitsgrad B. */
+      const lm = BUCH.allgemeintoleranzen_13920.laengenmasse;
+      const i = lm._bereiche.indexOf('über 120 bis 400');
+      p('der Nennmassbereich fuer 180 mm steht im Buch', i >= 0);
+      p('Grad B haelt dort die geforderten 2 mm', i >= 0 && lm.B[i] === 2,
+        i >= 0 ? String(lm.B[i]) : '-');
+      p('Grad A waere enger als noetig', i >= 0 && lm.A[i] === 1);
+    }
+    w.close();
+  }
+
   /* ---------- 3. Jedes Training einmal durchspielen ---------- */
 
   console.log('\nDie fuenf Trainings, je ein Durchgang mit lauter richtigen Antworten');

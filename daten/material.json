@@ -125,6 +125,26 @@
     "inhalt": []
   },
   {
+    "typ": "lernsituationen",
+    "bereich": "Fertigungstechnik",
+    "kategorie": "Fügeverfahren",
+    "name": "Der Lagerbock",
+    "url": "lernsituationen/lagerbock/index.html",
+    "werkzeuge": [
+      {
+        "datei": "fertigungstechnik-fuegeverfahren-schweissen.html",
+        "name": "Schweißen",
+        "art": "lektion"
+      },
+      {
+        "datei": "fertigungstechnik-fuegeverfahren-ueberblick.html",
+        "name": "Überblick über die Verfahren",
+        "art": "lektion"
+      }
+    ],
+    "inhalt": []
+  },
+  {
     "typ": "uebungen",
     "bereich": "Fertigungstechnik",
     "kategorie": "Zerspanung",

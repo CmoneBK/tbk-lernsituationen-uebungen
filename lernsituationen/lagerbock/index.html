@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fertigungstechnik: Fügeverfahren - Der Lagerbock</title>
+<meta name="description" content="Ein geschweißter Lagerbock für die Abtriebswelle: fünf Schweißangaben lesen, Werkstoff prüfen, Verfahren und Nahtvorbereitung wählen, Schweißfolge festlegen, Draht und Zeit rechnen, Abnahme planen.">
+<meta name="dauer" content="240 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/schweissnaht.js"></script>
+<style>
+  /* Nur was diese Lernsituation zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .bild{margin:16px 0 4px}
+  .bild svg{width:100%; height:auto; display:block}
+  .bild figcaption{font-size:13px; color:var(--muted); margin-top:6px; text-align:center}
+
+  /* Die Schritte der vollständigen Handlung als Marken über den Abschnitten. */
+  .schritt{
+    display:inline-block; font-size:12px; font-weight:700; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--accent); margin:26px 0 -4px;
+  }
+
+  .auftragskarte{
+    border-left:4px solid var(--accent); background:var(--card);
+    border-radius:0 12px 12px 0; padding:18px 20px; margin:16px 0;
+    box-shadow:var(--shadow);
+  }
+  .auftragskarte .von{font-size:13px; color:var(--muted); margin:0 0 8px}
+
+  .daten{display:flex; flex-wrap:wrap; gap:10px; margin:16px 0 0}
+  .daten div{
+    flex:1 1 150px; background:var(--bg); border:1px solid var(--border);
+    border-radius:10px; padding:10px 14px;
+  }
+  .daten .l{display:block; font-size:13px; color:var(--muted)}
+  .daten .v{font-size:18px; font-weight:700; font-variant-numeric:tabular-nums}
+
+  .haken{list-style:none; margin:8px 0 0; padding:0}
+  .haken li{padding:4px 0 4px 28px; position:relative}
+  .haken li::before{
+    content:"\2610"; position:absolute; left:0; top:2px;
+    font-size:18px; color:var(--muted);
+  }
+
+  .warnschild{
+    display:flex; gap:12px; align-items:flex-start;
+    border:1px solid var(--warn); border-left-width:4px; border-radius:10px;
+    background:var(--card); padding:12px 16px; margin:16px 0; font-size:15px;
+  }
+  .warnschild::before{content:"\26A0"; font-size:20px; line-height:1.1; color:var(--warn)}
+
+  /* Das Gesprächsprotokoll - eine Aussage je Zeile. */
+  .protokoll{list-style:none; margin:14px 0 0; padding:0}
+  .protokoll li{
+    border-left:3px solid var(--border-stark); padding:6px 0 6px 14px;
+    margin:0 0 12px; font-size:15.5px;
+  }
+  .protokoll .wer{
+    display:block; font-size:12.5px; color:var(--muted); font-weight:700;
+    letter-spacing:.04em; margin:0 0 2px;
+  }
+
+  /* Die fünf Nähte, überall unter demselben Buchstaben. */
+  .stelle{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:22px; height:22px; border-radius:50%; flex:0 0 auto;
+    background:var(--accent); color:#fff; font-size:13px; font-weight:700;
+    margin-right:8px; vertical-align:-4px;
+  }
+  .naehte{display:grid; gap:14px; margin:16px 0 0;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+  .naht{border:1px solid var(--border); border-radius:12px; padding:12px 14px;
+    background:var(--card)}
+  .naht h3{margin:0 0 8px; font-size:.95rem; display:flex; align-items:center}
+  .naht svg{width:100%; height:auto; display:block}
+
+  table.stellen td:first-child{white-space:nowrap}
+  table.stellen select{
+    width:100%; font:inherit; font-size:14px; padding:7px 8px; border-radius:8px;
+    color:inherit; background:var(--bg); border:1px solid var(--border-stark);
+  }
+  table.stellen input{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:7px 8px; border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  table.stellen select:focus-visible, table.stellen input:focus-visible{
+    outline:2px solid var(--accent); outline-offset:1px}
+  .urteil{font-size:13.5px; line-height:1.4; font-weight:600}
+  .urteil.ja{color:var(--ok)}
+  .urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+
+  .rechenweg{
+    background:var(--bg); border:1px solid var(--border); border-radius:10px;
+    padding:14px 16px; margin:14px 0; font-variant-numeric:tabular-nums;
+  }
+  .rechenweg p{margin:0 0 9px}
+  .rechenweg p:last-child{margin:0}
+  .rechenweg .schluss{font-weight:700}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Lernsituation &middot; Schweißen</p>
+    <h1>Der Lagerbock</h1>
+    <p class="lead">Die Abtriebswelle ist gedreht. Jetzt fehlt der Bock, der sie
+      trägt &ndash; und der wird nicht zerspant, sondern geschweißt.</p>
+  </header>
+
+  <main class="wrap">
+
+    <p class="schritt">Schritt 1 &middot; Auftrag</p>
+    <h2><span class="nr">1</span>Der Auftrag</h2>
+
+    <div class="auftragskarte">
+      <p class="von">Werkstattauftrag 26-118 &middot; Instandhaltung &middot; Förderband F2</p>
+      <p>&bdquo;Die Abtriebswelle aus dem letzten Auftrag liegt fertig im Regal.
+        Was fehlt, ist der Lagerbock, auf dem sie läuft &ndash; vier Stück, für die
+        neue Umlenkstation.</p>
+      <p>Der alte Bock war ein Gussteil und ist gerissen. Der neue wird
+        geschweißt: Grundplatte, Stehblech, zwei Rippen und ein Rohrstutzen für
+        die Lagerbuchse. Die Zeichnung liegt bei.</p>
+      <p>Ich brauche von euch: Was in der Zeichnung an Schweißangaben steht und
+        was das heißt. Welches Verfahren wir nehmen. Wie die Nähte vorbereitet
+        und in welcher Reihenfolge sie geschweißt werden. Und was das an Draht
+        und Zeit kostet &ndash; die vier Stück müssen bis Freitag stehen.&ldquo;</p>
+    </div>
+
+    <ul class="protokoll">
+      <li><span class="wer">Konstrukteur</span>
+        &bdquo;Alles aus S235JR. Grundplatte 12 mm, Stehblech 10 mm, Rippen 8 mm,
+        der Rohrstutzen ist ein Rohr 60&nbsp;&times;&nbsp;10. Die Buchse für den
+        Lagersitz &Oslash;&nbsp;36 der Welle kommt später in den Stutzen.&ldquo;</li>
+      <li><span class="wer">Schweißer</span>
+        &bdquo;In der Halle haben wir MAG mit M21 und Draht G3Si1. Auf dem Wagen
+        liegt das Handschweißgerät für draußen. WIG steht drüben an der kleinen
+        Anlage, das ist aber für Dünnblech und Edelstahl belegt.&ldquo;</li>
+      <li><span class="wer">Instandhalter</span>
+        &bdquo;Der Bock muss passen. Über die 180 mm der Grundplatte darf er mir
+        um höchstens 2 mm danebenliegen, sonst fluchtet die Welle nicht mit dem
+        Getriebe.&ldquo;</li>
+      <li><span class="wer">Konstrukteur</span>
+        &bdquo;Und noch etwas, weil die Frage jedes Mal kommt: Die Welle wird
+        <em>gelagert</em>, nicht angeschweißt. Warum, das könnt ihr selbst
+        ausrechnen.&ldquo;</li>
+    </ul>
+
+    <figure class="bild" id="bildBock"></figure>
+
+    <div class="daten">
+      <div><span class="l">Werkstoff</span><span class="v">S235JR</span></div>
+      <div><span class="l">Grundplatte</span><span class="v">180 &times; 90 &times; 12</span></div>
+      <div><span class="l">Stehblech</span><span class="v">120 &times; 100 &times; 10</span></div>
+      <div><span class="l">Rippen</span><span class="v">2 &times; 8 mm</span></div>
+      <div><span class="l">Rohrstutzen</span><span class="v">60 &times; 10</span></div>
+      <div><span class="l">Stückzahl</span><span class="v">4</span></div>
+    </div>
+
+    <div class="box auftrag">
+      <p><strong>Was am Ende vorliegen soll:</strong></p>
+      <ul class="haken">
+        <li>eine Tabelle mit allen fünf Schweißangaben, gelesen und erklärt</li>
+        <li>der Nachweis, dass sich S235JR ohne Vorwärmen schweißen lässt &ndash; und
+          die Begründung, warum die Welle nicht angeschweißt wird</li>
+        <li>das gewählte Verfahren mit Ordnungsnummer</li>
+        <li>die Nahtvorbereitung für den Stumpfstoß und die Schweißfolge</li>
+        <li>Draht und Zeit für einen Bock und für alle vier</li>
+        <li>ein Prüfplan: was geprüft wird, wogegen und mit welcher Toleranz</li>
+      </ul>
+    </div>
+
+    <p class="schritt">Schritt 2 &middot; Informieren</p>
+    <h2><span class="nr">2</span>Die fünf Schweißangaben lesen</h2>
+
+    <p>In der Zeichnung stehen fünf Sinnbilder, hier einzeln herausgezogen. Lest
+      für jedes ab, welche Naht gemeint ist und auf welcher Seite sie liegt.</p>
+
+    <div class="naehte" id="naehte"></div>
+
+    <div class="tabellenrahmen" style="margin-top:18px">
+      <table class="stellen">
+        <thead><tr><th>Naht</th><th>Welche Naht?</th><th>Welche Seite?</th>
+          <th>Stimmt?</th></tr></thead>
+        <tbody id="tabNaehte"></tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn1">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz1">Noch nichts gewählt.</p>
+
+    <details>
+      <summary>Lösung: was in den fünf Angaben steht</summary>
+      <div id="loesung1"></div>
+    </details>
+
+    <div class="warnschild">
+      <div><strong>Naht E ist die Falle.</strong> Ihr Symbol steht an der
+        Bezugs-Strichlinie. Wer das übersieht, schweißt den Anschlagwinkel auf
+        die falsche Seite &ndash; und merkt es erst, wenn der Bock montiert wird.</div>
+    </div>
+
+    <h2><span class="nr">3</span>Hält der Werkstoff das aus?</h2>
+
+    <p>Bevor irgendetwas geschweißt wird, gehört die Frage geklärt, ob der Stahl
+      das mitmacht. Das Maß dafür ist das
+      <strong>Kohlenstoffäquivalent</strong>:</p>
+
+    <div class="rechenweg">
+      <p>CEV = C + Mn/6 + (Cr + Mo + V)/5 + (Ni + Cu)/15</p>
+    </div>
+
+    <p>Die Anteile in Massenprozent: <strong>S235JR</strong> mit C&nbsp;0,17 und
+      Mn&nbsp;1,40; zum Vergleich die beiden Wellenwerkstoffe
+      <strong>42CrMo4</strong> mit C&nbsp;0,42, Mn&nbsp;0,75 und
+      Cr+Mo+V&nbsp;1,10 sowie <strong>X5CrNi18-10</strong> mit C&nbsp;0,05,
+      Mn&nbsp;2,0, Cr&nbsp;18 und Ni&nbsp;9.</p>
+
+    <div class="tabellenrahmen">
+      <table class="stellen">
+        <thead><tr><th>Gesucht</th><th>Antwort</th><th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>CEV des S235JR</td>
+            <td><input type="number" id="w1" step="0.01" inputmode="decimal"></td>
+            <td class="urteil" id="uw1">–</td></tr>
+          <tr><td>Muss der Lagerbock vorgewärmt werden?</td>
+            <td><select id="w2" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="nein">nein, CEV liegt unter 0,45</option>
+              <option value="ja">ja, CEV liegt über 0,45</option>
+            </select></td>
+            <td class="urteil" id="uw2">–</td></tr>
+          <tr><td>CEV des 42CrMo4</td>
+            <td><input type="number" id="w3" step="0.01" inputmode="decimal"></td>
+            <td class="urteil" id="uw3">–</td></tr>
+          <tr><td>Warum wird die Welle nicht angeschweißt?</td>
+            <td><select id="w4" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="a">Weil sich 42CrMo4 nicht schweißen lässt.</option>
+              <option value="b">Weil das Schweißen Vorwärmen und Wärmenachbehandlung verlangt – und die Vergütung damit verloren ginge.</option>
+              <option value="c">Weil nichtrostender Stahl nicht mit unlegiertem Stahl verbunden werden darf.</option>
+            </select></td>
+            <td class="urteil" id="uw4">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn2">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz2">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: 0,40 gegen 0,77</summary>
+      <p><strong>S235JR:</strong> 0,17 + 1,40/6 = 0,17 + 0,23 =
+        <strong>0,40</strong>. Unter 0,45, also gut schweißgeeignet &ndash; kein
+        Vorwärmen nötig. Genau deshalb ist S235JR der Stahl, aus dem im Stahlbau
+        fast alles geschweißt wird.</p>
+      <p><strong>42CrMo4:</strong> 0,42 + 0,75/6 + 1,10/5 = 0,42 + 0,13 + 0,22 =
+        <strong>0,77</strong>. Deutlich über 0,60. Schweißen ginge &ndash; mit
+        Vorwärmen, kontrollierter Abkühlung und Wärmenachbehandlung. Und dabei
+        wäre genau das dahin, wofür man den Stahl gewählt hat: die Vergütung.</p>
+      <p><strong>X5CrNi18-10:</strong> Die Formel ergibt hier eine Zahl jenseits
+        jeder Skala &ndash; und sagt trotzdem nichts. Sie beschreibt die Aufhärtung
+        beim Abkühlen, und die findet in einem austenitischen Stahl nicht statt.
+        Der lässt sich gut schweißen, nur nach anderen Regeln: wenig Wärme,
+        kein Vorwärmen.</p>
+    </details>
+
+    <p class="schritt">Schritt 3 &middot; Planen</p>
+    <h2><span class="nr">4</span>Das Verfahren wählen</h2>
+
+    <p>Vier Stück, unlegierter Stahl, Blechdicken von 8 bis 12 mm, alles in der
+      eigenen Halle, gut zugänglich in der Vorrichtung. Das Tabellenbuch nennt zu
+      jedem Verfahren, wofür es gedacht ist.</p>
+
+    <div class="tabellenrahmen">
+      <table class="stellen">
+        <thead><tr><th>Gesucht</th><th>Antwort</th><th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>Verfahren für die Kehlnähte</td>
+            <td><select id="v1" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="gas">Gasschmelzschweißen</option>
+              <option value="hand">Lichtbogenhandschweißen</option>
+              <option value="mag">Metall-Aktivgasschweißen (MAG)</option>
+              <option value="mig">Metall-Inertgasschweißen (MIG)</option>
+              <option value="wig">Wolfram-Inertgasschweißen (WIG)</option>
+            </select></td>
+            <td class="urteil" id="uv1">–</td></tr>
+          <tr><td>Ordnungsnummer nach DIN EN ISO 4063</td>
+            <td><input type="text" id="v2" autocomplete="off" placeholder="drei Ziffern"></td>
+            <td class="urteil" id="uv2">–</td></tr>
+          <tr><td>Warum nicht Lichtbogenhandschweißen?</td>
+            <td><select id="v3" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="a">Es taugt für diesen Stahl nicht.</option>
+              <option value="b">Es ist langsamer, und seinen Vorteil – ohne Gas auszukommen – braucht in der Halle niemand.</option>
+              <option value="c">Es erzeugt zu wenig Wärme für 12 mm Blech.</option>
+            </select></td>
+            <td class="urteil" id="uv3">–</td></tr>
+          <tr><td>In welcher Position liegen die Kehlnähte in der Vorrichtung?</td>
+            <td><select id="v4" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="PA">PA – Wannenposition</option>
+              <option value="PB">PB – Horizontalposition</option>
+              <option value="PE">PE – Überkopfposition</option>
+              <option value="PF">PF – Steigposition</option>
+            </select></td>
+            <td class="urteil" id="uv4">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn3">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz3">Noch nichts gewählt.</p>
+
+    <details>
+      <summary>Lösung: MAG 135, Position PB</summary>
+      <p><strong>MAG, Ordnungsnummer 135.</strong> Das Tabellenbuch führt unter
+        MAG &bdquo;unlegierte und legierte Stähle&ldquo; und hebt die hohe
+        Abschmelzleistung hervor. Bei vier Stück mit vielen Kehlnähten zählt
+        genau die. Das Gerät steht in der Halle, Draht und Gas sind da.</p>
+      <p><strong>Lichtbogenhandschweißen</strong> könnte dasselbe &ndash; langsamer,
+        mit Schlacke, die abgeklopft werden muss. Sein Vorteil ist, dass es ohne
+        Schutzgas auskommt; den braucht man auf der Baustelle und im Wind, nicht
+        in der eigenen Halle.</p>
+      <p><strong>WIG</strong> wäre hier verschenkt: hochwertig, aber langsam, und
+        gedacht für Dünnblech und Edelstahl. <strong>MIG</strong> ist das falsche
+        Gas für unlegierten Stahl, <strong>Gasschmelzschweißen</strong> bei 12 mm
+        aus der Zeit gefallen.</p>
+      <p>Die Kehlnähte am stehenden Stehblech verlaufen waagerecht &ndash; das ist
+        die <strong>Horizontalposition PB</strong>. Für sie gelten auch die
+        Richtwerte, mit denen wir gleich rechnen.</p>
+    </details>
+
+    <p class="schritt">Schritt 4 &middot; Entscheiden</p>
+    <h2><span class="nr">5</span>Nahtvorbereitung und Schweißfolge</h2>
+
+    <p>Die Kehlnähte brauchen keine Vorbereitung &ndash; die Kanten bleiben, wie sie
+      sind. Anders der <strong>Stumpfstoß am Rohrstutzen</strong>: Dort stoßen
+      10 mm Wandstärke auf das Stehblech, und die Naht soll durchgeschweißt
+      werden.</p>
+
+    <div class="tabellenrahmen">
+      <table class="stellen">
+        <thead><tr><th>Gesucht</th><th>Antwort</th><th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>Fugenform für den durchgeschweißten Stoß bei 10 mm</td>
+            <td><select id="n1" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="i">I-Fuge – ohne Vorbereitung</option>
+              <option value="v">V-Fuge</option>
+              <option value="steil">Steilflanken-V-Fuge</option>
+            </select></td>
+            <td class="urteil" id="un1">–</td></tr>
+          <tr><td>Öffnungswinkel &alpha; in Grad (Mitte des Bereichs)</td>
+            <td><input type="number" id="n2" step="5" inputmode="numeric"></td>
+            <td class="urteil" id="un2">–</td></tr>
+          <tr><td>Größter zulässiger Steg c in mm</td>
+            <td><input type="number" id="n3" step="0.5" inputmode="decimal"></td>
+            <td class="urteil" id="un3">–</td></tr>
+          <tr><td>Welche Schweißfolge hält den Verzug am kleinsten?</td>
+            <td><select id="n4" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="a">Erst die ganze Naht links, dann die ganze Naht rechts</option>
+              <option value="b">Wechselseitig, in Abschnitten, von der Mitte nach außen</option>
+              <option value="c">Beide Seiten gleichzeitig mit zwei Schweißern</option>
+            </select></td>
+            <td class="urteil" id="un4">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn4">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz4">Noch nichts gewählt.</p>
+
+    <details>
+      <summary>Lösung: V-Fuge, 50°, Steg bis 2 mm – und wechselseitig schweißen</summary>
+      <p>Die Tabelle der Nahtvorbereitung nennt für den durchgeschweißten Stoß
+        von <strong>3 bis 10 mm</strong> die <strong>V-Fuge</strong> mit einem
+        Öffnungswinkel von <strong>40° bis 60°</strong>, einem Steg von
+        höchstens <strong>2 mm</strong> und einem Spalt bis 4 mm. In der Mitte
+        des Winkelbereichs liegen 50°.</p>
+      <p>Die I-Fuge reicht nur bis 4 mm, die Steilflanken-V-Fuge beginnt erst
+        über 16 mm &ndash; und braucht eine Schweißbadsicherung.</p>
+      <p><strong>Die Schweißfolge:</strong> wechselseitig, in Abschnitten, von
+        der Mitte nach außen. Wechselseitig, damit sich die Winkelschrumpfung
+        der beiden Seiten aufhebt. In Abschnitten, damit nie ein langes Stück auf
+        einmal schrumpft. Von der Mitte nach außen, damit die Querschrumpfung
+        nach außen auslaufen kann.</p>
+      <p>Zwei Schweißer gleichzeitig klingt gut, ist aber selten machbar &ndash; und
+        löst das Problem nicht: Auch dann schrumpft beides zur selben Zeit.</p>
+    </details>
+
+    <p class="schritt">Schritt 5 &middot; Ausführen</p>
+    <h2><span class="nr">6</span>Wie viel Draht, wie viel Zeit?</h2>
+
+    <p>Jetzt die Frage, die der Meister gestellt hat. Die Nahtlängen stehen in der
+      Zeichnung, die Richtwerte im Tabellenbuch &ndash; für MAG, unlegierten Stahl,
+      Position PB.</p>
+
+    <div class="daten">
+      <div><span class="l">Nähte mit a = 4</span><span class="v">360 mm</span></div>
+      <div><span class="l">Nähte mit a = 3</span><span class="v">340 mm</span></div>
+      <div><span class="l">je Bock zusammen</span><span class="v">700 mm</span></div>
+      <div><span class="l">Stückzahl</span><span class="v">4</span></div>
+    </div>
+
+    <p class="fussnote">Die 360 mm sind die Doppel-Kehlnaht A, zweimal 180 mm.
+      Die 340 mm sind die umlaufende Rippennaht C mit 250 mm und die
+      unterbrochene Naht D mit 3 &times; 30 mm.</p>
+
+    <div class="tabellenrahmen">
+      <table class="stellen">
+        <thead><tr><th>Gesucht</th><th>Antwort</th><th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>Schweißzusatz für a = 4 in g/m (Tabellenbuch)</td>
+            <td><input type="number" id="r1" step="1" inputmode="numeric"></td>
+            <td class="urteil" id="ur1">–</td></tr>
+          <tr><td>Schweißzusatz für a = 3 in g/m (Tabellenbuch)</td>
+            <td><input type="number" id="r2" step="1" inputmode="numeric"></td>
+            <td class="urteil" id="ur2">–</td></tr>
+          <tr><td>Draht für einen Bock in g</td>
+            <td><input type="number" id="r3" step="0.1" inputmode="decimal"></td>
+            <td class="urteil" id="ur3">–</td></tr>
+          <tr><td>Hauptnutzungszeit für einen Bock in min</td>
+            <td><input type="number" id="r4" step="0.01" inputmode="decimal"></td>
+            <td class="urteil" id="ur4">–</td></tr>
+          <tr><td>Draht für alle vier Böcke in g</td>
+            <td><input type="number" id="r5" step="1" inputmode="decimal"></td>
+            <td class="urteil" id="ur5">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn5">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz5">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Rechenweg: 81 g und 1,23 min je Bock</summary>
+      <div class="rechenweg">
+        <p>Aus der Tabelle: a = 4 mm &rarr; <b>140 g/m</b> und <b>2,1 min/m</b>;
+          a = 3 mm &rarr; <b>90 g/m</b> und <b>1,4 min/m</b>.</p>
+        <p>Draht für die a4-Nähte: 140 g/m &middot; 0,36 m = <b>50,4 g</b></p>
+        <p>Draht für die a3-Nähte: 90 g/m &middot; 0,34 m = <b>30,6 g</b></p>
+        <p class="schluss">Draht je Bock = 50,4 g + 30,6 g = 81 g</p>
+        <p>Zeit für die a4-Nähte: 2,1 min/m &middot; 0,36 m = <b>0,76 min</b></p>
+        <p>Zeit für die a3-Nähte: 1,4 min/m &middot; 0,34 m = <b>0,48 min</b></p>
+        <p class="schluss">Hauptnutzungszeit je Bock = 1,23 min</p>
+        <p class="schluss">Für vier Böcke: 324 g Draht, 4,9 min Nahtzeit</p>
+      </div>
+      <p>Fünf Minuten für vier Böcke &ndash; das ist die
+        <em>Hauptnutzungszeit</em>, also reine Zeit unter Lichtbogen. Heften,
+        Einspannen, Wenden, Schlacke entfernen, Messen und Prüfen kommen hinzu
+        und machen in der Werkstatt ein Vielfaches davon aus.</p>
+      <p class="fussnote">Auffällig: Für a = 3 nennt die Tabelle mit 1,4 min/m
+        eine <em>kürzere</em> Zeit als für a = 2 mit 1,5 min/m. Das liegt an den
+        Einstellwerten &ndash; bei a = 3 läuft die Anlage mit mehr Strom und
+        schnellerem Draht. Wer die Tabelle abliest statt zu schätzen, merkt so
+        etwas.</p>
+    </details>
+
+    <p class="schritt">Schritt 6 &middot; Kontrollieren</p>
+    <h2><span class="nr">7</span>Prüfen und abnehmen</h2>
+
+    <p>Der Instandhalter hat eine Zahl genannt: höchstens 2 mm Abweichung über
+      die 180 mm der Grundplatte. Im Tabellenbuch stehen dafür vier
+      Genauigkeitsgrade für Schweißkonstruktionen.</p>
+
+    <div class="tabellenrahmen">
+      <table class="stellen">
+        <thead><tr><th>Gesucht</th><th>Antwort</th><th>Stimmt?</th></tr></thead>
+        <tbody>
+          <tr><td>In welchen Nennmaßbereich fallen die 180 mm?</td>
+            <td><select id="p1" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="a">bis 30</option>
+              <option value="b">über 30 bis 120</option>
+              <option value="c">über 120 bis 400</option>
+              <option value="d">über 400 bis 1000</option>
+            </select></td>
+            <td class="urteil" id="up1">–</td></tr>
+          <tr><td>Welcher Genauigkeitsgrad hält die geforderten &plusmn;2 mm?</td>
+            <td><select id="p2" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="A">A</option><option value="B">B</option>
+              <option value="C">C</option><option value="D">D</option>
+            </select></td>
+            <td class="urteil" id="up2">–</td></tr>
+          <tr><td>Was wird an jeder Naht als Erstes geprüft?</td>
+            <td><select id="p3" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="a">die Sichtprüfung – Form, Übergänge, Endkrater, Spritzer</option>
+              <option value="b">eine Durchstrahlungsprüfung</option>
+              <option value="c">ein Zugversuch an einer Probe</option>
+            </select></td>
+            <td class="urteil" id="up3">–</td></tr>
+          <tr><td>Warum wird nach dem Schweißen gewartet, bevor geprüft wird?</td>
+            <td><select id="p4" data-druck="ankreuzen">
+              <option value="">bitte wählen</option>
+              <option value="a">Damit die Naht abkühlt und man sie anfassen kann.</option>
+              <option value="b">Weil ein Kaltriss erst Stunden später entsteht.</option>
+              <option value="c">Damit die Schlacke von selbst abfällt.</option>
+            </select></td>
+            <td class="urteil" id="up4">–</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top:14px">
+      <button type="button" class="knopf" id="btn6">Prüfen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz6">Noch nichts gewählt.</p>
+
+    <details>
+      <summary>Lösung: Bereich „über 120 bis 400“, Genauigkeitsgrad B</summary>
+      <p>180 mm fallen in den Bereich <strong>über 120 bis 400 mm</strong>. Dort
+        erlauben die Allgemeintoleranzen für Schweißkonstruktionen:
+        Grad A &plusmn;1 mm, Grad <strong>B &plusmn;2 mm</strong>, Grad C
+        &plusmn;4 mm, Grad D &plusmn;7 mm.</p>
+      <p>Die Forderung von &plusmn;2 mm ist also <strong>Grad B</strong>. Grad A
+        wäre enger als nötig und teurer &ndash; er verlangt eine Vorrichtung und
+        vermutlich Richten. Grad C wäre zu grob: Bei 4 mm fluchtet die Welle
+        nicht mehr.</p>
+      <p>Der Grad gehört in die Zeichnung, nicht in den Kopf des Schweißers.
+        Ohne Angabe gilt, was der Betrieb als Werksnorm festgelegt hat &ndash; und
+        das kann jedes Mal etwas anderes sein.</p>
+      <p><strong>Geprüft</strong> wird zuerst mit den Augen: Nahtform,
+        Übergänge, Endkrater, Spritzer, Risse. Das ist keine Notlösung, sondern
+        die vorgeschriebene erste Stufe; alles Weitere kommt erst, wenn die
+        Sichtprüfung Anlass gibt oder die Bewertungsgruppe es verlangt.</p>
+      <p>Und die <strong>Wartezeit</strong>: Ein Kaltriss entsteht nicht beim
+        Schweißen, sondern beim Abkühlen &ndash; und oft erst Stunden danach, wenn
+        der Wasserstoff im harten Gefüge gewandert ist. Wer sofort prüft und
+        abhakt, prüft an der Sache vorbei.</p>
+    </details>
+
+    <p class="schritt">Schritt 7 &middot; Bewerten</p>
+    <h2><span class="nr">8</span>Zurückschauen</h2>
+
+    <details>
+      <summary>Reflexion im Team</summary>
+      <ul>
+        <li>Naht E liegt auf der Gegenseite. Wann wäre euch das aufgefallen &ndash;
+          beim Lesen der Zeichnung oder beim Zusammenbau?</li>
+        <li>Der Meister sagt: &bdquo;Schweißt die Rippen einfach ringsum durch,
+          dann muss keiner rechnen.&ldquo; Was kostet das &ndash; in Gramm, in Minuten
+          und in Verzug?</li>
+        <li>Ihr habt MAG gewählt. Was hätte am Auftrag anders sein müssen, damit
+          Lichtbogenhandschweißen richtig gewesen wäre?</li>
+        <li>Die Welle wird gelagert statt angeschweißt. Wer hat diese
+          Entscheidung eigentlich getroffen &ndash; und an welcher Stelle im Ablauf?</li>
+        <li>Angenommen, der Bock käme in eine Molkerei und müsste aus
+          X5CrNi18-10 sein. Welche eurer Entscheidungen kippt, und welche
+          bleibt?</li>
+      </ul>
+    </details>
+
+    <details>
+      <summary>Bewertungsraster</summary>
+      <div class="tabellenrahmen">
+        <table>
+          <thead>
+            <tr><th>Kriterium</th><th class="zahl">Punkte</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Alle fünf Schweißangaben richtig gelesen, Seite je Naht benannt</td><td class="zahl">20</td></tr>
+            <tr><td>Kohlenstoffäquivalent gerechnet, Vorwärmen begründet entschieden</td><td class="zahl">15</td></tr>
+            <tr><td>Verfahren gewählt, mit Ordnungsnummer und verworfener Alternative</td><td class="zahl">15</td></tr>
+            <tr><td>Nahtvorbereitung aus der Tabelle, Schweißfolge begründet</td><td class="zahl">20</td></tr>
+            <tr><td>Draht und Zeit gerechnet, Rechenweg belegt</td><td class="zahl">15</td></tr>
+            <tr><td>Prüfplan mit Genauigkeitsgrad und Reihenfolge der Prüfungen</td><td class="zahl">15</td></tr>
+            <tr class="summe"><td>Summe</td><td class="zahl">100</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="fussnote">Für die Zahlen gibt es die Punkte nur mit Quelle: Aus
+      welcher Tabelle stammt der Wert, und warum gilt diese Zeile für diesen
+      Fall? Eine richtige Zahl ohne Beleg ist geraten.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Ein geschweißtes Bauteil entsteht zweimal &ndash;
+      einmal in der Zeichnung und einmal in der Reihenfolge, in der geschweißt
+      wird. Wer nur das Erste liest, bekommt das Zweite geschenkt: krumm.
+    </div>
+
+    <h2><span class="nr">9</span>Material</h2>
+
+    <p>Die Lektion zeigt die Symbole, den Nahtquerschnitt und die Bemaßung zum
+      Einstellen &ndash; mit demselben Rechenweg für Draht und Zeit:</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-schweissen.html">Lektion Schweißen öffnen</a>
+    </p>
+    <p>Wer beim Einordnen der Verfahren hängt, findet den Überblick hier:</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="fertigungstechnik-fuegeverfahren-ueberblick.html">Lektion &bdquo;Überblick über die Verfahren&ldquo; öffnen</a>
+    </p>
+
+    <p>Wer an einer Stelle hängt, findet dort den passenden Ausschnitt:</p>
+    <div class="tabellenrahmen">
+      <table>
+        <thead>
+          <tr><th>Wenn es hakt bei &hellip;</th><th>&hellip; hilft</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Sinnbilder lesen</td>
+              <td><a href="../../uebungen/schweissen/01-was-sagt-das-symbol.html">Übung 1 &middot; Was sagt das Symbol?</a></td></tr>
+          <tr><td>Pfeilseite und Gegenseite</td>
+              <td><a href="../../uebungen/schweissen/02-pfeilseite-oder-gegenseite.html">Übung 2 &middot; Pfeilseite oder Gegenseite?</a></td></tr>
+          <tr><td>Nahtdicke, Stückelung, Draht und Zeit</td>
+              <td><a href="../../uebungen/schweissen/03-die-naht-bemassen.html">Übung 3 &middot; Die Naht bemaßen</a></td></tr>
+          <tr><td>Verfahren wählen</td>
+              <td><a href="../../uebungen/schweissen/04-welches-verfahren.html">Übung 4 &middot; Welches Verfahren?</a></td></tr>
+          <tr><td>Kohlenstoffäquivalent</td>
+              <td><a href="../../uebungen/schweissen/05-schweissgeeignet.html">Übung 5 &middot; Schweißgeeignet?</a></td></tr>
+          <tr><td>Verzug und Schweißfolge</td>
+              <td><a href="../../uebungen/schweissen/06-woher-kommt-der-verzug.html">Übung 6 &middot; Woher kommt der Verzug?</a></td></tr>
+          <tr><td>Symbole auf einen Blick</td>
+              <td><a href="../../trainings/schweissen/01-symbol-schnellcheck.html">Training 1 &middot; Symbol-Schnellcheck</a></td></tr>
+          <tr><td>a und z</td>
+              <td><a href="../../trainings/schweissen/03-a-und-z-umrechnen.html">Training 3 &middot; a und z umrechnen</a></td></tr>
+          <tr><td>Ordnungsnummern</td>
+              <td><a href="../../trainings/schweissen/05-verfahren-und-kennzahl.html">Training 5 &middot; Verfahren und Kennzahl</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Im Tabellenbuch</h3>
+    <div class="tabellenrahmen">
+      <table>
+        <thead>
+          <tr><th>Abschnitt</th><th>gebraucht für</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Symbole für Schweißen und Löten</td>
+              <td>die fünf Sinnbilder in Teil 2, Lage an der Bezugslinie,
+                Zusatzsymbole, Bemaßung</td></tr>
+          <tr><td>Schmelzschweißen, Schweißverfahren (Übersicht)</td>
+              <td>Wärmequelle, Zusatz und Anwendung je Verfahren in Teil 4</td></tr>
+          <tr><td>Verfahren, Schweißpositionen, Allgemeintoleranzen</td>
+              <td>Ordnungsnummer nach ISO 4063, Position nach ISO 6947,
+                Genauigkeitsgrade nach ISO 13920 in Teil 7</td></tr>
+          <tr><td>Nahtplanung, Einstell- und Leistungswerte</td>
+              <td>Nahtvorbereitung nach ISO 9692-1 in Teil 5; Schweißzusatz und
+                Hauptnutzungszeit in Teil 6</td></tr>
+          <tr><td>Bezeichnungssystem der Stähle</td>
+              <td>S235JR, S355J2, 42CrMo4 und X5CrNi18-10 in Teil 3</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="fussnote">Alle Zahlenwerte sind Orientierungswerte für den
+      Unterricht. Maßgebend sind Norm, Tabellenbuch und das
+      Schweißverfahrensblatt des Betriebs.</p>
+
+  </main>
+
+  <footer class="wrap">
+    <p>&copy; 2026 t-bk.de &middot; <a href="https://t-bk.de/impressum/">Impressum</a>
+      &middot; <a href="https://t-bk.de/datenschutz/">Datenschutz</a></p>
+  </footer>
+
+<script>
+"use strict";
+
+var NS = "http://www.w3.org/2000/svg";
+function el(id){ return document.getElementById(id); }
+function wert(id){
+  var e = el(id);
+  return e ? parseFloat(String(e.value).replace(",", ".")) : NaN;
+}
+function sv(name, attr, eltern){
+  var e = document.createElementNS(NS, name);
+  for(var k in attr) if(attr.hasOwnProperty(k)) e.setAttribute(k, attr[k]);
+  if(eltern) eltern.appendChild(e);
+  return e;
+}
+
+function urteilen(id, ok, offen){
+  var u = el(id);
+  if(offen){ u.textContent = "–"; u.className = "urteil"; return 0; }
+  u.textContent = ok ? "richtig" : "nein";
+  u.className = "urteil " + (ok ? "ja" : "nein");
+  return ok ? 1 : 0;
+}
+
+function bilanz(id, richtig, gesamt, offen, wort){
+  el(id).textContent = offen === gesamt
+    ? "Noch nichts " + (wort || "gewählt") + "."
+    : richtig + " von " + gesamt + " richtig"
+      + (offen ? ", " + offen + " noch offen." : ".");
+}
+
+/* ============================================================================
+   Der Lagerbock in der Ansicht
+   ----------------------------------------------------------------------------
+   Keine bemasste Werkstattzeichnung, sondern die Ansicht mit den fuenf
+   Nahtstellen. Die Sinnbilder stehen darunter einzeln - so kreuzen sich
+   keine Hinweislinien, und jede Angabe laesst sich fuer sich lesen.
+   ========================================================================== */
+(function bockZeichnen(){
+  var ziel = el("bildBock");
+  var svg = sv("svg", {viewBox:"0 0 700 400", role:"img",
+    "aria-label":"Ansicht des geschweißten Lagerbocks: Grundplatte, "
+      + "Stehblech mit Rohrstutzen und zwei Rippen; fünf Nahtstellen sind "
+      + "mit den Buchstaben A bis E gekennzeichnet"}, ziel);
+  var f = document.createElement("figcaption");
+  f.innerHTML = "Der Lagerbock in der Ansicht. Die Buchstaben A bis E "
+    + "bezeichnen die fünf Nahtstellen; die zugehörigen Sinnbilder stehen "
+    + "unten.";
+  ziel.appendChild(f);
+
+  var g = sv("g", {}, svg);
+  var BREIT = 2.0, SCHMAL = 1.0;
+
+  /* Grundplatte, von der Seite gesehen */
+  var px = 140, py = 300, pb = 400, pt = 26;
+  sv("rect", {x:px, y:py, width:pb, height:pt, fill:"none",
+    stroke:"currentColor", "stroke-width":BREIT}, g);
+
+  /* Stehblech, steht darauf */
+  var sx = 270, sb = 140, sh = 200;
+  sv("rect", {x:sx, y:py - sh, width:sb, height:sh, fill:"none",
+    stroke:"currentColor", "stroke-width":BREIT}, g);
+
+  /* Rohrstutzen im Stehblech: aussen und innen */
+  var mx = sx + sb / 2, my = py - sh + 78;
+  sv("circle", {cx:mx, cy:my, r:52, fill:"none", stroke:"currentColor",
+    "stroke-width":BREIT}, g);
+  sv("circle", {cx:mx, cy:my, r:32, fill:"none", stroke:"currentColor",
+    "stroke-width":BREIT}, g);
+  /* Mittellinien nach DIN ISO 128-24: schmale Strichpunktlinie */
+  sv("line", {x1:mx - 68, y1:my, x2:mx + 68, y2:my, stroke:"currentColor",
+    "stroke-width":SCHMAL, "stroke-dasharray":"12 2 2 2"}, g);
+  sv("line", {x1:mx, y1:my - 68, x2:mx, y2:my + 68, stroke:"currentColor",
+    "stroke-width":SCHMAL, "stroke-dasharray":"12 2 2 2"}, g);
+
+  /* Zwei Rippen, links und rechts als Dreiecke */
+  [[-1, sx], [1, sx + sb]].forEach(function(p){
+    var v = p[0], x0 = p[1];
+    sv("polygon", {points: x0 + "," + py + " "
+      + (x0 + v * 78) + "," + py + " " + x0 + "," + (py - 88),
+      fill:"none", stroke:"currentColor", "stroke-width":BREIT}, g);
+  });
+
+  /* Anschlagwinkel am rechten Ende der Grundplatte */
+  var ax = px + pb - 46;
+  sv("rect", {x:ax, y:py - 42, width:14, height:42, fill:"none",
+    stroke:"currentColor", "stroke-width":BREIT}, g);
+
+  /* Die fuenf Nahtstellen als Marken */
+  function marke(x, y, buchstabe){
+    sv("circle", {cx:x, cy:y, r:13, fill:"currentColor"}, g);
+    var t = sv("text", {x:x, y:y + 5, "text-anchor":"middle", "font-size":14,
+      "font-weight":700, fill:"var(--card, #fff)"}, g);
+    t.textContent = buchstabe;
+  }
+  marke(sx + 34, py - 18, "A");
+  /* B haengt nicht am Stutzen, sondern daneben: Auf dem Kreis laege der
+     Buchstabe auf einer Koerperkante und waere nicht zu lesen. Eine schmale
+     Hinweislinie zeigt, welche Naht gemeint ist. */
+  var bx = sx + 26, by = py - sh + 20;
+  (function(){
+    var dx = mx - bx, dy = my - by, l = Math.sqrt(dx * dx + dy * dy);
+    sv("line", {x1:bx + 15 * dx / l, y1:by + 15 * dy / l,
+      x2:mx - 52 * dx / l, y2:my - 52 * dy / l,
+      stroke:"currentColor", "stroke-width":SCHMAL}, g);
+  }());
+  marke(bx, by, "B");
+  marke(sx - 44, py - 22, "C");
+  marke(sx + sb + 44, py - 22, "D");
+  marke(ax + 30, py - 16, "E");
+
+  /* Benennungen, in freien Feldern */
+  function nenn(x, y, text, anker){
+    var t = sv("text", {x:x, y:y, "text-anchor":anker || "middle",
+      "font-size":13, fill:"currentColor"}, g);
+    t.textContent = text;
+    return t;
+  }
+  nenn(px + 40, py + 52, "Grundplatte 180 × 90 × 12", "start");
+  nenn(mx, py - sh - 16, "Stehblech 120 × 100 × 10");
+  nenn(mx + 120, my - 76, "Rohrstutzen 60 × 10", "start");
+  nenn(px + 20, py - 120, "Rippe 8 mm", "start");
+}());
+
+/* ============================================================================
+   Teil 2 - die fuenf Schweissangaben
+   ========================================================================== */
+
+var NAEHTE = [
+  {id:"A", titel:"Stehblech auf Grundplatte",
+   bild:{kombi:"dkehl", mass:"a4"},
+   naht:"dkehl", seite:"beide",
+   satz:"Ein <b>kombiniertes Grundsymbol</b>: zwei Dreiecke, über und unter "
+      + "der Volllinie. Das ist eine <b>Doppel-Kehlnaht</b> mit a = 4 mm &ndash; "
+      + "beide Seiten des Stehblechs werden angeschweißt. Eine Strichlinie "
+      + "braucht es dafür nicht."},
+  {id:"B", titel:"Rohrstutzen im Stehblech",
+   bild:{pfeilseite:{art:"v", mass:"a5", zusatz:"gegenlage"}, ringsum:true},
+   naht:"v", seite:"pfeil",
+   satz:"Eine <b>V-Naht</b> mit dem Halbkreis der <b>Gegenlage</b>: Nach dem "
+      + "Schweißen wird die Wurzel von hinten ausgearbeitet und eine zweite "
+      + "Lage gesetzt. Der Kreis am Knick heißt <b>ringsum</b> &ndash; die Naht "
+      + "läuft um den ganzen Stutzen."},
+  {id:"C", titel:"Rippe links",
+   bild:{pfeilseite:{art:"kehl", mass:"a3"}, ringsum:true},
+   naht:"kehl", seite:"pfeil",
+   satz:"<b>Kehlnaht</b> a = 3 mm auf der <b>Pfeilseite</b>, umlaufend um die "
+      + "ganze Rippe. Durchgehend, weil keine Stückelung dahintersteht."},
+  {id:"D", titel:"Rippe rechts",
+   bild:{pfeilseite:{art:"kehl", mass:"a3", hinten:"3 × 30 (30)"}},
+   naht:"kehl", seite:"pfeil",
+   satz:"Dieselbe <b>Kehlnaht</b> a = 3 mm, aber <b>unterbrochen</b>: drei "
+      + "Einzelnähte von je 30 mm, dazwischen 30 mm Abstand. Zusammen 90 mm "
+      + "statt 250 &ndash; und genau darum geht es in Teil 6."},
+  {id:"E", titel:"Anschlagwinkel",
+   bild:{gegenseite:{art:"kehl", mass:"a3"}},
+   naht:"kehl", seite:"gegen",
+   satz:"Wieder eine <b>Kehlnaht</b> a = 3 mm &ndash; aber das Symbol steht an der "
+      + "<b>Bezugs-Strichlinie</b>. Die Naht liegt auf der <b>Gegenseite</b>: "
+      + "Der Winkel wird von hinten angeschweißt, das Teil muss dafür gewendet "
+      + "werden."}
+];
+
+var NAHT_WAHL = [
+  ["kehl", "Kehlnaht"], ["dkehl", "Doppel-Kehlnaht"], ["v", "V-Naht"],
+  ["hv", "HV-Naht"], ["i", "I-Naht"], ["y", "Y-Naht"]
+];
+var SEITE_WAHL = [
+  ["pfeil", "Pfeilseite"], ["gegen", "Gegenseite"], ["beide", "beide Seiten"]
+];
+
+function auswahl(id, liste){
+  var s = document.createElement("select");
+  s.id = id;
+  s.setAttribute("data-druck", "ankreuzen");
+  var leer = document.createElement("option");
+  leer.value = ""; leer.textContent = "bitte wählen";
+  s.appendChild(leer);
+  liste.forEach(function(p){
+    var o = document.createElement("option");
+    o.value = p[0]; o.textContent = p[1];
+    s.appendChild(o);
+  });
+  return s;
+}
+
+(function naehteAufbauen(){
+  var wrap = el("naehte");
+  NAEHTE.forEach(function(n){
+    var k = document.createElement("div");
+    k.className = "naht";
+    var h = document.createElement("h3");
+    var b = document.createElement("span");
+    b.className = "stelle"; b.textContent = n.id;
+    h.appendChild(b);
+    h.appendChild(document.createTextNode(n.titel));
+    k.appendChild(h);
+    var svg = sv("svg", {viewBox:"0 0 300 130", role:"img",
+      "aria-label":"Sinnbild der Schweißnaht " + n.id + " am Lagerbock, "
+        + n.titel}, k);
+    var o = {};
+    for(var s in n.bild) if(n.bild.hasOwnProperty(s)) o[s] = n.bild[s];
+    o.x = 150; o.y = 50; o.zielX = 48; o.zielY = 96; o.laenge = 130;
+    schweissSinnbild(svg, o);
+    wrap.appendChild(k);
+  });
+
+  var tb = el("tabNaehte");
+  NAEHTE.forEach(function(n){
+    var tr = document.createElement("tr");
+    var td0 = document.createElement("td");
+    var b = document.createElement("span");
+    b.className = "stelle"; b.textContent = n.id;
+    td0.appendChild(b);
+    td0.appendChild(document.createTextNode(n.titel));
+    tr.appendChild(td0);
+    var td1 = document.createElement("td");
+    td1.appendChild(auswahl("n" + n.id, NAHT_WAHL));
+    tr.appendChild(td1);
+    var td2 = document.createElement("td");
+    td2.appendChild(auswahl("s" + n.id, SEITE_WAHL));
+    tr.appendChild(td2);
+    var td3 = document.createElement("td");
+    td3.className = "urteil"; td3.id = "u" + n.id; td3.textContent = "–";
+    tr.appendChild(td3);
+    tb.appendChild(tr);
+  });
+
+  el("loesung1").innerHTML = NAEHTE.map(function(n){
+    return "<p><strong>" + n.id + " &ndash; " + n.titel + ":</strong> "
+      + n.satz + "</p>";
+  }).join("");
+}());
+
+el("btn1").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  NAEHTE.forEach(function(n){
+    var a = el("n" + n.id).value, s = el("s" + n.id).value;
+    if(!a || !s){ offen++; urteilen("u" + n.id, false, true); return; }
+    var gut = (a === n.naht) + (s === n.seite);
+    var u = el("u" + n.id);
+    u.textContent = gut === 2 ? "richtig" : (gut === 1 ? "halb" : "nein");
+    u.className = "urteil " + (gut === 2 ? "ja" : "nein");
+    if(gut === 2) r++;
+  });
+  bilanz("bilanz1", r, NAEHTE.length, offen);
+});
+
+/* ============================================================================
+   Teil 3 - Werkstoff
+   ========================================================================== */
+
+/* CEV nach EN 1011-2, Anteile in Prozent - dieselben Zahlen wie in der
+   Lektion Schweissen. */
+function cev(c, mn, cr, ni){ return c + mn / 6 + cr / 5 + ni / 15; }
+var CEV_S235 = cev(0.17, 1.40, 0, 0);
+var CEV_42CRMO4 = cev(0.42, 0.75, 1.10, 0);
+
+el("btn2").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  var c1 = wert("w1");
+  var leer1 = !isFinite(c1); if(leer1) offen++;
+  r += urteilen("uw1", Math.abs(c1 - CEV_S235) <= 0.02, leer1);
+
+  var v2 = el("w2").value;
+  if(!v2) offen++;
+  r += urteilen("uw2", v2 === "nein", !v2);
+
+  var c3 = wert("w3");
+  var leer3 = !isFinite(c3); if(leer3) offen++;
+  r += urteilen("uw3", Math.abs(c3 - CEV_42CRMO4) <= 0.02, leer3);
+
+  var v4 = el("w4").value;
+  if(!v4) offen++;
+  r += urteilen("uw4", v4 === "b", !v4);
+
+  bilanz("bilanz2", r, 4, offen, "eingetragen");
+});
+
+/* ============================================================================
+   Teil 4 - Verfahren
+   ========================================================================== */
+
+el("btn3").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  var a = el("v1").value;
+  if(!a) offen++;
+  r += urteilen("uv1", a === "mag", !a);
+
+  var n = String(el("v2").value).trim();
+  if(!n) offen++;
+  r += urteilen("uv2", n === "135", !n);
+
+  var b = el("v3").value;
+  if(!b) offen++;
+  r += urteilen("uv3", b === "b", !b);
+
+  var p = el("v4").value;
+  if(!p) offen++;
+  r += urteilen("uv4", p === "PB", !p);
+
+  bilanz("bilanz3", r, 4, offen);
+});
+
+/* ============================================================================
+   Teil 5 - Nahtvorbereitung und Schweissfolge
+   ========================================================================== */
+
+el("btn4").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  var f = el("n1").value;
+  if(!f) offen++;
+  r += urteilen("un1", f === "v", !f);
+
+  /* Der Tabellenbereich ist 40 bis 60 Grad - die Mitte sind 50. */
+  var w = wert("n2");
+  var leerW = !isFinite(w); if(leerW) offen++;
+  r += urteilen("un2", Math.abs(w - 50) <= 0.5, leerW);
+
+  var c = wert("n3");
+  var leerC = !isFinite(c); if(leerC) offen++;
+  r += urteilen("un3", Math.abs(c - 2) <= 0.01, leerC);
+
+  var s = el("n4").value;
+  if(!s) offen++;
+  r += urteilen("un4", s === "b", !s);
+
+  bilanz("bilanz4", r, 4, offen);
+});
+
+/* ============================================================================
+   Teil 6 - Draht und Zeit
+   ----------------------------------------------------------------------------
+   Richtwerte fuer das MAG-Schweissen unlegierter Staehle in Position PB,
+   Tabellenbuch - Nahtplanung, Einstell- und Leistungswerte.
+   ========================================================================== */
+
+var G_A4 = 140, T_A4 = 2.1;      /* g/m und min/m fuer a = 4 mm */
+var G_A3 = 90,  T_A3 = 1.4;      /* g/m und min/m fuer a = 3 mm */
+var L_A4 = 0.36, L_A3 = 0.34;    /* Nahtlaengen je Bock in Metern */
+var STUECK = 4;
+
+var DRAHT_BOCK = G_A4 * L_A4 + G_A3 * L_A3;
+var ZEIT_BOCK  = T_A4 * L_A4 + T_A3 * L_A3;
+
+el("btn5").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  [["r1", "ur1", G_A4, 0.5],
+   ["r2", "ur2", G_A3, 0.5],
+   ["r3", "ur3", DRAHT_BOCK, 1],
+   ["r4", "ur4", ZEIT_BOCK, 0.03],
+   ["r5", "ur5", DRAHT_BOCK * STUECK, 4]].forEach(function(f){
+    var v = wert(f[0]);
+    var leer = !isFinite(v); if(leer) offen++;
+    r += urteilen(f[1], Math.abs(v - f[2]) <= f[3], leer);
+  });
+  bilanz("bilanz5", r, 5, offen, "eingetragen");
+});
+
+/* ============================================================================
+   Teil 7 - Pruefen und abnehmen
+   ========================================================================== */
+
+el("btn6").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  [["p1", "up1", "c"], ["p2", "up2", "B"], ["p3", "up3", "a"],
+   ["p4", "up4", "b"]].forEach(function(f){
+    var v = el(f[0]).value;
+    if(!v) offen++;
+    r += urteilen(f[1], v === f[2], !v);
+  });
+  bilanz("bilanz6", r, 4, offen);
+});
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="../../"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/fortschritt.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>
