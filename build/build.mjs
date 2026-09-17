@@ -133,9 +133,19 @@ async function seiteLesen(datei, { imPaket = false, baukasten = false } = {}) {
   if (/TBK_WETTKAMPF/.test(text)) noetig.push({ pfad: WETTKAMPF, attr: '' });
   /* Wer etwas ausfuellt, soll es nicht bei jedem Tabwechsel verlieren.
      Trainings bleiben aussen vor: Dort ist jede Runde eine neue Aufgabe,
-     und eine wiederhergestellte Antwort gehoerte zur Aufgabe von gestern. */
-  const auszufuellen = /<textarea|<select|<input[^>]+type=["'](?:text|number)["']/i;
-  if (!rel.startsWith('trainings/') && auszufuellen.test(text)) {
+     und eine wiederhergestellte Antwort gehoerte zur Aufgabe von gestern.
+
+     Frueher stand hier zusaetzlich ein Blick in den Quelltext: nur wo ein
+     <input>, <select> oder <textarea> zu sehen war, kam der Baustein dazu.
+     Seiten, die ihre Felder erst im Javascript bauen, sah diese Regel
+     nicht - die vier Uebungen zu den Fuegeverfahren und die Lernsituation
+     Gehaeusedeckel hatten deshalb gar kein Gedaechtnis, und ihre Antworten
+     waren nach jedem Seitenwechsel weg.
+
+     Jetzt bekommt jede Inhaltsseite den Baustein. Ob es etwas zu merken
+     gibt, entscheidet er selbst: Ohne Felder legt er weder Eintrag noch
+     Hinweis an. */
+  if (!rel.startsWith('trainings/')) {
     noetig.push({ pfad: FORTSCHRITT, attr: '' });
   }
   // Wo Zahlen eingestellt werden, soll das Mausrad den Wert aendern und nicht

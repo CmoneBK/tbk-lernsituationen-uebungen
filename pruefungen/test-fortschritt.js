@@ -251,6 +251,68 @@ async function alles() {
     dom.window.close();
   }
 
+  /* ---------- Wer Felder hat, muss sie sich auch merken ---------- */
+
+  console.log('\nJede Seite mit Feldern hat den Baustein');
+  {
+    /* Frueher entschied der Build ueber einen Blick in den Quelltext. Die
+       vier Uebungen zu den Fuegeverfahren und die Lernsituation
+       Gehaeusedeckel bauen ihre Auswahlfelder aber erst im Javascript -
+       die Regel sah sie nicht, und ihre Antworten waren nach jedem
+       Seitenwechsel weg. Gezaehlt wird deshalb, was nach dem Laden
+       tatsaechlich dasteht.
+
+       Trainings bleiben aussen vor: Dort ist jede Runde eine neue
+       Aufgabe. */
+    const NICHT = ['file', 'password', 'hidden', 'submit', 'button',
+      'reset', 'range'];
+    const sammeln = (ordner, aus) => {
+      if (!fs.existsSync(ordner)) return aus;
+      for (const e of fs.readdirSync(ordner, { withFileTypes: true })) {
+        const pf = path.join(ordner, e.name);
+        if (e.isDirectory()) sammeln(pf, aus);
+        else if (/\.html$/.test(e.name) && !e.name.startsWith('_')) aus.push(pf);
+      }
+      return aus;
+    };
+    const seiten = [];
+    ['lernsituationen', 'uebungen'].forEach(
+      (o) => sammeln(path.join(BASIS, o), seiten));
+    /* Die erzeugten Paketuebersichten sind Verzeichnisse, kein Inhalt. */
+    const inhalt = seiten.filter((f) => path.basename(f) !== 'index.html'
+      || f.includes('lernsituationen'));
+    p('es gibt Inhaltsseiten zu pruefen', inhalt.length > 0);
+
+    const ohne = [];
+    for (const datei of inhalt.sort()) {
+      const kurz = path.relative(BASIS, datei).replace(/\\/g, '/');
+      const roh = fs.readFileSync(datei, 'utf8');
+      const laut = new VirtualConsole();
+      let w;
+      try {
+        w = new JSDOM(mitAssets(roh), {
+          runScripts: 'dangerously', virtualConsole: laut,
+          url: 'https://t-bk.de/unterrichtsmaterial/' + kurz,
+          beforeParse(win) {
+            win.Element.prototype.scrollIntoView = function () {};
+            win.fetch = () => Promise.resolve({ json: () => Promise.resolve({}) });
+          },
+        }).window;
+      } catch (e) { p(kurz + ': laedt', false, e.message); continue; }
+
+      const felder = [...w.document.querySelectorAll('input, textarea, select')]
+        .filter((e) => !NICHT.includes((e.type || '').toLowerCase()))
+        .filter((e) => !(e.closest && e.closest('[data-merken="nein"]')));
+      w.close();
+
+      if (felder.length && !roh.includes('assets/fortschritt.js')) {
+        ohne.push(kurz + ' (' + felder.length + ' Felder)');
+      }
+    }
+    p(inhalt.length + ' Inhaltsseiten geprueft, keine ohne Gedaechtnis',
+      ohne.length === 0, ohne.join(', '));
+  }
+
 }
 
 alles().then(function () {
