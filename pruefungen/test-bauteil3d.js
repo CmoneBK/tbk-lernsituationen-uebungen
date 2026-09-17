@@ -93,8 +93,34 @@ async function main() {
   p('jede Nahtangabe hat eine Marke',
     w.NAEHTE.every((n) => marken.some((m) => m.id === n.id)),
     w.NAEHTE.map((n) => n.id).join(''));
-  p('und keine Marke steht für sich allein',
-    marken.every((m) => w.NAEHTE.some((n) => n.id === m.id)));
+
+  /* Es muss mehr anzuklicken geben als Lösungen: An jeder Kehle KÖNNTE
+     geschweißt werden, und die Aufgabe ist gerade, die richtige zu finden.
+     Gäbe es nur fünf Stellen, wäre die fünfte durch Ausschluss zu haben. */
+  const loesung = marken.filter((m) => w.istNaht(m.id));
+  const ablenkung = marken.filter((m) => !w.istNaht(m.id));
+  p('es gibt Kanten ohne Schweißangabe', ablenkung.length > 0,
+    ablenkung.length + ' von ' + marken.length);
+  p('und mehr anklickbare Stellen als Angaben',
+    new Set(marken.map((m) => m.id)).size > w.NAEHTE.length,
+    new Set(marken.map((m) => m.id)).size + ' zu ' + w.NAEHTE.length);
+
+  /* Am Anschlag liegen mehrere Kehlen nebeneinander - dort entscheidet
+     sich, ob jemand die Angabe gelesen hat oder geraten. */
+  const amAnschlag = marken.filter((m) => {
+    const x = [m.von, m.bis].filter(Boolean).map((e) => e.x);
+    return x.length === 2 && Math.min.apply(null, x) > M.platteL / 2 - 20;
+  });
+  p('am Anschlag sind mehrere Stellen zu unterscheiden',
+    amAnschlag.length >= 3, amAnschlag.length + ' Stellen');
+  p('und nur eine davon ist die Naht',
+    amAnschlag.filter((m) => w.istNaht(m.id)).length === 1,
+    amAnschlag.map((m) => m.id).join(', '));
+
+  /* Angeklickt werden Kanten, keine Kugeln: Wer auf eine Naht zeigen soll,
+     soll auf die Naht zeigen koennen. */
+  p('jede Stelle ist eine Kante oder eine Rundnaht',
+    marken.every((m) => m.von || m.ring), 'Kugeln dabei');
 
   /* Die Nahtlängen aus Teil 6 werden nicht hier hineingeschrieben, sondern
      aus der Seite gelesen: Geprüft wird, dass sie aus der Geometrie folgen.
@@ -156,25 +182,41 @@ async function main() {
   p('der Rohrstutzen durchdringt das Stehblech',
     M.rohrL > M.blechD, M.rohrL + ' zu ' + M.blechD);
 
-  /* Jede Marke muss am Bauteil liegen, nicht daneben in der Luft. */
-  const daneben = marken.filter((m) => {
-    const x = Math.abs(m.lage.x), y = m.lage.y, z = Math.abs(m.lage.z);
-    return x > M.platteL / 2 || z > M.platteT / 2
-      || y < M.platteD || y > M.platteD + M.blechH;
-  });
-  p('jede Marke liegt über der Grundplatte', !daneben.length,
+  /* Jede Kante muss am Bauteil liegen, nicht daneben in der Luft. Die
+     Raupe steht ein Stueck aus der Kehle heraus, deshalb die Zugabe. */
+  const luft = 8;
+  const punkte = (m) => m.ring ? [m.ring.mitte] : [m.von, m.bis];
+  const daneben = marken.filter((m) => punkte(m).some((e) =>
+    Math.abs(e.x) > M.platteL / 2 + luft
+    || Math.abs(e.z) > M.platteT / 2 + luft
+    || e.y < M.platteD - luft || e.y > M.platteD + M.blechH + luft));
+  p('jede Stelle liegt am Bauteil', !daneben.length,
     daneben.map((m) => m.id).join(', '));
 
-  /* Zwei Marken, die aufeinanderliegen, wären nicht zu unterscheiden. */
+  /* Eine Kante ohne Laenge waere nicht zu treffen - und die Rechnung, die
+     den Zylinder auf die Strecke legt, wuerde durch null teilen. */
+  const entartet = marken.filter((m) => m.von
+    && Math.hypot(m.bis.x - m.von.x, m.bis.y - m.von.y, m.bis.z - m.von.z) < 3);
+  p('keine Kante ohne Länge', !entartet.length,
+    entartet.map((m) => m.id).join(', '));
+
+  /* Zwei Kanten verschiedener Antworten duerfen nicht aufeinanderliegen:
+     Dann waere nicht zu entscheiden, welche getroffen wurde. */
+  const mitte = (m) => m.ring ? m.ring.mitte : {
+    x: (m.von.x + m.bis.x) / 2, y: (m.von.y + m.bis.y) / 2,
+    z: (m.von.z + m.bis.z) / 2 };
   const zuNah = [];
   for (let i = 0; i < marken.length; i++) {
     for (let j = i + 1; j < marken.length; j++) {
-      const a = marken[i].lage, b = marken[j].lage;
+      if (marken[i].id === marken[j].id) continue;
+      const a = mitte(marken[i]), b = mitte(marken[j]);
       const d2 = Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
-      if (d2 < 25) zuNah.push(marken[i].id + '/' + marken[j].id + ': ' + Math.round(d2));
+      if (d2 < 8) {
+        zuNah.push(marken[i].id + '/' + marken[j].id + ': ' + Math.round(d2));
+      }
     }
   }
-  p('keine zwei Marken liegen aufeinander', !zuNah.length, zuNah.join(', '));
+  p('keine zwei Antworten liegen aufeinander', !zuNah.length, zuNah.join(', '));
 
   /* Die Teileliste der Seite und die Maße müssen dasselbe sagen. */
   const roh = fs.readFileSync(path.join(BASIS, LS), 'utf8');

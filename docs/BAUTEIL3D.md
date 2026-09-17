@@ -55,7 +55,14 @@ var szene = Bauteil3D.aufbauen(document.getElementById("buehne"), {
     …
   ],
   marken: [
-    {id:"A", name:"Kehle am Stehblech", lage:{x:-20, y:17, z:10}, r:7}
+    // eine Stelle: Kugel
+    {id:"A", name:"Hinweis", lage:{x:-20, y:17, z:10}, r:7},
+    // eine Kante: Raupe entlang der Strecke
+    {id:"B", name:"Kehle am Blechfuß",
+     von:{x:-60, y:15, z:7}, bis:{x:60, y:15, z:7}, r:2.6},
+    // eine Rundnaht: Ring um eine Achse
+    {id:"C", name:"Naht am Stutzen",
+     ring:{mitte:{x:0, y:67, z:7}, radius:32, achse:"z"}, r:2.6}
   ],
   blick: {abstand:330, hoch:0.55, dreh:0.9},
   mitte: {x:0, y:55, z:0},
@@ -126,10 +133,41 @@ onWahl: function(id, marke){
 Ein Klick zählt nur, wenn der Zeiger dabei stehen geblieben ist (weniger als
 6 Pixel Weg). Wer die Ansicht dreht, wählt nicht versehentlich aus.
 
-Marken werden **zuletzt und ohne Tiefenprüfung** gezeichnet: Eine Stelle, die
-hinter einer Rippe verschwindet, könnte niemand anklicken — und wer sie
-suchen muss, statt sie zu erkennen, übt das Falsche. Alle Stellen sind
-sichtbar; die Aufgabe ist, die richtige zu wählen.
+### Kanten statt Kugeln
+
+Wer auf eine Naht zeigen soll, soll auf die **Naht** zeigen können und nicht
+auf eine Kugel daneben. Deshalb gibt es drei Gestalten:
+
+| Gestalt | Felder | wofür |
+| --- | --- | --- |
+| Kugel | `lage`, `r` | eine Stelle ohne Ausdehnung |
+| Raupe | `von`, `bis`, `r` | eine Kante — sieht aus wie die Naht |
+| Ring | `ring: {mitte, radius, achse}`, `r` | eine Rundnaht |
+
+**Mehrere Marken dürfen dieselbe `id` tragen.** Eine Doppel-Kehlnaht hat zwei
+Raupen, eine umlaufende Rippennaht vier; gemeldet wird trotzdem einmal
+dieselbe id, und `markeStand` färbt alle zusammen. So zerfällt eine Naht
+nicht in Teilantworten.
+
+Unter dem Zeiger hebt sich die Marke hervor. Ohne das wäre bei Kanten nicht
+zu sehen, was anklickbar ist — sie liegen ja am Bauteil.
+
+**Alle Marken liegen im durchscheinenden Zeichendurchgang.** Das ist kein
+Schmuck, sondern nötig: Die Bauteile selbst sind durchscheinend, weil die
+Montage sie einblendet. Eine undurchsichtige Raupe wäre vorher an der Reihe
+und würde von ihnen überdeckt, obwohl sie davor liegt — sie war schlicht
+unsichtbar, und die Ursache stand eine Weile im Dunkeln. Die Tiefenprüfung
+bleibt bei Kanten an: Was wirklich hinter dem Körper liegt, soll verdeckt
+sein, und Drehen gehört zur Aufgabe.
+
+### Mehr Stellen als Antworten
+
+Gibt es genau so viele Marken wie Lösungen, ist die letzte durch Ausschluss
+zu haben. Deshalb trägt der Lagerbock 24 Kanten für fünf Angaben: An jeder
+Kehle *könnte* geschweißt werden, und am Anschlag liegen drei nebeneinander,
+von denen nur eine in der Zeichnung steht. Wer eine Kante ohne Angabe trifft,
+bekommt nicht „falsche Naht“ zu hören, sondern „hier wird gar nicht
+geschweißt“ — das ist etwas anderes.
 
 ---
 

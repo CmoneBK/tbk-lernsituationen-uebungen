@@ -402,7 +402,7 @@
       /* Die Nahtdicke steht vor dem Symbol, die Stückelung dahinter - und
          zwar auf der Seite des Symbols, damit die Schrift nicht auf der
          Bezugslinie liegt. */
-      var yText = yLinie + (richtung < 0 ? -h * 0.25 : h * 0.85);
+      var yText = yLinie + (richtung < 0 ? -h * 0.25 : h * 1.1);
       if (angabe.mass) {
         snTxt(g, xSym - b / 2 - 4, yText, angabe.mass,
           {anker: "end", groesse: h * 0.85});

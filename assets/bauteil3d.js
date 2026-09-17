@@ -47,7 +47,14 @@
  *         …
  *       ],
  *       marken: [
- *         {id:"A", name:"Naht am Stehblech", lage:{x:0, y:12, z:5}, r:9}
+ *         // eine Stelle: Kugel
+ *         {id:"A", name:"Naht am Stehblech", lage:{x:0, y:12, z:5}, r:9},
+ *         // eine Kante: Raupe entlang der Strecke
+ *         {id:"B", name:"Kehle am Blechfuss",
+ *          von:{x:-60, y:12, z:5}, bis:{x:60, y:12, z:5}, r:3},
+ *         // eine Rundnaht: Ring um eine Achse
+ *         {id:"C", name:"Naht am Stutzen",
+ *          ring:{mitte:{x:0, y:67, z:5}, radius:30, achse:"z"}, r:3}
  *       ],
  *       onWahl: function(id){ … },
  *       blick: {abstand:420, hoch:0.9, dreh:0.7}
@@ -60,6 +67,10 @@
  *     szene.zerlegen()       alles in die Ruhelage
  *     szene.schritt(n)       bis Teil n zusammengesetzt
  *     szene.marken(true)     Marken sichtbar und anklickbar
+ *
+ * Mehrere Marken duerfen dieselbe id tragen: Eine Doppel-Kehlnaht hat zwei
+ * Raupen, eine umlaufende Rippennaht vier - gemeldet wird trotzdem einmal
+ * dieselbe id. So zerfaellt eine Naht nicht in Teilantworten.
  *     szene.markeStand(id, "richtig"|"falsch"|"offen")
  *     szene.hervorheben(id)  ein Teil herausheben (null: keines)
  *     szene.setzen({…})      Maße ändern, betroffene Teile neu bauen
@@ -335,7 +346,42 @@
       reihenfolge.push(teil.id);
     });
 
-    /* --- Marken: kleine Kugeln an den Stellen, die zu finden sind ----- */
+    /* ---------------------------------------------------------------------
+       Marken. Drei Gestalten, je nachdem, was zu treffen ist:
+
+         Kugel    eine Stelle - fuer Hinweise, die keine Ausdehnung haben
+         Raupe    eine Kante - ein schlanker Zylinder entlang der Strecke
+         Ring     eine Rundnaht - ein Torus um eine Achse
+
+       Eine Raupe sieht aus wie das, was sie ist: die Naht. Wer auf eine
+       Naht klicken soll, soll auf die Naht klicken koennen und nicht auf
+       eine Kugel daneben.
+       --------------------------------------------------------------------- */
+    function markeGeometrie(m) {
+      var r = m.r === undefined ? 3 : m.r;
+      if (m.ring) {
+        return { geo: new THREE.TorusGeometry(m.ring.radius, r, 10, 60),
+                 lage: m.ring.mitte, achse: m.ring.achse };
+      }
+      if (m.von) {
+        var a = new THREE.Vector3(m.von.x || 0, m.von.y || 0, m.von.z || 0);
+        var b = new THREE.Vector3(m.bis.x || 0, m.bis.y || 0, m.bis.z || 0);
+        var l = a.distanceTo(b);
+        var geo = new THREE.CylinderGeometry(r, r, l, 12, 1);
+        /* Der Zylinder steht von Haus aus auf der y-Achse; er wird auf die
+           Strecke gelegt. */
+        var richtung = b.clone().sub(a).normalize();
+        var dreh = new THREE.Quaternion().setFromUnitVectors(
+          new THREE.Vector3(0, 1, 0), richtung);
+        /* BufferGeometry kennt kein applyQuaternion - nur applyMatrix4. */
+        geo.applyMatrix4(new THREE.Matrix4().makeRotationFromQuaternion(dreh));
+        var mitte = a.clone().add(b).multiplyScalar(0.5);
+        return { geo: geo, lage: { x: mitte.x, y: mitte.y, z: mitte.z } };
+      }
+      return { geo: new THREE.SphereGeometry(m.r || 8, 20, 14), lage: m.lage };
+    }
+
+    /* --- Marken: das, was zu finden ist ------------------------------- */
     var markenGruppe = new THREE.Group();
     markenGruppe.visible = false;
     /* Die Marken werden zuletzt gezeichnet und ohne Tiefenpruefung: Eine
@@ -346,19 +392,33 @@
     szene.add(markenGruppe);
 
     (o.marken || []).forEach(function (m) {
-      var netz = new THREE.Mesh(
-        new THREE.SphereGeometry(m.r || 8, 20, 14),
-        new THREE.MeshStandardMaterial({
-          color: palette.marke, roughness: 0.4, metalness: 0.1,
-          transparent: true, opacity: 0.92,
-          depthTest: false, depthWrite: false
-        }));
-      netz.renderOrder = 11;
-      netz.position.set(m.lage.x || 0, m.lage.y || 0, m.lage.z || 0);
+      var form = markeGeometrie(m);
+      /* Eine Kugel liegt neben dem Bauteil und darf durchscheinen. Eine
+         Raupe liegt AUF dem Bauteil - sie muss sich verdecken lassen,
+         sonst sieht man die Naehte der Rueckseite mitten im Koerper. */
+      var kante = !!(m.von || m.ring);
+      /* Alle Marken liegen im durchscheinenden Durchgang - der wird nach
+         den Bauteilen gezeichnet. Die Bauteile selbst sind durchscheinend
+         (die Montage blendet sie ein); eine undurchsichtige Raupe waere
+         vorher dran und wuerde von ihnen ueberdeckt, obwohl sie davor
+         liegt. Die Tiefenpruefung bleibt an: Was wirklich hinter dem
+         Koerper liegt, soll auch verdeckt sein. */
+      var netz = new THREE.Mesh(form.geo, new THREE.MeshStandardMaterial({
+        color: palette.marke, roughness: 0.45, metalness: 0.1,
+        transparent: true, opacity: kante ? 1 : 0.92,
+        depthTest: kante, depthWrite: kante
+      }));
+      netz.renderOrder = kante ? 9 : 11;
+      netz.position.set(form.lage.x || 0, form.lage.y || 0, form.lage.z || 0);
+      if (form.achse === "x") netz.rotation.y = Math.PI / 2;
+      if (form.achse === "y") netz.rotation.x = Math.PI / 2;
       netz.userData.marke = m;
       netz.userData.stand = "offen";
       markenGruppe.add(netz);
-      markenNetze[m.id] = netz;
+      /* Mehrere Netze duerfen dieselbe id tragen - eine Doppel-Kehlnaht hat
+         zwei Raupen. Gespeichert wird deshalb eine Liste. */
+      if (!markenNetze[m.id]) markenNetze[m.id] = [];
+      markenNetze[m.id].push(netz);
     });
 
     /* --- Klicks -------------------------------------------------------- */
@@ -394,9 +454,27 @@
       if (m && typeof o.onWahl === "function") o.onWahl(m.id, m);
     }
 
+    /* Unter dem Zeiger hebt sich die Naht hervor. Ohne das muesste man
+       raten, was anklickbar ist - und bei Kanten sieht man es nicht von
+       selbst, weil sie am Bauteil liegen. */
+    var unterZeiger = null;
+    function hervor(id, an) {
+      (markenNetze[id] || []).forEach(function (n) {
+        if (n.userData.stand !== "offen") return;
+        n.material.color.setHex(an ? palette.hervor : palette.marke);
+      });
+    }
+
     function aufBewegung(ev) {
       if (!markenAn) return;
-      renderer.domElement.style.cursor = getroffen(ev) ? "pointer" : "grab";
+      var m = getroffen(ev);
+      var id = m ? m.id : null;
+      if (id !== unterZeiger) {
+        if (unterZeiger) hervor(unterZeiger, false);
+        if (id) hervor(id, true);
+        unterZeiger = id;
+      }
+      renderer.domElement.style.cursor = m ? "pointer" : "grab";
     }
 
     renderer.domElement.addEventListener("pointerdown", aufRunter);
@@ -435,8 +513,9 @@
         t.kanten.material.color.setHex(palette.kante);
       });
       Object.keys(markenNetze).forEach(function (id) {
-        var n = markenNetze[id];
-        n.material.color.setHex(palette[n.userData.stand] || palette.marke);
+        markenNetze[id].forEach(function (n) {
+          n.material.color.setHex(palette[n.userData.stand] || palette.marke);
+        });
       });
       if (boden) boden.material.color.setHex(palette.boden);
     }
@@ -554,17 +633,20 @@
 
       /* "offen", "richtig" oder "falsch" - mehr Zustände braucht es nicht. */
       markeStand: function (id, stand) {
-        var n = markenNetze[id];
-        if (!n) return api;
-        n.userData.stand = stand;
-        n.material.color.setHex(palette[stand] || palette.marke);
-        n.material.opacity = stand === "offen" ? 0.92 : 1;
+        (markenNetze[id] || []).forEach(function (n) {
+          n.userData.stand = stand;
+          n.material.color.setHex(palette[stand] || palette.marke);
+          if (n.material.transparent) {
+            n.material.opacity = stand === "offen" ? 0.92 : 1;
+          }
+        });
         return api;
       },
 
       markeZeigen: function (id, an) {
-        var n = markenNetze[id];
-        if (n) n.visible = an !== false;
+        (markenNetze[id] || []).forEach(function (n) {
+          n.visible = an !== false;
+        });
         return api;
       },
 
@@ -614,8 +696,9 @@
 
       /* Eine Marke verschieben - nötig, wenn sich die Maße geändert haben. */
       markeSetzen: function (id, lage) {
-        var n = markenNetze[id];
-        if (n) n.position.set(lage.x || 0, lage.y || 0, lage.z || 0);
+        (markenNetze[id] || []).forEach(function (n) {
+          n.position.set(lage.x || 0, lage.y || 0, lage.z || 0);
+        });
         return api;
       },
 

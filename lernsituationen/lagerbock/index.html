@@ -7,6 +7,7 @@
 <meta name="description" content="Ein geschweißter Lagerbock für die Abtriebswelle: fünf Schweißangaben lesen, Werkstoff prüfen, Verfahren und Nahtvorbereitung wählen, Schweißfolge festlegen, Draht und Zeit rechnen, Abnahme planen.">
 <meta name="dauer" content="240 min">
 <link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/zeichnen.js"></script>
 <script src="../../assets/schweissnaht.js"></script>
 <style>
   /* Nur was diese Lernsituation zusätzlich braucht. Alles Übrige: assets/uebung.css */
@@ -238,10 +239,11 @@
       <p>
         <button type="button" class="knopf leise" id="btn3dNochmal">Von vorn</button>
       </p>
-      <p class="fussnote">Die f&uuml;nf Stellen sind als Kugeln markiert. Sie
-        sitzen dort, wo die Naht wirklich liegt &ndash; A an der Kehle zwischen
-        Stehblech und Grundplatte, B am Stutzen, C und D an den Rippen,
-        E am Anschlagwinkel auf der Gegenseite.</p>
+      <p class="fussnote">Anklickbar sind die <strong>Kanten</strong>, an
+        denen geschwei&szlig;t werden k&ouml;nnte &ndash; es sind mehr, als es
+        Angaben gibt. Am Anschlag etwa liegen drei Kehlen nebeneinander, und
+        nur eine davon steht in der Zeichnung. Unter dem Zeiger hebt sich die
+        Kante hervor; Ziehen dreht den Bock, das Mausrad zoomt.</p>
     </div>
 
     <p class="ohne3d" id="ohne3d" hidden>Dieses Ger&auml;t kann keine
@@ -777,118 +779,246 @@ function bilanz(id, richtig, gesamt, offen, wort){
    keine Hinweislinien, und jede Angabe laesst sich fuer sich lesen.
    ========================================================================== */
 (function bockZeichnen(){
+  /* ==========================================================================
+     Die Schweisskonstruktionszeichnung des Lagerbocks
+     --------------------------------------------------------------------------
+     Zwei Ansichten in Projektionsmethode 1 (europaeisch): Vorderansicht oben,
+     Draufsicht darunter. In Methode 1 liegt die Draufsicht unter der
+     Vorderansicht, und was dem Betrachter der Vorderansicht am naechsten ist,
+     steht darin UNTEN. Danach ist die Draufsicht hier aufgebaut.
+
+     Zwei Ansichten reichen: Die Vorderansicht traegt Laenge und Hoehe, die
+     Draufsicht die Tiefe. Eine dritte wuerde nur wiederholen - und nach
+     DIN ISO 129-1 gehoert nichts doppelt in eine Zeichnung.
+
+     Die Masse stehen gestaffelt, das kleinste innen: links die Hoehen der
+     Platte und des Blechs, rechts alles, was daran haengt. Die Sinnbilder
+     stehen links und rechts ausserhalb, damit keine Pfeillinie quer durch
+     eine Ansicht laeuft.
+
+     Alle Masse in Millimetern, dieselben Zahlen wie im raeumlichen Modell
+     (dort in der Liste M). 1,6 Bildpunkte je Millimeter.
+     ========================================================================== */
   var ziel = el("bildBock");
-  var svg = sv("svg", {viewBox:"0 0 700 400", role:"img",
-    "aria-label":"Vorderansicht des geschwei\u00dften Lagerbocks: Grundplatte, "
-      + "Stehblech mit Bohrung und Rohrstutzen, zwei Rippen und der Anschlag; "
-      + "f\u00fcnf Nahtstellen sind mit den Buchstaben A bis E gekennzeichnet"}, ziel);
+  ziel.textContent = "";
+  var svg = sv("svg", {viewBox:"0 0 1040 872", role:"img",
+    "aria-label":"Schweißkonstruktionszeichnung des Lagerbocks in zwei "
+      + "Ansichten: Vorderansicht mit Grundplatte, Stehblech, Bohrung und "
+      + "Rohrstutzen, zwei Rippen und Anschlag, darunter die Draufsicht; "
+      + "vollständig bemaßt und mit den fünf Schweißsinnbildern A bis E"},
+    ziel);
   var f = document.createElement("figcaption");
-  f.innerHTML = "Der Lagerbock in der Vorderansicht, ma\u00dfst\u00e4blich. Die "
-    + "Buchstaben A bis E bezeichnen die f\u00fcnf Nahtstellen; die "
-    + "zugeh\u00f6rigen Sinnbilder stehen unten. Das r\u00e4umliche Modell "
-    + "weiter oben zeigt dieselben Ma\u00dfe.";
+  f.innerHTML = "Der Lagerbock, Schweißkonstruktionszeichnung in "
+    + "Projektionsmethode 1. Die fünf Sinnbilder A bis E zeigen mit ihrer "
+    + "Pfeillinie auf den Stoß, den sie meinen; unten stehen sie noch "
+    + "einmal einzeln.";
   ziel.appendChild(f);
 
   var g = sv("g", {}, svg);
-  var BREIT = 2.0, SCHMAL = 1.0;
 
-  /* Massstab und Nullpunkt. Dieselben Zahlen wie im 3D-Modell weiter unten
-     (dort in der Liste M) - nur hier mit 2,6 Bildpunkten je Millimeter und
-     der Plattenoberseite als Bezug. Wer die Ansicht mit dem Modell
-     vergleicht, muss dasselbe sehen. */
-  var s = 2.6;
-  var PLATTE_L = 180, PLATTE_D = 12;
-  var BLECH_B = 120, BLECH_H = 100;
-  var ROHR_D = 60, ROHR_Y = 67;
-  var RIPPE_X = 22, RIPPE_Y = 53;
-  var ANS_X = 8, ANS_Y = 38;
+  /* --- Masse (mm), dieselben wie im Modell ------------------------------ */
+  var PL = 180, PT = 90, PD = 12;
+  var BB = 120, BH = 100, BD = 10;
+  var RD = 60, RDI = 40, RL = 40, RY = 67;
+  var KX = 22, KY = 53, KD = 8;
+  var AX = 6, AY = 38, AZ = 45;
 
-  var mitte = 350, oben = 300;                 /* Plattenoberseite */
-  function bx(mm){ return mitte + mm * s; }    /* x in mm ab Bauteilmitte */
-  function by(mm){ return oben - mm * s; }     /* y in mm ueber der Platte */
+  /* --- Massstab und Nullpunkte ----------------------------------------- */
+  var s = 1.6;
+  var MX = 400, VY0 = 300, DY0 = 476;
 
-  /* Grundplatte */
-  sv("rect", {x:bx(-PLATTE_L / 2), y:oben, width:PLATTE_L * s,
-    height:PLATTE_D * s, fill:"none", stroke:"currentColor",
+  function vx(mm){ return MX + mm * s; }
+  function vy(mm){ return VY0 - mm * s; }
+  function dy(mm){ return DY0 + (mm + PT / 2) * s; }
+
+  var LINKS = vx(-PL / 2), RECHTS = vx(PL / 2);
+
+  /* ======================================================================
+     1  VORDERANSICHT
+     ====================================================================== */
+  kasten(g, LINKS, vy(PD), PL * s, PD * s);
+  kasten(g, vx(-BB / 2), vy(PD + BH), BB * s, BH * s);
+
+  var by = vy(RY), ra = RD / 2 * s, ri = RDI / 2 * s;
+  svgEl("circle", {cx:MX, cy:by, r:ra, fill:"none", stroke:"currentColor",
     "stroke-width":BREIT}, g);
-
-  /* Stehblech */
-  sv("rect", {x:bx(-BLECH_B / 2), y:by(BLECH_H), width:BLECH_B * s,
-    height:BLECH_H * s, fill:"none", stroke:"currentColor",
+  svgEl("circle", {cx:MX, cy:by, r:ri, fill:"none", stroke:"currentColor",
     "stroke-width":BREIT}, g);
+  achse(g, MX - ra - 14, MX + ra + 14, by);
+  linie(g, MX, by - ra - 14, MX, by + ra + 14, SCHMAL, {strich:"12 2 2 2"});
+  /* Symmetrielinie oberhalb des Blechs */
+  linie(g, MX, vy(PD + BH) - 20, MX, vy(PD + BH) + 6, SCHMAL,
+    {strich:"12 2 2 2"});
 
-  /* Bohrung im Stehblech und der Stutzen darin */
-  var my = by(ROHR_Y - PLATTE_D);
-  sv("circle", {cx:mitte, cy:my, r:ROHR_D / 2 * s, fill:"none",
-    stroke:"currentColor", "stroke-width":BREIT}, g);
-  sv("circle", {cx:mitte, cy:my, r:(ROHR_D / 2 - 10) * s, fill:"none",
-    stroke:"currentColor", "stroke-width":BREIT}, g);
-  /* Mittellinien nach DIN ISO 128-24: schmale Strichpunktlinie */
-  var ue = ROHR_D / 2 * s + 12;
-  sv("line", {x1:mitte - ue, y1:my, x2:mitte + ue, y2:my,
-    stroke:"currentColor", "stroke-width":SCHMAL,
-    "stroke-dasharray":"12 2 2 2"}, g);
-  sv("line", {x1:mitte, y1:my - ue, x2:mitte, y2:my + ue,
-    stroke:"currentColor", "stroke-width":SCHMAL,
-    "stroke-dasharray":"12 2 2 2"}, g);
-
-  /* Die beiden Rippen: rechtwinklige Dreiecke an den Blechstirnseiten */
   [-1, 1].forEach(function(v){
-    var x0 = bx(v * BLECH_B / 2);
-    sv("polygon", {points: x0 + "," + oben + " "
-      + (x0 + v * RIPPE_X * s) + "," + oben + " "
-      + x0 + "," + by(RIPPE_Y),
+    var x0 = vx(v * BB / 2);
+    svgEl("polygon", {points: x0 + "," + vy(PD) + " "
+      + (x0 + v * KX * s) + "," + vy(PD) + " " + x0 + "," + vy(PD + KY),
       fill:"none", stroke:"currentColor", "stroke-width":BREIT}, g);
   });
+  kasten(g, vx(PL / 2 - AX), vy(PD + AY), AX * s, AY * s);
 
-  /* Anschlag am rechten Plattenende */
-  sv("rect", {x:bx(PLATTE_L / 2 - ANS_X), y:by(ANS_Y), width:ANS_X * s,
-    height:ANS_Y * s, fill:"none", stroke:"currentColor",
-    "stroke-width":BREIT}, g);
+  /* ======================================================================
+     2  DRAUFSICHT
+     ====================================================================== */
+  kasten(g, LINKS, dy(-PT / 2), PL * s, PT * s);
+  /* Der Stutzen liegt beidseits des Blechs frei; dazwischen verdeckt ihn
+     das Stehblech, das hoeher ist. Seine Bohrung ist von oben verdeckt. */
+  [[-RL / 2, -BD / 2], [BD / 2, RL / 2]].forEach(function(pz){
+    kasten(g, vx(-RD / 2), dy(pz[0]), RD * s, (pz[1] - pz[0]) * s);
+    [-RDI / 2, RDI / 2].forEach(function(xx){
+      linie(g, vx(xx), dy(pz[0]), vx(xx), dy(pz[1]), SCHMAL, {strich:"6 3"});
+    });
+  });
+  kasten(g, vx(-BB / 2), dy(-BD / 2), BB * s, BD * s);
+  [-1, 1].forEach(function(v){
+    var x0 = vx(v * BB / 2), x1 = vx(v * (BB / 2 + KX));
+    kasten(g, Math.min(x0, x1), dy(-KD / 2), KX * s, KD * s);
+  });
+  kasten(g, vx(PL / 2 - AX), dy(-AZ / 2), AX * s, AZ * s);
+  achse(g, LINKS - 16, RECHTS + 16, dy(0));
+  linie(g, MX, dy(-PT / 2) - 16, MX, dy(PT / 2) + 16, SCHMAL,
+    {strich:"12 2 2 2"});
 
-  /* Die fuenf Nahtstellen als Marken */
-  function marke(x, y, buchstabe){
-    sv("circle", {cx:x, cy:y, r:13, fill:"currentColor"}, g);
-    var tx = sv("text", {x:x, y:y + 5, "text-anchor":"middle", "font-size":14,
-      "font-weight":700, fill:"var(--card, #fff)"}, g);
-    tx.textContent = buchstabe;
+  /* ======================================================================
+     3  BEMASSUNG
+     ----------------------------------------------------------------------
+     Vollstaendig und ohne geschlossenen Masszug: Die Hoehen haengen an der
+     Plattenoberseite, die Tiefen an der Mittellinie, die Laengen an der
+     Bauteilmitte. Was sich daraus ergibt - der Abstand zwischen
+     Rippenspitze und Anschlag - steht nicht noch einmal da.
+     ====================================================================== */
+  /* Laengen, gestaffelt ueber der Vorderansicht: innen das kleinste */
+  mass(g, vx(BB / 2), vx(BB / 2 + KX), vy(PD + BH) - 28, KX + "",
+    [vy(PD + KY), vy(PD)]);
+  mass(g, vx(-BB / 2), vx(BB / 2), vy(PD + BH) - 56, BB + "", vy(PD + BH));
+  mass(g, LINKS, RECHTS, vy(PD + BH) - 84, PL + "", [vy(PD), vy(PD)]);
+  /* Der Anschlag ist zu schmal fuer ein Mass zwischen den Pfeilen - mass()
+     setzt sie dann von aussen herein. */
+  mass(g, vx(PL / 2 - AX), RECHTS, vy(0) + 34, AX + "", vy(0));
+
+  /* Hoehen: links die beiden Grundmasse, rechts, was daran haengt */
+  massV(g, vy(PD), vy(0), LINKS - 26, PD + "", LINKS, true);
+  massV(g, vy(PD + BH), vy(PD), LINKS - 56, BH + "", vx(-BB / 2), true);
+  massV(g, vy(PD + KY), vy(PD), RECHTS + 28, KY + "",
+    [vx(BB / 2), vx(BB / 2 + KX)], false);
+  massV(g, by, vy(PD), RECHTS + 58, (RY - PD) + "", vx(BB / 2), false);
+  massV(g, vy(PD + AY), vy(PD), RECHTS + 88, AY + "", RECHTS, false);
+
+  /* Durchmesser: nach DIN ISO 129-1 an einer Hinweislinie, weil im Kreis
+     kein Platz fuer die Masszahl ist. */
+  function massHinweis(zx, zy, ab, hoch, text){
+    var h = sv("g", {"class":"hinweis"}, g);
+    var x1 = zx + ab, y1 = zy - hoch;
+    var l = Math.hypot(ab, hoch) || 1;
+    linie(h, x1, y1, zx, zy, SCHMAL);
+    pfeil(h, zx, zy, -ab / l, hoch / l);
+    var r = ab < 0 ? -1 : 1;
+    linie(h, x1, y1, x1 + r * (text.length * 7 + 8), y1, SCHMAL);
+    svgEl("text", {x:x1 + r * 4, y:y1 - 6, "font-size":12.5,
+      "text-anchor": r < 0 ? "end" : "start", fill:"currentColor"}, h)
+      .textContent = text;
+    return h;
   }
-  /* A sitzt in der Kehle zwischen Blechflanke und Platte, innerhalb des
-     Blechs - dort laeuft die Doppel-Kehlnaht. */
-  marke(bx(-25), oben - 16, "A");
-  /* B haengt nicht am Stutzen selbst: Auf dem Kreis laege der Buchstabe auf
-     einer Koerperkante. Eine schmale Hinweislinie zeigt, was gemeint ist. */
-  var bmx = bx(-46), bmy = by(BLECH_H) + 22;
-  (function(){
-    var dx = mitte - bmx, dy = my - bmy, l = Math.sqrt(dx * dx + dy * dy);
-    sv("line", {x1:bmx + 15 * dx / l, y1:bmy + 15 * dy / l,
-      x2:mitte - (ROHR_D / 2 * s) * dx / l,
-      y2:my - (ROHR_D / 2 * s) * dy / l,
-      stroke:"currentColor", "stroke-width":SCHMAL}, g);
-  }());
-  marke(bmx, bmy, "B");
-  marke(bx(-BLECH_B / 2 - RIPPE_X) - 20, oben - 16, "C");
-  var dmx = bx(PLATTE_L / 2) + 32, dmy = oben - 16;
-  sv("line", {x1:dmx - 14, y1:dmy,
-    x2:bx(BLECH_B / 2 + RIPPE_X) + 3, y2:oben - 4,
+  var w = Math.SQRT1_2;
+  massHinweis(MX - ra * w, by - ra * w, -70, 54, "⌀" + RD);
+  massHinweis(MX + ri * w, by + ri * w, 74, -58, "⌀" + RDI);
+
+  /* Tiefen an der Draufsicht */
+  mass(g, LINKS, RECHTS, dy(PT / 2) + 40, PT + "", dy(PT / 2));
+  massV(g, dy(-BD / 2), dy(BD / 2), LINKS - 26, BD + "", vx(-BB / 2), true);
+  massV(g, dy(-RL / 2), dy(RL / 2), LINKS - 56, RL + "", vx(-RD / 2), true);
+  massV(g, dy(-KD / 2), dy(KD / 2), RECHTS + 28, KD + "",
+    vx(BB / 2 + KX), false);
+  massV(g, dy(-AZ / 2), dy(AZ / 2), RECHTS + 58, AZ + "", RECHTS, false);
+
+  /* ======================================================================
+     4  DIE FUENF SCHWEISSANGABEN
+     ----------------------------------------------------------------------
+     Nach DIN EN ISO 2553, gezeichnet mit assets/schweissnaht.js. Der Knick
+     sitzt dicht neben der Ansicht, die Bezugslinie laeuft nach aussen. Die
+     Buchstaben sind kein Normzeichen, sondern die Verbindung zur Tabelle.
+     ====================================================================== */
+  function angabe(o, buchstabe){
+    schweissSinnbild(g, o);
+    var l = o.laenge || 120;
+    var kx = o.nachLinks ? o.x - l - 20 : o.x + l + 20;
+    svgEl("circle", {cx:kx, cy:o.y, r:11, fill:"currentColor"}, g);
+    svgEl("text", {x:kx, y:o.y + 4, "text-anchor":"middle", "font-size":12.5,
+      "font-weight":700, fill:"var(--card, #fff)"}, g).textContent = buchstabe;
+  }
+
+  var LK = LINKS - 34, RK = RECHTS + 34;
+
+  /* C - Kehlnaht ringsum an der linken Rippe */
+  angabe({x:LK, y:vy(0) + 42, zielX:vx(-BB / 2 - KX / 2), zielY:vy(PD),
+          laenge:104, nachLinks:true, ringsum:true,
+          pfeilseite:{art:"kehl", mass:"a3"}}, "C");
+
+  /* A - Doppel-Kehlnaht zwischen Stehblech und Grundplatte */
+  angabe({x:LK, y:vy(0) + 100, zielX:vx(-BB / 4), zielY:vy(PD),
+          laenge:104, nachLinks:true, kombi:"dkehl", mass:"a4"}, "A");
+
+  /* B - V-Naht mit Gegenlage, ringsum um den Stutzen */
+  angabe({x:RK, y:vy(PD + BH) + 14, zielX:MX + ra * w, zielY:by - ra * w,
+          laenge:116, nachLinks:false, ringsum:true,
+          pfeilseite:{art:"v", mass:"a5", zusatz:"gegenlage"}}, "B");
+
+  /* D - unterbrochene Kehlnaht an der rechten Rippe */
+  angabe({x:RK, y:vy(0) + 100, zielX:vx(BB / 2 + KX / 2), zielY:vy(PD),
+          laenge:164, nachLinks:false,
+          pfeilseite:{art:"kehl", mass:"a3", hinten:"3 × 30 (30)"}}, "D");
+
+  /* E - Kehlnaht auf der Gegenseite am Anschlag */
+  angabe({x:RK, y:vy(0) + 42, zielX:vx(PL / 2 - AX / 2), zielY:vy(PD),
+          laenge:116, nachLinks:false,
+          gegenseite:{art:"kehl", mass:"a3"}}, "E");
+
+  /* Positionsnummern und eine Stueckliste stehen hier bewusst nicht: Die
+     Teile sind in der Vorderansicht zu erkennen und oben in der Teileliste
+     benannt. Eine zweite Nummerierung in der Draufsicht sagt nichts Neues -
+     und die Nummer am Anschlag haette verraten, worauf Angabe E zeigt.
+     ====================================================================== */
+
+  /* ======================================================================
+     6  SCHRIFTFELD
+     ====================================================================== */
+  var sfx = 706, sfy = 700, sfb = 304, sfh = 134;
+  kasten(g, sfx, sfy, sfb, sfh);
+  linie(g, sfx, sfy + 46, sfx + sfb, sfy + 46, SCHMAL);
+  linie(g, sfx, sfy + 90, sfx + sfb, sfy + 90, SCHMAL);
+  linie(g, sfx + 158, sfy + 46, sfx + 158, sfy + sfh, SCHMAL);
+
+  function feld(x, y, klein, gross){
+    svgEl("text", {x:x, y:y, "font-size":9.5, fill:"currentColor"}, g)
+      .textContent = klein;
+    svgEl("text", {x:x, y:y + 17, "font-size":13, "font-weight":700,
+      fill:"currentColor"}, g).textContent = gross;
+  }
+  feld(sfx + 10, sfy + 18, "Benennung", "Lagerbock, geschweißt");
+  feld(sfx + 10, sfy + 64, "Werkstoff", "S235JR");
+  feld(sfx + 168, sfy + 64, "Maßstab", "1:1");
+  feld(sfx + 10, sfy + 108, "Maße in", "mm");
+  svgEl("text", {x:sfx + 168, y:sfy + 108, "font-size":9.5,
+    fill:"currentColor"}, g).textContent = "Projektionsmethode";
+
+  /* Das Sinnbild der Methode 1: der Kegelstumpf von vorn, rechts daneben die
+     Ansicht von links - in Methode 1 steht sie rechts. */
+  var px = sfx + 168, py = sfy + 122, kh = 10;
+  svgEl("polygon", {points:
+    px + "," + (py - kh) + " " + (px + 20) + "," + (py - kh * 0.55) + " "
+    + (px + 20) + "," + (py + kh * 0.55) + " " + px + "," + (py + kh),
+    fill:"none", stroke:"currentColor", "stroke-width":SCHMAL}, g);
+  svgEl("ellipse", {cx:px + 36, cy:py, rx:5, ry:kh, fill:"none",
     stroke:"currentColor", "stroke-width":SCHMAL}, g);
-  marke(dmx, dmy, "D");
-  marke(bx(PLATTE_L / 2 - ANS_X / 2), by(ANS_Y) - 20, "E");
+  svgEl("ellipse", {cx:px + 36, cy:py, rx:5, ry:kh * 0.55, fill:"none",
+    stroke:"currentColor", "stroke-width":SCHMAL}, g);
 
-  /* Benennungen, in freien Feldern */
-  function nenn(x, y, text, anker){
-    var tx = sv("text", {x:x, y:y, "text-anchor":anker || "middle",
-      "font-size":13, fill:"currentColor"}, g);
-    tx.textContent = text;
-    return tx;
-  }
-  nenn(bx(-PLATTE_L / 2), oben + PLATTE_D * s + 22,
-    "Grundplatte 180 \u00d7 90 \u00d7 12", "start");
-  nenn(mitte, by(BLECH_H) - 12, "Stehblech 120 \u00d7 100 \u00d7 10");
-  nenn(bx(BLECH_B / 2) + 14, my - 30,
-    "Rohrstutzen 60 \u00d7 10", "start");
-  nenn(bx(-PLATTE_L / 2), by(RIPPE_Y) + 4, "Rippe 8 mm", "start");
-  nenn(bx(PLATTE_L / 2), by(ANS_Y) - 34, "Anschlag", "end");
+  /* Benennung der beiden Ansichten */
+  svgEl("text", {x:LINKS, y:vy(PD + BH) - 100, "font-size":12,
+    "font-weight":600, fill:"currentColor"}, g).textContent = "Vorderansicht";
+  svgEl("text", {x:LINKS, y:dy(-PT / 2) - 22, "font-size":12,
+    "font-weight":600, fill:"currentColor"}, g).textContent = "Draufsicht";
 }());
 
 /* ============================================================================
@@ -1247,28 +1377,111 @@ function teileListe(){
   ];
 }
 
-/* Die fuenf Nahtstellen - dort, wo die Naht wirklich liegt. */
-function markenListe(){
-  return [
-    /* A liegt in der Kehle zwischen Blechflanke und Platte, auf der
-       Vorderseite - dort, wo die Doppel-Kehlnaht sitzt. */
-    {id:"A", name:"Kehle zwischen Stehblech und Grundplatte",
-     lage:{x:-25, y:M.platteD + 5, z:M.blechD / 2 + 5}, r:7},
-    {id:"B", name:"Stumpfsto\u00df am Rohrstutzen",
-     lage:{x:0, y:M.rohrY + M.rohrD / 2, z:M.blechD / 2 + 2}, r:8},
-    /* C und D sitzen unten aussen an den Rippen, wo die waagerechte
-       Kathete auf der Platte aufliegt. */
-    {id:"C", name:"Rippe links, umlaufend",
-     lage:{x:-RIPPE_X - 4, y:M.platteD + 5, z:M.rippeD / 2 + 5}, r:7},
-    {id:"D", name:"Rippe rechts, unterbrochen",
-     lage:{x:RIPPE_X + 4, y:M.platteD + 5, z:M.rippeD / 2 + 5}, r:7},
-    /* E liegt am Fuss des Anschlags, auf der vom Blech abgewandten Seite -
-       das ist die Gegenseite. */
-    {id:"E", name:"Anschlagwinkel, Gegenseite",
-     lage:{x:M.platteL / 2 - M.anschlagX / 2,
-           y:M.platteD + 5, z:-M.anschlagZ / 2 - 5}, r:7}
-  ];
+/* ============================================================================
+   Die Stellen zum Anklicken
+   ----------------------------------------------------------------------------
+   Nicht Kugeln neben dem Bauteil, sondern die Kanten selbst: Jede Raupe liegt
+   dort, wo eine Naht liegen wuerde. Deshalb sind hier mehr Stellen als
+   Loesungen - an jeder Kehle KOENNTE geschweisst werden, und die Aufgabe ist
+   gerade, die richtige zu finden.
+
+   Die Buchstaben A bis E sind die fuenf Angaben aus der Zeichnung. Alles, was
+   mit "x" beginnt, ist eine Kante ohne Schweissangabe - dort wird nicht
+   geschweisst, obwohl man es koennte.
+
+   Eine Naht darf aus mehreren Raupen bestehen: Die Doppel-Kehlnaht A hat zwei,
+   die umlaufende Rippennaht C vier. Sie tragen dieselbe id, und der Baustein
+   meldet sie als eine Antwort.
+   ========================================================================== */
+var NAHT_R = 2.6;                        /* Raupendicke in mm */
+/* Eine Kehlnaht liegt IN der Ecke und beruehrt beide Flaechen. Eine Raupe,
+   deren Mitte genau auf der Kante sitzt, steckt zur Haelfte im Werkstoff -
+   sie waere weder zu sehen noch zu treffen. Der Versatz legt sie so hinein,
+   dass sie beide Schenkel beruehrt und ganz sichtbar bleibt. */
+var NV = NAHT_R * 0.8;
+var PO = M.platteD + NV;                 /* auf der Platte, in der Kehle */
+var BZ = M.blechD / 2 + NV;              /* vor der Blechflanke */
+var KZ = M.rippeD / 2 + NV;              /* neben der Rippenflanke */
+var BX = M.blechB / 2;                   /* Blechstirn in x */
+var BXV = BX + NV;                       /* davor */
+var AL = M.platteL / 2 - M.anschlagX;    /* Anschlag, blechseitige Flanke */
+var AZ2 = M.anschlagZ / 2;
+
+function kante(id, name, a, b){
+  return {id:id, name:name, von:a, bis:b, r:NAHT_R};
 }
+
+function markenListe(){
+  var m = [];
+
+  /* --- A: Doppel-Kehlnaht, beide Flanken des Stehblechs ---------------- */
+  [BZ, -BZ].forEach(function(z){
+    m.push(kante("A", "Kehle zwischen Stehblech und Grundplatte",
+      {x:-BX, y:PO, z:z}, {x:BX, y:PO, z:z}));
+  });
+
+  /* --- B: Rundnaht am Stutzen, vorn und hinten ------------------------- */
+  [M.blechD / 2 + NV, -(M.blechD / 2 + NV)].forEach(function(z){
+    m.push({id:"B", name:"Stumpfstoß am Rohrstutzen",
+      ring:{mitte:{x:0, y:M.rohrY, z:z},
+            radius:M.rohrD / 2 + NV, achse:"z"}, r:NAHT_R});
+  });
+
+  /* --- C und D: die Rippen, je vier Raupen ----------------------------- */
+  [["C", -1, "Rippe links, umlaufend"],
+   ["D",  1, "Rippe rechts, unterbrochen"]].forEach(function(pp){
+    var id = pp[0], v = pp[1], name = pp[2];
+    [KZ, -KZ].forEach(function(z){
+      /* waagerechte Kathete: Kehle zwischen Rippe und Platte */
+      m.push(kante(id, name, {x:v * BX, y:PO, z:z},
+        {x:v * (BX + M.rippeX), y:PO, z:z}));
+      /* senkrechte Kathete: Kehle zwischen Rippe und Blechstirn */
+      m.push(kante(id, name, {x:v * BXV, y:M.platteD, z:z},
+        {x:v * BXV, y:M.platteD + M.rippeY, z:z}));
+    });
+  });
+
+  /* --- E: der Anschlag, blechseitige Flanke ---------------------------- */
+  m.push(kante("E", "Anschlag, Gegenseite",
+    {x:AL - NV, y:PO, z:-AZ2}, {x:AL - NV, y:PO, z:AZ2}));
+
+  /* --- Und die Kanten, an denen NICHT geschweisst wird ----------------- */
+  /* Am Anschlag seine beiden Stirnseiten: Sie sehen aus wie E und sind es
+     nicht - genau hier wird die Angabe gelesen oder geraten. */
+  [1, -1].forEach(function(v){
+    m.push(kante("xAnschlagStirn", "Stirnseite des Anschlags",
+      {x:AL, y:PO, z:v * (AZ2 + NV)},
+      {x:M.platteL / 2, y:PO, z:v * (AZ2 + NV)}));
+  });
+  /* Die Stirnseiten des Stehblechs auf der Platte */
+  [-1, 1].forEach(function(v){
+    m.push(kante("xBlechStirn", "Stirnseite des Stehblechs",
+      {x:v * BXV, y:PO, z:-M.blechD / 2}, {x:v * BXV, y:PO, z:M.blechD / 2}));
+  });
+  /* Die Hypotenusen der Rippen - freie Kanten, keine Kehle */
+  [["xRippeL", -1], ["xRippeR", 1]].forEach(function(pp){
+    [M.rippeD / 2, -M.rippeD / 2].forEach(function(z){
+      m.push(kante(pp[0], "freie Kante der Rippe",
+        {x:pp[1] * (BX + M.rippeX), y:M.platteD, z:z},
+        {x:pp[1] * BX, y:M.platteD + M.rippeY, z:z}));
+    });
+  });
+  /* Die Oberkante des Stehblechs */
+  m.push(kante("xBlechOben", "Oberkante des Stehblechs",
+    {x:-BX, y:M.platteD + M.blechH, z:0},
+    {x:BX, y:M.platteD + M.blechH, z:0}));
+  /* Die Stirnflaechen des Stutzens - dort stoesst nichts an */
+  [M.rohrL / 2, -M.rohrL / 2].forEach(function(z){
+    m.push({id:"xStutzenEnde", name:"Stirnfläche des Rohrstutzens",
+      ring:{mitte:{x:0, y:M.rohrY, z:z}, radius:(M.rohrD + M.rohrDi) / 4,
+            achse:"z"}, r:NAHT_R * 0.7});
+  });
+
+  return m;
+}
+
+/* Welche ids sind Loesungen? Alles Uebrige ist Ablenkung. */
+function istNaht(id){ return "ABCDE".indexOf(id) >= 0 && id.length === 1; }
 
 var BLICK = {abstand:430, hoch:0.42, dreh:0.62};
 var MITTE = {x:0, y:55, z:0};
@@ -1355,7 +1568,7 @@ function stellenAufbauen(){
   szeneStellen = Bauteil3D.aufbauen(el("buehneStellen"), {
     teile: teileListe(),
     marken: markenListe(),
-    blick: BLICK,
+    blick: {abstand:BLICK.abstand, hoch:0.68, dreh:BLICK.dreh},
     mitte: MITTE,
     beschreibung: "Derselbe Lagerbock mit f\u00fcnf markierten Nahtstellen zum "
       + "Anklicken",
@@ -1381,7 +1594,9 @@ function stellenVonVorn(){
   stellenFolge = mischen(NAEHTE.map(function(n){ return n.id; }));
   stellenNr = 0;
   stellenTreffer = 0;
-  NAEHTE.forEach(function(n){ szeneStellen.markeStand(n.id, "offen"); });
+  markenListe().forEach(function(m){
+    szeneStellen.markeStand(m.id, "offen");
+  });
   el("rueck3d").hidden = true;
   stelleFragen();
 }
@@ -1424,8 +1639,12 @@ function stelleGewaehlt(id){
     var falsch = NAEHTE.filter(function(n){ return n.id === id; })[0];
     szeneStellen.markeStand(id, "falsch");
     r.className = "rueck3d nein";
-    r.innerHTML = "<b>Das ist " + (falsch ? falsch.titel : "eine andere Stelle")
-      + ".</b> Gesucht war " + naht.titel + " \u2013 such weiter.";
+    r.innerHTML = istNaht(id)
+      ? "<b>Das ist " + (falsch ? falsch.titel : "eine andere Naht")
+        + ".</b> Gesucht war " + naht.titel + " \u2013 such weiter."
+      : "<b>Hier wird gar nicht geschwei\u00dft.</b> Die Zeichnung gibt f\u00fcr "
+        + "diese Kante keine Angabe \u2013 gesucht war "
+        + naht.titel + ".";
     r.hidden = false;
     window.setTimeout(function(){
       szeneStellen.markeStand(id, "offen");
