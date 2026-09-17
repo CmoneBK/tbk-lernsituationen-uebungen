@@ -98,6 +98,29 @@
   .rechenweg p{margin:0 0 9px}
   .rechenweg p:last-child{margin:0}
   .rechenweg .schluss{font-weight:700}
+
+  /* --- Der Bock in 3D ------------------------------------------------- */
+  .karte3d{border:1px solid var(--border); border-radius:12px;
+    padding:14px 16px; margin:18px 0 0; background:var(--card)}
+  .karte3d h3{margin:0 0 4px; font-size:1.02rem}
+  .karte3d .sub{margin:0 0 12px; color:var(--muted); font-size:.9rem}
+  /* Die Buehne bekommt ihre Hoehe aus dem Seitenverhaeltnis - sonst ist sie
+     beim ersten Zeichnen null hoch und die Leinwand bleibt leer. */
+  .buehne{width:100%; aspect-ratio:16/10; min-height:260px;
+    border:1px solid var(--border); border-radius:10px; overflow:hidden;
+    background:var(--bg)}
+  @media (max-width:640px){ .buehne{aspect-ratio:4/3} }
+  .schrittzeile{margin:10px 0 4px; font-size:.92rem; color:var(--muted);
+    min-height:1.4em}
+  .gesucht{margin:0 0 10px; font-weight:600}
+  .rueck3d{margin:10px 0 0; padding:9px 12px; border-radius:8px;
+    font-size:.94rem}
+  .rueck3d.ja{background:rgba(22,163,74,.12); border-left:4px solid var(--ok)}
+  .rueck3d.nein{background:rgba(220,38,38,.10); border-left:4px solid var(--bad)}
+  .ohne3d{color:var(--muted); font-size:.9rem; margin:14px 0 0}
+  /* Im Ausdruck hat eine Leinwand nichts zu suchen - dort steht die
+     Ansicht, und die traegt dieselben Buchstaben. */
+  @media print{ .karte3d{display:none} }
 </style>
 <script src="../../assets/thema.js"></script>
 </head>
@@ -149,10 +172,27 @@
 
     <figure class="bild" id="bildBock"></figure>
 
+    <div class="karte3d" id="karte3d" hidden>
+      <h3>Der Bock, Teil f&uuml;r Teil</h3>
+      <p class="sub">Sechs Teile, in der Reihenfolge, in der sie
+        <em>zusammengelegt</em> werden. Ziehen dreht die Ansicht, das Mausrad
+        zoomt.</p>
+      <p class="sub">Das ist die Montagereihenfolge, nicht die Schwei&szlig;folge
+        &ndash; die steht in Teil 5 und meint etwas anderes: in welcher
+        Reihenfolge <em>innerhalb</em> einer Naht geschwei&szlig;t wird.</p>
+      <div class="buehne" id="buehne3d"></div>
+      <p class="schrittzeile" id="schritt3d">&ndash;</p>
+      <p>
+        <button type="button" class="knopf" id="btn3dMontage">Zusammensetzen</button>
+        <button type="button" class="knopf leise" id="btn3dZurueck">Zerlegen</button>
+        <button type="button" class="knopf leise" id="btn3dAlles">Fertig zeigen</button>
+      </p>
+    </div>
+
     <div class="daten">
       <div><span class="l">Werkstoff</span><span class="v">S235JR</span></div>
       <div><span class="l">Grundplatte</span><span class="v">180 &times; 90 &times; 12</span></div>
-      <div><span class="l">Stehblech</span><span class="v">120 &times; 100 &times; 10</span></div>
+      <div><span class="l">Stehblech</span><span class="v">180 &times; 100 &times; 10</span></div>
       <div><span class="l">Rippen</span><span class="v">2 &times; 8 mm</span></div>
       <div><span class="l">Rohrstutzen</span><span class="v">60 &times; 10</span></div>
       <div><span class="l">Stückzahl</span><span class="v">4</span></div>
@@ -186,6 +226,28 @@
         <tbody id="tabNaehte"></tbody>
       </table>
     </div>
+
+    <div class="karte3d" id="karteStellen" hidden>
+      <h3>Und wo liegt die Naht?</h3>
+      <p class="sub">Das Sinnbild sagt, <em>welche</em> Naht. Am Modell steht
+        die andere H&auml;lfte der Frage: <em>wo</em>. Dreht den Bock und klickt
+        die Stelle an, die zur gesuchten Angabe geh&ouml;rt.</p>
+      <p class="gesucht" id="gesucht3d">&ndash;</p>
+      <div class="buehne" id="buehneStellen"></div>
+      <p class="rueck3d" id="rueck3d" hidden></p>
+      <p>
+        <button type="button" class="knopf leise" id="btn3dNochmal">Von vorn</button>
+      </p>
+      <p class="fussnote">Die f&uuml;nf Stellen sind als Kugeln markiert. Sie
+        sitzen dort, wo die Naht wirklich liegt &ndash; A an der Kehle zwischen
+        Stehblech und Grundplatte, B am Stutzen, C und D an den Rippen,
+        E am Anschlagwinkel auf der Gegenseite.</p>
+    </div>
+
+    <p class="ohne3d" id="ohne3d" hidden>Dieses Ger&auml;t kann keine
+      3D-Darstellung zeigen. Die Ansicht oben reicht f&uuml;r alles, was in
+      diesem Teil gefragt ist &ndash; die Buchstaben A bis E stehen dort an
+      denselben Stellen.</p>
 
     <p style="margin-top:14px">
       <button type="button" class="knopf" id="btn1">Prüfen</button>
@@ -790,7 +852,7 @@ function bilanz(id, richtig, gesamt, offen, wort){
     return t;
   }
   nenn(px + 40, py + 52, "Grundplatte 180 × 90 × 12", "start");
-  nenn(mx, py - sh - 16, "Stehblech 120 × 100 × 10");
+  nenn(mx, py - sh - 16, "Stehblech 180 × 100 × 10");
   nenn(mx + 120, my - 76, "Rohrstutzen 60 × 10", "start");
   nenn(px + 20, py - 120, "Rippe 8 mm", "start");
 }());
@@ -1056,5 +1118,280 @@ el("btn6").addEventListener("click", function(){
 <script src="../../assets/baukasten.js"></script>
 <script src="../../assets/pdf.js"></script>
 <script src="../../assets/export.js"></script>
+<script src="../../vendor/three.min.js"></script>
+<script src="../../vendor/OrbitControls.js"></script>
+<script src="../../assets/bauteil3d.js"></script>
+<script>
+"use strict";
+
+/* ============================================================================
+   Der Lagerbock in 3D
+   ----------------------------------------------------------------------------
+   Zwei Szenen aus derselben Geometrie:
+
+     1. In Teil 1 die Montage - sechs Teile, in der Reihenfolge, in der sie
+        zusammengehen. Das beantwortet die Frage, die eine Ansicht offen
+        laesst: Was sitzt eigentlich wo?
+     2. In Teil 2 dieselbe Baugruppe mit den fuenf Nahtstellen als Marken.
+        Wer eine Angabe gelesen hat, muss zeigen, wo die Naht liegt.
+
+   Alle Masse in Millimetern, Ursprung in der Mitte der Grundplatte,
+   y nach oben. Die Zahlen sind dieselben wie in der Teileliste - wer das
+   Modell nachmisst, findet, was oben steht.
+   ========================================================================== */
+
+/* Masse der Teile. Aus der Teileliste, nicht geschaetzt. */
+var M = {
+  platteL:180, platteT:90, platteD:12,
+  blechB:180, blechH:100, blechD:10,
+  rohrD:60, rohrDi:40, rohrL:40,
+  rippeX:40, rippeY:85, rippeD:8,
+  winkelX:30, winkelY:40, winkelZ:60, winkelS:8
+};
+
+/* Die Rippen stehen auf der Vorderseite des Stehblechs, links und rechts
+   vom Stutzen. Ihre senkrechte Kathete liegt am Blech, die waagerechte auf
+   der Platte - deshalb die Vierteldrehung um die Hochachse.
+
+   Die Masse sind nicht geschaetzt, sondern folgen aus Teil 6: Naht C ist
+   die umlaufende Rippennaht mit 250 mm. Umlaufend heisst hier, dass beide
+   Seiten der Rippe angeschweisst werden, also
+
+       2 * (senkrechte Kathete + waagerechte Kathete) = 250 mm
+       2 * (85 + 40) = 250
+
+   Die waagerechte Kathete kann nicht laenger sein als das, was vor dem
+   Blech noch Platte ist: (90 - 10) / 2 = 40 mm. Damit steht die senkrechte
+   fest, und sie bleibt mit 85 mm unter der Blechhoehe von 100 mm. */
+var RIPPE_Z = M.blechD / 2 + M.rippeX / 2;
+var RIPPE_Y = M.platteD + M.rippeY / 2;
+var RIPPE_X = 50;
+
+function teileListe(){
+  return [
+    {id:"platte", name:"Grundplatte 180 \u00d7 90 \u00d7 12", form:"quader",
+     masse:{x:M.platteL, y:M.platteD, z:M.platteT},
+     lage:{x:0, y:M.platteD / 2, z:0},
+     von:{y:-58}},
+
+    {id:"blech", name:"Stehblech 180 \u00d7 100 \u00d7 10", form:"quader",
+     masse:{x:M.blechB, y:M.blechH, z:M.blechD},
+     lage:{x:0, y:M.platteD + M.blechH / 2, z:0},
+     von:{y:55}},
+
+    {id:"stutzen", name:"Rohrstutzen 60 \u00d7 10", form:"rohr", achse:"z",
+     masse:{d:M.rohrD, di:M.rohrDi, l:M.rohrL},
+     lage:{x:0, y:M.platteD + 55, z:0},
+     von:{z:82}},
+
+    {id:"rippeL", name:"Rippe links, 8 mm", form:"keil",
+     masse:{x:M.rippeX, y:M.rippeY, z:M.rippeD},
+     lage:{x:-RIPPE_X, y:RIPPE_Y, z:RIPPE_Z},
+     dreh:{y:-Math.PI / 2},
+     von:{x:-88}},
+
+    {id:"rippeR", name:"Rippe rechts, 8 mm", form:"keil",
+     masse:{x:M.rippeX, y:M.rippeY, z:M.rippeD},
+     lage:{x:RIPPE_X, y:RIPPE_Y, z:RIPPE_Z},
+     dreh:{y:-Math.PI / 2},
+     von:{x:88}},
+
+    {id:"winkel", name:"Anschlagwinkel", form:"winkel",
+     masse:{x:M.winkelX, y:M.winkelY, z:M.winkelZ, s:M.winkelS},
+     lage:{x:M.platteL / 2 - M.winkelX / 2, y:M.platteD + M.winkelY / 2,
+           z:-M.platteT / 2 + M.winkelZ / 2},
+     von:{x:70, y:40}}
+  ];
+}
+
+/* Die fuenf Nahtstellen - dort, wo die Naht wirklich liegt. */
+function markenListe(){
+  return [
+    {id:"A", name:"Kehle zwischen Stehblech und Grundplatte",
+     lage:{x:-20, y:M.platteD + 5, z:M.blechD / 2 + 5}, r:7},
+    {id:"B", name:"Stumpfsto\u00df am Rohrstutzen",
+     lage:{x:0, y:M.platteD + 55 + M.rohrD / 2, z:M.blechD / 2 + 2}, r:8},
+    {id:"C", name:"Rippe links, umlaufend",
+     lage:{x:-RIPPE_X - M.rippeD / 2 - 5, y:M.platteD + 5,
+           z:M.blechD / 2 + 18}, r:7},
+    {id:"D", name:"Rippe rechts, unterbrochen",
+     lage:{x:RIPPE_X + M.rippeD / 2 + 5, y:M.platteD + 5,
+           z:M.blechD / 2 + 18}, r:7},
+    /* Der Winkel steht mit seinem senkrechten Schenkel bei x = 60 bis 68.
+       Die Naht auf der Gegenseite liegt auf der vom Blech abgewandten
+       Seite, also rechts davon. */
+    {id:"E", name:"Anschlagwinkel, Gegenseite",
+     lage:{x:M.platteL / 2 - M.winkelX + M.winkelS + 5, y:M.platteD + 5,
+           z:-M.platteT / 2 + M.winkelZ / 2}, r:7}
+  ];
+}
+
+var BLICK = {abstand:430, hoch:0.55, dreh:0.9};
+var MITTE = {x:0, y:55, z:0};
+
+var szeneMontage = null, szeneStellen = null;
+
+function drei(){
+  if(!window.Bauteil3D || !Bauteil3D.moeglich()){
+    var hinweis = el("ohne3d");
+    if(hinweis) hinweis.hidden = false;
+    return;
+  }
+  montageAufbauen();
+  stellenAufbauen();
+}
+
+/* --------------------------------------------------------------- Montage */
+function montageAufbauen(){
+  var karte = el("karte3d");
+  karte.hidden = false;
+
+  szeneMontage = Bauteil3D.aufbauen(el("buehne3d"), {
+    teile: teileListe(),
+    blick: BLICK,
+    mitte: MITTE,
+    beschreibung: "Der Lagerbock in dreidimensionaler Ansicht: Grundplatte, "
+      + "Stehblech mit Rohrstutzen, zwei Rippen und der Anschlagwinkel",
+    dauer: 800,
+    onSchritt: function(n, gesamt, teil){
+      el("schritt3d").textContent = n === 0
+        ? "Zerlegt \u2013 " + gesamt + " Teile"
+        : "Teil " + n + " von " + gesamt
+          + (teil ? ": " + teil.name : " eingesetzt");
+    },
+    onFertig: function(){
+      el("schritt3d").textContent = "Fertig \u2013 so geht der Bock zusammen.";
+    }
+  });
+  if(!szeneMontage){ el("ohne3d").hidden = false; karte.hidden = true; return; }
+
+  el("btn3dMontage").addEventListener("click", function(){
+    szeneMontage.montage();
+  });
+  el("btn3dZurueck").addEventListener("click", function(){
+    szeneMontage.zerlegen();
+  });
+  el("btn3dAlles").addEventListener("click", function(){
+    szeneMontage.zeigenAlles();
+  });
+
+  /* Zusammengesetzt anfangen: So ist zuerst zu sehen, worum es geht.
+     Sobald die Karte ins Bild kommt, laeuft die Montage einmal von selbst -
+     danach nur noch auf Knopfdruck. Wer sie nie sieht, bekommt auch keine
+     Animation vorgesetzt, die er gar nicht bemerkt. */
+  szeneMontage.zeigenAlles();
+  var liefSchon = false;
+  function einmalZeigen(){
+    if(liefSchon) return;
+    liefSchon = true;
+    szeneMontage.zerlegen();
+    window.setTimeout(function(){ szeneMontage.montage(); }, 400);
+  }
+  if(window.IntersectionObserver){
+    var wache = new IntersectionObserver(function(eintraege){
+      eintraege.forEach(function(e){
+        if(e.isIntersecting){ wache.disconnect(); einmalZeigen(); }
+      });
+    }, {threshold:0.4});
+    wache.observe(karte);
+  }else{
+    window.setTimeout(einmalZeigen, 1200);
+  }
+}
+
+/* ------------------------------------------------------- Stellen anklicken */
+/* Die Reihenfolge wird gemischt, damit nicht A, B, C, D, E abgeklappert
+   wird - gefragt ist die Stelle, nicht das Alphabet. */
+var stellenFolge = [], stellenNr = 0, stellenTreffer = 0, stellenOffen = true;
+
+function stellenAufbauen(){
+  var karte = el("karteStellen");
+  karte.hidden = false;
+
+  szeneStellen = Bauteil3D.aufbauen(el("buehneStellen"), {
+    teile: teileListe(),
+    marken: markenListe(),
+    blick: BLICK,
+    mitte: MITTE,
+    beschreibung: "Derselbe Lagerbock mit f\u00fcnf markierten Nahtstellen zum "
+      + "Anklicken",
+    onWahl: stelleGewaehlt
+  });
+  if(!szeneStellen){ karte.hidden = true; return; }
+
+  szeneStellen.zeigenAlles().marken(true);
+  el("btn3dNochmal").addEventListener("click", stellenVonVorn);
+  stellenVonVorn();
+}
+
+function mischen(liste){
+  var a = liste.slice();
+  for(var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var x = a[i]; a[i] = a[j]; a[j] = x;
+  }
+  return a;
+}
+
+function stellenVonVorn(){
+  stellenFolge = mischen(NAEHTE.map(function(n){ return n.id; }));
+  stellenNr = 0;
+  stellenTreffer = 0;
+  NAEHTE.forEach(function(n){ szeneStellen.markeStand(n.id, "offen"); });
+  el("rueck3d").hidden = true;
+  stelleFragen();
+}
+
+function stelleFragen(){
+  if(stellenNr >= stellenFolge.length){
+    el("gesucht3d").innerHTML = "<b>Fertig:</b> " + stellenTreffer + " von "
+      + stellenFolge.length + " auf Anhieb getroffen.";
+    stellenOffen = false;
+    return;
+  }
+  stellenOffen = true;
+  var naht = NAEHTE.filter(function(n){
+    return n.id === stellenFolge[stellenNr]; })[0];
+  el("gesucht3d").innerHTML = "Gesucht ist <b>" + naht.titel + "</b> "
+    + "(Angabe " + naht.id + ") \u2013 wo liegt diese Naht am Bock? "
+    + "<span class=\"fussnote\">" + (stellenNr + 1) + " von "
+    + stellenFolge.length + "</span>";
+}
+
+function stelleGewaehlt(id){
+  if(!stellenOffen) return;
+  var soll = stellenFolge[stellenNr];
+  var naht = NAEHTE.filter(function(n){ return n.id === soll; })[0];
+  var r = el("rueck3d");
+
+  if(id === soll){
+    stellenTreffer++;
+    stellenOffen = false;
+    szeneStellen.markeStand(id, "richtig");
+    r.className = "rueck3d ja";
+    r.innerHTML = "<b>Getroffen.</b> " + naht.titel + " \u2013 " + naht.satz;
+    r.hidden = false;
+    stellenNr++;
+    window.setTimeout(function(){
+      r.hidden = true;
+      stelleFragen();
+    }, 2200);
+  }else{
+    var falsch = NAEHTE.filter(function(n){ return n.id === id; })[0];
+    szeneStellen.markeStand(id, "falsch");
+    r.className = "rueck3d nein";
+    r.innerHTML = "<b>Das ist " + (falsch ? falsch.titel : "eine andere Stelle")
+      + ".</b> Gesucht war " + naht.titel + " \u2013 such weiter.";
+    r.hidden = false;
+    window.setTimeout(function(){
+      szeneStellen.markeStand(id, "offen");
+    }, 1400);
+  }
+}
+
+if(document.readyState === "loading"){
+  document.addEventListener("DOMContentLoaded", drei);
+}else{ drei(); }
+</script>
 </body>
 </html>
