@@ -283,6 +283,72 @@ console.log('\nLektion oder Werkzeug - die Pakete muessen es richtig sagen');
   });
 }
 
+console.log('\nJede Werkzeugseite traegt ihren Untertitel');
+{
+  /* Auf der Uebersicht steht unter jedem Namen eine Zeile, die sagt, was
+     einen erwartet - sie kommt aus <meta name="description">. Fehlt sie,
+     steht die Karte nackt da: "Ueberblick", und sonst nichts.
+
+     Und wo mehrere Karten unter derselben Ueberschrift stehen, sortiert
+     ohne <meta name="reihenfolge"> das Alphabet. Dann steht der Ueberblick
+     zu den Fuegeverfahren hinter dem Schweissen: erst das Einzelverfahren,
+     dann die Einordnung. */
+  const holen = (text, name) => {
+    const m = new RegExp('<meta[^>]*name="' + name + '"[^>]*content="([^"]*)"', 'i')
+      .exec(text);
+    return m ? m[1].replace(/\s+/g, ' ').trim() : '';
+  };
+  /* "Bereich: Kategorie - Name" - getrennt wird am " - " MIT Leerzeichen,
+     damit "Form- und Lagetoleranzen" heil bleibt. */
+  const zerlegen = (titel) => {
+    const dp = titel.indexOf(':');
+    if (dp === -1) return { kopf: 'Allgemein', name: titel };
+    const bereich = titel.slice(0, dp).trim();
+    const rest = titel.slice(dp + 1).trim();
+    const bs = rest.indexOf(' - ');
+    return bs === -1
+      ? { kopf: bereich, name: rest }
+      : { kopf: bereich + ' / ' + rest.slice(0, bs).trim(), name: rest.slice(bs + 3).trim() };
+  };
+
+  const seiten = fs.readdirSync(TOOLS)
+    .filter((f) => f.toLowerCase().endsWith('.html'))
+    .map((f) => {
+      const text = fs.readFileSync(path.join(TOOLS, f), 'utf8');
+      const t = /<title[^>]*>([\s\S]*?)<\/title>/i.exec(text);
+      const titel = t ? t[1].replace(/\s+/g, ' ').trim() : '';
+      return Object.assign({ datei: f, titel, art: holen(text, 'art') || 'simulation',
+        beschreibung: holen(text, 'description'),
+        reihenfolge: holen(text, 'reihenfolge') }, zerlegen(titel));
+    });
+
+  p('es gibt Werkzeugseiten', seiten.length > 0);
+
+  seiten.forEach((s) => {
+    p(s.datei + ': hat einen Untertitel', !!s.beschreibung,
+      'ohne <meta name="description"> bleibt die Karte nackt');
+    p(s.datei + ': der Untertitel wiederholt nicht den Namen',
+      s.beschreibung.toLowerCase() !== s.name.toLowerCase(), s.beschreibung);
+  });
+
+  /* Gruppiert wird wie in der Uebersicht: je Art und je Ueberschrift. */
+  const gruppen = new Map();
+  seiten.forEach((s) => {
+    const k = s.art + ' | ' + s.kopf;
+    if (!gruppen.has(k)) gruppen.set(k, []);
+    gruppen.get(k).push(s);
+  });
+  [...gruppen].forEach(([k, block]) => {
+    if (block.length < 2) return;
+    const zahlen = block.map((s) => s.reihenfolge);
+    p(k + ': jede Karte hat eine Reihenfolge',
+      zahlen.every((z) => /^[0-9]+$/.test(z)),
+      block.map((s) => s.name + '=' + (s.reihenfolge || '-')).join(', '));
+    p(k + ': keine Zahl doppelt',
+      new Set(zahlen).size === zahlen.length, zahlen.join(', '));
+  });
+}
+
 console.log('\n' + (fehler ? fehler + ' Fehler' : 'alles gruen'));
 process.exit(fehler ? 1 : 0);
 }
