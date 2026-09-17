@@ -9,3 +9,9 @@ tabellenbuch/
 
 # Auswertung der Bildungsplaene: Arbeitsgrundlage, nicht zum Veroeffentlichen.
 bildungsgaenge/
+
+# Der Leseschluessel der Rueckmeldungen gehoert nicht hierher (siehe
+# docs/FEEDBACK-API.md, Weg C). Falls doch jemand eine Datei anlegt:
+.env
+.env.*
+*feedback-lese-key*

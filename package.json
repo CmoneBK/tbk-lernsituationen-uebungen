@@ -6,7 +6,8 @@
   "scripts": {
     "build": "node build/build.mjs",
     "check": "node build/build.mjs --check",
-    "pruefen": "node pruefungen/alle.js"
+    "pruefen": "node pruefungen/alle.js",
+    "rueckmeldungen": "node build/rueckmeldungen.mjs"
   },
   "devDependencies": {
     "jsdom": "^22.1.0",

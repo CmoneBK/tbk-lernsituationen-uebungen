@@ -179,6 +179,75 @@ Zeitfalle, Honeypot und die Dankesmeldung selbst. **Wenn Weg A reicht, seid ihr 
 - Keine externen Captcha-/Analytics-Dienste.
 - Keine Anzeige/Moderation abgegebener Feedbacks bauen.
 
+## Weg C: Feedback lesen (nur vertrauenswürdige Clients — KEINE Webseite)
+
+Zum Auslesen der gesammelten Rückmeldungen gibt es einen **geschützten** Endpunkt.
+Er ist **nicht** für eine Browser-Seite gedacht: Der Schlüssel darf **niemals** in
+eine öffentliche Seite oder ein Repo. Gedacht ist er für einen vertrauenswürdigen
+Client — z. B. Claude Code per `curl`, oder ein privates Skript auf einem Rechner der
+Lehrkraft.
+
+```
+GET /api/feedback.php?action=liste
+Authorization: Bearer <SCHLÜSSEL>        (alternativ ?key=<SCHLÜSSEL>)
+```
+
+Parameter (alle optional):
+
+| Param | Wirkung |
+|---|---|
+| `seit` | ISO-Datum oder Unix-Zeit — nur Neueres |
+| `limit` | 1..200, Default 50 |
+| `pfad` | Präfix-Filter, z. B. `/unterrichtsmaterial/lernsituationen/` |
+| `status` | `neu` \| `erledigt` \| `spam` (Zusatzfilter) |
+
+Antwort:
+```json
+{ "ok": true, "anzahl": 7, "neuestes": "2026-09-17T18:22:05+02:00",
+  "eintraege": [
+    { "id": 143, "zeit": "2026-09-17T18:22:05+02:00", "rolle": "schueler",
+      "kategorie": "fehler", "nachricht": "…", "pfad": "/unterrichtsmaterial/…",
+      "titel": "…", "status": "neu" }
+  ] }
+```
+
+- Ohne gültigen Schlüssel: **401**, keine Daten.
+- Die Antwort enthält **keine IP / keinen IP-Hash / nichts Personenbezogenes**.
+- `Authorization: Bearer` bevorzugen — steht so nicht in Server-Logs (anders als `?key=`).
+- Der Schlüssel liegt serverseitig in `feedback-config.php` (`files/`) und wird separat
+  übergeben, **nicht** in dieser Datei notiert.
+- Als „erledigt"/„spam" markieren geht derzeit per SQL/Absprache mit dem Website-Chat;
+  ein Schreib-Endpunkt lässt sich bei Bedarf nachrüsten.
+
+
+### Wie der Schlüssel in diesem Repo gehandhabt wird
+
+Gar nicht — und das ist der Punkt. Er steht in keiner Datei hier, auch nicht
+in einer `.env` daneben: Eine Datei, die man versehentlich mitcommittet, ist
+genau die Datei, die man nicht anlegt. Gereicht wird er von außen:
+
+```
+TBK_FEEDBACK_KEY=<schluessel>       als Umgebungsvariable, oder
+~/.tbk/feedback-lese-key            als Datei mit dem Schlüssel drin
+```
+
+Abholen und lesbar ausgeben:
+
+```
+npm run rueckmeldungen                                  die letzten 50
+npm run rueckmeldungen -- --seit 2026-09-01             nur Neueres
+npm run rueckmeldungen -- --pfad /unterrichtsmaterial/lernsituationen/
+npm run rueckmeldungen -- --roh                         die rohe Antwort
+```
+
+Ausgegeben wird nach Kategorie, Fehlermeldungen zuerst, Freitext im
+Wortlaut, am Ende die betroffenen Seiten nach Häufigkeit. Der Schlüssel
+wandert als `Authorization: Bearer` in den Kopf und erscheint in keiner
+Ausgabe, auch nicht im Fehlerfall.
+
+`pruefungen/test-feedback.js` wacht darüber, dass hier kein Schlüssel liegt
+und keine Seite den Leseweg anfasst.
+
 ## Backend-Fragen / neue Felder
 Das entscheidet der Website-/Infra-Chat (nicht dieses Repo). Braucht ihr ein zusätzliches
 Feld oder eine andere Kategorie, meldet es dort — dann werden Endpoint, Datenbank und

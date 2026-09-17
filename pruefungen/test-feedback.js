@@ -261,6 +261,85 @@ function weiter() {
     }
   }
 
+  /* ------------------------------------------------ Weg C: der Leseweg */
+  /* Rueckmeldungen lesen geht ueber einen geschuetzten Endpunkt. Der
+     Schluessel dazu darf nirgends im Repo liegen und keine Seite darf ihn
+     anfassen - eine Seite im Browser gibt ihn jedem weiter, der hinsieht.
+     Geprueft wird deshalb beides: dass hier keiner liegt, und dass nur das
+     Werkzeug auf der Kommandozeile den Leseweg kennt. */
+  console.log('\nDer Leseweg');
+  {
+    const holer = path.join(MATERIAL, 'build', 'rueckmeldungen.mjs');
+    p('build/rueckmeldungen.mjs ist da', fs.existsSync(holer));
+
+    if (fs.existsSync(holer)) {
+      const q = fs.readFileSync(holer, 'utf8');
+      p('es schickt den Schlüssel im Kopf, nicht in der Adresse',
+        /Authorization: 'Bearer '/.test(q)
+        && !/searchParams\.set\('key'/.test(q));
+      p('es holt den Schlüssel von außen',
+        /TBK_FEEDBACK_KEY/.test(q) && /feedback-lese-key/.test(q));
+      /* Ein Schluessel ist 64 Hex-Zeichen (openssl rand -hex 32). Steht so
+         etwas im Quelltext, ist er hineingerutscht. */
+      p('und trägt selbst keinen',
+        !/\b[0-9a-f]{32,}\b/.test(q));
+    }
+
+    /* Kein Schluessel irgendwo im Material - weder als Datei noch im Text.
+       Gesucht wird nach dem, was der Endpunkt erwartet. */
+    const verdaechtig = [];
+    const sehen = (verzeichnis) => {
+      for (const e of fs.readdirSync(verzeichnis, { withFileTypes: true })) {
+        if (/^(node_modules|\.git|vendor|tabellenbuch|bildungsgaenge)$/.test(e.name)) continue;
+        const voll = path.join(verzeichnis, e.name);
+        if (e.isDirectory()) { sehen(voll); continue; }
+        if (/feedback-lese-key|^\.env/.test(e.name)) {
+          verdaechtig.push(path.relative(MATERIAL, voll) + ' (Dateiname)');
+          continue;
+        }
+        if (!/\.(js|mjs|html|json|md|txt)$/.test(e.name)) continue;
+        const inhalt = fs.readFileSync(voll, 'utf8');
+        if (/lese_key\s*[=:]\s*['"][^'"]{8,}/.test(inhalt)
+          || /TBK_FEEDBACK_KEY\s*=\s*['"]?[0-9a-f]{16,}/.test(inhalt)) {
+          verdaechtig.push(path.relative(MATERIAL, voll));
+        }
+      }
+    };
+    sehen(MATERIAL);
+    p('kein Leseschlüssel liegt im Repo', !verdaechtig.length,
+      verdaechtig.join(', '));
+
+    /* Und keine ausgelieferte Seite ruft den Leseweg auf. Prüfungen und
+       Werkzeuge auf der Kommandozeile duerfen ihn kennen - sie werden nicht
+       ausgeliefert. */
+    const seiten = [];
+    const sammeln = (verzeichnis) => {
+      for (const e of fs.readdirSync(verzeichnis, { withFileTypes: true })) {
+        if (/^(node_modules|\.git|vendor|tabellenbuch|bildungsgaenge|pruefungen|build)$/
+          .test(e.name)) continue;
+        const voll = path.join(verzeichnis, e.name);
+        if (e.isDirectory()) sammeln(voll);
+        else if (/\.(html|js)$/.test(e.name)) seiten.push(voll);
+      }
+    };
+    sammeln(MATERIAL);
+    const lesend = seiten.filter((f) => {
+      const inhalt = fs.readFileSync(f, 'utf8');
+      return /action=liste/.test(inhalt) || /Bearer/.test(inhalt);
+    });
+    p(seiten.length + ' Seiten und Bausteine, keiner fasst den Leseweg an',
+      !lesend.length, lesend.map((f) => path.relative(MATERIAL, f)).join(', '));
+
+    /* Die Doku muss den Weg beschreiben, sonst weiss beim naechsten Mal
+       niemand mehr, wo der Schluessel herkommt. */
+    const doku = fs.readFileSync(
+      path.join(MATERIAL, 'docs', 'FEEDBACK-API.md'), 'utf8');
+    p('docs/FEEDBACK-API.md kennt Weg C',
+      /## Weg C: Feedback lesen/.test(doku)
+      && /TBK_FEEDBACK_KEY/.test(doku)
+      && /npm run rueckmeldungen/.test(doku));
+  }
+
   console.log(fehler ? '\n' + fehler + ' Befunde' : '\nalles gruen');
   process.exit(fehler ? 1 : 0);
 }
