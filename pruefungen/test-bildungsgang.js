@@ -400,6 +400,148 @@ console.log('\nÜbersichten');
       url: 'https://t-bk.de/unterrichtsmaterial/uebungen/schraubverbindungen/', bg: 'bfs-for' });
   p('Paketseite: für bfs-for fallen nur zwei weg',
     [...pakMr.d.querySelectorAll('.liste > li')].filter((li) => li.hidden).length === 2);
+
+  /* Der Drehprozess: Fuer die HS10-Stufe faellt die Kette der
+     technologischen Daten weg (AS 2.3), die Werkzeug- und Pruefmittelwahl
+     bleibt (AS 2.2). Fuer die FOR-Stufe bleibt alles - sie hat AS 2.3. */
+  const dp = await laden(path.join(MAT, 'uebungen/drehprozess/index.html'),
+    { wurzel: MAT, praefix: '(?:\\.\\./)*',
+      url: 'https://t-bk.de/unterrichtsmaterial/uebungen/drehprozess/',
+      bg: 'bfs-hs10' });
+  const dpZeilen = [...dp.d.querySelectorAll('.liste > li')];
+  p('Drehprozess: für bfs-hs10 fallen drei Übungen weg',
+    dpZeilen.filter((li) => li.hidden).length === 3,
+    dpZeilen.filter((li) => li.hidden).length + ' von ' + dpZeilen.length);
+
+  const dpFor = await laden(path.join(MAT, 'uebungen/drehprozess/index.html'),
+    { wurzel: MAT, praefix: '(?:\\.\\./)*',
+      url: 'https://t-bk.de/unterrichtsmaterial/uebungen/drehprozess/',
+      bg: 'bfs-for' });
+  p('Drehprozess: für bfs-for bleiben alle sieben',
+    [...dpFor.d.querySelectorAll('.liste > li')]
+      .filter((li) => li.hidden).length === 0);
+
+  /* Und innerhalb einer Uebung: Grenzabmasse ablesen und Teile beurteilen
+     bleiben, das Zielmass faellt. */
+  const ueb6 = await laden(
+    path.join(MAT, 'uebungen/drehprozess/06-auf-welches-mass-wird-geschlichtet.html'),
+    { wurzel: MAT, praefix: '(?:\\.\\./)*',
+      url: 'https://t-bk.de/unterrichtsmaterial/uebungen/drehprozess/',
+      bg: 'bfs-hs10' });
+  const abschnitte = [...ueb6.d.querySelectorAll('main h2')]
+    .map((h) => (h.hidden ? '-' : '+') + h.textContent.replace(/^\d+/, '').trim());
+  p('Übung 6: das Zielmaß fällt für bfs-hs10 weg',
+    abschnitte.some((a) => a.startsWith('-') && /Zielma/.test(a)),
+    abschnitte.join(' | '));
+  p('Übung 6: Grenzabmaße und die vier Teile bleiben',
+    abschnitte.some((a) => a === '+Die Grenzabmaße')
+      && abschnitte.some((a) => a.startsWith('+Vier Teile')),
+    abschnitte.join(' | '));
+}
+
+/* ---------- 11. Der Gehäusedeckel: zwei Wege, einer davon rechnet ----------
+
+   Die Lernsituation bietet dieselbe Schraube zweimal an - hergeleitet und
+   nachgeschlagen. Für die Berufsfachschule bleibt der nachgeschlagene Weg.
+   Das stand lange als Entscheidung in bildungsgaenge/README.md, wirkte aber
+   nicht: Das Attribut sass an einer h3, und die liest der Baukasten in einer
+   Lernsituation nicht. Diese Pruefung haelt fest, dass es jetzt wirkt. */
+console.log('\nGehäusedeckel: Weg A und Weg B');
+{
+  const ziel = path.join(MAT, 'lernsituationen/gehaeusedeckel/index.html');
+  const url = 'https://t-bk.de/unterrichtsmaterial/lernsituationen/gehaeusedeckel/';
+  const wege = (dom) => [...dom.querySelectorAll('main h2')]
+    .filter((h) => /^Weg [AB]/.test(h.textContent.trim()))
+    .map((h) => (h.hidden ? '-' : '+') + h.textContent.trim().slice(0, 5));
+
+  const hs = await laden(ziel, { wurzel: MAT, praefix: '(?:\\.\\./)*', url,
+    bg: 'bfs-hs10' });
+  p('beide Wege sind eigene Teile', wege(hs.d).length === 2, wege(hs.d).join(' '));
+  p('für bfs-hs10 fällt Weg A weg',
+    wege(hs.d).indexOf('-Weg A') !== -1, wege(hs.d).join(' '));
+  p('Weg B bleibt', wege(hs.d).indexOf('+Weg B') !== -1, wege(hs.d).join(' '));
+  p('die Rechnung darunter ist mit weg',
+    [...hs.d.querySelectorAll('main details')]
+      .filter((d) => /Die Rechnung/.test(d.textContent)).every((d) => {
+        let n = d;
+        while (n) { if (n.hidden) return true; n = n.parentElement; }
+        return false;
+      }));
+
+  const alle = await laden(ziel, { wurzel: MAT, praefix: '(?:\\.\\./)*', url });
+  p('ohne Wahl stehen beide da',
+    wege(alle.d).join(' ') === '+Weg A +Weg B', wege(alle.d).join(' '));
+}
+
+/* ---------- 12. Sitzt jedes Attribut an einer Stelle, die gelesen wird? ----
+
+   Ein data-bg-ohne an einer h3 in einer Übung tut nichts: Der Baukasten
+   nimmt dort eine h2 mit allem, was ihr folgt, als kleinste Einheit. Ein
+   Attribut an der falschen Stelle sieht aber aus wie eine getroffene
+   Entscheidung - und niemand merkt, dass die Seite weiter überall
+   erscheint. Ebenso ein Schlüssel mit Tippfehler.
+
+   Wo es stehen darf:
+     Übung, Training, Lernsituation   h2, details, summary
+       (dazu li und a in den erzeugten Übersichten)
+     Lektion                          button[data-tab], die Karte, h2, h3   */
+console.log('\nWo die Attribute sitzen');
+{
+  const SCHLUESSEL = [...fs.readFileSync(path.join(MAT, 'assets/bildungsgang.js'),
+    'utf8').matchAll(/schluessel:\s*'([a-z0-9-]+)'/g)].map((m) => m[1]);
+  p('sieben Schlüssel gefunden', SCHLUESSEL.length === 7, SCHLUESSEL.join(' '));
+
+  const HAND = new Set(['H2', 'DETAILS', 'SUMMARY']);
+  const ERZEUGT = new Set(['LI', 'A']);
+  const LEKTION = new Set(['BUTTON', 'DIV', 'SECTION', 'H2', 'H3']);
+
+  const sammeln = (wurzel, teil) => {
+    const aus = [];
+    const gehen = (ort) => {
+      let e;
+      try { e = fs.readdirSync(ort, { withFileTypes: true }); } catch (x) { return; }
+      for (const d of e) {
+        const voll = path.join(ort, d.name);
+        if (d.isDirectory()) gehen(voll);
+        else if (d.name.endsWith('.html')) aus.push(voll);
+      }
+    };
+    gehen(path.join(wurzel, teil));
+    return aus;
+  };
+
+  const seiten = [
+    ...sammeln(MAT, 'uebungen'), ...sammeln(MAT, 'trainings'),
+    ...sammeln(MAT, 'lernsituationen'), path.join(MAT, 'index.html'),
+    ...sammeln(TOOLS, '.'),
+  ];
+
+  let falscherWirt = [], falscherSchluessel = [], gezaehlt = 0;
+  for (const datei of seiten) {
+    const rel = path.relative(MAT, datei).split(path.sep).join('/');
+    const text = fs.readFileSync(datei, 'utf8');
+    const lektion = rel.includes('/tools/') || rel.startsWith('tools/');
+    const erzeugt = path.basename(datei) === 'index.html' && !lektion;
+    /* meta zählt mit, sitzt aber immer richtig - geprüft werden die Werte. */
+    for (const m of text.matchAll(
+      /<([a-z0-9]+)\b[^>]*\b(?:data-)?bg-ohne="([^"]*)"/gi)) {
+      gezaehlt++;
+      const wirt = m[1].toUpperCase();
+      const erlaubt = wirt === 'META' ? true
+        : lektion ? LEKTION.has(wirt)
+          : HAND.has(wirt) || (erzeugt && ERZEUGT.has(wirt));
+      if (!erlaubt) falscherWirt.push(rel + ': <' + m[1] + '>');
+      for (const k of m[2].split(/\s+/).filter(Boolean)) {
+        if (!SCHLUESSEL.includes(k)) falscherSchluessel.push(rel + ': ' + k);
+      }
+    }
+  }
+  p(gezaehlt + ' Attribute über ' + seiten.length + ' Seiten gefunden',
+    gezaehlt > 20, String(gezaehlt));
+  p('jedes sitzt an einer Stelle, die gelesen wird', !falscherWirt.length,
+    falscherWirt.join(' | '));
+  p('jeder Schlüssel ist einer der sieben', !falscherSchluessel.length,
+    falscherSchluessel.join(' | '));
 }
 
 console.log('\n' + (fehler ? fehler + ' Fehler' : 'alles gruen'));

@@ -306,12 +306,23 @@ console.log('\nLernsituation – Der Gehäusedeckel');
     d.querySelectorAll('.stelle').length >= 20,
     d.querySelectorAll('.stelle').length + ' Ziffern');
 
-  /* Der rechnende Weg gehoert nicht in jeden Bildungsgang. */
-  p('Weg A ist gekennzeichnet',
-    d.querySelectorAll('[data-bg-ohne="bfs-hs10 bfs-for"]').length === 2,
-    d.querySelectorAll('[data-bg-ohne="bfs-hs10 bfs-for"]').length + ' Elemente');
+  /* Der rechnende Weg gehoert nicht in jeden Bildungsgang.
+
+     Frueher stand hier, es muessten zwei Elemente gekennzeichnet sein - und
+     das stimmte auch, nur sassen beide an einer h3 und an einem div. Der
+     Baukasten nimmt in einer Uebung oder Lernsituation die h2 als kleinste
+     Einheit; die Kennzeichnung tat also nichts, und der Test bestaetigte
+     sie trotzdem. Geprueft wird jetzt der Ort, und dass es wirkt, prueft
+     test-bildungsgang.js. */
+  const wegA = [...d.querySelectorAll('[data-bg-ohne="bfs-hs10 bfs-for"]')];
+  p('Weg A ist gekennzeichnet', wegA.length === 1,
+    wegA.length + ' Elemente');
+  p('und zwar an einer h2 – nur die liest der Baukasten',
+    wegA.length === 1 && wegA[0].tagName === 'H2'
+      && /Weg A/.test(wegA[0].textContent),
+    wegA.map((e) => e.tagName).join(' '));
   p('Weg B gilt für alle',
-    ![...d.querySelectorAll('h3')]
+    ![...d.querySelectorAll('h2')]
       .some((h) => /Weg B/.test(h.textContent) && h.hasAttribute('data-bg-ohne')));
   p('die Seite selbst nimmt sich nicht aus',
     !d.querySelector('meta[name="bg-ohne"]'));
