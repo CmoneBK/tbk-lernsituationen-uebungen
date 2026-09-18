@@ -924,7 +924,11 @@
     var x2 = M + (Ra + 4) * Math.cos(ar), y2 = cy - (Ra + 4) * Math.sin(ar);
     linie(e, x1, y1, x2, y2, BREIT);
     pfeil(e, x2, y2, -Math.cos(ar), Math.sin(ar));
-    txt(e, x1 + 14 * Math.cos(ar), y1 - 14 * Math.sin(ar) + 5, 'F',
+    /* Das F steht NEBEN dem Pfeil, nicht hinter seinem Ende. Hinter dem Ende
+       wandert es mit der Lastrichtung mit - und bei einer Last nach unten
+       landet es auf der Bildunterschrift. Quer zum Pfeil bleibt der Abstand
+       zu allem anderen gleich, egal wohin die Kraft zeigt. */
+    txt(e, x1 - 13 * Math.sin(ar), y1 - 13 * Math.cos(ar) + 5, 'F',
       {groesse: 15, fett: true});
 
     /* Was sich dreht - und ob die Last mitdreht */
