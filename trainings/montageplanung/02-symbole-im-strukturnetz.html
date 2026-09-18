@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Symbole im Strukturnetz</title>
+<meta name="description" content="Rechteck oder Oval, volle oder unterbrochene Linie – vier Zeichen, und an der Biegepresse geübt, was sie bedeuten.">
+<meta name="dauer" content="10 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .frage{font-size:19px; line-height:1.4; font-weight:700; margin:0 0 6px;
+    min-height:1.4em}
+  .frageart{font-size:13px; color:var(--muted); margin:0 0 14px}
+  .wahl{display:grid; gap:10px}
+  .wahl button{
+    font:600 15px/1.35 inherit; cursor:pointer; padding:13px 15px; text-align:left;
+    border-radius:10px; border:1px solid var(--border-stark);
+    background:var(--bg); color:var(--fg);
+  }
+  .wahl button:hover:not(:disabled){border-color:var(--accent)}
+  .wahl button:disabled{cursor:default; opacity:.6}
+  .wahl button.war{opacity:1}
+  .wahl button.war.ok{border-color:var(--ok); background:rgba(22,163,74,.14)}
+  .wahl button.war.nein{border-color:var(--bad); background:rgba(220,38,38,.12)}
+  .uhr{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:13px; color:var(--muted); margin:0 0 10px;
+    font-variant-numeric:tabular-nums}
+  .fortschritt{height:8px; border-radius:999px; background:var(--border);
+    overflow:hidden; margin:0 0 16px}
+  .fortschritt i{display:block; height:100%; background:var(--accent);
+    transition:width .2s ease}
+  .bilanz{font-size:19px; font-weight:700; margin:0 0 8px}
+  .rueckblick{list-style:none; margin:12px 0 0; padding:0}
+  .rueckblick li{display:flex; gap:10px; align-items:baseline; padding:5px 0;
+    border-top:1px solid var(--border); font-size:14px}
+  .rueckblick .marke{font-weight:700; flex:0 0 auto}
+  .rueckblick .marke.ok{color:var(--ok)}
+  .rueckblick .marke.nein{color:var(--bad)}
+  .einstellung{display:flex; flex-wrap:wrap; gap:14px; align-items:flex-end;
+    margin:0 0 4px}
+  .einstellung > div{flex:1 1 190px}
+  .einstellung label{display:block; font-size:13px; font-weight:700; margin:0 0 5px}
+  .einstellung select{width:100%; font:inherit; font-size:14px; padding:8px 9px;
+    border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark)}
+  .stufentext{font-size:13.5px; color:var(--muted); margin:8px 0 0}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Montageplanung</p>
+    <h1>Symbole im Strukturnetz</h1>
+    <p class="lead">Vier Zeichen, mehr kennt ein Strukturnetz nicht. Genau deshalb muss man sie sicher lesen.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>So läuft es:</strong> Ein Zeichen oder eine Verbindung der Biegepresse steht da &ndash; gefragt ist, was im Netz dazugehört.</p>
+      <p>Zwei Fragen beantwortet ein Strukturnetz: <em>Berühren sich zwei Teile?</em> Und: <em>Bewegen sie sich dabei gegeneinander?</em> Alles andere steht woanders.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Durchgang</h2>
+
+    <div class="box">
+      <div class="einstellung">
+        <div>
+          <label for="stufe">Schwierigkeit</label>
+          <select id="stufe">
+            <option value="einfach">Einfach &ndash; nur die Zeichen</option>
+            <option value="mittel" selected>Mittel &ndash; dazu echte Verbindungen</option>
+            <option value="schwer">Schwer &ndash; dazu die Grenzen des Netzes</option>
+          </select>
+        </div>
+        <div>
+          <label for="umfang">Wie viele Angaben?</label>
+          <select id="umfang"></select>
+        </div>
+      </div>
+      <p class="stufentext" id="stufentext"></p>
+    </div>
+
+    <div class="box">
+      <div class="uhr">
+        <span id="stand">Angabe 1 von 10</span>
+        <span id="zeit">0:00</span>
+      </div>
+      <div class="fortschritt"><i id="balken" style="width:0%"></i></div>
+
+      <p class="frage" id="frage">&ndash;</p>
+      <p class="frageart" id="frageart"></p>
+
+      <div class="wahl" id="wahl"></div>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+
+      <p style="margin-top:14px">
+        <button type="button" class="knopf" id="btnWeiter" hidden>Weiter</button>
+        <button type="button" class="knopf leise" id="btnNeu">Von vorn</button>
+      </p>
+    </div>
+
+    <div id="ende" hidden>
+      <h3>Ergebnis</h3>
+      <div class="box">
+        <p class="bilanz" id="bilanz">&ndash;</p>
+        <p id="urteil"></p>
+        <div id="rueckblick"></div>
+      </div>
+    </div>
+
+    <h2><span class="nr">2</span>Die Zeichen auf einen Blick</h2>
+
+    <div class="tabellenrahmen">
+      <table>
+        <thead><tr><th>Zeichen</th><th>Bedeutung</th><th>Beispiel an der Presse</th></tr></thead>
+        <tbody>
+          <tr><td><b>Rechteck</b></td><td>Fertigungsteil</td>
+            <td>Grundplatte, Ständer, Exzenterwelle</td></tr>
+          <tr><td><b>Oval</b></td><td>Normteil</td>
+            <td>Schraube, Stift, Druckfeder</td></tr>
+          <tr><td><b>volle Linie</b></td><td>berühren sich, keine Bewegung</td>
+            <td>Ständer auf der Grundplatte</td></tr>
+          <tr><td><b>unterbrochene Linie</b></td>
+            <td>berühren sich und bewegen sich gegeneinander</td>
+            <td>Welle in der Ständerbohrung</td></tr>
+          <tr><td><b>keine Linie</b></td><td>kein Kontakt</td>
+            <td>Stempel und Gesenk</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="normen">Das Strukturnetz ist keine genormte Darstellung,
+      sondern ein Lernwerkzeug. Es zwingt zu zwei Fragen, die man an der
+      Zeichnung beantworten muss: Berühren sie sich? Bewegen sie sich?</p>
+
+
+    <h3>Weiterarbeiten</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="montage-grundlagen-strukturnetz-und-montageplan.html">Werkzeug &#8222;Strukturnetz und Montageplan&#8220; öffnen</a>
+    </p>
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot;
+    <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+var FRAGEART = "Was heißt das im Strukturnetz?";
+
+/* Ein Strukturnetz kennt vier Zeichen und keins mehr. Genau deshalb ist es
+   ein gutes Werkzeug fuer den Anfang: Es gibt nichts zu verwechseln - wenn
+   man die vier kennt. */
+var AUFGABEN = [
+  {frage:"<b>Rechteck</b>", loesung:1, s:1, kurz:"Rechteck",
+   wahl:["Normteil", "Fertigungsteil", "feste Verbindung",
+         "bewegliche Verbindung"],
+   warum:"Ein Rechteck steht für ein Teil, das in der Werkstatt entsteht - "
+     + "eckig wie das Halbzeug, aus dem es gemacht wird."},
+  {frage:"<b>Oval</b>", loesung:0, s:1, kurz:"Oval",
+   wahl:["Normteil", "Fertigungsteil", "feste Verbindung",
+         "bewegliche Verbindung"],
+   warum:"Ein Oval steht für ein Teil, das man bestellt: Schraube, Stift, "
+     + "Feder, Mutter."},
+  {frage:"<b>Volle Linie</b>", loesung:2, s:1, kurz:"volle Linie",
+   wahl:["Normteil", "Fertigungsteil", "feste Verbindung",
+         "bewegliche Verbindung"],
+   warum:"Die Teile berühren sich und bewegen sich nicht gegeneinander."},
+  {frage:"<b>Unterbrochene Linie</b>", loesung:3, s:1,
+   kurz:"unterbrochene Linie",
+   wahl:["Normteil", "Fertigungsteil", "feste Verbindung",
+         "bewegliche Verbindung"],
+   warum:"Die Teile berühren sich und bewegen sich dabei gegeneinander - "
+     + "eine Lagerstelle, eine Führung, ein Gelenk."},
+  {frage:"<b>Keine Linie</b> zwischen zwei Kästchen", loesung:2, s:1,
+   kurz:"keine Linie",
+   wahl:["die Teile sind gleich", "die Teile gehören zur selben Baugruppe",
+         "die Teile berühren sich nicht", "das ist ein Zeichenfehler"],
+   warum:"Keine Linie heißt: kein Kontakt. Stempel und Gesenk der Presse "
+     + "berühren sich nie - dazwischen liegt das Blech."},
+  {frage:"Grundplatte &ndash; Ständer", loesung:0, s:2,
+   kurz:"Platte/Ständer",
+   wahl:["volle Linie", "unterbrochene Linie", "keine Linie",
+         "Oval"],
+   warum:"Der Ständer steht fest auf der Platte und wird verschraubt."},
+  {frage:"Exzenterwelle &ndash; Ständer", loesung:1, s:2, kurz:"Welle/Ständer",
+   wahl:["volle Linie", "unterbrochene Linie", "keine Linie", "Oval"],
+   warum:"Die Welle dreht sich in der Bohrung des Ständers. Berührung mit "
+     + "Bewegung - unterbrochene Linie."},
+  {frage:"Stempelhalter &ndash; Führungsbolzen", loesung:1, s:2,
+   kurz:"Halter/Bolzen",
+   wahl:["volle Linie", "unterbrochene Linie", "keine Linie", "Oval"],
+   warum:"Der Halter gleitet auf dem Bolzen auf und ab - das ist seine "
+     + "Führung."},
+  {frage:"Handhebel &ndash; Exzenterwelle", loesung:0, s:2,
+   kurz:"Hebel/Welle",
+   wahl:["volle Linie", "unterbrochene Linie", "keine Linie", "Oval"],
+   warum:"Der Hebel dreht die Welle mit; zwischen beiden gibt es keine "
+     + "Bewegung. Dafür ist der Kegelstift da."},
+  {frage:"Biegegesenk &ndash; Stempelhalter", loesung:2, s:2,
+   kurz:"Gesenk/Halter",
+   wahl:["volle Linie", "unterbrochene Linie", "keine Linie", "Oval"],
+   warum:"Sie berühren sich nie. In der unteren Endlage bleiben 2 mm - "
+     + "genau so dick ist das Blech."},
+  {frage:"Wie wird eine <b>Druckfeder</b> gezeichnet?", loesung:1, s:3,
+   kurz:"Feder",
+   wahl:["als Rechteck", "als Oval", "als Linie", "gar nicht"],
+   warum:"Eine Feder ist ein Normteil - man kauft sie mit ihrer "
+     + "Bezeichnung, man fertigt sie nicht."},
+  {frage:"Wie wird der <b>Stempelhalter</b> gezeichnet?", loesung:0, s:3,
+   kurz:"Stempelhalter",
+   wahl:["als Rechteck", "als Oval", "als Linie", "gar nicht"],
+   warum:"Ein Fertigungsteil: Es entsteht nach Zeichnung in der Werkstatt."},
+  {frage:"Wie oft steht der <b>Ständer</b> im Strukturnetz?", loesung:1, s:3,
+   kurz:"Ständer, wie oft",
+   wahl:["zweimal, er ist zweimal verbaut", "einmal, als eine Position",
+         "gar nicht, er ist kein eigenes Teil", "so oft wie er Schrauben hat"],
+   warum:"Das Netz zeigt Positionen, nicht Stückzahlen. Wie oft ein Teil "
+     + "verbaut ist, steht in der Stückliste."},
+  {frage:"Was sagt ein Strukturnetz über die <b>Reihenfolge</b>?",
+   loesung:3, s:3, kurz:"Reihenfolge",
+   wahl:["die Reihenfolge von oben nach unten",
+         "die Reihenfolge von links nach rechts",
+         "die Reihenfolge der Positionsnummern", "gar nichts"],
+   warum:"Ein Strukturnetz zeigt, was zusammenhängt - nicht, in welcher "
+     + "Reihenfolge montiert wird. Dafür ist der Vorranggraph da."}
+];
+
+var STUFEN = {
+  einfach: {max:1, text:"Die vier Zeichen und ihre Bedeutung."},
+  mittel:  {max:2, text:"Dazu echte Verbindungen der Biegepresse."},
+  schwer:  {max:3, text:"Dazu die Fragen, die zeigen, was ein Strukturnetz "
+    + "nicht sagt."}
+};
+
+function el(id){ return document.getElementById(id); }
+
+var runde = [], nr = 0, treffer = 0, offen = true, start = 0, uhr = null;
+
+function mischen(liste){
+  var a = liste.slice();
+  for(var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+function vorrat(){
+  var max = STUFEN[el("stufe").value].max;
+  return AUFGABEN.filter(function(a){ return a.s <= max; });
+}
+
+function umfangFuellen(){
+  var feld = el("umfang"), da = vorrat().length, vorher = Number(feld.value) || 0;
+  feld.textContent = "";
+  for(var n = 5; n <= da; n++){
+    var o = document.createElement("option");
+    o.value = String(n);
+    o.textContent = n + (n === da ? " (alle)" : "");
+    feld.appendChild(o);
+  }
+  feld.value = String(Math.min(Math.max(vorher || 10, 5), da));
+}
+
+function zeitText(ms){
+  var s = Math.floor(ms / 1000);
+  return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2);
+}
+
+function uhrLaufen(){
+  if(uhr) clearInterval(uhr);
+  start = Date.now();
+  uhr = setInterval(function(){
+    el("zeit").textContent = zeitText(Date.now() - start);
+  }, 500);
+}
+
+window.TBK_WETTKAMPF = { neu: function(){ neuerDurchgang(); }, ergebnisAn: "ende" };
+
+function neuerDurchgang(){
+  umfangFuellen();
+  el("stufentext").textContent = STUFEN[el("stufe").value].text;
+  runde = mischen(vorrat()).slice(0, Number(el("umfang").value));
+  nr = 0;
+  treffer = 0;
+  el("ende").hidden = true;
+  el("rueckblick").textContent = "";
+  uhrLaufen();
+  zeigen();
+}
+
+function zeigen(){
+  var a = runde[nr];
+  offen = true;
+
+  el("stand").textContent = "Angabe " + (nr + 1) + " von " + runde.length;
+  el("balken").style.width = (100 * nr / runde.length) + "%";
+
+  el("frage").innerHTML = a.frage;
+  el("frageart").textContent = a.art || FRAGEART;
+
+  var w = el("wahl");
+  w.textContent = "";
+  a.wahl.forEach(function(name, i){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.innerHTML = name;
+    b.addEventListener("click", function(){ antwort(i, b); });
+    w.appendChild(b);
+  });
+
+  el("rueck").hidden = true;
+  el("btnWeiter").hidden = true;
+}
+
+function antwort(gewaehlt, knopf){
+  if(!offen) return;
+  offen = false;
+
+  var a = runde[nr];
+  var ok = gewaehlt === a.loesung;
+  if(ok) treffer++;
+  a.richtigBeantwortet = ok;
+
+  var knoepfe = el("wahl").querySelectorAll("button");
+  for(var i = 0; i < knoepfe.length; i++){
+    knoepfe[i].disabled = true;
+    if(i === a.loesung) knoepfe[i].className = "war ok";
+  }
+  if(!ok) knopf.className = "war nein";
+
+  var r = el("rueck");
+  r.hidden = false;
+  r.className = "rueckmeldung " + (ok ? "ja" : "nein");
+  r.innerHTML = "<strong>" + a.wahl[a.loesung] + ".</strong> " + a.warum;
+
+  el("btnWeiter").hidden = false;
+  el("btnWeiter").focus();
+}
+
+function weiter(){
+  nr++;
+  if(nr < runde.length){ zeigen(); return; }
+
+  if(uhr) clearInterval(uhr);
+  el("balken").style.width = "100%";
+  el("stand").textContent = "fertig";
+  el("ende").hidden = false;
+
+  el("bilanz").textContent = treffer + " von " + runde.length + " richtig, in "
+    + zeitText(Date.now() - start) + " min.";
+
+  var anteil = treffer / runde.length;
+  el("urteil").textContent = anteil === 1
+    ? "Vollständig. Damit könnt ihr jedes Netz lesen."
+    : (anteil >= 0.8 ? "Fast. Unten steht, was danebenging." : "Die Tabelle unten hat fünf Zeilen. Lest sie, dann noch einmal von vorn.");
+
+  var ul = document.createElement("ul");
+  ul.className = "rueckblick";
+  runde.forEach(function(a){
+    var li = document.createElement("li");
+    li.innerHTML = '<span class="marke ' + (a.richtigBeantwortet ? "ok" : "nein")
+      + '">' + (a.richtigBeantwortet ? "richtig" : "falsch") + "</span><span>"
+      + a.kurz + " &ndash; " + a.wahl[a.loesung] + "</span>";
+    ul.appendChild(li);
+  });
+  el("rueckblick").textContent = "";
+  el("rueckblick").appendChild(ul);
+  document.dispatchEvent(new CustomEvent("tbk-durchgang-ende",
+    {detail:{richtig: treffer, gesamt: runde.length}}));
+
+  el("ende").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+
+el("btnWeiter").addEventListener("click", weiter);
+el("btnNeu").addEventListener("click", neuerDurchgang);
+el("stufe").addEventListener("change", neuerDurchgang);
+el("umfang").addEventListener("change", neuerDurchgang);
+
+neuerDurchgang();
+</script>
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/wettkampf.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

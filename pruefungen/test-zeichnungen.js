@@ -276,6 +276,10 @@ function pruefe(svg, name, rel) {
        danebenliegende Mantellinie als halb bemasztes Mass. Gruppen mit
        der Kennung "hinweis" sagen, was die Spitze bedeutet. */
     if (e.closest('.hinweis')) return;
+    /* Ein Schnittpfeil zeigt die Blickrichtung, nicht ein Mass. Er steht
+       nach DIN ISO 128-40 allein an seinem Ende der Schnittlinie - ein
+       zweiter Pfeil am anderen Ende waere dort schlicht falsch. */
+    if (e.closest('.schnittmarke')) return;
     const pt = dreieckPunkte(e);
     if (!pt) return;
     let weit = 0;

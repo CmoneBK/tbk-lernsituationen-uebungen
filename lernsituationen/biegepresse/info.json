@@ -1,0 +1,18 @@
+{
+  "titel": "Montage: Baugruppen - Die Biegepresse",
+  "platz": 1,
+  "lead": "Zwölf Positionen werden zu einer Exzenter-Handbiegepresse: die Zusammenstellung lesen, die Stückliste vervollständigen, das Strukturnetz aufstellen, die Montagereihenfolge planen und begründen, in 3D montieren, die Kraft am Hebel rechnen und am Ende ohne Schaden wieder zerlegen.",
+  "untertitel": "Zwölf Positionen, ein Montageplan: Zeichnung lesen, Strukturnetz aufstellen, Reihenfolge begründen, montieren und rechnen.",
+  "werkzeuge": [
+    {
+      "datei": "montage-grundlagen-strukturnetz-und-montageplan.html",
+      "name": "Strukturnetz und Montageplan",
+      "art": "lektion"
+    },
+    {
+      "datei": "montage-grundlagen-montageplaner.html",
+      "name": "Montageplaner",
+      "art": "simulation"
+    }
+  ]
+}

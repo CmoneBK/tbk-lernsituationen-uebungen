@@ -1,0 +1,27 @@
+{
+  "titel": "Montage: Grundlagen - Montageplanung",
+  "platz": 1,
+  "lead": "Sieben Übungen rund um den Montageplan der Biegepresse: die Zusammenstellung lesen, Normteile von Fertigungsteilen unterscheiden, das Strukturnetz lesen, Vorrang von Freiheit trennen, eine gültige Reihenfolge aufstellen, das richtige Werkzeug wählen und am Ende ohne Schaden zerlegen.",
+  "untertitel": "Sieben Übungen zum Montageplan: Zeichnung lesen, Strukturnetz, Vorrangbeziehungen, Reihenfolge, Werkzeug und Demontage.",
+  "werkzeuge": [
+    {
+      "datei": "montage-grundlagen-strukturnetz-und-montageplan.html",
+      "name": "Strukturnetz und Montageplan",
+      "art": "lektion"
+    },
+    {
+      "datei": "montage-grundlagen-montageplaner.html",
+      "name": "Montageplaner",
+      "art": "simulation"
+    }
+  ],
+  "reihenfolge": [
+    "01-die-zusammenstellung-lesen.html",
+    "02-normteil-oder-fertigungsteil.html",
+    "03-das-strukturnetz-lesen.html",
+    "04-vorrang-oder-frei.html",
+    "05-die-reihenfolge-planen.html",
+    "06-womit-und-in-welcher-lage.html",
+    "07-wieder-auseinander.html"
+  ]
+}

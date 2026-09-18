@@ -1,0 +1,23 @@
+{
+  "titel": "Montage: Grundlagen - Montageplanung",
+  "platz": 1,
+  "lead": "Drei schnelle Durchgänge zur Montageplanung: die vier Grundfunktionen, die Zeichen des Strukturnetzes und die Normbezeichnungen der Teile, aus denen die Biegepresse besteht.",
+  "untertitel": "Drei Schnellchecks: Grundfunktionen, Strukturnetz-Zeichen und Normbezeichnungen.",
+  "werkzeuge": [
+    {
+      "datei": "montage-grundlagen-strukturnetz-und-montageplan.html",
+      "name": "Strukturnetz und Montageplan",
+      "art": "lektion"
+    },
+    {
+      "datei": "montage-grundlagen-montageplaner.html",
+      "name": "Montageplaner",
+      "art": "simulation"
+    }
+  ],
+  "reihenfolge": [
+    "01-begriffe-der-montage.html",
+    "02-symbole-im-strukturnetz.html",
+    "03-normbezeichnung-lesen.html"
+  ]
+}

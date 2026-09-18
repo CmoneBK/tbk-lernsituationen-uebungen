@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wieder auseinander</title>
+<meta name="description" content="Demontage der Biegepresse: rückwärts denken, den Kegelstift von der richtigen Seite treiben, die Federn entspannen und die Ständer kennzeichnen.">
+<meta name="dauer" content="20 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .bild{margin:16px 0 4px}
+  .bild svg{width:100%; height:auto; display:block}
+  .bild figcaption{font-size:13px; color:var(--muted); margin-top:6px;
+    text-align:center}
+  .pos{
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:24px; height:24px; padding:0 5px; border-radius:12px;
+    flex:0 0 auto; background:var(--accent); color:#fff; font-size:13px;
+    font-weight:700; margin-right:8px; vertical-align:-5px;
+    font-variant-numeric:tabular-nums;
+  }
+  table.fr td:first-child{line-height:1.5}
+  table.fr select{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:7px 8px; border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  table.fr select:focus-visible{outline:2px solid var(--accent);
+    outline-offset:1px}
+  .urteil{font-size:13.5px; line-height:1.4; font-weight:600;
+    white-space:nowrap}
+  .urteil.ja{color:var(--ok)}
+  .urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Montageplanung</p>
+    <h1>Wieder auseinander</h1>
+    <p class="lead">Wer montieren kann, kann noch nicht demontieren. Beim Zerlegen geht kaputt, was beim Zusammenbau hielt.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Ausgangslage:</strong> Die Presse ist montiert und geprüft. Jetzt wird sie wieder zerlegt &ndash; sie geht als Bausatz in den Unterricht, und jedes Teil muss dabei heil bleiben.</p>
+      <p>Die Grundregel ist einfach: <strong>Die Demontage läuft rückwärts.</strong> Wer zuletzt kam, geht zuerst. Aber sie ist nicht nur die Umkehrung &ndash; es gibt Handgriffe, die es beim Zusammenbau gar nicht gab: entspannen, kennzeichnen, austreiben.</p>
+    </div>
+
+
+    <h2><span class="nr">1</span>Sieben Fragen zur Demontage</h2>
+
+    <div class="tabellenrahmen">
+      <table class="fr">
+        <thead><tr><th>Frage</th><th>Antwort</th><th></th></tr></thead>
+        <tbody id="tabFragen"></tbody>
+      </table>
+    </div>
+
+    <p>
+      <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+      <button type="button" class="knopf leise" id="btnLoesung">Lösung zeigen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz">Noch nichts gewählt.</p>
+
+    <details id="loesungBox">
+      <summary>Lösung mit Begründung</summary>
+      <div id="loesung"></div>
+    </details>
+
+
+    <h3>Weiterarbeiten</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="montage-grundlagen-strukturnetz-und-montageplan.html">Werkzeug &#8222;Strukturnetz und Montageplan&#8220; öffnen</a>
+    </p>
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot;
+    <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+function el(id){ return document.getElementById(id); }
+
+var FRAGEN = [
+  {
+    "frage": "Womit beginnt die Demontage?",
+    "loesung": "mit dem Kegelstift",
+    "warum": "Rückwärts heißt: zuerst das, was zuletzt kam und über dem nichts mehr liegt. Der Kegelstift war der letzte Handgriff."
+  },
+  {
+    "frage": "Von welcher Seite wird der Kegelstift ausgetrieben?",
+    "loesung": "von der dünnen Seite her",
+    "warum": "Ein Kegelstift verjüngt sich 1:50. Er geht nur dorthin heraus, wo er weiter wird. Von der dicken Seite geschlagen verkeilt er sich."
+  },
+  {
+    "frage": "Was ist beim Abnehmen des Stempelhalters zu beachten?",
+    "loesung": "die Federn stehen unter Vorspannung",
+    "warum": "Auch in der oberen Lage sind sie noch 5 mm zusammengedrückt. Wer den Halter einfach abhebt, bekommt sie entgegen."
+  },
+  {
+    "frage": "Welche Verbindung ist <em>nicht</em> ohne weiteres lösbar?",
+    "loesung": "keine - alle sind lösbar",
+    "warum": "Schrauben, Stifte und Steckverbindungen: Diese Presse ist ganz aus lösbaren Verbindungen gebaut. Das ist kein Zufall, sondern Absicht - sie soll ja als Bausatz in den Unterricht."
+  },
+  {
+    "frage": "Die Ständer sind abgeschraubt. Was löst sich dann von selbst?",
+    "loesung": "die Exzenterwelle",
+    "warum": "Sie wird nur von den beiden Ständerbohrungen gehalten. Deshalb gehört sie beim Abschrauben festgehalten."
+  },
+  {
+    "frage": "Das Gesenk lässt sich nach dem Lösen der Schrauben nicht abheben. Woran liegt das?",
+    "loesung": "es sitzt auf den Zylinderstiften",
+    "warum": "Die Stifte halten es in der Lage. Es muss gerade nach oben abgezogen werden, nicht gekippt - sonst verkantet es und beschädigt die Stifte."
+  },
+  {
+    "frage": "Welche Teile werden beim Zerlegen gekennzeichnet?",
+    "loesung": "die beiden Ständer",
+    "warum": "Sie sehen gleich aus, sind aber zusammen mit der Welle eingelaufen. Wer sie vertauscht, bekommt eine Welle, die schwerer läuft als vorher. Ein Körnerschlag genügt."
+  }
+];
+var WAHL = ["mit dem Kegelstift", "mit der Grundplatte", "mit den Führungsbolzen", "von der dünnen Seite her", "von der dicken Seite her", "die Federn stehen unter Vorspannung", "keine - alle sind lösbar", "die Exzenterwelle", "es sitzt auf den Zylinderstiften", "die beiden Ständer", "die Schrauben"];
+
+
+/* --------------------------------------------------------------------------
+   Die Fragen: je eine Zeile mit einer Auswahl. Geprüft wird auf Knopfdruck,
+   nicht bei jeder Wahl - wer zwischendurch die Meinung ändert, soll das
+   ohne rote Zwischenrufe tun können.
+   -------------------------------------------------------------------------- */
+(function fragenAufbauen(){
+  var tb = el("tabFragen");
+  FRAGEN.forEach(function(f, i){
+    var tr = document.createElement("tr");
+
+    var td0 = document.createElement("td");
+    td0.innerHTML = f.frage;
+    tr.appendChild(td0);
+
+    var td1 = document.createElement("td");
+    var s = document.createElement("select");
+    s.id = "f" + i;
+    s.setAttribute("aria-label", "Antwort zu Frage " + (i + 1));
+    var leer = document.createElement("option");
+    leer.value = ""; leer.textContent = "– bitte wählen –";
+    s.appendChild(leer);
+    (f.wahl || WAHL).forEach(function(w){
+      var o = document.createElement("option");
+      o.value = w; o.textContent = w;
+      s.appendChild(o);
+    });
+    td1.appendChild(s);
+    tr.appendChild(td1);
+
+    var td2 = document.createElement("td");
+    td2.className = "urteil"; td2.id = "u" + i; td2.textContent = "–";
+    tr.appendChild(td2);
+
+    tb.appendChild(tr);
+  });
+
+  el("loesung").innerHTML = FRAGEN.map(function(f, i){
+    return "<p><strong>" + (i + 1) + ". " + f.loesung + "</strong> &ndash; "
+      + f.warum + "</p>";
+  }).join("");
+}());
+
+el("btnPruefen").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  FRAGEN.forEach(function(f, i){
+    var v = el("f" + i).value, u = el("u" + i);
+    if(!v){ u.textContent = "–"; u.className = "urteil"; offen++; return; }
+    var ok = v === f.loesung;
+    u.textContent = ok ? "richtig" : "nein";
+    u.className = "urteil " + (ok ? "ja" : "nein");
+    if(ok) r++;
+  });
+  el("bilanz").textContent = r + " von " + FRAGEN.length + " richtig."
+    + (offen ? " (" + offen + " noch offen.)" : "");
+  if(r === FRAGEN.length) el("loesungBox").open = true;
+});
+
+el("btnLoesung").addEventListener("click", function(){
+  el("loesungBox").open = true;
+});
+</script>
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/fortschritt.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

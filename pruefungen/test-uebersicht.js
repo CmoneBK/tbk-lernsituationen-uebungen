@@ -133,7 +133,12 @@ tabs[0].dispatchEvent(new dom.window.MouseEvent('click', { bubbles: true }));
 p('Suche gilt nach dem Wechsel weiter', sichtbar(sim) === 1, sichtbar(sim) + ' Treffer');
 
 tippen('');
-p('Leeren zeigt wieder alles', sichtbar(sim) === 19);
+/* Wie viele es sind, sagt die Seite selbst. Eine feste Zahl hier waere eine
+   zweite Wahrheit, die bei jedem neuen Werkzeug nachgezogen werden muesste -
+   und die dann nicht die Suche prueft, sondern das Zaehlen. */
+const alleKarten = sim.querySelectorAll('a.card').length;
+p('Leeren zeigt wieder alles', sichtbar(sim) === alleKarten,
+  sichtbar(sim) + ' von ' + alleKarten);
 const kopfWeg = [...sim.querySelectorAll('.bereich, .cat')].filter(h => h.hidden).length;
 p('keine Ueberschrift bleibt versteckt', kopfWeg === 0, kopfWeg + ' versteckt');
 

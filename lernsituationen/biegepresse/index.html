@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Montage: Baugruppen - Die Biegepresse</title>
+<meta name="description" content="Eine Exzenter-Handbiegepresse aus zwölf Positionen: Zusammenstellung lesen, Stückliste vervollständigen, Strukturnetz aufstellen, Montagereihenfolge planen, in 3D montieren, die Kraft am Hebel rechnen und wieder zerlegen.">
+<meta name="dauer" content="180 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/zeichnen.js"></script>
+<script src="../../assets/biegepresse.js"></script>
+<script src="../../assets/montageplan.js"></script>
+<style>
+  /* Nur was diese Lernsituation zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .bild{margin:16px 0 4px}
+  .bild svg{width:100%; height:auto; display:block}
+  .bild figcaption{font-size:13px; color:var(--muted); margin-top:6px; text-align:center}
+
+  .schritt{
+    display:inline-block; font-size:12px; font-weight:700; letter-spacing:.08em;
+    text-transform:uppercase; color:var(--accent); margin:26px 0 -4px;
+  }
+
+  .auftragskarte{
+    border-left:4px solid var(--accent); background:var(--card);
+    border-radius:0 12px 12px 0; padding:18px 20px; margin:16px 0;
+    box-shadow:var(--shadow);
+  }
+  .auftragskarte .von{font-size:13px; color:var(--muted); margin:0 0 8px}
+
+  .daten{display:flex; flex-wrap:wrap; gap:10px; margin:16px 0 0}
+  .daten div{
+    flex:1 1 150px; background:var(--bg); border:1px solid var(--border);
+    border-radius:10px; padding:10px 14px;
+  }
+  .daten .l{display:block; font-size:13px; color:var(--muted)}
+  .daten .v{font-size:18px; font-weight:700; font-variant-numeric:tabular-nums}
+
+  .haken{list-style:none; margin:8px 0 0; padding:0}
+  .haken li{padding:4px 0 4px 28px; position:relative}
+  .haken li::before{
+    content:"\2610"; position:absolute; left:0; top:2px;
+    font-size:18px; color:var(--muted);
+  }
+
+  .warnschild{
+    display:flex; gap:12px; align-items:flex-start;
+    border:1px solid var(--warn); border-left-width:4px; border-radius:10px;
+    background:var(--card); padding:12px 16px; margin:16px 0; font-size:15px;
+  }
+  .warnschild::before{content:"\26A0"; font-size:20px; line-height:1.1; color:var(--warn)}
+
+  .protokoll{list-style:none; margin:14px 0 0; padding:0}
+  .protokoll li{
+    border-left:3px solid var(--border-stark); padding:6px 0 6px 14px;
+    margin:0 0 12px; font-size:15.5px;
+  }
+  .protokoll .wer{
+    display:block; font-size:12.5px; color:var(--muted); font-weight:700;
+    letter-spacing:.04em; margin:0 0 2px;
+  }
+
+  /* Die Positionsnummer, überall dieselbe Marke. */
+  .pos{
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:24px; height:24px; padding:0 5px; border-radius:12px; flex:0 0 auto;
+    background:var(--accent); color:#fff; font-size:13px; font-weight:700;
+    margin-right:8px; vertical-align:-5px; font-variant-numeric:tabular-nums;
+  }
+
+  table.stueck td:first-child{white-space:nowrap; text-align:center}
+  table.stueck select, table.stueck input{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:7px 8px; border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  table.stueck select:focus-visible, table.stueck input:focus-visible{
+    outline:2px solid var(--accent); outline-offset:1px}
+  .urteil{font-size:13.5px; line-height:1.4; font-weight:600}
+  .urteil.ja{color:var(--ok)}
+  .urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+
+  .rechenweg{
+    background:var(--bg); border:1px solid var(--border); border-radius:10px;
+    padding:14px 16px; margin:14px 0; font-variant-numeric:tabular-nums;
+  }
+  .rechenweg p{margin:0 0 9px}
+  .rechenweg p:last-child{margin:0}
+  .rechenweg .schluss{font-weight:700}
+
+  /* --- Strukturnetz und Montageplan ----------------------------------- */
+  .netz{margin:16px 0 4px; border:1px solid var(--border); border-radius:12px;
+    padding:10px; background:var(--card); overflow-x:auto}
+  .netz svg{width:100%; min-width:620px; height:auto; display:block}
+
+  .mp-vorrat{display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 0}
+  .mp-teil{
+    font:inherit; font-size:14px; padding:8px 12px; border-radius:9px;
+    border:1px solid var(--border-stark); background:var(--card);
+    color:inherit; cursor:pointer; display:inline-flex; align-items:center;
+  }
+  .mp-teil.norm{border-radius:18px}
+  .mp-teil:hover:not(:disabled){border-color:var(--accent)}
+  .mp-teil:disabled{opacity:.35; cursor:default}
+  .mp-teil.zuckt{animation:zuck .28s 2}
+  @keyframes zuck{0%{transform:translateX(0)}25%{transform:translateX(-4px)}
+    75%{transform:translateX(4px)}100%{transform:translateX(0)}}
+  .mp-nr{
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:22px; height:22px; padding:0 4px; border-radius:11px;
+    background:var(--accent); color:#fff; font-size:12px; font-weight:700;
+    margin-right:8px; font-variant-numeric:tabular-nums;
+  }
+  .mp-kopf{margin:0; font-size:13.5px; color:var(--muted)}
+  .mp-zwischen{margin:16px 0 4px; font-weight:600; font-size:14px}
+  .mp-plan{margin:0; padding:0 0 0 4px; list-style:none;
+    counter-reset:mpschritt}
+  .mp-plan li{
+    counter-increment:mpschritt; display:flex; align-items:center; gap:8px;
+    padding:5px 0; border-bottom:1px dashed var(--border); font-size:14.5px;
+  }
+  .mp-plan li::before{
+    content:counter(mpschritt) "."; min-width:26px; color:var(--muted);
+    font-variant-numeric:tabular-nums; font-size:13px;
+  }
+  .mp-weg{
+    margin-left:auto; font:inherit; font-size:12.5px; padding:3px 9px;
+    border-radius:7px; border:1px solid var(--border-stark);
+    background:transparent; color:var(--muted); cursor:pointer;
+  }
+  .mp-rueck{margin:12px 0 0; padding:9px 12px; border-radius:8px; font-size:.94rem}
+  .mp-rueck.ja{background:rgba(22,163,74,.12); border-left:4px solid var(--ok)}
+  .mp-rueck.nein{background:rgba(220,38,38,.10); border-left:4px solid var(--bad)}
+
+  /* --- Die Presse in 3D ------------------------------------------------ */
+  .karte3d{border:1px solid var(--border); border-radius:12px;
+    padding:14px 16px; margin:18px 0 0; background:var(--card)}
+  .karte3d h3{margin:0 0 4px; font-size:1.02rem}
+  .karte3d .sub{margin:0 0 12px; color:var(--muted); font-size:.9rem}
+  .buehne{width:100%; aspect-ratio:16/10; min-height:260px;
+    border:1px solid var(--border); border-radius:10px; overflow:hidden;
+    background:var(--bg)}
+  @media (max-width:640px){ .buehne{aspect-ratio:4/3} }
+  .schrittzeile{margin:10px 0 4px; font-size:.92rem; color:var(--muted);
+    min-height:1.4em}
+  .ohne3d{color:var(--muted); font-size:.9rem; margin:14px 0 0}
+  @media print{ .karte3d{display:none} .netz svg{min-width:0} }
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Lernsituation &middot; Montage</p>
+    <h1>Die Biegepresse</h1>
+    <p class="lead">Zwölf Positionen liegen auf dem Tisch. Daraus wird eine
+      Presse &ndash; aber nicht in beliebiger Reihenfolge, und nicht ohne Plan.</p>
+  </header>
+
+  <main class="wrap">
+
+    <p class="schritt">1 &middot; Informieren</p>
+    <h2><span class="nr">1</span>Der Auftrag</h2>
+
+    <div class="auftragskarte">
+      <p class="von">Werkstattauftrag 41/26 &middot; Ausbildungswerkstatt</p>
+      <p>Für den Unterricht in der Blechbearbeitung werden <strong>zwölf
+      Exzenter-Handbiegepressen</strong> gebraucht. Die Einzelteile sind
+      gefertigt und liegen bereit, die Normteile sind aus dem Lager geholt.</p>
+      <p>Ihr montiert die <strong>erste</strong> Presse &ndash; und ihr schreibt
+      dabei den <strong>Montageplan</strong>, nach dem die übrigen elf gebaut
+      werden. Der Plan ist das eigentliche Ergebnis: Er muss so genau sein,
+      dass jemand, der die Presse noch nie gesehen hat, sie damit
+      zusammenbekommt.</p>
+    </div>
+
+    <div class="daten">
+      <div><span class="l">Positionen</span><span class="v">12</span></div>
+      <div><span class="l">Einzelteile</span><span class="v">20</span></div>
+      <div><span class="l">Hub</span><span class="v">12 mm</span></div>
+      <div><span class="l">Blech</span><span class="v">30 × 2 mm</span></div>
+    </div>
+
+    <ul class="protokoll">
+      <li><span class="wer">Ausbilder</span>„Ihr könnt die Teile in fast
+        beliebiger Reihenfolge zusammenbauen. Fast. An ein paar Stellen geht
+        nur eine &ndash; und die findet ihr nicht durch Probieren, sondern
+        indem ihr die Zeichnung lest."</li>
+      <li><span class="wer">Auszubildende</span>„Und wenn wir uns vertun?"</li>
+      <li><span class="wer">Ausbilder</span>„Dann müsst ihr wieder auseinander.
+        Genau deshalb schreiben wir den Plan <em>vorher</em>."</li>
+    </ul>
+
+    <h2><span class="nr">2</span>Die Zusammenstellung lesen</h2>
+
+    <p>Die Zeichnung zeigt die fertige Presse in drei Schnitten. Sie trägt
+    keine Fertigungsmaße &ndash; die stehen auf den Einzelteilzeichnungen.
+    Hier stehen nur die <strong>Hauptmaße</strong>: was außen herum passt,
+    was zusammenpasst und was die Presse tut.</p>
+
+    <figure class="bild" id="bildPresse"></figure>
+
+    <p>Sechs Fragen an die Zeichnung. Wer sie beantworten kann, hat sie
+    gelesen.</p>
+
+    <div class="tabellenrahmen">
+      <table class="stueck">
+        <thead><tr><th>Frage</th><th>Antwort</th><th></th></tr></thead>
+        <tbody id="tabLesen"></tbody>
+      </table>
+    </div>
+
+    <p><button type="button" class="knopf" id="btnLesen">Prüfen</button></p>
+    <p class="bilanzzeile" id="bilanzLesen">Noch nichts gewählt.</p>
+
+    <details>
+      <summary>Lösung: was in der Zeichnung steht</summary>
+      <div id="loesungLesen"></div>
+    </details>
+
+    <p class="schritt">2 &middot; Planen</p>
+    <h2><span class="nr">3</span>Die Stückliste vervollständigen</h2>
+
+    <p>Die Stückliste ist getrennt von der Zeichnung erstellt &ndash; deshalb
+    steht die Zeichnungsnummer oben drauf. Fünf Zeilen sind noch offen.</p>
+
+    <p class="fussnote">Aufbau nach Tabellenbuch: Pos.-Nr., Menge, Benennung,
+      Werkstoff bzw. Normkurzbezeichnung, Bemerkung. Eine Normbezeichnung
+      besteht aus Benennung, Norm, gegebenenfalls Form oder Typ, den Maßen
+      und dem Werkstoff oder der Festigkeitsklasse.</p>
+
+    <div class="tabellenrahmen">
+      <table class="stueck">
+        <thead><tr>
+          <th>Pos.</th><th>Menge</th><th>Benennung, Werkstoff / Norm</th>
+          <th>Bemerkung</th>
+        </tr></thead>
+        <tbody id="tabStueck"></tbody>
+      </table>
+    </div>
+
+    <p><button type="button" class="knopf" id="btnStueck">Prüfen</button></p>
+    <p class="bilanzzeile" id="bilanzStueck">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: die vollständige Stückliste</summary>
+      <div id="loesungStueck"></div>
+    </details>
+
+    <h2><span class="nr">4</span>Das Strukturnetz</h2>
+
+    <p>Ein Strukturnetz beantwortet zwei Fragen und sonst keine:
+    <em>Berühren sich zwei Teile?</em> Und wenn ja: <em>Bewegen sie sich
+    dabei gegeneinander?</em></p>
+
+    <ul>
+      <li><strong>Rechteck</strong> &ndash; ein Fertigungsteil, also etwas,
+        das in der Werkstatt entsteht.</li>
+      <li><strong>Oval</strong> &ndash; ein Normteil, also etwas, das man
+        bestellt.</li>
+      <li><strong>Volle Linie</strong> &ndash; die beiden Teile berühren
+        sich, ohne sich gegeneinander zu bewegen.</li>
+      <li><strong>Unterbrochene Linie</strong> &ndash; sie bewegen sich
+        gegeneinander.</li>
+    </ul>
+
+    <div class="netz" id="netzPresse"></div>
+    <p class="fussnote">Das Netz zeigt alle 18 Verbindungen der Presse.
+      Die Grundplatte berührt fast alles &ndash; deshalb laufen von ihr so
+      viele Linien weg, und deshalb kreuzen sich einige. Das ist keine
+      schlechte Zeichnung, sondern die Aussage: Die Grundplatte trägt.</p>
+
+    <p>Fünf Verbindungen, fünf Fragen:</p>
+
+    <div class="tabellenrahmen">
+      <table class="stueck">
+        <thead><tr><th>Verbindung</th><th>Wie verbunden?</th><th></th></tr></thead>
+        <tbody id="tabNetz"></tbody>
+      </table>
+    </div>
+
+    <p><button type="button" class="knopf" id="btnNetz">Prüfen</button></p>
+    <p class="bilanzzeile" id="bilanzNetz">Noch nichts gewählt.</p>
+
+    <details>
+      <summary>Lösung: warum welche Linie</summary>
+      <div id="loesungNetz"></div>
+    </details>
+
+    <p class="schritt">3 &middot; Entscheiden</p>
+    <h2><span class="nr">5</span>Die Reihenfolge planen</h2>
+
+    <p>Jetzt der Montageplan. Klickt die Positionen in der Reihenfolge an, in
+    der ihr sie einbauen würdet. Geprüft wird erst am Schluss &ndash; hier
+    darf man sich vertun, und genau darum geht es beim Planen.</p>
+
+    <div class="warnschild">
+      <div><strong>Es gibt nicht die eine richtige Reihenfolge.</strong>
+      Für diese Presse sind <strong id="zahlFolgen">viele</strong>
+      Reihenfolgen gültig. Geprüft wird deshalb nicht gegen eine Musterlösung,
+      sondern gegen die Vorrangbeziehungen: Was muss vor was? Alles Übrige
+      ist eure Entscheidung.</div>
+    </div>
+
+    <div id="planPlanen"></div>
+
+    <p>
+      <button type="button" class="knopf leise" id="btnPlanVonVorn">Von vorn</button>
+    </p>
+
+    <details>
+      <summary>Lösung: die Vorrangbeziehungen im Klartext</summary>
+      <div id="loesungVorrang"></div>
+    </details>
+
+    <p class="schritt">4 &middot; Ausführen</p>
+    <h2><span class="nr">6</span>Montieren</h2>
+
+    <div class="karte3d" id="karte3d" hidden>
+      <h3>Die Presse entsteht</h3>
+      <p class="sub">Dieselben zwölf Positionen, jetzt am Modell. Klickt das
+        Teil an, das als nächstes eingebaut wird &ndash; es fliegt an seinen
+        Platz. Hier wird jeder Fehlgriff sofort erklärt: Ihr steht ja an der
+        Maschine und nicht am Schreibtisch.</p>
+      <div class="buehne" id="buehne3d"></div>
+      <p class="schrittzeile" id="zeile3d"></p>
+      <div id="planBauen"></div>
+      <p>
+        <button type="button" class="knopf leise" id="btn3dVonVorn">Von vorn</button>
+        <button type="button" class="knopf leise" id="btn3dFertig">Fertig zeigen</button>
+      </p>
+      <p class="fussnote">Ziehen dreht die Presse, das Mausrad zoomt. Wer den
+        Stempelhalter einbauen will, muss ihn von oben über die Bolzen
+        fädeln &ndash; von der Seite geht es nicht, und genau das sagt die
+        Vorrangbeziehung.</p>
+    </div>
+
+    <p class="ohne3d" id="ohne3d" hidden>Dieses Gerät kann keine
+      3D-Darstellung zeigen. Der Montageplan aus Teil 5 reicht für alles,
+      was hier gefragt ist.</p>
+
+    <p class="schritt">5 &middot; Kontrollieren</p>
+    <h2><span class="nr">7</span>Wie viel Kraft kommt unten an?</h2>
+
+    <p>Die Presse ist ein Hebel, hinter dem ein zweiter Hebel steckt. Am
+    Handhebel greift die Hand an, 280 mm von der Wellenmitte entfernt. Der
+    Exzenter drückt mit seiner Exzentrizität von 6 mm auf den
+    Stempelhalter &ndash; er wirkt also wie eine Kurbel mit 6 mm Radius.</p>
+
+    <div class="daten">
+      <div><span class="l">Hebellänge <em>l</em></span><span class="v">280 mm</span></div>
+      <div><span class="l">Handkraft <em>F</em><sub>H</sub></span><span class="v">150 N</span></div>
+      <div><span class="l">Exzentrizität <em>e</em></span><span class="v">6 mm</span></div>
+      <div><span class="l">Federrate <em>R</em></span><span class="v">2,4 N/mm</span></div>
+    </div>
+
+    <p class="fussnote">Gerechnet wird die ungünstigste Stellung: Steht die
+      Exzentrizität waagerecht, hebt sich der Stempel am schnellsten, und
+      dort ist die Kraft am kleinsten. Wer damit rechnet, ist auf der
+      sicheren Seite. Reibung bleibt außen vor.</p>
+
+    <div class="tabellenrahmen">
+      <table class="stueck">
+        <thead><tr><th>Größe</th><th>Wert</th><th>Einheit</th><th></th></tr></thead>
+        <tbody id="tabRechnen"></tbody>
+      </table>
+    </div>
+
+    <p><button type="button" class="knopf" id="btnRechnen">Prüfen</button></p>
+    <p class="bilanzzeile" id="bilanzRechnen">Noch nichts eingetragen.</p>
+
+    <details>
+      <summary>Lösung: der Rechenweg</summary>
+      <div class="rechenweg">
+        <p><strong>Moment am Handhebel</strong><br>
+          <em>M</em> = <em>F</em><sub>H</sub> &middot; <em>l</em>
+          = 150 N &middot; 0,28 m = <strong>42 Nm</strong></p>
+        <p><strong>Kraft am Stempel</strong><br>
+          Dasselbe Moment wirkt am Exzenter, nur mit 6 mm statt 280 mm
+          Hebelarm.<br>
+          <em>F</em><sub>St</sub> = <em>M</em> / <em>e</em>
+          = 42 Nm / 0,006 m = <strong>7000 N</strong></p>
+        <p><strong>Was die Federn abziehen</strong><br>
+          In der unteren Endlage ist jede Feder von 48 mm auf 31 mm
+          zusammengedrückt, also um 17 mm.<br>
+          <em>F</em><sub>F</sub> = 2 &middot; 2,4 N/mm &middot; 17 mm
+          = <strong>81,6 N</strong></p>
+        <p class="schluss">Nutzbare Presskraft
+          = 7000 N &minus; 82 N &asymp; <strong>6,9 kN</strong> &ndash;
+          aus 150 N Handkraft. Die Presse übersetzt rund
+          <strong>47-fach</strong>.</p>
+        <p>Und das ist der Grund für die Warnung an der Maschine: Was man mit
+        einer Hand aufbringt, zerquetscht unten einen Finger.</p>
+      </div>
+    </details>
+
+    <h2><span class="nr">8</span>Probebiegen, prüfen, zerlegen</h2>
+
+    <p>Bevor die übrigen elf gebaut werden, wird die erste geprüft. Die
+    Liste ist kurz, aber keine Zeile darf fehlen.</p>
+
+    <ul class="haken">
+      <li>Läuft der Hebel über den ganzen Weg leicht? Klemmt er, sitzt der
+        Stempelhalter schief auf den Bolzen.</li>
+      <li>Kommt der Stempelhalter von selbst wieder hoch? Wenn nicht, sind
+        die Federn falsch herum eingebaut oder zu weit zusammengedrückt.</li>
+      <li>Steht der Stempel mittig über der Nut? Wenn nicht, sind die
+        Zylinderstifte des Gesenks nicht bis zum Anschlag eingetrieben.</li>
+      <li>Bleiben in der unteren Endlage 2 mm zwischen Stempel und
+        Nutgrund? Das ist die Dicke des Blechs &ndash; ohne diesen Spalt
+        schlägt der Stempel auf.</li>
+      <li>Ein Probestreifen 30 × 2 mm: Ist der Winkel sauber, ohne Riss auf
+        der Außenseite?</li>
+      <li>Sitzt der Kegelstift fest und steht er auf der dünnen Seite
+        heraus, damit man ihn wieder austreiben kann?</li>
+    </ul>
+
+    <p>Und dann wieder auseinander &ndash; die Presse geht als Bausatz in den
+    Unterricht. Eine Frage dazu:</p>
+
+    <div class="tabellenrahmen">
+      <table class="stueck">
+        <thead><tr><th>Frage</th><th>Antwort</th><th></th></tr></thead>
+        <tbody id="tabDemo"></tbody>
+      </table>
+    </div>
+
+    <p><button type="button" class="knopf" id="btnDemo">Prüfen</button></p>
+    <p class="bilanzzeile" id="bilanzDemo">Noch nichts gewählt.</p>
+
+    <details>
+      <summary>Lösung: Demontage</summary>
+      <div id="loesungDemo"></div>
+    </details>
+
+    <p class="schritt">6 &middot; Bewerten</p>
+    <h2><span class="nr">9</span>Zurückschauen</h2>
+
+    <div class="box">
+      <p>Drei Sätze, die aus dieser Lernsituation hängenbleiben sollen:</p>
+      <ol>
+        <li><strong>Montieren heißt nicht nur fügen.</strong> Dazu gehören
+        das Handhaben (das Teil in die richtige Lage bringen), das Justieren
+        (den Stempel über die Nut stellen) und das Kontrollieren. Wer nur
+        schraubt, montiert nicht.</li>
+        <li><strong>Die Reihenfolge steht nicht in der Zeichnung &ndash; aber
+        sie folgt aus ihr.</strong> Dass die Feder vor den Stempelhalter
+        muss, sagt kein Maß; man sieht es, wenn man die Zeichnung versteht.</li>
+        <li><strong>Ein Plan ist gut, wenn ein Fremder danach arbeiten
+        kann.</strong> Nicht, wenn man selbst noch weiß, was gemeint war.</li>
+      </ol>
+      <p>Wer weiterdenken will: Diese Presse kommt ohne Lager, ohne
+      Dichtungen und ohne Sicherungsringe aus. Sobald eine Welle schnell
+      läuft oder Öl im Spiel ist, ändert sich das &ndash; und dann wird aus
+      der Montage eine Aufgabe, bei der die Bauteilkunde mitredet.</p>
+    </div>
+
+    <h2><span class="nr">10</span>Material</h2>
+
+    <div class="box">
+      <ul>
+        <li>Zusammenstellungszeichnung TBK-2026-041 (oben, Teil 2)</li>
+        <li>Stückliste zur Zeichnung TBK-2026-041 (Teil 3)</li>
+        <li>Tabellenbuch Metall: Stücklisten und Positionsnummern,
+          Zylinderschrauben mit Innensechskant, Senkungen, Stifte und
+          Bolzen, zylindrische Schrauben-Druckfedern</li>
+        <li>Werkzeug: Innensechskantschlüssel SW 5 und SW 6, Kunststoffhammer,
+          Splinttreiber Ø 4, Messschieber, Haarwinkel</li>
+      </ul>
+    </div>
+
+  </main>
+
+<script>
+function el(id){ return document.getElementById(id); }
+
+/* ==========================================================================
+   Die Zeichnung
+   ========================================================================== */
+PRESSE.zeichnen("bildPresse");
+
+/* ==========================================================================
+   Teil 2 - Die Zusammenstellung lesen
+   --------------------------------------------------------------------------
+   Sechs Fragen, die man nur an der Zeichnung beantworten kann. Drei davon
+   zielen auf Regeln, die man kennen muss (Positionsnummer ist nicht Menge,
+   Wellen werden laengs nicht schraffiert, ein Schnitt braucht eine Ebene);
+   drei auf das Bauteil selbst.
+   ========================================================================== */
+var LESEN = [
+  {f: "Wie viele <strong>Ständer</strong> hat die Presse?",
+   wahl: ["1", "2", "4", "so viele wie Positionsnummern"],
+   loesung: "2",
+   satz: "Die Stückliste sagt es in der Spalte <em>Menge</em>: Position 2 "
+     + "kommt zweimal vor. Die Positionsnummer ist keine Stückzahl - in der "
+     + "Zeichnung steht die 2 nur einmal, weil beide Ständer dasselbe Teil "
+     + "sind."},
+  {f: "Warum ist die <strong>Exzenterwelle</strong> im Schnitt A-A nicht "
+     + "schraffiert?",
+   wahl: ["Sie ist aus einem anderen Werkstoff",
+          "Sie wird der Länge nach geschnitten und ist ein Vollteil",
+          "Sie liegt hinter der Schnittebene",
+          "Das ist ein Zeichenfehler"],
+   loesung: "Sie wird der Länge nach geschnitten und ist ein Vollteil",
+   satz: "Wellen, Bolzen, Schrauben, Stifte, Niete und Federn werden "
+     + "längsgeschnitten nicht schraffiert. Die Schraffur würde etwas "
+     + "vortäuschen, das man nicht wissen muss - dass da ein Querschnitt "
+     + "wäre, den es zu betrachten lohnt. Quer geschnitten werden sie "
+     + "dagegen schon schraffiert."},
+  {f: "Was zeigt der <strong>Schnitt C-C</strong>, was A-A nicht zeigen "
+     + "kann?",
+   wahl: ["die Gesamtlänge", "den Winkel der V-Nut",
+          "die Lage der Schrauben", "die Höhe der Ständer"],
+   loesung: "den Winkel der V-Nut",
+   satz: "Die V-Nut läuft in Blickrichtung von A-A. Dort sieht man nur "
+     + "ihren Grund als Strich. Erst der Blick quer dazu zeigt den "
+     + "eingeschlossenen Winkel von 90° - deshalb gibt es diesen dritten "
+     + "Schnitt überhaupt."},
+  {f: "Wie groß ist der <strong>Hub</strong> des Stempels?",
+   wahl: ["6 mm", "12 mm", "20 mm", "56 mm"],
+   loesung: "12 mm",
+   satz: "Der Hub ist der doppelte Exzenterwert: 2 · e = 2 · 6 mm = 12 mm. "
+     + "Das Maß steht rechts neben dem Exzenterbund."},
+  {f: "Was bedeuten die <strong>2 mm</strong> im Schnitt C-C?",
+   wahl: ["die Blechdicke, für die die Presse ausgelegt ist",
+          "die Wanddicke des Gesenks",
+          "das Spiel der Führungsbolzen",
+          "die Tiefe der Zylinderstifte"],
+   loesung: "die Blechdicke, für die die Presse ausgelegt ist",
+   satz: "In der unteren Endlage bleibt zwischen Stempelspitze und Nutgrund "
+     + "genau dieser Spalt. Er ist kein Spiel, sondern der Platz für das "
+     + "Werkstück. Wer dickeres Blech einlegt, schlägt den Stempel auf."},
+  {f: "Wozu sind die beiden <strong>Zylinderstifte</strong> am Gesenk da?",
+   wahl: ["Sie halten das Gesenk fest",
+          "Sie richten das Gesenk aus",
+          "Sie sichern die Schrauben gegen Losdrehen",
+          "Sie führen den Stempel"],
+   loesung: "Sie richten das Gesenk aus",
+   satz: "Halten tun die beiden Zylinderschrauben. Die Stifte legen die "
+     + "Lage fest - kraftschlüssig verschraubt verrutscht ein Teil, "
+     + "formschlüssig gestiftet nicht. Deshalb wird erst gestiftet und dann "
+     + "geschraubt, nicht umgekehrt."}
+];
+
+/* ==========================================================================
+   Teil 3 - Die Stueckliste
+   --------------------------------------------------------------------------
+   Fuenf Luecken. Zwei fragen die Menge (Positionsnummer ist nicht
+   Stueckzahl), drei die Normbezeichnung - und die steht so im Tabellenbuch.
+   ========================================================================== */
+var STUECK_OFFEN = [
+  {pos: 2, feld: "menge", loesung: "2",
+   hinweis: "Wie viele Ständer stehen auf der Grundplatte?"},
+  {pos: 6, feld: "menge", loesung: "2",
+   hinweis: "Wie viele Führungsbolzen tragen den Stempelhalter?"},
+  {pos: 9, feld: "menge", loesung: "4",
+   hinweis: "Zwei Schrauben je Ständer."},
+  {pos: 11, feld: "benennung",
+   wahl: ["Zylinderstift ISO 2338 – 6 m6 × 20 – St",
+          "Zylinderstift ISO 2338 – 20 m6 × 6 – St",
+          "Kegelstift ISO 2339 – A – 6 × 20 – St",
+          "Spannstift ISO 8752 – 6 × 20 – St"],
+   loesung: "Zylinderstift ISO 2338 – 6 m6 × 20 – St",
+   hinweis: "Erst der Nenndurchmesser, dann die Länge."},
+  {pos: 12, feld: "benennung",
+   wahl: ["Kegelstift ISO 2339 – A – 5 × 40 – St",
+          "Kegelstift ISO 2339 – 5 × 40",
+          "Zylinderstift ISO 2338 – 5 m6 × 40 – St",
+          "Kerbstift ISO 8740 – 5 × 40 – St"],
+   loesung: "Kegelstift ISO 2339 – A – 5 × 40 – St",
+   hinweis: "Beim Kegelstift gehört die Form in die Bezeichnung: "
+     + "A geschliffen, B gedreht."}
+];
+
+/* ==========================================================================
+   Teil 4 - Das Strukturnetz
+   ========================================================================== */
+var NETZ_FRAGEN = [
+  {a: 3, b: 2, loesung: "beweglich",
+   satz: "Die Welle dreht sich in den Bohrungen der Ständer. Berührung ja, "
+     + "Bewegung ja - unterbrochene Linie."},
+  {a: 3, b: 7, loesung: "fest",
+   satz: "Der Hebel sitzt auf dem Wellenzapfen und dreht die Welle mit. "
+     + "Zwischen beiden gibt es keine Bewegung - volle Linie. Genau dafür "
+     + "ist der Kegelstift da."},
+  {a: 4, b: 6, loesung: "beweglich",
+   satz: "Der Stempelhalter gleitet auf den Bolzen auf und ab. Das ist "
+     + "seine Führung - ohne diese Bewegung täte die Presse nichts."},
+  {a: 5, b: 4, loesung: "gar nicht",
+   satz: "Gesenk und Stempelhalter berühren sich nie. In der unteren "
+     + "Endlage bleiben 2 mm - und darin liegt das Blech. Wer hier eine "
+     + "Linie zieht, hat die Zeichnung nicht zu Ende gelesen."},
+  {a: 1, b: 8, loesung: "fest",
+   satz: "Die Feder steht auf der Grundplatte und rutscht dort nicht. Sie "
+     + "bewegt sich gegen den Stempelhalter und gegen den Bolzen, aber "
+     + "nicht gegen die Platte."}
+];
+
+/* ==========================================================================
+   Teil 7 - Die Rechnung
+   ========================================================================== */
+var RECHNEN = [
+  {kurz: "Moment am Handhebel <em>M</em>", einheit: "Nm", loesung: 42,
+   dulden: 0.5},
+  {kurz: "Kraft am Stempel <em>F</em><sub>St</sub>", einheit: "N",
+   loesung: 7000, dulden: 60},
+  {kurz: "Gegenkraft beider Federn <em>F</em><sub>F</sub>", einheit: "N",
+   loesung: 81.6, dulden: 2},
+  {kurz: "Übersetzung <em>F</em><sub>St</sub> / <em>F</em><sub>H</sub>",
+   einheit: "&ndash;", loesung: 46.7, dulden: 1}
+];
+
+var DEMO = [
+  {f: "Womit fängt die Demontage an?",
+   wahl: ["mit der Grundplatte", "mit dem Kegelstift",
+          "mit den Führungsbolzen", "mit dem Gesenk"],
+   loesung: "mit dem Kegelstift",
+   satz: "Rückwärts heißt: zuerst das, was nichts mehr trägt und über dem "
+     + "alles andere liegt. Der Kegelstift war der letzte Handgriff, also "
+     + "ist er der erste beim Zerlegen. Mit der Grundplatte anzufangen ist "
+     + "kein Zerlegen, sondern Umkippen."},
+  {f: "Von welcher Seite wird der Kegelstift ausgetrieben?",
+   wahl: ["von der dicken Seite her", "von der dünnen Seite her",
+          "das ist gleichgültig", "gar nicht, er wird herausgezogen"],
+   loesung: "von der dünnen Seite her",
+   satz: "Ein Kegelstift hat 1:50 Verjüngung. Er geht nur in die Richtung "
+     + "heraus, in die er weiter wird - also treibt man von der dünnen "
+     + "Seite her. Wer von der dicken Seite schlägt, verkeilt ihn."},
+  {f: "Was passiert mit den Druckfedern, wenn man den Stempelhalter abnimmt?",
+   wahl: ["nichts, sie stehen lose auf der Platte",
+          "sie schnellen hoch - vorher entspannen",
+          "sie bleiben am Stempelhalter hängen",
+          "sie müssen zerstört werden"],
+   loesung: "sie schnellen hoch - vorher entspannen",
+   satz: "Auch in der oberen Lage sind die Federn noch um 5 mm "
+     + "zusammengedrückt. Wer den Stempelhalter einfach abhebt, bekommt sie "
+     + "entgegen. Erst den Hebel festhalten oder die Welle ausbauen, dann "
+     + "den Halter abnehmen."}
+];
+
+/* ==========================================================================
+   Aufbau der Tabellen
+   ========================================================================== */
+function auswahl(id, liste){
+  var s = document.createElement("select");
+  s.id = id;
+  var leer = document.createElement("option");
+  leer.value = ""; leer.textContent = "– bitte wählen –";
+  s.appendChild(leer);
+  liste.forEach(function(w){
+    var o = document.createElement("option");
+    o.value = w; o.textContent = w;
+    s.appendChild(o);
+  });
+  return s;
+}
+
+function zeileMitWahl(tbody, nr, frageHtml, liste, id){
+  var tr = document.createElement("tr");
+  var td0 = document.createElement("td");
+  td0.innerHTML = frageHtml;
+  tr.appendChild(td0);
+  var td1 = document.createElement("td");
+  td1.appendChild(auswahl(id, liste));
+  tr.appendChild(td1);
+  var td2 = document.createElement("td");
+  td2.className = "urteil"; td2.id = "u" + id; td2.textContent = "–";
+  tr.appendChild(td2);
+  tbody.appendChild(tr);
+  return tr;
+}
+
+/* --- Teil 2 ------------------------------------------------------------- */
+(function lesenAufbauen(){
+  var tb = el("tabLesen");
+  LESEN.forEach(function(f, i){
+    zeileMitWahl(tb, i, f.f, f.wahl, "l" + i);
+  });
+  el("loesungLesen").innerHTML = LESEN.map(function(f, i){
+    return "<p><strong>" + (i + 1) + ". " + f.loesung + "</strong> &ndash; "
+      + f.satz + "</p>";
+  }).join("");
+}());
+
+el("btnLesen").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  LESEN.forEach(function(f, i){
+    var v = el("l" + i).value, u = el("ul" + i);
+    if(!v){ u.textContent = "–"; u.className = "urteil"; offen++; return; }
+    var ok = v === f.loesung;
+    u.textContent = ok ? "richtig" : "nein";
+    u.className = "urteil " + (ok ? "ja" : "nein");
+    if(ok) r++;
+  });
+  el("bilanzLesen").textContent = r + " von " + LESEN.length + " richtig."
+    + (offen ? " (" + offen + " noch offen.)" : "");
+});
+
+/* --- Teil 3 ------------------------------------------------------------- */
+(function stueckAufbauen(){
+  var tb = el("tabStueck");
+  PRESSE.TEILE.forEach(function(t){
+    var offen = STUECK_OFFEN.filter(function(o){ return o.pos === t.pos; })[0];
+    var tr = document.createElement("tr");
+
+    var td0 = document.createElement("td");
+    td0.innerHTML = '<span class="pos">' + t.pos + '</span>';
+    tr.appendChild(td0);
+
+    var td1 = document.createElement("td");
+    if(offen && offen.feld === "menge"){
+      var i = document.createElement("input");
+      i.type = "text"; i.inputMode = "numeric"; i.id = "s" + t.pos;
+      i.setAttribute("aria-label", "Menge zu Position " + t.pos);
+      td1.appendChild(i);
+    }else{
+      td1.textContent = t.menge;
+      td1.style.textAlign = "center";
+    }
+    tr.appendChild(td1);
+
+    var td2 = document.createElement("td");
+    if(offen && offen.feld === "benennung"){
+      td2.appendChild(auswahl("s" + t.pos, offen.wahl));
+    }else{
+      td2.innerHTML = t.benennung
+        + (t.werkstoff ? ' <span class="fussnote">' + t.werkstoff
+           + "</span>" : "");
+    }
+    tr.appendChild(td2);
+
+    var td3 = document.createElement("td");
+    td3.innerHTML = '<span class="fussnote">' + (t.bemerkung || "")
+      + "</span>";
+    if(offen) td3.innerHTML += '<br><span class="urteil" id="us' + t.pos
+      + '">–</span>';
+    tr.appendChild(td3);
+
+    tb.appendChild(tr);
+  });
+
+  el("loesungStueck").innerHTML =
+    "<p>Zeichnung TBK-2026-041, Blatt 1 von 1:</p><ol>"
+    + PRESSE.TEILE.map(function(t){
+        return "<li><strong>" + t.menge + " &times; " + t.benennung
+          + "</strong>" + (t.werkstoff ? ", " + t.werkstoff : "")
+          + (t.bemerkung ? " (" + t.bemerkung + ")" : "") + "</li>";
+      }).join("") + "</ol>"
+    + "<p>Zwei Dinge, die immer wieder verwechselt werden: Die "
+    + "<strong>Positionsnummer</strong> steht in der Zeichnung nur einmal, "
+    + "auch wenn das Teil zweimal verbaut ist &ndash; wie oft, sagt allein "
+    + "die Spalte Menge. Und in der <strong>Normbezeichnung</strong> steht "
+    + "immer erst der Durchmesser, dann die Länge.</p>";
+}());
+
+el("btnStueck").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  STUECK_OFFEN.forEach(function(o){
+    var f = el("s" + o.pos), u = el("us" + o.pos);
+    var v = (f.value || "").trim();
+    if(!v){ u.textContent = "–"; u.className = "urteil"; offen++; return; }
+    var ok = v.replace(/\s+/g, " ") === o.loesung;
+    u.textContent = ok ? "richtig" : "nein";
+    u.className = "urteil " + (ok ? "ja" : "nein");
+    if(ok) r++;
+  });
+  el("bilanzStueck").textContent = r + " von " + STUECK_OFFEN.length
+    + " richtig." + (offen ? " (" + offen + " noch offen.)" : "");
+});
+
+/* --- Teil 4 ------------------------------------------------------------- */
+(function netzAufbauen(){
+  Montageplan.netz("netzPresse", {
+    teile: PRESSE.TEILE,
+    kanten: PRESSE.STRUKTUR,
+    lage: PRESSE.NETZ_LAGE
+  });
+
+  var tb = el("tabNetz");
+  var WAHL = ["fest verbunden", "beweglich verbunden",
+    "berühren sich gar nicht"];
+  var KURZ = {fest: "fest verbunden", beweglich: "beweglich verbunden",
+    "gar nicht": "berühren sich gar nicht"};
+  NETZ_FRAGEN.forEach(function(f, i){
+    var a = PRESSE.teil(f.a), b = PRESSE.teil(f.b);
+    zeileMitWahl(tb, i,
+      '<span class="pos">' + f.a + "</span>" + a.kurz
+      + " &ndash; " + '<span class="pos">' + f.b + "</span>" + b.kurz,
+      WAHL, "n" + i);
+  });
+  el("loesungNetz").innerHTML = NETZ_FRAGEN.map(function(f){
+    var a = PRESSE.teil(f.a), b = PRESSE.teil(f.b);
+    return "<p><strong>" + a.kurz + " &ndash; " + b.kurz + ": "
+      + KURZ[f.loesung] + ".</strong> " + f.satz + "</p>";
+  }).join("");
+}());
+
+el("btnNetz").addEventListener("click", function(){
+  var KURZ = {fest: "fest verbunden", beweglich: "beweglich verbunden",
+    "gar nicht": "berühren sich gar nicht"};
+  var r = 0, offen = 0;
+  NETZ_FRAGEN.forEach(function(f, i){
+    var v = el("n" + i).value, u = el("un" + i);
+    if(!v){ u.textContent = "–"; u.className = "urteil"; offen++; return; }
+    var ok = v === KURZ[f.loesung];
+    u.textContent = ok ? "richtig" : "nein";
+    u.className = "urteil " + (ok ? "ja" : "nein");
+    if(ok) r++;
+  });
+  el("bilanzNetz").textContent = r + " von " + NETZ_FRAGEN.length
+    + " richtig." + (offen ? " (" + offen + " noch offen.)" : "");
+});
+
+/* --- Teil 5 ------------------------------------------------------------- */
+(function planenAufbauen(){
+  var z = Montageplan.wieVieleFolgen(PRESSE.TEILE, PRESSE.VORRANG, 300000);
+  el("zahlFolgen").textContent = z.abgebrochen
+    ? "mehr als " + z.zahl : z.zahl;
+
+  var plan = Montageplan.reihenfolge("planPlanen", {
+    teile: PRESSE.TEILE,
+    vorrang: PRESSE.VORRANG,
+    sofort: false
+  });
+  el("btnPlanVonVorn").addEventListener("click", function(){
+    plan.vonVorn();
+  });
+
+  el("loesungVorrang").innerHTML = "<ol>" + PRESSE.VORRANG.map(function(v){
+    var a = PRESSE.teil(v.vorher), b = PRESSE.teil(v.nachher);
+    return "<li><strong>" + a.kurz + " vor " + b.kurz + ".</strong> "
+      + v.warum + "</li>";
+  }).join("") + "</ol><p>Mehr Bedingungen gibt es nicht. Alles, was hier "
+    + "nicht steht, dürft ihr frei entscheiden &ndash; und deshalb sind so "
+    + "viele Reihenfolgen richtig.</p>";
+}());
+
+/* --- Teil 6: Montieren in 3D -------------------------------------------- */
+/* Der Montageplan-Baustein fuehrt die Reihenfolge, der 3D-Baustein zeigt
+   sie. Verbunden sind beide ueber die Positionsnummer: Zu einer Position
+   gehoeren ein oder mehrere Koerper im Modell - die Exzenterwelle etwa ist
+   ein Fertigungsteil, aber drei Drehkoerper. */
+var szene = null;
+
+function koerperVon(pos){
+  return PRESSE.teile3d()
+    .filter(function(k){ return k.pos === pos; })
+    .map(function(k){ return k.id; });
+}
+
+function drei(){
+  if(!window.Bauteil3D || !Bauteil3D.moeglich()){
+    var h = el("ohne3d");
+    if(h) h.hidden = false;
+    return;
+  }
+  var karte = el("karte3d");
+  karte.hidden = false;
+
+  szene = Bauteil3D.aufbauen(el("buehne3d"), {
+    teile: PRESSE.teile3d(),
+    blick: {abstand: 560, hoch: 0.40, dreh: 0.78},
+    mitte: {x: 0, y: 70, z: 0},
+    dauer: 700,
+    beschreibung: "Die Exzenter-Handbiegepresse zum Zusammensetzen: "
+      + "zwölf Positionen, die der Reihe nach an ihren Platz fliegen"
+  });
+  if(!szene){ karte.hidden = true; el("ohne3d").hidden = false; return; }
+
+  szene.alleVerbergen();
+
+  var bauen = Montageplan.reihenfolge("planBauen", {
+    teile: PRESSE.TEILE,
+    vorrang: PRESSE.VORRANG,
+    sofort: true,
+    onSetzen: function(pos){
+      koerperVon(pos).forEach(function(id){ szene.einsetzen(id); });
+      var t = PRESSE.teil(pos);
+      el("zeile3d").textContent = t ? t.menge + " × " + t.benennung : "";
+    },
+    onZurueck: function(pos){
+      koerperVon(pos).forEach(function(id){ szene.herausnehmen(id); });
+      el("zeile3d").textContent = "";
+    },
+    onStand: function(gesetzt, fertig){
+      if(fertig) el("zeile3d").textContent = "Die Presse steht.";
+    }
+  });
+
+  el("btn3dVonVorn").addEventListener("click", function(){
+    bauen.vonVorn();
+    szene.alleVerbergen();
+    el("zeile3d").textContent = "";
+  });
+  el("btn3dFertig").addEventListener("click", function(){
+    szene.zeigenAlles();
+    el("zeile3d").textContent = "So sieht sie fertig aus. "
+      + "Zum Planen wieder auf „Von vorn“.";
+  });
+}
+
+/* --- Teil 7 ------------------------------------------------------------- */
+(function rechnenAufbauen(){
+  var tb = el("tabRechnen");
+  RECHNEN.forEach(function(g, i){
+    var tr = document.createElement("tr");
+    var td0 = document.createElement("td");
+    td0.innerHTML = g.kurz;
+    tr.appendChild(td0);
+    var td1 = document.createElement("td");
+    var inp = document.createElement("input");
+    inp.type = "text"; inp.inputMode = "decimal"; inp.id = "r" + i;
+    inp.setAttribute("aria-label", td0.textContent);
+    td1.appendChild(inp);
+    tr.appendChild(td1);
+    var td2 = document.createElement("td");
+    td2.innerHTML = g.einheit;
+    tr.appendChild(td2);
+    var td3 = document.createElement("td");
+    td3.className = "urteil"; td3.id = "ur" + i; td3.textContent = "–";
+    tr.appendChild(td3);
+    tb.appendChild(tr);
+  });
+}());
+
+el("btnRechnen").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  RECHNEN.forEach(function(g, i){
+    var roh = (el("r" + i).value || "").trim().replace(",", ".");
+    var u = el("ur" + i);
+    if(!roh){ u.textContent = "–"; u.className = "urteil"; offen++; return; }
+    var z = Number(roh);
+    var ok = isFinite(z) && Math.abs(z - g.loesung) <= g.dulden;
+    u.textContent = ok ? "richtig" : "nein";
+    u.className = "urteil " + (ok ? "ja" : "nein");
+    if(ok) r++;
+  });
+  el("bilanzRechnen").textContent = r + " von " + RECHNEN.length
+    + " richtig." + (offen ? " (" + offen + " noch offen.)" : "");
+});
+
+/* --- Teil 8 ------------------------------------------------------------- */
+(function demoAufbauen(){
+  var tb = el("tabDemo");
+  DEMO.forEach(function(f, i){
+    zeileMitWahl(tb, i, f.f, f.wahl, "d" + i);
+  });
+  el("loesungDemo").innerHTML = DEMO.map(function(f, i){
+    return "<p><strong>" + (i + 1) + ". " + f.loesung + "</strong> &ndash; "
+      + f.satz + "</p>";
+  }).join("");
+}());
+
+el("btnDemo").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  DEMO.forEach(function(f, i){
+    var v = el("d" + i).value, u = el("ud" + i);
+    if(!v){ u.textContent = "–"; u.className = "urteil"; offen++; return; }
+    var ok = v === f.loesung;
+    u.textContent = ok ? "richtig" : "nein";
+    u.className = "urteil " + (ok ? "ja" : "nein");
+    if(ok) r++;
+  });
+  el("bilanzDemo").textContent = r + " von " + DEMO.length + " richtig."
+    + (offen ? " (" + offen + " noch offen.)" : "");
+});
+
+if(document.readyState === "loading"){
+  document.addEventListener("DOMContentLoaded", drei);
+}else{ drei(); }
+</script>
+<script src="../../vendor/three.min.js"></script>
+<script src="../../vendor/OrbitControls.js"></script>
+<script src="../../assets/bauteil3d.js"></script>
+<script src="../../assets/back-nav.js"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/fortschritt.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

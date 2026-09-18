@@ -66,6 +66,14 @@
  *     szene.zeigenAlles()    alles sofort an seinem Platz
  *     szene.zerlegen()       alles in die Ruhelage
  *     szene.schritt(n)       bis Teil n zusammengesetzt
+ *
+ * Und fuer eine Montage, deren Reihenfolge der Lernende selbst bestimmt:
+ *
+ *     szene.alleVerbergen()  nichts ist da
+ *     szene.einsetzen(id)    dieses eine Teil fliegt an seinen Platz
+ *     szene.herausnehmen(id) und wieder weg
+ *     szene.teileWaehlbar(true)   Klicks treffen jetzt die Teile
+ *     szene.teilStand(id, "richtig"|"falsch"|"offen")
  *     szene.marken(true)     Marken sichtbar und anklickbar
  *
  * Mehrere Marken duerfen dieselbe id tragen: Eine Doppel-Kehlnaht hat zwei
@@ -138,6 +146,16 @@
     }
   };
 
+  /* Wer im Betriebssystem eingestellt hat, dass Bewegung ihn stoert, hat
+     das so gemeint. Die Teile fliegen dann nicht an ihren Platz, sondern
+     sind dort - die Aussage der Montage bleibt, die Bewegung faellt weg.
+     Nebenbei macht das die Darstellung pruefbar: Ein Bild, das auf eine
+     Animation wartet, laesst sich nicht nachmessen. */
+  function ruhigerBitte() {
+    return !!(welt.matchMedia
+      && welt.matchMedia("(prefers-reduced-motion: reduce)").matches);
+  }
+
   function themaJetzt() {
     var w = document.documentElement.getAttribute("data-thema-effektiv");
     if (w === "dunkel" || w === "hell") return w;
@@ -200,6 +218,85 @@
       return g;
     },
 
+    platte: function (m) {
+      /* Eine liegende Platte: Dicke in y, Bohrungen senkrecht hindurch.
+
+         Der Baustein zeichnet Umrisse immer in der xy-Ebene und zieht sie
+         ueber z aus. Eine Platte mit senkrechten Bohrungen braucht es
+         andersherum - also wird der Umriss in (x, -z) gezeichnet, ueber die
+         Dicke ausgezogen und danach gekippt. Das Minus vor z macht die
+         Kippung wieder wett; ohne es laegen die Bohrungen gespiegelt. */
+      var form = new THREE.Shape();
+      form.moveTo(-m.x / 2, -m.z / 2);
+      form.lineTo(m.x / 2, -m.z / 2);
+      form.lineTo(m.x / 2, m.z / 2);
+      form.lineTo(-m.x / 2, m.z / 2);
+      form.closePath();
+      (m.loecher || []).forEach(function (l) {
+        var loch = new THREE.Path();
+        loch.absarc(l.x || 0, -(l.z || 0), l.d / 2, 0, Math.PI * 2, true);
+        form.holes.push(loch);
+      });
+      var g = new THREE.ExtrudeGeometry(form,
+        { depth: m.y, bevelEnabled: false, curveSegments: 28 });
+      g.translate(0, 0, -m.y / 2);
+      g.rotateX(-Math.PI / 2);
+      return g;
+    },
+    flanke: function (m) {
+      /* Die Flanke einer V-Nut: ein Vierkant, dessen obere Kante um "nut"
+         eingezogen ist. Zwei davon, gegenlaeufig gedreht, bilden die Nut -
+         und zwischen ihnen bleibt Platz fuer die Leisten, in denen die
+         Bohrungen sitzen. Querschnitt in (z, y), ausgezogen ueber x. */
+      var form = new THREE.Shape();
+      form.moveTo(0, 0);
+      form.lineTo(m.z, 0);
+      form.lineTo(m.z, m.y);
+      form.lineTo(m.nut, m.y);
+      form.closePath();
+      var g = new THREE.ExtrudeGeometry(form,
+        { depth: m.x, bevelEnabled: false });
+      g.translate(0, -m.y / 2, -m.x / 2);
+      return g;
+    },
+    dach: function (m) {
+      /* Symmetrischer Keil - Ruecken oben, Schneide unten. Die Schneide
+         laeuft entlang x; der Querschnitt liegt in der zy-Ebene. Das ist
+         die Form eines Biegestempels.
+
+         Gebaut wird der Querschnitt wie immer in der xy-Ebene und dann um
+         90 Grad gedreht, damit die Ausdehnung in x zeigt. */
+      var form = new THREE.Shape();
+      form.moveTo(-m.z / 2, m.y / 2);
+      form.lineTo(m.z / 2, m.y / 2);
+      form.lineTo(0, -m.y / 2);
+      form.closePath();
+      var g = new THREE.ExtrudeGeometry(form,
+        { depth: m.x, bevelEnabled: false });
+      g.translate(0, 0, -m.x / 2);
+      g.rotateY(Math.PI / 2);
+      return g;
+    },
+    gesenk: function (m) {
+      /* Ein Quader mit einer V-Nut im Ruecken. m.nut ist die Nuttiefe; der
+         eingeschlossene Winkel ist 90 Grad, die Flanken steigen also unter
+         45 Grad an und die Nut ist oben 2 * nut breit. Die Nut laeuft
+         entlang x - dieselbe Richtung wie die Schneide des Stempels. */
+      var form = new THREE.Shape();
+      form.moveTo(-m.z / 2, -m.y / 2);
+      form.lineTo(m.z / 2, -m.y / 2);
+      form.lineTo(m.z / 2, m.y / 2);
+      form.lineTo(m.nut, m.y / 2);
+      form.lineTo(0, m.y / 2 - m.nut);
+      form.lineTo(-m.nut, m.y / 2);
+      form.lineTo(-m.z / 2, m.y / 2);
+      form.closePath();
+      var g = new THREE.ExtrudeGeometry(form,
+        { depth: m.x, bevelEnabled: false });
+      g.translate(0, 0, -m.x / 2);
+      g.rotateY(Math.PI / 2);
+      return g;
+    },
     winkel: function (m) {
       /* L-Profil: ein liegender und ein stehender Schenkel, Dicke s. */
       var form = new THREE.Shape();
@@ -251,6 +348,8 @@
     var reihenfolge = [];    /* ids in Montagereihenfolge */
     var laeuft = false, animation = null, uhr = null;
     var markenAn = false, hervorId = null;
+    var teileAn = false;             /* treffen Klicks die Teile selbst? */
+    var teilStaende = {};            /* id -> "offen" | "richtig" | "falsch" */
     var abgeraeumt = false;
 
     /* --- Leinwand ---------------------------------------------------- */
@@ -337,6 +436,7 @@
         (teil.lage.x || 0) + ((teil.von && teil.von.x) || 0),
         (teil.lage.y || 0) + ((teil.von && teil.von.y) || 0),
         (teil.lage.z || 0) + ((teil.von && teil.von.z) || 0));
+      netz.userData.teilId = teil.id;
       szene.add(gruppe);
       return { gruppe: gruppe, netz: netz, kanten: kanten, teil: teil };
     }
@@ -439,19 +539,44 @@
       return treffer.length ? treffer[0].object.userData.marke : null;
     }
 
+    /* Welches Teil liegt unter dem Zeiger? Gezaehlt wird nur, was gerade
+       sichtbar ist - ein noch nicht eingebautes Teil kann man nicht
+       anklicken. */
+    function teilGetroffen(ev) {
+      zeigerSetzen(ev);
+      strahl.setFromCamera(zeiger, kamera);
+      var koerper = [];
+      Object.keys(teile).forEach(function (id) {
+        if (teile[id].gruppe.visible) koerper.push(teile[id].netz);
+      });
+      var treffer = strahl.intersectObjects(koerper, false);
+      return treffer.length ? treffer[0].object.userData.teilId : null;
+    }
+
     function aufRunter(ev) {
       runter = { x: ev.clientX, y: ev.clientY };
     }
 
     function aufHoch(ev) {
-      if (!markenAn || !runter) return;
+      if ((!markenAn && !teileAn) || !runter) return;
       /* Wer die Ansicht dreht, wählt nicht aus. Ein Klick ist ein Klick,
          wenn der Zeiger dabei stehen geblieben ist. */
       var weit = Math.hypot(ev.clientX - runter.x, ev.clientY - runter.y);
       runter = null;
       if (weit > 6) return;
-      var m = getroffen(ev);
-      if (m && typeof o.onWahl === "function") o.onWahl(m.id, m);
+      if (markenAn) {
+        var m = getroffen(ev);
+        if (m) {
+          if (typeof o.onWahl === "function") o.onWahl(m.id, m);
+          return;
+        }
+      }
+      if (teileAn) {
+        var id = teilGetroffen(ev);
+        if (id && typeof o.onTeil === "function") {
+          o.onTeil(id, teile[id] ? teile[id].teil : null);
+        }
+      }
     }
 
     /* Unter dem Zeiger hebt sich die Naht hervor. Ohne das muesste man
@@ -465,16 +590,33 @@
       });
     }
 
+    /* Dasselbe fuer die Teile: Was sich unter dem Zeiger hebt, ist
+       anklickbar. Ohne das raet man. */
+    var teilUnterZeiger = null;
+    function teilHervor(id, an) {
+      var t = teile[id];
+      if (!t) return;
+      if (teilStaende[id] && teilStaende[id] !== "offen") return;
+      t.netz.material.color.setHex(an ? palette.hervor
+        : (t.teil.farbe === undefined ? palette.teil : t.teil.farbe));
+    }
+
     function aufBewegung(ev) {
-      if (!markenAn) return;
-      var m = getroffen(ev);
+      if (!markenAn && !teileAn) return;
+      var m = markenAn ? getroffen(ev) : null;
       var id = m ? m.id : null;
       if (id !== unterZeiger) {
         if (unterZeiger) hervor(unterZeiger, false);
         if (id) hervor(id, true);
         unterZeiger = id;
       }
-      renderer.domElement.style.cursor = m ? "pointer" : "grab";
+      var tid = (!m && teileAn) ? teilGetroffen(ev) : null;
+      if (tid !== teilUnterZeiger) {
+        if (teilUnterZeiger) teilHervor(teilUnterZeiger, false);
+        if (tid) teilHervor(tid, true);
+        teilUnterZeiger = tid;
+      }
+      renderer.domElement.style.cursor = (m || tid) ? "pointer" : "grab";
     }
 
     renderer.domElement.addEventListener("pointerdown", aufRunter);
@@ -506,7 +648,10 @@
       szene.background = new THREE.Color(palette.grund);
       Object.keys(teile).forEach(function (id) {
         var t = teile[id];
-        if (t.teil.farbe === undefined) {
+        var stand = teilStaende[id];
+        if (stand && stand !== "offen") {
+          t.netz.material.color.setHex(palette[stand]);
+        } else if (t.teil.farbe === undefined) {
           t.netz.material.color.setHex(
             id === hervorId ? palette.hervor : palette.teil);
         }
@@ -554,7 +699,10 @@
     function zerlegen() {
       lauf++;
       laeuft = false;
-      reihenfolge.forEach(function (id) { setzeFortschritt(id, 0); });
+      reihenfolge.forEach(function (id) {
+        teile[id].gruppe.visible = true;
+        setzeFortschritt(id, 0);
+      });
       if (typeof o.onSchritt === "function") o.onSchritt(0, reihenfolge.length);
       return api;
     }
@@ -562,7 +710,10 @@
     function zeigenAlles() {
       lauf++;
       laeuft = false;
-      reihenfolge.forEach(function (id) { setzeFortschritt(id, 1); });
+      reihenfolge.forEach(function (id) {
+        teile[id].gruppe.visible = true;
+        setzeFortschritt(id, 1);
+      });
       if (typeof o.onSchritt === "function") {
         o.onSchritt(reihenfolge.length, reihenfolge.length);
       }
@@ -572,17 +723,28 @@
     function schritt(n) {
       lauf++;
       laeuft = false;
-      reihenfolge.forEach(function (id, i) { setzeFortschritt(id, i < n ? 1 : 0); });
+      reihenfolge.forEach(function (id, i) {
+        teile[id].gruppe.visible = true;
+        setzeFortschritt(id, i < n ? 1 : 0);
+      });
       if (typeof o.onSchritt === "function") o.onSchritt(n, reihenfolge.length);
       return api;
     }
 
     function montage(abNr) {
+      if (ruhigerBitte()) {
+        zeigenAlles();
+        if (typeof o.onFertig === "function") o.onFertig();
+        return api;
+      }
       var meiner = ++lauf;
       laeuft = true;
       var dauer = o.dauer || 850, pause = o.pause || 220;
       var i = abNr || 0;
-      reihenfolge.forEach(function (id, k) { setzeFortschritt(id, k < i ? 1 : 0); });
+      reihenfolge.forEach(function (id, k) {
+        teile[id].gruppe.visible = true;
+        setzeFortschritt(id, k < i ? 1 : 0);
+      });
 
       function naechstes() {
         if (meiner !== lauf) return;
@@ -613,10 +775,97 @@
     }
 
     /* ---------------------------------------------------------------------
+       Ein einzelnes Teil einsetzen
+
+       Die Montage mit fester Folge kann der Baustein schon. Fuer eine
+       Montage, deren Reihenfolge der Lernende bestimmt, braucht es den
+       Schritt einzeln: Das Teil ist bis dahin gar nicht da, und wenn es
+       gewaehlt wird, fliegt es aus seiner Ruhelage an seinen Platz.
+       --------------------------------------------------------------------- */
+    function alleVerbergen() {
+      lauf++;
+      laeuft = false;
+      reihenfolge.forEach(function (id) {
+        var d = teile[id].gruppe.userData;
+        d.lauf = (d.lauf || 0) + 1;
+        setzeFortschritt(id, 0);
+        teile[id].gruppe.visible = false;
+      });
+      return api;
+    }
+
+    function einsetzen(id, fertig) {
+      var t = teile[id];
+      if (!t) return api;
+      t.gruppe.visible = true;
+      /* Jedes Teil zaehlt fuer sich. Die gemeinsame Zaehlmarke waere hier
+         falsch: Wer zwei Teile kurz nacheinander einsetzt, wuerde damit die
+         erste Bewegung abwuergen - und das Teil bliebe in der Luft
+         stehen. */
+      var d = t.gruppe.userData;
+      d.lauf = (d.lauf || 0) + 1;
+      var meiner = d.lauf;
+      var dauer = o.dauer || 850, start = null;
+      if (ruhigerBitte()) {
+        setzeFortschritt(id, 1);
+        if (typeof fertig === "function") fertig();
+        return api;
+      }
+      function takt(jetzt) {
+        if (meiner !== d.lauf || !t.gruppe.visible) return;
+        if (start === null) start = jetzt;
+        var a = Math.min(1, (jetzt - start) / dauer);
+        setzeFortschritt(id, a);
+        if (a < 1) { welt.requestAnimationFrame(takt); return; }
+        if (typeof fertig === "function") fertig();
+      }
+      setzeFortschritt(id, 0);
+      welt.requestAnimationFrame(takt);
+      return api;
+    }
+
+    function herausnehmen(id) {
+      if (!teile[id]) return api;
+      var d = teile[id].gruppe.userData;
+      d.lauf = (d.lauf || 0) + 1;      /* eine laufende Bewegung abbrechen */
+      setzeFortschritt(id, 0);
+      teile[id].gruppe.visible = false;
+      return api;
+    }
+
+    /* ---------------------------------------------------------------------
        Die Schnittstelle nach außen
        --------------------------------------------------------------------- */
     var api = {
       montage: montage,
+      alleVerbergen: alleVerbergen,
+      einsetzen: einsetzen,
+      herausnehmen: herausnehmen,
+      sichtbar: function (id) {
+        return !!(teile[id] && teile[id].gruppe.visible);
+      },
+
+      /* Klicks treffen ab jetzt die Teile selbst. Was ein Treffer
+         bedeutet, entscheidet die Seite - hier wird nichts bewertet. */
+      teileWaehlbar: function (an) {
+        teileAn = an !== false;
+        if (!teileAn && teilUnterZeiger) {
+          teilHervor(teilUnterZeiger, false);
+          teilUnterZeiger = null;
+        }
+        return api;
+      },
+
+      teilStand: function (id, stand) {
+        if (!teile[id]) return api;
+        teilStaende[id] = stand;
+        teile[id].netz.material.color.setHex(
+          stand && stand !== "offen" ? (palette[stand] || palette.teil)
+            : (teile[id].teil.farbe === undefined
+              ? palette.teil : teile[id].teil.farbe));
+        return api;
+      },
+
       zeigenAlles: zeigenAlles,
       zerlegen: zerlegen,
       schritt: schritt,

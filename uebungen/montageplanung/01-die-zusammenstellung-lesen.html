@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Die Zusammenstellung lesen</title>
+<meta name="description" content="Acht Fragen an die Zusammenstellungszeichnung der Biegepresse: Positionsnummer und Menge, Schraffur, Schnittverläufe, Bruchlinie und Maßstab.">
+<meta name="dauer" content="25 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/zeichnen.js"></script>
+<script src="../../assets/biegepresse.js"></script>
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .bild{margin:16px 0 4px}
+  .bild svg{width:100%; height:auto; display:block}
+  .bild figcaption{font-size:13px; color:var(--muted); margin-top:6px;
+    text-align:center}
+  .pos{
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:24px; height:24px; padding:0 5px; border-radius:12px;
+    flex:0 0 auto; background:var(--accent); color:#fff; font-size:13px;
+    font-weight:700; margin-right:8px; vertical-align:-5px;
+    font-variant-numeric:tabular-nums;
+  }
+  table.fr td:first-child{line-height:1.5}
+  table.fr select{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:7px 8px; border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  table.fr select:focus-visible{outline:2px solid var(--accent);
+    outline-offset:1px}
+  .urteil{font-size:13.5px; line-height:1.4; font-weight:600;
+    white-space:nowrap}
+  .urteil.ja{color:var(--ok)}
+  .urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Montageplanung</p>
+    <h1>Die Zusammenstellung lesen</h1>
+    <p class="lead">Eine Zusammenstellungszeichnung sagt nicht, wie ein Teil gefertigt wird. Sie sagt, wie die Teile zusammengehören.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Ausgangslage:</strong> Vor euch liegt die Zeichnung TBK-2026-041 der Exzenter-Handbiegepresse. Sie trägt drei Schnitte und zwölf Positionsnummern &ndash; aber keine Fertigungsmaße.</p>
+      <p>Das ist kein Versäumnis, sondern die Regel: Eine Zusammenstellung zeigt <strong>Hauptmaße</strong> &ndash; Gesamtabmessungen, Anschlussmaße und das, was die Funktion beschreibt. Alles andere steht auf den Einzelteilzeichnungen, und nach DIN ISO 129-1 gehört nichts doppelt in eine Zeichnung.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Die Zeichnung</h2>
+
+    <figure class="bild" id="bild"></figure>
+
+
+    <h2><span class="nr">2</span>Acht Fragen an die Zeichnung</h2>
+
+    <div class="tabellenrahmen">
+      <table class="fr">
+        <thead><tr><th>Frage</th><th>Antwort</th><th></th></tr></thead>
+        <tbody id="tabFragen"></tbody>
+      </table>
+    </div>
+
+    <p>
+      <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+      <button type="button" class="knopf leise" id="btnLoesung">Lösung zeigen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz">Noch nichts gewählt.</p>
+
+    <details id="loesungBox">
+      <summary>Lösung mit Begründung</summary>
+      <div id="loesung"></div>
+    </details>
+
+
+    <h3>Weiterarbeiten</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="montage-grundlagen-strukturnetz-und-montageplan.html">Werkzeug &#8222;Strukturnetz und Montageplan&#8220; öffnen</a>
+    </p>
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot;
+    <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+function el(id){ return document.getElementById(id); }
+
+var FRAGEN = [
+  {
+    "frage": "Wie viele <strong>Ständer</strong> braucht eine Presse?",
+    "wahl": [
+      "1",
+      "2",
+      "4",
+      "steht nicht in der Zeichnung"
+    ],
+    "loesung": "2",
+    "warum": "Die Spalte <em>Menge</em> der Stückliste sagt es. In der Zeichnung steht die 2 nur einmal - eine Positionsnummer ist keine Stückzahl."
+  },
+  {
+    "frage": "Welche Position trägt die Nummer <strong>6</strong>?",
+    "wahl": [
+      "Führungsbolzen",
+      "Druckfeder",
+      "Biegegesenk",
+      "Zylinderstift"
+    ],
+    "loesung": "Führungsbolzen",
+    "warum": "Die Hinweislinie der 6 zeigt auf den senkrechten Bolzen rechts neben dem Gesenk. Die Feder darum herum ist Position 8."
+  },
+  {
+    "frage": "Warum ist die <strong>Exzenterwelle</strong> im Schnitt A-A nicht schraffiert?",
+    "wahl": [
+      "anderer Werkstoff",
+      "sie liegt hinter der Schnittebene",
+      "sie ist ein Vollteil, längs geschnitten",
+      "Zeichenfehler"
+    ],
+    "loesung": "sie ist ein Vollteil, längs geschnitten",
+    "warum": "Wellen, Bolzen, Schrauben, Stifte, Niete und Federn werden längs geschnitten nicht schraffiert. Quer geschnitten schon."
+  },
+  {
+    "frage": "Wo liegt die Schnittebene <strong>B-B</strong>?",
+    "wahl": [
+      "senkrecht, in der Mitte der Presse",
+      "waagerecht, dicht über der Grundplatte",
+      "waagerecht, in Höhe der Welle",
+      "senkrecht, durch den Handhebel"
+    ],
+    "loesung": "waagerecht, dicht über der Grundplatte",
+    "warum": "Die Marken B stehen links und rechts auf gleicher Höhe, und die Pfeile zeigen nach unten - man blickt also von oben auf eine waagerechte Ebene."
+  },
+  {
+    "frage": "Was zeigt <strong>C-C</strong>, was die anderen Schnitte nicht zeigen?",
+    "wahl": [
+      "die Gesamtlänge",
+      "den Winkel der V-Nut",
+      "die Lage der Ständer",
+      "die Hebellänge"
+    ],
+    "loesung": "den Winkel der V-Nut",
+    "warum": "Die Nut läuft in Blickrichtung von A-A und zeigt dort nur ihren Grund. Erst der Blick quer dazu zeigt die 90°."
+  },
+  {
+    "frage": "Warum ist der Handhebel mit einer <strong>Freihandlinie abgebrochen</strong> gezeichnet?",
+    "wahl": [
+      "er ist beschädigt",
+      "er ist zu lang für das Blatt",
+      "er gehört nicht zur Baugruppe",
+      "er wird noch gefertigt"
+    ],
+    "loesung": "er ist zu lang für das Blatt",
+    "warum": "280 mm im Maßstab 1:1 sprengen das Blatt. Die Bruchlinie sagt: hier geht es weiter. Das Maß steht trotzdem dran - gemessen ab Wellenmitte."
+  },
+  {
+    "frage": "Der <strong>Maßstab</strong> im Schriftfeld ist 1:1. Was bedeutet dann &#8222;2:1&#8220; über dem Schnitt C-C?",
+    "wahl": [
+      "C-C ist doppelt so groß gezeichnet",
+      "C-C ist halb so groß gezeichnet",
+      "C-C zeigt zwei Teile",
+      "ein Schreibfehler"
+    ],
+    "loesung": "C-C ist doppelt so groß gezeichnet",
+    "warum": "Eine Einzelheit darf einen eigenen Maßstab haben. Er steht dann bei ihr und nicht im Schriftfeld."
+  },
+  {
+    "frage": "Wie groß ist der <strong>Hub</strong> des Stempels?",
+    "wahl": [
+      "6 mm",
+      "12 mm",
+      "20 mm",
+      "56 mm"
+    ],
+    "loesung": "12 mm",
+    "warum": "Der Hub ist das Doppelte der Exzentrizität: 2 · 6 mm. Das Maß steht rechts am Exzenterbund."
+  }
+];
+var WAHL = [];
+
+PRESSE.zeichnen("bild");
+
+/* --------------------------------------------------------------------------
+   Die Fragen: je eine Zeile mit einer Auswahl. Geprüft wird auf Knopfdruck,
+   nicht bei jeder Wahl - wer zwischendurch die Meinung ändert, soll das
+   ohne rote Zwischenrufe tun können.
+   -------------------------------------------------------------------------- */
+(function fragenAufbauen(){
+  var tb = el("tabFragen");
+  FRAGEN.forEach(function(f, i){
+    var tr = document.createElement("tr");
+
+    var td0 = document.createElement("td");
+    td0.innerHTML = f.frage;
+    tr.appendChild(td0);
+
+    var td1 = document.createElement("td");
+    var s = document.createElement("select");
+    s.id = "f" + i;
+    s.setAttribute("aria-label", "Antwort zu Frage " + (i + 1));
+    var leer = document.createElement("option");
+    leer.value = ""; leer.textContent = "– bitte wählen –";
+    s.appendChild(leer);
+    (f.wahl || WAHL).forEach(function(w){
+      var o = document.createElement("option");
+      o.value = w; o.textContent = w;
+      s.appendChild(o);
+    });
+    td1.appendChild(s);
+    tr.appendChild(td1);
+
+    var td2 = document.createElement("td");
+    td2.className = "urteil"; td2.id = "u" + i; td2.textContent = "–";
+    tr.appendChild(td2);
+
+    tb.appendChild(tr);
+  });
+
+  el("loesung").innerHTML = FRAGEN.map(function(f, i){
+    return "<p><strong>" + (i + 1) + ". " + f.loesung + "</strong> &ndash; "
+      + f.warum + "</p>";
+  }).join("");
+}());
+
+el("btnPruefen").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  FRAGEN.forEach(function(f, i){
+    var v = el("f" + i).value, u = el("u" + i);
+    if(!v){ u.textContent = "–"; u.className = "urteil"; offen++; return; }
+    var ok = v === f.loesung;
+    u.textContent = ok ? "richtig" : "nein";
+    u.className = "urteil " + (ok ? "ja" : "nein");
+    if(ok) r++;
+  });
+  el("bilanz").textContent = r + " von " + FRAGEN.length + " richtig."
+    + (offen ? " (" + offen + " noch offen.)" : "");
+  if(r === FRAGEN.length) el("loesungBox").open = true;
+});
+
+el("btnLoesung").addEventListener("click", function(){
+  el("loesungBox").open = true;
+});
+</script>
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/fortschritt.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

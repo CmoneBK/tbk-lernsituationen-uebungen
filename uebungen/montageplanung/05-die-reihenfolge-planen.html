@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Die Reihenfolge planen</title>
+<meta name="description" content="Zwölf Positionen in eine gültige Montagereihenfolge bringen – geprüft wird gegen die Vorrangbeziehungen, nicht gegen eine Musterlösung.">
+<meta name="dauer" content="30 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/biegepresse.js"></script>
+<script src="../../assets/montageplan.js"></script>
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .mp-vorrat{display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 0}
+  .mp-teil{
+    font:inherit; font-size:14px; padding:8px 12px; border-radius:9px;
+    border:1px solid var(--border-stark); background:var(--card);
+    color:inherit; cursor:pointer; display:inline-flex; align-items:center;
+  }
+  .mp-teil.norm{border-radius:18px}
+  .mp-teil:hover:not(:disabled){border-color:var(--accent)}
+  .mp-teil:disabled{opacity:.35; cursor:default}
+  .mp-teil.zuckt{animation:zuck .28s 2}
+  @keyframes zuck{0%{transform:translateX(0)}25%{transform:translateX(-4px)}
+    75%{transform:translateX(4px)}100%{transform:translateX(0)}}
+  .mp-nr{
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:22px; height:22px; padding:0 4px; border-radius:11px;
+    background:var(--accent); color:#fff; font-size:12px; font-weight:700;
+    margin-right:8px; font-variant-numeric:tabular-nums;
+  }
+  .mp-kopf{margin:0; font-size:13.5px; color:var(--muted)}
+  .mp-zwischen{margin:16px 0 4px; font-weight:600; font-size:14px}
+  .mp-plan{margin:0; padding:0 0 0 4px; list-style:none;
+    counter-reset:mpschritt}
+  .mp-plan li{
+    counter-increment:mpschritt; display:flex; align-items:center; gap:8px;
+    padding:5px 0; border-bottom:1px dashed var(--border); font-size:14.5px;
+  }
+  .mp-plan li::before{
+    content:counter(mpschritt) "."; min-width:26px; color:var(--muted);
+    font-variant-numeric:tabular-nums; font-size:13px;
+  }
+  .mp-weg{
+    margin-left:auto; font:inherit; font-size:12.5px; padding:3px 9px;
+    border-radius:7px; border:1px solid var(--border-stark);
+    background:transparent; color:var(--muted); cursor:pointer;
+  }
+  .mp-rueck{margin:12px 0 0; padding:9px 12px; border-radius:8px;
+    font-size:.94rem}
+  .mp-rueck.ja{background:rgba(22,163,74,.12); border-left:4px solid var(--ok)}
+  .mp-rueck.nein{background:rgba(220,38,38,.10);
+    border-left:4px solid var(--bad)}
+  .zahl{font-variant-numeric:tabular-nums; font-weight:700}
+  .modus{display:flex; flex-wrap:wrap; gap:14px; align-items:flex-end;
+    margin:0 0 4px}
+  .modus > div{flex:1 1 220px}
+  .modus label{display:block; font-size:13px; font-weight:700; margin:0 0 5px}
+  .modus select{width:100%; font:inherit; font-size:14px; padding:8px 9px;
+    border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark)}
+  .modustext{font-size:13.5px; color:var(--muted); margin:8px 0 0}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Montageplanung</p>
+    <h1>Die Reihenfolge planen</h1>
+    <p class="lead">Zwölf Positionen, eine Presse &ndash; und mehr richtige
+      Reihenfolgen, als man denkt.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Die Aufgabe:</strong> Bringt die zwölf Positionen der
+      Biegepresse in eine Reihenfolge, nach der man sie montieren kann.
+      Klickt dazu die Teile in der Reihenfolge an, in der sie eingebaut
+      werden; das zuletzt gesetzte lässt sich zurücknehmen.</p>
+      <p><strong>Wichtig:</strong> Geprüft wird nicht gegen eine
+      Musterlösung, sondern gegen die <em>Vorrangbeziehungen</em> &ndash;
+      also gegen die Frage, was zwingend vor was kommen muss. Alles Übrige
+      ist eure Entscheidung, und sie ist dann auch richtig.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Wie viele Lösungen gibt es?</h2>
+
+    <p>Bevor ihr anfangt, eine Zahl, die die Frage beantwortet, die in jeder
+    Klasse kommt:</p>
+
+    <div class="box">
+      <p>Für diese Presse gibt es <span class="zahl" id="zahlFolgen">…</span>
+      <strong>gültige Montagereihenfolgen</strong>. Sie ergeben sich aus
+      zwölf Positionen und
+      <span class="zahl" id="zahlVorrang">…</span> Vorrangbeziehungen.</p>
+      <p class="fussnote">Ohne jede Bedingung wären es 12! = 479&nbsp;001&nbsp;600.
+      Die Vorrangbeziehungen streichen fast alle davon weg &ndash; aber eben
+      nicht bis auf eine. Wer im Betrieb einen Montageplan schreibt,
+      entscheidet innerhalb dieses Spielraums: nach Zugänglichkeit, nach
+      Werkzeugwechseln, nach dem, was sich gut greifen lässt.</p>
+    </div>
+
+    <h2><span class="nr">2</span>Euer Plan</h2>
+
+    <div class="box">
+      <div class="modus">
+        <div>
+          <label for="modus">Wie soll geprüft werden?</label>
+          <select id="modus">
+            <option value="ende" selected>Erst am Schluss &ndash; wie beim Planen am Schreibtisch</option>
+            <option value="sofort">Sofort bei jedem Schritt &ndash; wie an der Maschine</option>
+          </select>
+        </div>
+      </div>
+      <p class="modustext" id="modustext"></p>
+    </div>
+
+    <div id="plan"></div>
+
+    <p style="margin-top:16px">
+      <button type="button" class="knopf leise" id="btnVonVorn">Von vorn</button>
+      <button type="button" class="knopf leise" id="btnLoesung">Vorrangbeziehungen zeigen</button>
+    </p>
+
+    <details id="loesungBox">
+      <summary>Die Vorrangbeziehungen im Klartext</summary>
+      <div id="loesung"></div>
+    </details>
+
+    <h2><span class="nr">3</span>Eine Reihenfolge ist noch kein Plan</h2>
+
+    <div class="box">
+      <p>Was ihr oben gebaut habt, ist die <strong>Reihenfolge</strong>. Ein
+      Montageplan sagt mehr:</p>
+      <div class="tabellenrahmen">
+        <table>
+          <thead><tr><th>Nr.</th><th>Arbeitsschritt</th><th>Betriebsmittel</th>
+            <th>Prüfen</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Grundplatte auf die Werkbank spannen</td>
+              <td>Schraubstock, Schutzbacken</td><td>&ndash;</td></tr>
+            <tr><td>2</td><td>Zwei Führungsbolzen einschrauben</td>
+              <td>von Hand, dann SW 6</td>
+              <td>bis zum Bund eingeschraubt?</td></tr>
+            <tr><td>3</td><td>Zwei Druckfedern aufstecken</td>
+              <td>von Hand</td><td>sitzen sie auf der Platte auf?</td></tr>
+            <tr><td>&hellip;</td><td>&hellip;</td><td>&hellip;</td>
+              <td>&hellip;</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Vier Spalten, und die vierte ist die, die am häufigsten fehlt.
+      Ohne sie merkt niemand, dass etwas schiefgegangen ist &ndash; bis die
+      Presse fertig ist und klemmt.</p>
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="montage-grundlagen-montageplaner.html">Werkzeug &#8222;Montageplaner&#8220; öffnen</a>
+    </p>
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot;
+    <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+function el(id){ return document.getElementById(id); }
+
+var MODUS = {
+  ende: "Ihr dürft alles in beliebiger Reihenfolge anklicken. Erst wenn "
+    + "alle zwölf stehen, wird geprüft - und dann bekommt ihr den ersten "
+    + "Verstoß genannt. So plant man am Schreibtisch.",
+  sofort: "Jeder Schritt wird sofort geprüft. Was noch nicht geht, wird "
+    + "abgelehnt und begründet. So läuft es an der Maschine: Dort merkt man "
+    + "es auch sofort, nur unangenehmer."
+};
+
+var plan = null;
+
+function planAufbauen(){
+  var sofort = el("modus").value === "sofort";
+  el("modustext").textContent = MODUS[el("modus").value];
+  plan = Montageplan.reihenfolge("plan", {
+    teile: PRESSE.TEILE,
+    vorrang: PRESSE.VORRANG,
+    sofort: sofort,
+    onStand: function(gesetzt, fertig){
+      if(fertig){
+        document.dispatchEvent(new CustomEvent("tbk-durchgang-ende",
+          {detail:{richtig: 1, gesamt: 1}}));
+      }
+    }
+  });
+}
+
+(function zahlenZeigen(){
+  var z = Montageplan.wieVieleFolgen(PRESSE.TEILE, PRESSE.VORRANG, 300000);
+  el("zahlFolgen").textContent = z.abgebrochen
+    ? "mehr als " + z.zahl : z.zahl;
+  el("zahlVorrang").textContent = PRESSE.VORRANG.length;
+}());
+
+(function loesungAufbauen(){
+  el("loesung").innerHTML = "<ol>" + PRESSE.VORRANG.map(function(v){
+    var a = PRESSE.teil(v.vorher), b = PRESSE.teil(v.nachher);
+    return "<li><strong>" + a.kurz + " vor " + b.kurz + ".</strong> "
+      + v.warum + "</li>";
+  }).join("") + "</ol><p>Mehr Bedingungen gibt es nicht. Wer sie alle "
+    + "einhält, hat einen gültigen Plan - ganz gleich, wie er die übrigen "
+    + "Schritte anordnet.</p>";
+}());
+
+el("btnVonVorn").addEventListener("click", function(){
+  if(plan) plan.vonVorn();
+});
+el("btnLoesung").addEventListener("click", function(){
+  el("loesungBox").open = true;
+});
+el("modus").addEventListener("change", planAufbauen);
+
+planAufbauen();
+</script>
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/fortschritt.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

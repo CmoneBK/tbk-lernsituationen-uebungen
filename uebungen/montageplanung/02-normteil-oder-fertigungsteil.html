@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Normteil oder Fertigungsteil?</title>
+<meta name="description" content="Zehn Positionen der Biegepresse einordnen – und den Unterschied begründen können, auch bei den zwei Fällen, die täuschen.">
+<meta name="dauer" content="15 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .bild{margin:16px 0 4px}
+  .bild svg{width:100%; height:auto; display:block}
+  .bild figcaption{font-size:13px; color:var(--muted); margin-top:6px;
+    text-align:center}
+  .pos{
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:24px; height:24px; padding:0 5px; border-radius:12px;
+    flex:0 0 auto; background:var(--accent); color:#fff; font-size:13px;
+    font-weight:700; margin-right:8px; vertical-align:-5px;
+    font-variant-numeric:tabular-nums;
+  }
+  table.fr td:first-child{line-height:1.5}
+  table.fr select{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:7px 8px; border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  table.fr select:focus-visible{outline:2px solid var(--accent);
+    outline-offset:1px}
+  .urteil{font-size:13.5px; line-height:1.4; font-weight:600;
+    white-space:nowrap}
+  .urteil.ja{color:var(--ok)}
+  .urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Montageplanung</p>
+    <h1>Normteil oder Fertigungsteil?</h1>
+    <p class="lead">Was man bestellt, ist ein Normteil. Was in der Werkstatt entsteht, ein Fertigungsteil. Zwei Positionen sehen aus wie das eine und sind das andere.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Die Unterscheidung ist keine Spitzfindigkeit.</strong> Sie entscheidet, was eingekauft und was gefertigt wird, was eine Zeichnung braucht und was eine Bestellnummer, und ob im Strukturnetz ein Rechteck oder ein Oval steht.</p>
+      <p>Die Probe: Kann ich das Teil mit einer <strong>Normbezeichnung</strong> bestellen, ohne eine Zeichnung mitzuschicken? Dann ist es ein Normteil.</p>
+    </div>
+
+
+    <h2><span class="nr">1</span>Zehn Positionen</h2>
+
+    <div class="tabellenrahmen">
+      <table class="fr">
+        <thead><tr><th>Position</th><th>Was ist das?</th><th></th></tr></thead>
+        <tbody id="tabFragen"></tbody>
+      </table>
+    </div>
+
+    <p>
+      <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+      <button type="button" class="knopf leise" id="btnLoesung">Lösung zeigen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz">Noch nichts gewählt.</p>
+
+    <details id="loesungBox">
+      <summary>Lösung mit Begründung</summary>
+      <div id="loesung"></div>
+    </details>
+
+
+    <h3>Weiterarbeiten</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="montage-grundlagen-strukturnetz-und-montageplan.html">Werkzeug &#8222;Strukturnetz und Montageplan&#8220; öffnen</a>
+    </p>
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot;
+    <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+function el(id){ return document.getElementById(id); }
+
+var FRAGEN = [
+  {
+    "frage": "<span class=\"pos\">1</span>Grundplatte",
+    "loesung": "Fertigungsteil",
+    "warum": "Ein Stück Flachstahl, in der Werkstatt gesägt, gefräst und gebohrt. Es gibt keine Norm, unter der man es bestellen könnte."
+  },
+  {
+    "frage": "<span class=\"pos\">3</span>Exzenterwelle",
+    "loesung": "Fertigungsteil",
+    "warum": "Gedreht nach Zeichnung. Die Exzentrizität von 6 mm gibt es in keinem Katalog."
+  },
+  {
+    "frage": "<span class=\"pos\">8</span>Druckfeder 1,6 × 21,6 × 48,0",
+    "loesung": "Normteil",
+    "warum": "Man bestellt sie mit Drahtdurchmesser, Außendurchmesser und Länge - drei Zahlen, und die Feder ist eindeutig."
+  },
+  {
+    "frage": "<span class=\"pos\">9</span>Zylinderschraube ISO 4762 – M8 × 20 – 8.8",
+    "loesung": "Normteil",
+    "warum": "Die Norm legt Kopf, Gewinde und Maße fest. Jeder Händler liefert dieselbe Schraube."
+  },
+  {
+    "frage": "<span class=\"pos\">6</span>Führungsbolzen Ø 12 h8 mit Gewindezapfen M10",
+    "loesung": "Fertigungsteil",
+    "warum": "Klingt wie ein Normteil, ist aber keins: Diese Kombination aus h8-Schaft und Gewindezapfen steht in keiner Norm. Sie wird gedreht."
+  },
+  {
+    "frage": "<span class=\"pos\">11</span>Zylinderstift ISO 2338 – 6 m6 × 20 – St",
+    "loesung": "Normteil",
+    "warum": "ISO 2338 - bestellbar."
+  },
+  {
+    "frage": "<span class=\"pos\">4</span>Stempelhalter mit Biegestempel",
+    "loesung": "Fertigungsteil",
+    "warum": "Der 90°-Keil wird gefräst. Ein Biegestempel ist ein Werkzeug, kein Normteil."
+  },
+  {
+    "frage": "<span class=\"pos\">12</span>Kegelstift ISO 2339 – A – 5 × 40 – St",
+    "loesung": "Normteil",
+    "warum": "ISO 2339, Form A. Die Bohrung dafür wird allerdings erst beim Montieren gerieben - der Stift ist genormt, seine Bohrung nicht."
+  },
+  {
+    "frage": "<span class=\"pos\">5</span>Biegegesenk mit V-Nut 90°",
+    "loesung": "Fertigungsteil",
+    "warum": "Nach Zeichnung gefräst und gehärtet."
+  },
+  {
+    "frage": "<span class=\"pos\">2</span>Ständer",
+    "loesung": "Fertigungsteil",
+    "warum": "Zweimal dasselbe Fertigungsteil. Dass es zweimal gebraucht wird, macht es nicht zum Normteil."
+  }
+];
+var WAHL = ["Normteil", "Fertigungsteil"];
+
+
+/* --------------------------------------------------------------------------
+   Die Fragen: je eine Zeile mit einer Auswahl. Geprüft wird auf Knopfdruck,
+   nicht bei jeder Wahl - wer zwischendurch die Meinung ändert, soll das
+   ohne rote Zwischenrufe tun können.
+   -------------------------------------------------------------------------- */
+(function fragenAufbauen(){
+  var tb = el("tabFragen");
+  FRAGEN.forEach(function(f, i){
+    var tr = document.createElement("tr");
+
+    var td0 = document.createElement("td");
+    td0.innerHTML = f.frage;
+    tr.appendChild(td0);
+
+    var td1 = document.createElement("td");
+    var s = document.createElement("select");
+    s.id = "f" + i;
+    s.setAttribute("aria-label", "Antwort zu Frage " + (i + 1));
+    var leer = document.createElement("option");
+    leer.value = ""; leer.textContent = "– bitte wählen –";
+    s.appendChild(leer);
+    (f.wahl || WAHL).forEach(function(w){
+      var o = document.createElement("option");
+      o.value = w; o.textContent = w;
+      s.appendChild(o);
+    });
+    td1.appendChild(s);
+    tr.appendChild(td1);
+
+    var td2 = document.createElement("td");
+    td2.className = "urteil"; td2.id = "u" + i; td2.textContent = "–";
+    tr.appendChild(td2);
+
+    tb.appendChild(tr);
+  });
+
+  el("loesung").innerHTML = FRAGEN.map(function(f, i){
+    return "<p><strong>" + (i + 1) + ". " + f.loesung + "</strong> &ndash; "
+      + f.warum + "</p>";
+  }).join("");
+}());
+
+el("btnPruefen").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  FRAGEN.forEach(function(f, i){
+    var v = el("f" + i).value, u = el("u" + i);
+    if(!v){ u.textContent = "–"; u.className = "urteil"; offen++; return; }
+    var ok = v === f.loesung;
+    u.textContent = ok ? "richtig" : "nein";
+    u.className = "urteil " + (ok ? "ja" : "nein");
+    if(ok) r++;
+  });
+  el("bilanz").textContent = r + " von " + FRAGEN.length + " richtig."
+    + (offen ? " (" + offen + " noch offen.)" : "");
+  if(r === FRAGEN.length) el("loesungBox").open = true;
+});
+
+el("btnLoesung").addEventListener("click", function(){
+  el("loesungBox").open = true;
+});
+</script>
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/fortschritt.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

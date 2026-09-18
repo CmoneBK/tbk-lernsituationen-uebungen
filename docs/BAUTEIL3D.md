@@ -20,7 +20,8 @@ Der Baustein macht drei Dinge:
    in der Seite — `bauteil3d.js` kennt keine Lagerböcke.
 2. **Zusammensetzen.** Die Teile fahren der Reihe nach aus einer Ruhelage an
    ihren Platz. Das ist die Montage.
-3. **Anklicken lassen.** Wer eine Marke trifft, löst `onWahl(id)` aus.
+3. **Anklicken lassen.** Wer eine Marke trifft, löst `onWahl(id)` aus; wer
+   ein Teil trifft, `onTeil(id)` – wenn `teileWaehlbar(true)` gesetzt ist.
 
 Was er **nicht** macht: rechnen, bewerten, zählen, speichern, nachladen. Die
 Auswertung gehört in die Seite. Nur so lässt sich derselbe Körper in einer
@@ -68,6 +69,7 @@ var szene = Bauteil3D.aufbauen(document.getElementById("buehne"), {
   mitte: {x:0, y:55, z:0},
   beschreibung: "…",                  // wird das aria-label der Leinwand
   onWahl:    function(id, marke){ … },
+  onTeil:    function(id, teil){ … },
   onSchritt: function(n, gesamt, teil){ … },
   onFertig:  function(){ … }
 });
@@ -91,6 +93,8 @@ Richtung, aus der das Teil einfährt.
 | `rohr` | `{d, di, l}` | `achse: "x"\|"y"\|"z"`; `di: 0` ergibt einen Vollzylinder |
 | `keil` | `{x, y, z}` | rechtwinkliges Dreieck in xy, über z ausgezogen; Katheten auf +x und +y |
 | `winkel` | `{x, y, z, s}` | L-Profil, Schenkeldicke `s` |
+| `dach` | `{x, y, z}` | symmetrischer Keil, Schneide unten und entlang x – ein Biegestempel |
+| `gesenk` | `{x, y, z, nut}` | Quader mit V-Nut im Rücken, 90°, Tiefe `nut`, Nut entlang x |
 
 Gedreht wird über `dreh: {x, y, z}` im Bogenmaß. Eine Rippe, deren senkrechte
 Kathete am Blech liegen soll, bekommt `dreh:{y:-Math.PI/2}`.
@@ -207,6 +211,36 @@ werden die 3D-Karten über `@media print` ausgeblendet.
 
 ---
 
+## 6a. Montieren, ohne die Reihenfolge vorzuschreiben
+
+`montage()` spielt eine feste Folge ab. Für eine Montage, deren Reihenfolge
+der Lernende selbst bestimmt, gibt es den Schritt einzeln:
+
+```js
+szene.alleVerbergen();          // nichts ist da
+szene.einsetzen("gesenk");      // dieses Teil fliegt an seinen Platz
+szene.herausnehmen("gesenk");   // und wieder weg
+szene.teileWaehlbar(true);      // Klicks treffen jetzt die Teile
+szene.teilStand("gesenk", "richtig");
+```
+
+Zwei Dinge daran sind nicht offensichtlich:
+
+**Jedes Teil zählt für sich.** Die Montage mit fester Folge benutzt eine
+gemeinsame Zählmarke, um abgebrochene Läufe zu erkennen. Für `einsetzen()`
+wäre die falsch: Wer zwei Teile kurz nacheinander einsetzt, würde damit die
+erste Bewegung abwürgen — und das Teil bliebe in der Luft stehen. Deshalb hat
+jedes Teil seine eigene.
+
+**Wer keine Bewegung will, bekommt keine.** Ist im Betriebssystem
+`prefers-reduced-motion` gesetzt, fliegt nichts; die Teile sind an ihrem
+Platz. Die Aussage der Montage bleibt, die Bewegung fällt weg. Nebenbei macht
+das die Darstellung prüfbar: Ein Bild, das auf eine Animation wartet, lässt
+sich nicht nachmessen — und in Headless-Chrome läuft
+`requestAnimationFrame` unter virtueller Zeit ohnehin nur ein einziges Mal.
+
+---
+
 ## 7. Hell und dunkel
 
 Die Szene malt sich selbst hell oder dunkel, je nach `data-thema-effektiv` am
@@ -246,10 +280,11 @@ beides nebeneinanderlegt.
 
 Absehbar gebraucht, aber noch nicht gebaut:
 
-* **Flächen und Kanten als Ziel**, nicht nur gesetzte Marken. Heute wird auf
-  Kugeln geklickt; für Fragen wie „welche Fläche ist die Bezugsfläche?"
-  müsste der Strahl auf die Teile selbst treffen und die getroffene Fläche
-  melden.
+* **Flächen als Ziel.** Ganze Teile lassen sich inzwischen anklicken
+  (`teileWaehlbar`), Kanten und Rundnähte als Marken auch. Was noch fehlt,
+  ist die einzelne *Fläche* — für Fragen wie „welche Fläche ist die
+  Bezugsfläche?" müsste der Strahl melden, welches Dreieck er getroffen hat,
+  und der Baustein daraus die Fläche ableiten.
 * **Bemaßung im Raum** — Maßpfeile und Maßzahlen, die sich mitdrehen.
 * **Schnittdarstellung**: eine Ebene, die den Körper aufschneidet.
 * **Montagepfade**, die nicht gerade sind — für Teile, die eingefädelt oder

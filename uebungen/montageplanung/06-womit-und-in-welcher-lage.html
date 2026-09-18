@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Womit wird montiert?</title>
+<meta name="description" content="Acht Montageschritte an der Biegepresse und das Betriebsmittel, das dazugehört – vom Innensechskantschlüssel bis zum Haarwinkel.">
+<meta name="dauer" content="15 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .bild{margin:16px 0 4px}
+  .bild svg{width:100%; height:auto; display:block}
+  .bild figcaption{font-size:13px; color:var(--muted); margin-top:6px;
+    text-align:center}
+  .pos{
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:24px; height:24px; padding:0 5px; border-radius:12px;
+    flex:0 0 auto; background:var(--accent); color:#fff; font-size:13px;
+    font-weight:700; margin-right:8px; vertical-align:-5px;
+    font-variant-numeric:tabular-nums;
+  }
+  table.fr td:first-child{line-height:1.5}
+  table.fr select{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:7px 8px; border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  table.fr select:focus-visible{outline:2px solid var(--accent);
+    outline-offset:1px}
+  .urteil{font-size:13.5px; line-height:1.4; font-weight:600;
+    white-space:nowrap}
+  .urteil.ja{color:var(--ok)}
+  .urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Montageplanung</p>
+    <h1>Womit wird montiert?</h1>
+    <p class="lead">Ein Montageplan nennt nicht nur den Schritt, sondern auch das Werkzeug. Sonst steht der Nächste vor der Maschine und sucht.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Ein Montageplan hat mindestens vier Spalten:</strong> die Nummer des Schrittes, was zu tun ist, womit, und woran man erkennt, dass es stimmt.</p>
+      <p>Die Spalte <em>womit</em> ist die, die am häufigsten fehlt &ndash; und die, wegen der am häufigsten etwas kaputtgeht. Ein Stahlhammer auf einem Zylinderstift macht mehr Schaden als eine falsche Reihenfolge.</p>
+    </div>
+
+
+    <h2><span class="nr">1</span>Acht Schritte</h2>
+
+    <div class="tabellenrahmen">
+      <table class="fr">
+        <thead><tr><th>Schritt</th><th>Womit?</th><th></th></tr></thead>
+        <tbody id="tabFragen"></tbody>
+      </table>
+    </div>
+
+    <p>
+      <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+      <button type="button" class="knopf leise" id="btnLoesung">Lösung zeigen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz">Noch nichts gewählt.</p>
+
+    <details id="loesungBox">
+      <summary>Lösung mit Begründung</summary>
+      <div id="loesung"></div>
+    </details>
+
+
+    <h3>Weiterarbeiten</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="montage-grundlagen-strukturnetz-und-montageplan.html">Werkzeug &#8222;Strukturnetz und Montageplan&#8220; öffnen</a>
+    </p>
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot;
+    <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+function el(id){ return document.getElementById(id); }
+
+var FRAGEN = [
+  {
+    "frage": "Die vier <strong>Zylinderschrauben M8</strong> anziehen",
+    "loesung": "Innensechskantschlüssel SW 6",
+    "warum": "ISO 4762 M8 hat SW 6. Die Schlüsselweite steht im Tabellenbuch bei den Zylinderschrauben - raten kostet Schraubenköpfe."
+  },
+  {
+    "frage": "Die zwei <strong>Zylinderschrauben M6</strong> am Gesenk anziehen",
+    "loesung": "Innensechskantschlüssel SW 5",
+    "warum": "M6 hat SW 5. Zwei Größen an einer Maschine - deshalb gehören beide auf den Montageplan."
+  },
+  {
+    "frage": "Die <strong>Zylinderstifte</strong> in die Grundplatte setzen",
+    "loesung": "Kunststoffhammer",
+    "warum": "Ein Zylinderstift m6 sitzt stramm. Ein Stahlhammer staucht ihn und macht einen Grat, der die Bohrung zerstört."
+  },
+  {
+    "frage": "Den <strong>Kegelstift</strong> wieder heraustreiben",
+    "loesung": "Splinttreiber",
+    "warum": "Ein Durchtreiber mit passendem Durchmesser, angesetzt an der dünnen Seite. Mit der Zange zieht man ihn nicht."
+  },
+  {
+    "frage": "Prüfen, ob die <strong>Ständer senkrecht</strong> stehen",
+    "loesung": "Haarwinkel",
+    "warum": "Vor dem Festziehen. Danach lässt sich ein schiefer Ständer nur noch mit Gewalt richten."
+  },
+  {
+    "frage": "Die <strong>Höhe des Gesenks</strong> nachmessen",
+    "loesung": "Messschieber",
+    "warum": "20 mm, und davon hängt der Spalt von 2 mm ab. Wer hier schätzt, biegt später falsch."
+  },
+  {
+    "frage": "Die <strong>Exzenterwelle</strong> zwischen die Ständer bringen",
+    "loesung": "von Hand, ohne Werkzeug",
+    "warum": "Die Welle liegt lose zwischen den Ständern; erst danach werden sie aufgeschoben. Wer hier Werkzeug braucht, hat die Reihenfolge falsch."
+  },
+  {
+    "frage": "Das <strong>Anziehdrehmoment</strong> der M8-Schrauben einhalten",
+    "loesung": "Drehmomentschlüssel",
+    "warum": "Nach Gefühl angezogen streuen Vorspannkräfte um mehr als das Doppelte. An einer Presse, die 7 kN erzeugt, ist das keine Kleinigkeit."
+  }
+];
+var WAHL = ["Innensechskantschlüssel SW 5", "Innensechskantschlüssel SW 6", "Kunststoffhammer", "Splinttreiber", "Haarwinkel", "Messschieber", "Drehmomentschlüssel", "von Hand, ohne Werkzeug"];
+
+
+/* --------------------------------------------------------------------------
+   Die Fragen: je eine Zeile mit einer Auswahl. Geprüft wird auf Knopfdruck,
+   nicht bei jeder Wahl - wer zwischendurch die Meinung ändert, soll das
+   ohne rote Zwischenrufe tun können.
+   -------------------------------------------------------------------------- */
+(function fragenAufbauen(){
+  var tb = el("tabFragen");
+  FRAGEN.forEach(function(f, i){
+    var tr = document.createElement("tr");
+
+    var td0 = document.createElement("td");
+    td0.innerHTML = f.frage;
+    tr.appendChild(td0);
+
+    var td1 = document.createElement("td");
+    var s = document.createElement("select");
+    s.id = "f" + i;
+    s.setAttribute("aria-label", "Antwort zu Frage " + (i + 1));
+    var leer = document.createElement("option");
+    leer.value = ""; leer.textContent = "– bitte wählen –";
+    s.appendChild(leer);
+    (f.wahl || WAHL).forEach(function(w){
+      var o = document.createElement("option");
+      o.value = w; o.textContent = w;
+      s.appendChild(o);
+    });
+    td1.appendChild(s);
+    tr.appendChild(td1);
+
+    var td2 = document.createElement("td");
+    td2.className = "urteil"; td2.id = "u" + i; td2.textContent = "–";
+    tr.appendChild(td2);
+
+    tb.appendChild(tr);
+  });
+
+  el("loesung").innerHTML = FRAGEN.map(function(f, i){
+    return "<p><strong>" + (i + 1) + ". " + f.loesung + "</strong> &ndash; "
+      + f.warum + "</p>";
+  }).join("");
+}());
+
+el("btnPruefen").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  FRAGEN.forEach(function(f, i){
+    var v = el("f" + i).value, u = el("u" + i);
+    if(!v){ u.textContent = "–"; u.className = "urteil"; offen++; return; }
+    var ok = v === f.loesung;
+    u.textContent = ok ? "richtig" : "nein";
+    u.className = "urteil " + (ok ? "ja" : "nein");
+    if(ok) r++;
+  });
+  el("bilanz").textContent = r + " von " + FRAGEN.length + " richtig."
+    + (offen ? " (" + offen + " noch offen.)" : "");
+  if(r === FRAGEN.length) el("loesungBox").open = true;
+});
+
+el("btnLoesung").addEventListener("click", function(){
+  el("loesungBox").open = true;
+});
+</script>
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/fortschritt.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

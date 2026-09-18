@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Normbezeichnung lesen</title>
+<meta name="description" content="Zylinderstift, Kegelstift, Zylinderschraube, Druckfeder: was an welcher Stelle der Bezeichnung steht – und woran man erkennt, dass eine nicht stimmt.">
+<meta name="dauer" content="10 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .frage{font-size:19px; line-height:1.4; font-weight:700; margin:0 0 6px;
+    min-height:1.4em}
+  .frageart{font-size:13px; color:var(--muted); margin:0 0 14px}
+  .wahl{display:grid; gap:10px}
+  .wahl button{
+    font:600 15px/1.35 inherit; cursor:pointer; padding:13px 15px; text-align:left;
+    border-radius:10px; border:1px solid var(--border-stark);
+    background:var(--bg); color:var(--fg);
+  }
+  .wahl button:hover:not(:disabled){border-color:var(--accent)}
+  .wahl button:disabled{cursor:default; opacity:.6}
+  .wahl button.war{opacity:1}
+  .wahl button.war.ok{border-color:var(--ok); background:rgba(22,163,74,.14)}
+  .wahl button.war.nein{border-color:var(--bad); background:rgba(220,38,38,.12)}
+  .uhr{display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-size:13px; color:var(--muted); margin:0 0 10px;
+    font-variant-numeric:tabular-nums}
+  .fortschritt{height:8px; border-radius:999px; background:var(--border);
+    overflow:hidden; margin:0 0 16px}
+  .fortschritt i{display:block; height:100%; background:var(--accent);
+    transition:width .2s ease}
+  .bilanz{font-size:19px; font-weight:700; margin:0 0 8px}
+  .rueckblick{list-style:none; margin:12px 0 0; padding:0}
+  .rueckblick li{display:flex; gap:10px; align-items:baseline; padding:5px 0;
+    border-top:1px solid var(--border); font-size:14px}
+  .rueckblick .marke{font-weight:700; flex:0 0 auto}
+  .rueckblick .marke.ok{color:var(--ok)}
+  .rueckblick .marke.nein{color:var(--bad)}
+  .einstellung{display:flex; flex-wrap:wrap; gap:14px; align-items:flex-end;
+    margin:0 0 4px}
+  .einstellung > div{flex:1 1 190px}
+  .einstellung label{display:block; font-size:13px; font-weight:700; margin:0 0 5px}
+  .einstellung select{width:100%; font:inherit; font-size:14px; padding:8px 9px;
+    border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark)}
+  .stufentext{font-size:13.5px; color:var(--muted); margin:8px 0 0}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Montageplanung</p>
+    <h1>Normbezeichnung lesen</h1>
+    <p class="lead">Eine Normbezeichnung ist ein Satz mit fester Wortstellung. Wer sie liest, bestellt richtig.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>So läuft es:</strong> Eine Bezeichnung steht da, ein Teil davon ist hervorgehoben &ndash; gefragt ist, was er bedeutet.</p>
+      <p>Die Wortstellung ist immer dieselbe: Benennung, Norm, gegebenenfalls Form oder Typ, die Maße, zuletzt Werkstoff oder Festigkeitsklasse. Bei den Maßen steht <strong>immer erst der Durchmesser, dann die Länge</strong>.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Durchgang</h2>
+
+    <div class="box">
+      <div class="einstellung">
+        <div>
+          <label for="stufe">Schwierigkeit</label>
+          <select id="stufe">
+            <option value="einfach">Einfach &ndash; der Zylinderstift</option>
+            <option value="mittel" selected>Mittel &ndash; dazu Kegelstift und Schraube</option>
+            <option value="schwer">Schwer &ndash; dazu Feder und Fehler</option>
+          </select>
+        </div>
+        <div>
+          <label for="umfang">Wie viele Angaben?</label>
+          <select id="umfang"></select>
+        </div>
+      </div>
+      <p class="stufentext" id="stufentext"></p>
+    </div>
+
+    <div class="box">
+      <div class="uhr">
+        <span id="stand">Angabe 1 von 10</span>
+        <span id="zeit">0:00</span>
+      </div>
+      <div class="fortschritt"><i id="balken" style="width:0%"></i></div>
+
+      <p class="frage" id="frage">&ndash;</p>
+      <p class="frageart" id="frageart"></p>
+
+      <div class="wahl" id="wahl"></div>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+
+      <p style="margin-top:14px">
+        <button type="button" class="knopf" id="btnWeiter" hidden>Weiter</button>
+        <button type="button" class="knopf leise" id="btnNeu">Von vorn</button>
+      </p>
+    </div>
+
+    <div id="ende" hidden>
+      <h3>Ergebnis</h3>
+      <div class="box">
+        <p class="bilanz" id="bilanz">&ndash;</p>
+        <p id="urteil"></p>
+        <div id="rueckblick"></div>
+      </div>
+    </div>
+
+    <h2><span class="nr">2</span>Die Bezeichnungen der Biegepresse</h2>
+
+    <div class="tabellenrahmen">
+      <table>
+        <thead><tr><th>Bezeichnung</th><th>Aufbau</th></tr></thead>
+        <tbody>
+          <tr><td>Zylinderstift ISO 2338 &ndash; 6 m6 x 20 &ndash; St</td>
+            <td>Benennung &middot; Norm &middot; Nenn-&#8960; &middot;
+              Toleranzklasse &middot; Länge &middot; Werkstoff</td></tr>
+          <tr><td>Kegelstift ISO 2339 &ndash; A &ndash; 5 x 40 &ndash; St</td>
+            <td>Benennung &middot; Norm &middot; Form &middot; Nenn-&#8960;
+              &middot; Länge &middot; Werkstoff</td></tr>
+          <tr><td>Zylinderschraube ISO 4762 &ndash; M8 x 20 &ndash; 8.8</td>
+            <td>Benennung &middot; Norm &middot; Gewinde &middot; Länge
+              &middot; Festigkeitsklasse</td></tr>
+          <tr><td>Druckfeder 1,6 x 21,6 x 48,0</td>
+            <td>Drahtdurchmesser &middot; Außendurchmesser &middot; Länge
+              der unbelasteten Feder</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="normen">Die vier Normteil-Bezeichnungen der Biegepresse.
+      Stifte mit DIN-EN-Hauptnummer werden mit ISO-Nummern bezeichnet; die
+      ISO-Nummer ist die DIN-EN-Nummer minus 20000.</p>
+
+
+    <h3>Weiterarbeiten</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="montage-grundlagen-strukturnetz-und-montageplan.html">Werkzeug &#8222;Strukturnetz und Montageplan&#8220; öffnen</a>
+    </p>
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot;
+    <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+var FRAGEART = "Was bedeutet der hervorgehobene Teil der Bezeichnung?";
+
+/* Eine Normbezeichnung ist kein Kuerzel, sondern ein Satz mit fester
+   Wortstellung: Benennung, Norm, Form oder Typ, Masse, Werkstoff. Wer sie
+   lesen kann, bestellt richtig - und erkennt, wenn auf einer Stueckliste
+   Unsinn steht. */
+var AUFGABEN = [
+  {frage:"Zylinderstift ISO 2338 &ndash; <b>6</b> m6 x 20 &ndash; St",
+   loesung:0, s:1, kurz:"Stift, erste Zahl",
+   wahl:["der Nenndurchmesser in mm", "die Länge in mm",
+         "die Stückzahl", "die Festigkeitsklasse"],
+   warum:"Erst der Durchmesser, dann die Länge - immer in dieser "
+     + "Reihenfolge."},
+  {frage:"Zylinderstift ISO 2338 &ndash; 6 m6 x <b>20</b> &ndash; St",
+   loesung:1, s:1, kurz:"Stift, zweite Zahl",
+   wahl:["der Nenndurchmesser in mm", "die Länge in mm",
+         "die Stückzahl", "die Festigkeitsklasse"],
+   warum:"Die zweite Zahl ist immer die Länge."},
+  {frage:"Zylinderstift ISO 2338 &ndash; 6 <b>m6</b> x 20 &ndash; St",
+   loesung:2, s:1, kurz:"m6",
+   wahl:["der Werkstoff", "die Härte", "die Toleranzklasse",
+         "die Oberfläche"],
+   warum:"m6 ist eine Toleranzklasse. Der Stift wird in m6 oder h8 "
+     + "geliefert - davon hängt ab, ob er sich pressen oder schieben lässt."},
+  {frage:"Zylinderstift ISO 2338 &ndash; 6 m6 x 20 &ndash; <b>St</b>",
+   loesung:0, s:1, kurz:"St",
+   wahl:["Stahl", "Stift", "Standard", "Stückzahl"],
+   warum:"St steht für Stahl. Nichtrostend wäre A1 oder C1."},
+  {frage:"Kegelstift ISO 2339 &ndash; <b>A</b> &ndash; 5 x 40 &ndash; St",
+   loesung:1, s:2, kurz:"Kegelstift, Form",
+   wahl:["die Festigkeitsklasse", "die Form: A geschliffen, B gedreht",
+         "die Toleranzklasse", "der Kegelwinkel"],
+   warum:"Beim Kegelstift gehört die Form in die Bezeichnung. A ist "
+     + "geschliffen und feiner, B gedreht."},
+  {frage:"Zylinderschraube ISO 4762 &ndash; M8 x 20 &ndash; <b>8.8</b>",
+   loesung:2, s:2, kurz:"8.8",
+   wahl:["Schlüsselweite 8, Länge 8", "8 mm Kopf, 8 mm Gewinde",
+         "die Festigkeitsklasse", "die Toleranzklasse"],
+   warum:"8.8 ist die Festigkeitsklasse: Die erste Zahl mal 100 ergibt die "
+     + "Zugfestigkeit in N/mm², die zweite mal zehn den Prozentsatz davon, "
+     + "bei dem die Streckgrenze liegt."},
+  {frage:"Zylinderschraube <b>ISO 4762</b> &ndash; M8 x 20 &ndash; 8.8",
+   loesung:3, s:2, kurz:"ISO 4762",
+   wahl:["die Sachnummer im Lager", "der Hersteller",
+         "die Bestellnummer", "die Norm, die die Form festlegt"],
+   warum:"Die Norm legt Kopfform, Maße und Toleranzen fest. ISO 4762 ist "
+     + "die Zylinderschraube mit Innensechskant, früher DIN 912."},
+  {frage:"Zylinderschraube ISO 4762 &ndash; <b>M8</b> x 20 &ndash; 8.8",
+   loesung:0, s:2, kurz:"M8",
+   wahl:["metrisches Gewinde mit 8 mm Nenndurchmesser",
+         "Schlüsselweite 8 mm", "Kopfdurchmesser 8 mm",
+         "Gewindesteigung 8 mm"],
+   warum:"M ist das metrische ISO-Gewinde, die Zahl der Nenndurchmesser. "
+     + "Die Steigung steht nur beim Feingewinde dabei."},
+  {frage:"Druckfeder <b>1,6</b> x 21,6 x 48,0", loesung:0, s:3,
+   kurz:"Feder, erste Zahl",
+   wahl:["der Drahtdurchmesser", "der Außendurchmesser",
+         "die Länge der unbelasteten Feder", "die Federrate"],
+   warum:"Die Reihenfolge ist d x De x L0: Drahtdurchmesser, "
+     + "Außendurchmesser, Länge im unbelasteten Zustand."},
+  {frage:"Druckfeder 1,6 x 21,6 x <b>48,0</b>", loesung:2, s:3,
+   kurz:"Feder, dritte Zahl",
+   wahl:["der Drahtdurchmesser", "der Außendurchmesser",
+         "die Länge der unbelasteten Feder", "die Federrate"],
+   warum:"L0 ist die Länge, solange nichts auf die Feder drückt. Eingebaut "
+     + "ist sie kürzer - die Differenz mal der Federrate ergibt die Kraft."},
+  {frage:"Was fehlt in &#8222;Kegelstift 5 x 40&#8220;?", loesung:1, s:3,
+   kurz:"was fehlt",
+   wahl:["nichts", "Norm, Form und Werkstoff", "nur die Stückzahl",
+         "nur der Werkstoff"],
+   warum:"Ohne Norm weiß niemand, welcher Kegelstift gemeint ist; ohne "
+     + "Form nicht, ob geschliffen oder gedreht; ohne Werkstoff nicht, ob "
+     + "Stahl oder nichtrostend."},
+  {frage:"&#8222;Zylinderstift ISO 2338 &ndash; 20 m6 x 6 &ndash; St&#8220; "
+     + "&ndash; was stimmt hier nicht?",
+   loesung:2, s:3, kurz:"vertauscht",
+   wahl:["die Norm ist falsch", "der Werkstoff fehlt",
+         "Durchmesser und Länge sind vertauscht", "nichts"],
+   warum:"Ein Stift Ø 20 mit 6 mm Länge wäre eine Scheibe. Gemeint ist "
+     + "Ø 6 mit 20 mm Länge - erst der Durchmesser, dann die Länge."}
+];
+
+var STUFEN = {
+  einfach: {max:1, text:"Die Zylinderstift-Bezeichnung, Stück für Stück."},
+  mittel:  {max:2, text:"Dazu Kegelstift und Zylinderschraube."},
+  schwer:  {max:3, text:"Dazu die Feder und zwei Bezeichnungen, die nicht "
+    + "stimmen."}
+};
+
+function el(id){ return document.getElementById(id); }
+
+var runde = [], nr = 0, treffer = 0, offen = true, start = 0, uhr = null;
+
+function mischen(liste){
+  var a = liste.slice();
+  for(var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+function vorrat(){
+  var max = STUFEN[el("stufe").value].max;
+  return AUFGABEN.filter(function(a){ return a.s <= max; });
+}
+
+function umfangFuellen(){
+  var feld = el("umfang"), da = vorrat().length, vorher = Number(feld.value) || 0;
+  feld.textContent = "";
+  for(var n = 5; n <= da; n++){
+    var o = document.createElement("option");
+    o.value = String(n);
+    o.textContent = n + (n === da ? " (alle)" : "");
+    feld.appendChild(o);
+  }
+  feld.value = String(Math.min(Math.max(vorher || 10, 5), da));
+}
+
+function zeitText(ms){
+  var s = Math.floor(ms / 1000);
+  return Math.floor(s / 60) + ":" + ("0" + (s % 60)).slice(-2);
+}
+
+function uhrLaufen(){
+  if(uhr) clearInterval(uhr);
+  start = Date.now();
+  uhr = setInterval(function(){
+    el("zeit").textContent = zeitText(Date.now() - start);
+  }, 500);
+}
+
+window.TBK_WETTKAMPF = { neu: function(){ neuerDurchgang(); }, ergebnisAn: "ende" };
+
+function neuerDurchgang(){
+  umfangFuellen();
+  el("stufentext").textContent = STUFEN[el("stufe").value].text;
+  runde = mischen(vorrat()).slice(0, Number(el("umfang").value));
+  nr = 0;
+  treffer = 0;
+  el("ende").hidden = true;
+  el("rueckblick").textContent = "";
+  uhrLaufen();
+  zeigen();
+}
+
+function zeigen(){
+  var a = runde[nr];
+  offen = true;
+
+  el("stand").textContent = "Angabe " + (nr + 1) + " von " + runde.length;
+  el("balken").style.width = (100 * nr / runde.length) + "%";
+
+  el("frage").innerHTML = a.frage;
+  el("frageart").textContent = a.art || FRAGEART;
+
+  var w = el("wahl");
+  w.textContent = "";
+  a.wahl.forEach(function(name, i){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.innerHTML = name;
+    b.addEventListener("click", function(){ antwort(i, b); });
+    w.appendChild(b);
+  });
+
+  el("rueck").hidden = true;
+  el("btnWeiter").hidden = true;
+}
+
+function antwort(gewaehlt, knopf){
+  if(!offen) return;
+  offen = false;
+
+  var a = runde[nr];
+  var ok = gewaehlt === a.loesung;
+  if(ok) treffer++;
+  a.richtigBeantwortet = ok;
+
+  var knoepfe = el("wahl").querySelectorAll("button");
+  for(var i = 0; i < knoepfe.length; i++){
+    knoepfe[i].disabled = true;
+    if(i === a.loesung) knoepfe[i].className = "war ok";
+  }
+  if(!ok) knopf.className = "war nein";
+
+  var r = el("rueck");
+  r.hidden = false;
+  r.className = "rueckmeldung " + (ok ? "ja" : "nein");
+  r.innerHTML = "<strong>" + a.wahl[a.loesung] + ".</strong> " + a.warum;
+
+  el("btnWeiter").hidden = false;
+  el("btnWeiter").focus();
+}
+
+function weiter(){
+  nr++;
+  if(nr < runde.length){ zeigen(); return; }
+
+  if(uhr) clearInterval(uhr);
+  el("balken").style.width = "100%";
+  el("stand").textContent = "fertig";
+  el("ende").hidden = false;
+
+  el("bilanz").textContent = treffer + " von " + runde.length + " richtig, in "
+    + zeitText(Date.now() - start) + " min.";
+
+  var anteil = treffer / runde.length;
+  el("urteil").textContent = anteil === 1
+    ? "Vollständig. Damit lest ihr jede Stückliste."
+    : (anteil >= 0.8 ? "Fast. Unten steht, was danebenging." : "Merkt euch den einen Satz: erst der Durchmesser, dann die Länge. Damit sind die Hälfte der Fragen beantwortet.");
+
+  var ul = document.createElement("ul");
+  ul.className = "rueckblick";
+  runde.forEach(function(a){
+    var li = document.createElement("li");
+    li.innerHTML = '<span class="marke ' + (a.richtigBeantwortet ? "ok" : "nein")
+      + '">' + (a.richtigBeantwortet ? "richtig" : "falsch") + "</span><span>"
+      + a.kurz + " &ndash; " + a.wahl[a.loesung] + "</span>";
+    ul.appendChild(li);
+  });
+  el("rueckblick").textContent = "";
+  el("rueckblick").appendChild(ul);
+  document.dispatchEvent(new CustomEvent("tbk-durchgang-ende",
+    {detail:{richtig: treffer, gesamt: runde.length}}));
+
+  el("ende").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+
+el("btnWeiter").addEventListener("click", weiter);
+el("btnNeu").addEventListener("click", neuerDurchgang);
+el("stufe").addEventListener("change", neuerDurchgang);
+el("umfang").addEventListener("change", neuerDurchgang);
+
+neuerDurchgang();
+</script>
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/wettkampf.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

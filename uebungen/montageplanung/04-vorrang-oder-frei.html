@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vorrang oder frei?</title>
+<meta name="description" content="Zehn Paare von Montageschritten: Muss der eine vor dem anderen kommen – und warum? Die Hälfte der Fälle ist frei.">
+<meta name="dauer" content="25 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .bild{margin:16px 0 4px}
+  .bild svg{width:100%; height:auto; display:block}
+  .bild figcaption{font-size:13px; color:var(--muted); margin-top:6px;
+    text-align:center}
+  .pos{
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:24px; height:24px; padding:0 5px; border-radius:12px;
+    flex:0 0 auto; background:var(--accent); color:#fff; font-size:13px;
+    font-weight:700; margin-right:8px; vertical-align:-5px;
+    font-variant-numeric:tabular-nums;
+  }
+  table.fr td:first-child{line-height:1.5}
+  table.fr select{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:7px 8px; border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  table.fr select:focus-visible{outline:2px solid var(--accent);
+    outline-offset:1px}
+  .urteil{font-size:13.5px; line-height:1.4; font-weight:600;
+    white-space:nowrap}
+  .urteil.ja{color:var(--ok)}
+  .urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Montageplanung</p>
+    <h1>Vorrang oder frei?</h1>
+    <p class="lead">Die schwierigste Frage der Montageplanung ist nicht, was zuerst kommt. Sie ist, was egal ist.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Eine Vorrangbeziehung</strong> sagt: Dieser Schritt muss vor jenem kommen. Sie hat immer einen Grund, und der Grund steht nie in der Zeichnung &ndash; er folgt aus ihr.</p>
+      <p>Die drei häufigsten Gründe:</p>
+      <ul>
+        <li><strong>Zugänglichkeit</strong> &ndash; später kommt man nicht mehr heran.</li>
+        <li><strong>Der Weg</strong> &ndash; das Teil ließe sich gar nicht mehr an seinen Platz bringen.</li>
+        <li><strong>Die Funktion</strong> &ndash; erst ausrichten, dann festziehen.</li>
+      </ul>
+      <p>Wo keiner dieser Gründe greift, ist die Reihenfolge frei. Das ist keine Lücke im Plan, sondern Spielraum für die Werkstatt.</p>
+    </div>
+
+
+    <h2><span class="nr">1</span>Zehn Paare</h2>
+
+    <div class="tabellenrahmen">
+      <table class="fr">
+        <thead><tr><th>Diese beiden Schritte</th><th>Was gilt?</th><th></th></tr></thead>
+        <tbody id="tabFragen"></tbody>
+      </table>
+    </div>
+
+    <p>
+      <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+      <button type="button" class="knopf leise" id="btnLoesung">Lösung zeigen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz">Noch nichts gewählt.</p>
+
+    <details id="loesungBox">
+      <summary>Lösung mit Begründung</summary>
+      <div id="loesung"></div>
+    </details>
+
+
+    <h3>Weiterarbeiten</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="montage-grundlagen-strukturnetz-und-montageplan.html">Werkzeug &#8222;Strukturnetz und Montageplan&#8220; öffnen</a>
+    </p>
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot;
+    <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+function el(id){ return document.getElementById(id); }
+
+var FRAGEN = [
+  {
+    "frage": "<strong>Druckfeder</strong> und <strong>Führungsbolzen</strong>",
+    "loesung": "der Bolzen muss vorher",
+    "warum": "Die Feder wird auf den Bolzen gesteckt. Ohne Bolzen liegt sie nur herum."
+  },
+  {
+    "frage": "<strong>Druckfeder</strong> und <strong>Stempelhalter</strong>",
+    "loesung": "die Feder muss vorher",
+    "warum": "Die Feder liegt unter dem Halter. Ist der Halter erst auf den Bolzen gefädelt, kommt man an die Feder nicht mehr heran."
+  },
+  {
+    "frage": "<strong>Biegegesenk</strong> und <strong>Ständer</strong>",
+    "loesung": "die Reihenfolge ist frei",
+    "warum": "Beide stehen nebeneinander auf der Grundplatte und behindern sich nicht. Hier darf jeder entscheiden."
+  },
+  {
+    "frage": "<strong>Zylinderstift</strong> und <strong>Zylinderschraube M6</strong> am Gesenk",
+    "loesung": "der Stift muss vorher",
+    "warum": "Die Stifte richten das Gesenk aus, die Schrauben halten es fest. Wer erst schraubt, richtet gegen eine festgezogene Verbindung - und reißt am Ende das Gewinde aus."
+  },
+  {
+    "frage": "<strong>Stempelhalter</strong> und <strong>Exzenterwelle</strong>",
+    "loesung": "der Stempelhalter muss vorher",
+    "warum": "Über dem Halter liegt später die Welle mit ihrem Exzenterbund. Zwischen Bund und Grundplatte bleiben dann 51 mm - der Halter ginge nicht mehr über die 68 mm hohen Bolzen."
+  },
+  {
+    "frage": "<strong>Exzenterwelle</strong> und <strong>Ständer</strong>",
+    "loesung": "die Welle muss vorher",
+    "warum": "Der Exzenterbund ist Ø 56 und passt durch keine Ø-20-Bohrung. Die Welle wird zwischen die Ständer gelegt, dann werden die Ständer von beiden Seiten aufgeschoben."
+  },
+  {
+    "frage": "<strong>Handhebel</strong> und <strong>Kegelstift</strong>",
+    "loesung": "der Hebel muss vorher",
+    "warum": "Der Stift geht durch Nabe und Welle. Vorher gibt es nichts zu sichern - und die Bohrung dafür wird erst gerieben, wenn der Hebel sitzt."
+  },
+  {
+    "frage": "<strong>Grundplatte</strong> und <strong>Handhebel</strong>",
+    "loesung": "die Grundplatte muss vorher",
+    "warum": "Nicht unmittelbar - aber über die Kette Platte, Ständer, Welle, Hebel. Eine Vorrangbeziehung darf über Umwege gelten; im Plan reicht es, die unmittelbaren aufzuschreiben."
+  },
+  {
+    "frage": "<strong>Zylinderschraube M8</strong> und <strong>Biegegesenk</strong>",
+    "loesung": "die Reihenfolge ist frei",
+    "warum": "Die M8-Schrauben halten die Ständer, das Gesenk sitzt zwischen ihnen. Beide stören einander nicht."
+  },
+  {
+    "frage": "<strong>Führungsbolzen</strong> und <strong>Grundplatte</strong>",
+    "loesung": "die Grundplatte muss vorher",
+    "warum": "Der Bolzen wird in die Platte eingeschraubt. Was nicht da ist, hat kein Gewinde."
+  }
+];
+var WAHL = ["der Bolzen muss vorher", "die Feder muss vorher", "der Stift muss vorher", "der Stempelhalter muss vorher", "die Welle muss vorher", "der Hebel muss vorher", "die Grundplatte muss vorher", "die Reihenfolge ist frei"];
+
+
+/* --------------------------------------------------------------------------
+   Die Fragen: je eine Zeile mit einer Auswahl. Geprüft wird auf Knopfdruck,
+   nicht bei jeder Wahl - wer zwischendurch die Meinung ändert, soll das
+   ohne rote Zwischenrufe tun können.
+   -------------------------------------------------------------------------- */
+(function fragenAufbauen(){
+  var tb = el("tabFragen");
+  FRAGEN.forEach(function(f, i){
+    var tr = document.createElement("tr");
+
+    var td0 = document.createElement("td");
+    td0.innerHTML = f.frage;
+    tr.appendChild(td0);
+
+    var td1 = document.createElement("td");
+    var s = document.createElement("select");
+    s.id = "f" + i;
+    s.setAttribute("aria-label", "Antwort zu Frage " + (i + 1));
+    var leer = document.createElement("option");
+    leer.value = ""; leer.textContent = "– bitte wählen –";
+    s.appendChild(leer);
+    (f.wahl || WAHL).forEach(function(w){
+      var o = document.createElement("option");
+      o.value = w; o.textContent = w;
+      s.appendChild(o);
+    });
+    td1.appendChild(s);
+    tr.appendChild(td1);
+
+    var td2 = document.createElement("td");
+    td2.className = "urteil"; td2.id = "u" + i; td2.textContent = "–";
+    tr.appendChild(td2);
+
+    tb.appendChild(tr);
+  });
+
+  el("loesung").innerHTML = FRAGEN.map(function(f, i){
+    return "<p><strong>" + (i + 1) + ". " + f.loesung + "</strong> &ndash; "
+      + f.warum + "</p>";
+  }).join("");
+}());
+
+el("btnPruefen").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  FRAGEN.forEach(function(f, i){
+    var v = el("f" + i).value, u = el("u" + i);
+    if(!v){ u.textContent = "–"; u.className = "urteil"; offen++; return; }
+    var ok = v === f.loesung;
+    u.textContent = ok ? "richtig" : "nein";
+    u.className = "urteil " + (ok ? "ja" : "nein");
+    if(ok) r++;
+  });
+  el("bilanz").textContent = r + " von " + FRAGEN.length + " richtig."
+    + (offen ? " (" + offen + " noch offen.)" : "");
+  if(r === FRAGEN.length) el("loesungBox").open = true;
+});
+
+el("btnLoesung").addEventListener("click", function(){
+  el("loesungBox").open = true;
+});
+</script>
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/fortschritt.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

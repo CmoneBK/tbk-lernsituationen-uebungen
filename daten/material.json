@@ -95,6 +95,28 @@
   },
   {
     "typ": "lernsituationen",
+    "bereich": "Montage",
+    "kategorie": "Baugruppen",
+    "name": "Die Biegepresse",
+    "platz": 1,
+    "untertitel": "Zwölf Positionen, ein Montageplan: Zeichnung lesen, Strukturnetz aufstellen, Reihenfolge begründen, montieren und rechnen.",
+    "url": "lernsituationen/biegepresse/index.html",
+    "werkzeuge": [
+      {
+        "datei": "montage-grundlagen-strukturnetz-und-montageplan.html",
+        "name": "Strukturnetz und Montageplan",
+        "art": "lektion"
+      },
+      {
+        "datei": "montage-grundlagen-montageplaner.html",
+        "name": "Montageplaner",
+        "art": "simulation"
+      }
+    ],
+    "inhalt": []
+  },
+  {
+    "typ": "lernsituationen",
     "bereich": "Fertigungstechnik",
     "kategorie": "Fügeverfahren",
     "name": "Der Gehäusedeckel",
@@ -300,6 +322,57 @@
       {
         "titel": "Die Klebung gestalten",
         "url": "uebungen/loeten-kleben/04-die-klebung-gestalten.html"
+      }
+    ]
+  },
+  {
+    "typ": "uebungen",
+    "bereich": "Montage",
+    "kategorie": "Grundlagen",
+    "name": "Montageplanung",
+    "platz": 1,
+    "untertitel": "Sieben Übungen zum Montageplan: Zeichnung lesen, Strukturnetz, Vorrangbeziehungen, Reihenfolge, Werkzeug und Demontage.",
+    "url": "uebungen/montageplanung/index.html",
+    "werkzeuge": [
+      {
+        "datei": "montage-grundlagen-strukturnetz-und-montageplan.html",
+        "name": "Strukturnetz und Montageplan",
+        "art": "lektion"
+      },
+      {
+        "datei": "montage-grundlagen-montageplaner.html",
+        "name": "Montageplaner",
+        "art": "simulation"
+      }
+    ],
+    "inhalt": [
+      {
+        "titel": "Die Zusammenstellung lesen",
+        "url": "uebungen/montageplanung/01-die-zusammenstellung-lesen.html"
+      },
+      {
+        "titel": "Normteil oder Fertigungsteil?",
+        "url": "uebungen/montageplanung/02-normteil-oder-fertigungsteil.html"
+      },
+      {
+        "titel": "Das Strukturnetz lesen",
+        "url": "uebungen/montageplanung/03-das-strukturnetz-lesen.html"
+      },
+      {
+        "titel": "Vorrang oder frei?",
+        "url": "uebungen/montageplanung/04-vorrang-oder-frei.html"
+      },
+      {
+        "titel": "Die Reihenfolge planen",
+        "url": "uebungen/montageplanung/05-die-reihenfolge-planen.html"
+      },
+      {
+        "titel": "Womit wird montiert?",
+        "url": "uebungen/montageplanung/06-womit-und-in-welcher-lage.html"
+      },
+      {
+        "titel": "Wieder auseinander",
+        "url": "uebungen/montageplanung/07-wieder-auseinander.html"
       }
     ]
   },
@@ -533,6 +606,41 @@
       {
         "titel": "Flussmittel-Kennzahl",
         "url": "trainings/loeten-kleben/03-flussmittel-kennzahl.html"
+      }
+    ]
+  },
+  {
+    "typ": "trainings",
+    "bereich": "Montage",
+    "kategorie": "Grundlagen",
+    "name": "Montageplanung",
+    "platz": 1,
+    "untertitel": "Drei Schnellchecks: Grundfunktionen, Strukturnetz-Zeichen und Normbezeichnungen.",
+    "url": "trainings/montageplanung/index.html",
+    "werkzeuge": [
+      {
+        "datei": "montage-grundlagen-strukturnetz-und-montageplan.html",
+        "name": "Strukturnetz und Montageplan",
+        "art": "lektion"
+      },
+      {
+        "datei": "montage-grundlagen-montageplaner.html",
+        "name": "Montageplaner",
+        "art": "simulation"
+      }
+    ],
+    "inhalt": [
+      {
+        "titel": "Begriffe der Montage",
+        "url": "trainings/montageplanung/01-begriffe-der-montage.html"
+      },
+      {
+        "titel": "Symbole im Strukturnetz",
+        "url": "trainings/montageplanung/02-symbole-im-strukturnetz.html"
+      },
+      {
+        "titel": "Normbezeichnung lesen",
+        "url": "trainings/montageplanung/03-normbezeichnung-lesen.html"
       }
     ]
   },

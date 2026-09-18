@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Das Strukturnetz lesen</title>
+<meta name="description" content="Zehn Verbindungen der Biegepresse: berühren sich die Teile, und bewegen sie sich dabei gegeneinander?">
+<meta name="dauer" content="20 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/biegepresse.js"></script>
+<script src="../../assets/montageplan.js"></script>
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .bild{margin:16px 0 4px}
+  .bild svg{width:100%; height:auto; display:block}
+  .bild figcaption{font-size:13px; color:var(--muted); margin-top:6px;
+    text-align:center}
+  .pos{
+    display:inline-flex; align-items:center; justify-content:center;
+    min-width:24px; height:24px; padding:0 5px; border-radius:12px;
+    flex:0 0 auto; background:var(--accent); color:#fff; font-size:13px;
+    font-weight:700; margin-right:8px; vertical-align:-5px;
+    font-variant-numeric:tabular-nums;
+  }
+  table.fr td:first-child{line-height:1.5}
+  table.fr select{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:7px 8px; border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  table.fr select:focus-visible{outline:2px solid var(--accent);
+    outline-offset:1px}
+  .urteil{font-size:13.5px; line-height:1.4; font-weight:600;
+    white-space:nowrap}
+  .urteil.ja{color:var(--ok)}
+  .urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+  .netz{margin:16px 0 4px; border:1px solid var(--border);
+    border-radius:12px; padding:10px; background:var(--card);
+    overflow-x:auto}
+  .netz svg{width:100%; min-width:620px; height:auto;
+    display:block}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Montageplanung</p>
+    <h1>Das Strukturnetz lesen</h1>
+    <p class="lead">Zwei Fragen, mehr stellt ein Strukturnetz nicht. Genau deshalb zwingt es zum Hinsehen.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Ein Strukturnetz</strong> zeigt, welche Teile einander berühren und ob sie sich dabei gegeneinander bewegen. Rechtecke sind Fertigungsteile, Ovale Normteile; eine volle Linie heißt fest verbunden, eine unterbrochene beweglich verbunden.</p>
+      <p>Was es <em>nicht</em> zeigt: die Reihenfolge der Montage, die Stückzahl und die Maße. Wer das sucht, schaut in den Montageplan oder in die Stückliste.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Das Netz der Presse</h2>
+
+    <div class="netz" id="netz"></div>
+    <p class="fussnote">Alle 18 Verbindungen der Biegepresse. Von der Grundplatte laufen die meisten Linien weg &ndash; sie trägt alles.</p>
+
+
+    <h2><span class="nr">2</span>Zehn Verbindungen</h2>
+
+    <div class="tabellenrahmen">
+      <table class="fr">
+        <thead><tr><th>Verbindung</th><th>Wie verbunden?</th><th></th></tr></thead>
+        <tbody id="tabFragen"></tbody>
+      </table>
+    </div>
+
+    <p>
+      <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+      <button type="button" class="knopf leise" id="btnLoesung">Lösung zeigen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz">Noch nichts gewählt.</p>
+
+    <details id="loesungBox">
+      <summary>Lösung mit Begründung</summary>
+      <div id="loesung"></div>
+    </details>
+
+
+    <h3>Weiterarbeiten</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="montage-grundlagen-strukturnetz-und-montageplan.html">Werkzeug &#8222;Strukturnetz und Montageplan&#8220; öffnen</a>
+    </p>
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot;
+    <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+function el(id){ return document.getElementById(id); }
+
+var FRAGEN = [
+  {
+    "frage": "Grundplatte &ndash; Ständer",
+    "loesung": "fest verbunden",
+    "warum": "Der Ständer steht auf der Platte und ist verschraubt. Keine Bewegung."
+  },
+  {
+    "frage": "Exzenterwelle &ndash; Ständer",
+    "loesung": "beweglich verbunden",
+    "warum": "Die Welle dreht sich in der Bohrung. Das ist die einzige Lagerstelle der Presse."
+  },
+  {
+    "frage": "Stempelhalter &ndash; Führungsbolzen",
+    "loesung": "beweglich verbunden",
+    "warum": "Der Halter gleitet auf den Bolzen auf und ab."
+  },
+  {
+    "frage": "Exzenterwelle &ndash; Stempelhalter",
+    "loesung": "beweglich verbunden",
+    "warum": "Der Exzenter wälzt sich auf der Oberseite des Halters ab. Berührung ja, und sie wandert - also beweglich."
+  },
+  {
+    "frage": "Biegegesenk &ndash; Stempelhalter",
+    "loesung": "berühren sich nicht",
+    "warum": "Nie. In der unteren Endlage bleiben 2 mm, und die sind für das Blech da. Berührten sie sich, wäre die Presse falsch gebaut."
+  },
+  {
+    "frage": "Handhebel &ndash; Kegelstift",
+    "loesung": "fest verbunden",
+    "warum": "Der Stift steckt in der Nabe des Hebels und in der Welle. Er verbindet beide - deshalb hat er im Netz zwei Linien."
+  },
+  {
+    "frage": "Druckfeder &ndash; Führungsbolzen",
+    "loesung": "beweglich verbunden",
+    "warum": "Die Feder sitzt auf dem Bolzen und gleitet an ihm, wenn sie federt."
+  },
+  {
+    "frage": "Druckfeder &ndash; Grundplatte",
+    "loesung": "fest verbunden",
+    "warum": "Das untere Ende steht auf der Platte und rutscht dort nicht. Dieselbe Feder ist also einmal fest und einmal beweglich verbunden - je nachdem, mit wem."
+  },
+  {
+    "frage": "Grundplatte &ndash; Handhebel",
+    "loesung": "berühren sich nicht",
+    "warum": "Zwischen beiden liegen Welle und Ständer. Im Strukturnetz führt kein Weg auf direktem Wege von der Platte zum Hebel."
+  },
+  {
+    "frage": "Zylinderstift &ndash; Biegegesenk",
+    "loesung": "fest verbunden",
+    "warum": "Der Stift steckt zur Hälfte in der Platte und zur Hälfte im Gesenk. Beide Verbindungen sind fest - er richtet das Gesenk aus und hält es gegen Verschieben."
+  }
+];
+var WAHL = ["fest verbunden", "beweglich verbunden", "berühren sich nicht"];
+
+Montageplan.netz("netz", {
+  teile: PRESSE.TEILE,
+  kanten: PRESSE.STRUKTUR,
+  lage: PRESSE.NETZ_LAGE
+});
+
+/* --------------------------------------------------------------------------
+   Die Fragen: je eine Zeile mit einer Auswahl. Geprüft wird auf Knopfdruck,
+   nicht bei jeder Wahl - wer zwischendurch die Meinung ändert, soll das
+   ohne rote Zwischenrufe tun können.
+   -------------------------------------------------------------------------- */
+(function fragenAufbauen(){
+  var tb = el("tabFragen");
+  FRAGEN.forEach(function(f, i){
+    var tr = document.createElement("tr");
+
+    var td0 = document.createElement("td");
+    td0.innerHTML = f.frage;
+    tr.appendChild(td0);
+
+    var td1 = document.createElement("td");
+    var s = document.createElement("select");
+    s.id = "f" + i;
+    s.setAttribute("aria-label", "Antwort zu Frage " + (i + 1));
+    var leer = document.createElement("option");
+    leer.value = ""; leer.textContent = "– bitte wählen –";
+    s.appendChild(leer);
+    (f.wahl || WAHL).forEach(function(w){
+      var o = document.createElement("option");
+      o.value = w; o.textContent = w;
+      s.appendChild(o);
+    });
+    td1.appendChild(s);
+    tr.appendChild(td1);
+
+    var td2 = document.createElement("td");
+    td2.className = "urteil"; td2.id = "u" + i; td2.textContent = "–";
+    tr.appendChild(td2);
+
+    tb.appendChild(tr);
+  });
+
+  el("loesung").innerHTML = FRAGEN.map(function(f, i){
+    return "<p><strong>" + (i + 1) + ". " + f.loesung + "</strong> &ndash; "
+      + f.warum + "</p>";
+  }).join("");
+}());
+
+el("btnPruefen").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  FRAGEN.forEach(function(f, i){
+    var v = el("f" + i).value, u = el("u" + i);
+    if(!v){ u.textContent = "–"; u.className = "urteil"; offen++; return; }
+    var ok = v === f.loesung;
+    u.textContent = ok ? "richtig" : "nein";
+    u.className = "urteil " + (ok ? "ja" : "nein");
+    if(ok) r++;
+  });
+  el("bilanz").textContent = r + " von " + FRAGEN.length + " richtig."
+    + (offen ? " (" + offen + " noch offen.)" : "");
+  if(r === FRAGEN.length) el("loesungBox").open = true;
+});
+
+el("btnLoesung").addEventListener("click", function(){
+  el("loesungBox").open = true;
+});
+</script>
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/fortschritt.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>
