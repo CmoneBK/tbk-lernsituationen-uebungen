@@ -45,24 +45,24 @@
      Luft über dem Werkstück.
      ====================================================================== */
   var M = {
-    gpL: 140, gpT: 100, gpD: 15,           /* Grundplatte */
+    gpL: 160, gpT: 100, gpD: 15,           /* Grundplatte */
 
-    alL: 80, alB: 12, alH: 20,             /* Anschlagleiste, zwei Stück */
+    alL: 80, alB: 20, alH: 20,             /* Anschlagleiste, zwei Stück */
     alBx: -40,                             /* Leiste quer: Mitte in x */
     alBz1: -34, alBz2: 46,                 /* und ihre Enden in z */
     alAz: 26,                              /* Leiste längs: Mitte in z */
     alAx1: -30, alAx2: 50,                 /* und ihre Enden in x */
 
-    saD: 20, saH: 46, saX: 55,             /* Distanzsäule, zwei Stück */
+    saD: 20, saH: 46, saX: 65,             /* Distanzsäule, zwei Stück */
 
-    bpL: 140, bpT: 70, bpD: 14,            /* Bohrplatte */
+    bpL: 160, bpT: 70, bpD: 14,            /* Bohrplatte */
     fuehrD: 8.2, fuehrA: 40, fuehrM: -4,   /* Führungsbohrungen */
 
-    spGew: 12, spL: 60, spX: -4,           /* Spannschraube M12 × 60 */
+    spGew: 12, spL: 80, spX: -4,           /* Spannschraube M12 × 80 */
     griffD: 63,                            /* Kreuzgriff DIN 6335 – M12 */
 
     wsL: 80, wsT: 40, wsD: 6,              /* Werkstück */
-    wsX1: -34, wsX2: 46, wsZ2: 20,         /* wo es liegt: in der Ecke */
+    wsX1: -30, wsX2: 50, wsZ2: 16,         /* wo es liegt: in der Ecke */
 
     stiftAx: [-20, 40], schraubeAx: [0, 20],
     stiftBz: [-24, 36], schraubeBz: [-4, 16]
@@ -74,22 +74,26 @@
   M.bpOben = M.saOben + M.bpD;                       /* 75 */
   M.wsOben = M.gpD + M.wsD;                          /* 21 */
   M.luft = M.saOben - M.wsOben;                      /* 40 */
+  M.spOben = M.wsOben + M.spL;                       /* 101 */
+  M.griffY = M.spOben - 8;                           /* Mitte des Kreuzgriffs */
+  M.senkD = 11;                                      /* Senkung für M6 */
+  M.senkT = 7;
 
   /* ======================================================================
      2  DIE STÜCKLISTE
      ====================================================================== */
   var TEILE = [
     {pos: 1, menge: 1, benennung: 'Grundplatte', werkstoff: 'S235JR',
-     bemerkung: '140 × 100 × 15', art: 'fertigung', kurz: 'Grundplatte'},
+     bemerkung: '160 × 100 × 15', art: 'fertigung', kurz: 'Grundplatte'},
     {pos: 2, menge: 2, benennung: 'Anschlagleiste', werkstoff: 'S235JR',
-     bemerkung: '80 × 12 × 20', art: 'fertigung', kurz: 'Anschlagleiste'},
+     bemerkung: '80 × 20 × 20', art: 'fertigung', kurz: 'Anschlagleiste'},
     {pos: 3, menge: 2, benennung: 'Distanzsäule', werkstoff: 'E295',
      bemerkung: 'Ø 20 × 46, Gewindezapfen M10', art: 'fertigung',
      kurz: 'Distanzsäule'},
     {pos: 4, menge: 1, benennung: 'Bohrplatte', werkstoff: 'C45',
      bemerkung: '2 × Ø 8,2 im Abstand 40', art: 'fertigung',
      kurz: 'Bohrplatte'},
-    {pos: 5, menge: 1, benennung: 'Gewindestift DIN 6332 – S M12 × 60',
+    {pos: 5, menge: 1, benennung: 'Gewindestift DIN 6332 – S M12 × 80',
      werkstoff: '', bemerkung: 'Spannschraube mit Druckzapfen', art: 'norm',
      kurz: 'Spannschraube'},
     {pos: 6, menge: 1, benennung: 'Kreuzgriff DIN 6335 – M12',
@@ -127,7 +131,7 @@
     {a: 3, b: 7, art: 'fest',
      warum: 'Die M8-Schrauben greifen in das Gewinde der Säulen.'},
     {a: 4, b: 7, art: 'fest',
-     warum: 'und liegen mit dem Kopf in der Bohrplatte.'},
+     warum: 'und liegen mit dem Kopf auf der Bohrplatte.'},
     {a: 4, b: 5, art: 'beweglich',
      warum: 'Die Spannschraube dreht sich im Gewinde der Bohrplatte - '
        + 'sonst könnte sie nicht spannen.'},
@@ -175,6 +179,10 @@
      warum: 'Der Kreuzgriff kommt auf das obere Ende der Spannschraube.'},
     {vorher: 5, nachher: 10,
      warum: 'Die Kontermutter wird auf die Spannschraube gedreht.'},
+    {vorher: 10, nachher: 6,
+     warum: 'Die Mutter muss über das obere Ende der Spannschraube. Sitzt '
+       + 'dort schon der Kreuzgriff, kommt sie nicht mehr daran vorbei - '
+       + 'im Modell sieht man es, auf dem Papier muss man es sich denken.'},
 
     /* Und eine, die am Werkzeug hängt, nicht am Werkstück. */
     {vorher: 8, nachher: 4,
@@ -297,10 +305,10 @@
     });
 
     /* --- Spannschraube, Kontermutter, Kreuzgriff ------------------------ */
-    var sp = M.spX, spOben = M.bpOben + 30;
+    var sp = M.spX, spOben = M.spOben;
     riegel(g, sp - sr, sp + sr, M.wsOben, spOben, leer);
     riegel(g, sp - 10, sp + 10, M.bpOben, M.bpOben + 10, leer);
-    var gy = spOben - 8;
+    var gy = M.griffY;
     riegel(g, sp - 9, sp + 9, gy - 6, gy + 8, leer);
     [-1, 1].forEach(function (v) {
       Z.schnittTeil(g, [[vx(sp + v * 9), vy(gy + 4)],
@@ -440,7 +448,230 @@
   }
 
   /* ======================================================================
-     6  WAS DIE PRÜFUNG BRAUCHT
+     6  DIE VORRICHTUNG ALS KÖRPER
+     ----------------------------------------------------------------------
+     Dieselben Maße, jetzt für assets/bauteil3d.js.
+
+     Zwei Dinge sind hier wichtiger, als sie aussehen:
+
+     1. BOHRUNGEN. Wo ein Teil durch ein anderes gesteckt wird, hat das
+        andere ein Loch. Ohne sie sähe man einen Block, durch den zwei
+        Säulen wachsen - und die Vorrichtung lebt davon, dass man durch die
+        Bohrplatte hindurchbohrt.
+
+     2. EINSCHUBRICHTUNG. Diese Baugruppe ist ein Stapel: Bis auf die
+        Grundplatte, die von unten kommt, fährt jedes Teil von oben ein.
+        Das ist keine Vereinfachung, sondern der Grund, warum sie eine
+        Vorrichtung ist - was von oben kommt, lässt sich auch von oben
+        wieder lösen.
+
+     Beides zusammen entscheidet, welche Reihenfolgen möglich sind, und
+     pruefungen/test-montage.js rechnet jedes Paar durch: Kein Teil darf auf
+     seinem Weg ein anderes durchqueren, das nach den Vorrangbeziehungen
+     schon dort liegen könnte. Die Bedingung "Kontermutter vor Kreuzgriff"
+     stammt aus genau dieser Rechnung.
+
+     Das Werkstück ist kein Körper. Es steht nicht in der Stückliste - es
+     wird gebohrt, nicht montiert. In der Zeichnung liegt es als graue
+     Fläche in der Ecke.
+     ====================================================================== */
+  function teile3d() {
+    var t = [];
+    function nimm(e) { t.push(e); return e; }
+
+    var alMitteX = (M.alAx1 + M.alAx2) / 2;      /* Mitte der Leiste längs */
+    var alMitteZ = (M.alBz1 + M.alBz2) / 2;      /* Mitte der Leiste quer  */
+    var senkUnten = M.alOben - M.senkT;          /* wo die Senkung anfängt */
+
+    /* --- 1 Grundplatte, mit vierzehn Bohrungen ------------------------ */
+    var loecher = [];
+    M.stiftAx.forEach(function (x) {
+      loecher.push({d: 5, x: x, z: M.alAz});
+    });
+    M.schraubeAx.forEach(function (x) {
+      loecher.push({d: 5, x: x, z: M.alAz});     /* Gewinde M6 */
+    });
+    M.stiftBz.forEach(function (z) {
+      loecher.push({d: 5, x: M.alBx, z: z});
+    });
+    M.schraubeBz.forEach(function (z) {
+      loecher.push({d: 5, x: M.alBx, z: z});
+    });
+    [-1, 1].forEach(function (v) {
+      loecher.push({d: 8.5, x: v * M.saX, z: 0});  /* Gewinde M10 */
+    });
+    nimm({id: 'grundplatte', pos: 1, name: 'Grundplatte', form: 'platte',
+      masse: {x: M.gpL, y: M.gpD, z: M.gpT, loecher: loecher},
+      lage: {x: 0, y: M.gpD / 2, z: 0}, von: {x: 0, y: -190, z: 0}});
+
+    /* --- 9 Zylinderstifte, von oben eingetrieben ---------------------- */
+    M.stiftAx.forEach(function (x, i) {
+      nimm({id: 'stiftA' + i, pos: 9, name: 'Zylinderstift', form: 'rohr',
+        achse: 'y', masse: {d: 5, di: 0, l: 16},
+        lage: {x: x, y: M.gpD, z: M.alAz}, von: {x: 0, y: 180, z: 0}});
+    });
+    M.stiftBz.forEach(function (z, i) {
+      nimm({id: 'stiftB' + i, pos: 9, name: 'Zylinderstift', form: 'rohr',
+        achse: 'y', masse: {d: 5, di: 0, l: 16},
+        lage: {x: M.alBx, y: M.gpD, z: z}, von: {x: 0, y: 180, z: 0}});
+    });
+
+    /* --- 2 Anschlagleisten, je zwei Körper ---------------------------- */
+    /* Zwei, weil die Senkung für den Schraubenkopf ein zweiter Durchmesser
+       ist: unten das Durchgangsloch 6,6, oben die Senkung 11. Ein einzelner
+       ausgezogener Umriss kann nur eines von beidem. */
+    function leiste(id, masseUnten, masseOben, lage) {
+      nimm({id: id + 'U', pos: 2, name: 'Anschlagleiste', form: 'platte',
+        masse: masseUnten,
+        lage: {x: lage.x, y: (M.gpD + senkUnten) / 2, z: lage.z},
+        von: {x: 0, y: 150, z: 0}});
+      nimm({id: id + 'O', pos: 2, name: 'Anschlagleiste', form: 'platte',
+        masse: masseOben,
+        lage: {x: lage.x, y: (senkUnten + M.alOben) / 2, z: lage.z},
+        von: {x: 0, y: 150, z: 0}});
+    }
+    (function leisteLaengs() {
+      var u = [], o = [];
+      M.stiftAx.forEach(function (x) {
+        u.push({d: 5, x: x - alMitteX, z: 0});
+        o.push({d: 5, x: x - alMitteX, z: 0});
+      });
+      M.schraubeAx.forEach(function (x) {
+        u.push({d: 6.6, x: x - alMitteX, z: 0});
+        o.push({d: M.senkD, x: x - alMitteX, z: 0});
+      });
+      leiste('leisteA',
+        {x: M.alL, y: senkUnten - M.gpD, z: M.alB, loecher: u},
+        {x: M.alL, y: M.alOben - senkUnten, z: M.alB, loecher: o},
+        {x: alMitteX, z: M.alAz});
+    }());
+    (function leisteQuer() {
+      var u = [], o = [];
+      M.stiftBz.forEach(function (z) {
+        u.push({d: 5, x: 0, z: z - alMitteZ});
+        o.push({d: 5, x: 0, z: z - alMitteZ});
+      });
+      M.schraubeBz.forEach(function (z) {
+        u.push({d: 6.6, x: 0, z: z - alMitteZ});
+        o.push({d: M.senkD, x: 0, z: z - alMitteZ});
+      });
+      leiste('leisteB',
+        {x: M.alB, y: senkUnten - M.gpD, z: M.alL, loecher: u},
+        {x: M.alB, y: M.alOben - senkUnten, z: M.alL, loecher: o},
+        {x: M.alBx, z: alMitteZ});
+    }());
+
+    /* --- 8 Zylinderschrauben M6 × 20, von oben ------------------------ */
+    function schraubeM6(id, x, z) {
+      nimm({id: id + 'Kopf', pos: 8, name: 'Zylinderschraube M6',
+        form: 'rohr', achse: 'y', masse: {d: 10, di: 0, l: 6},
+        lage: {x: x, y: senkUnten + 3, z: z}, von: {x: 0, y: 140, z: 0}});
+      nimm({id: id + 'Schaft', pos: 8, name: 'Zylinderschraube M6',
+        form: 'rohr', achse: 'y', masse: {d: 6, di: 0, l: 20},
+        lage: {x: x, y: senkUnten - 10, z: z}, von: {x: 0, y: 140, z: 0}});
+    }
+    M.schraubeAx.forEach(function (x, i) {
+      schraubeM6('m6A' + i, x, M.alAz);
+    });
+    M.schraubeBz.forEach(function (z, i) {
+      schraubeM6('m6B' + i, M.alBx, z);
+    });
+
+    /* --- 3 Distanzsäulen mit Gewindezapfen M10 ------------------------ */
+    [-1, 1].forEach(function (v) {
+      var k = v < 0 ? 'L' : 'R';
+      nimm({id: 'saeule' + k, pos: 3, name: 'Distanzsäule', form: 'rohr',
+        achse: 'y', masse: {d: M.saD, di: 0, l: M.saH},
+        lage: {x: v * M.saX, y: M.gpD + M.saH / 2, z: 0},
+        von: {x: 0, y: 175, z: 0}});
+      nimm({id: 'zapfen' + k, pos: 3, name: 'Gewindezapfen M10',
+        form: 'rohr', achse: 'y', masse: {d: 10, di: 0, l: 13},
+        lage: {x: v * M.saX, y: M.gpD - 6.5, z: 0},
+        von: {x: 0, y: 175, z: 0}});
+    });
+
+    /* --- 4 Bohrplatte, von oben auf die Säulen ------------------------ */
+    nimm({id: 'bohrplatte', pos: 4, name: 'Bohrplatte', form: 'platte',
+      masse: {x: M.bpL, y: M.bpD, z: M.bpT, loecher: [
+        {d: 9, x: -M.saX, z: 0}, {d: 9, x: M.saX, z: 0},
+        {d: M.fuehrD, x: M.fuehrM - M.fuehrA / 2, z: 0},
+        {d: M.fuehrD, x: M.fuehrM + M.fuehrA / 2, z: 0},
+        {d: M.spGew, x: M.spX, z: 0}]},
+      lage: {x: 0, y: M.saOben + M.bpD / 2, z: 0},
+      von: {x: 0, y: 165, z: 0}});
+
+    /* --- 7 Zylinderschrauben M8 × 30, von oben in die Säulen ---------- */
+    [-1, 1].forEach(function (v) {
+      var k = v < 0 ? 'L' : 'R';
+      nimm({id: 'm8Kopf' + k, pos: 7, name: 'Zylinderschraube M8',
+        form: 'rohr', achse: 'y', masse: {d: 13, di: 0, l: 8},
+        lage: {x: v * M.saX, y: M.bpOben + 4, z: 0},
+        von: {x: 0, y: 150, z: 0}});
+      nimm({id: 'm8Schaft' + k, pos: 7, name: 'Zylinderschraube M8',
+        form: 'rohr', achse: 'y', masse: {d: 8, di: 0, l: 30},
+        lage: {x: v * M.saX, y: M.bpOben - 15, z: 0},
+        von: {x: 0, y: 150, z: 0}});
+    });
+
+    /* --- 5 Spannschraube, durch das Gewinde der Bohrplatte ------------ */
+    nimm({id: 'spannschraube', pos: 5, name: 'Spannschraube', form: 'rohr',
+      achse: 'y', masse: {d: M.spGew, di: 0, l: M.spL},
+      lage: {x: M.spX, y: M.wsOben + M.spL / 2, z: 0},
+      von: {x: 0, y: 190, z: 0}});
+
+    /* --- 10 Kontermutter, auf die Bohrplatte -------------------------- */
+    nimm({id: 'kontermutter', pos: 10, name: 'Sechskantmutter',
+      form: 'rohr', achse: 'y', masse: {d: 20, di: M.spGew, l: 10},
+      lage: {x: M.spX, y: M.bpOben + 5, z: 0},
+      von: {x: 0, y: 140, z: 0}});
+
+    /* --- 6 Kreuzgriff: Nabe und zwei gekreuzte Arme ------------------- */
+    nimm({id: 'griffNabe', pos: 6, name: 'Kreuzgriff', form: 'rohr',
+      achse: 'y', masse: {d: 18, di: 0, l: 14},
+      lage: {x: M.spX, y: M.griffY + 1, z: 0},
+      von: {x: 0, y: 160, z: 0}});
+    [{x: M.griffD, y: 8, z: 12}, {x: 12, y: 8, z: M.griffD}]
+      .forEach(function (masse, i) {
+        nimm({id: 'griffArm' + i, pos: 6, name: 'Kreuzgriff', form: 'quader',
+          masse: masse, lage: {x: M.spX, y: M.griffY, z: 0},
+          von: {x: 0, y: 160, z: 0}});
+      });
+
+    return t;
+  }
+
+  /* Eine gültige Montagefolge, als Liste von Körperkennungen. Gesucht wird
+     nicht die schönste, sondern irgendeine, die keine Vorrangbeziehung
+     verletzt - genau das prüft die Übung ja auch. */
+  function reihenfolge() {
+    var offen = TEILE.map(function (t) { return t.pos; });
+    var gesetzt = [], folge = [];
+    while (offen.length) {
+      var genommen = false;
+      for (var i = 0; i < offen.length; i++) {
+        var pos = offen[i];
+        var frei = VORRANG.every(function (v) {
+          return v.nachher !== pos || gesetzt.indexOf(v.vorher) >= 0;
+        });
+        if (!frei) continue;
+        gesetzt.push(pos);
+        offen.splice(i, 1);
+        genommen = true;
+        break;
+      }
+      if (!genommen) break;        /* Kreise gibt es keine - siehe Prüfung */
+    }
+    var koerper = teile3d();
+    gesetzt.forEach(function (pos) {
+      koerper.forEach(function (k) {
+        if (k.pos === pos) folge.push(k.id);
+      });
+    });
+    return folge;
+  }
+
+  /* ======================================================================
+     7  WAS DIE PRÜFUNG BRAUCHT
      ====================================================================== */
   function darfDurchdringen(a, b) {
     return STRUKTUR.some(function (k) {
@@ -463,7 +694,9 @@
     STRUKTUR: STRUKTUR,
     NETZ_LAGE: NETZ_LAGE,
     VORRANG: VORRANG,
+    REIHENFOLGE: reihenfolge(),
     zeichnen: zeichnen,
+    teile3d: teile3d,
     darfDurchdringen: darfDurchdringen,
     teil: teilNr
   };

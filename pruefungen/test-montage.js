@@ -225,6 +225,139 @@ function vorrangPruefen(B, MP) {
   return { folgen, noetig };
 }
 
+/* Das Modell einer Baugruppe: Sind alle Positionen da, kommt jeder Körper
+   aus einer Richtung - und, der eigentliche Beweis, lässt sich die Baugruppe
+   in jeder erlaubten Reihenfolge wirklich zusammenbauen?
+
+   "noetig" ist die transitive Hülle der Vorrangbeziehungen, wie sie
+   vorherHuelle() liefert. */
+function modellPruefen(B, noetig) {
+  const koerper = B.teile3d();
+  const vorherNoetig = noetig;
+
+  p('jede Position kommt im Modell vor',
+    B.TEILE.every((t) => koerper.some((k) => k.pos === t.pos)),
+    B.TEILE.filter((t) => !koerper.some((k) => k.pos === t.pos))
+      .map((t) => t.pos).join(','));
+  p('jeder Körper hat eine eigene Kennung',
+    new Set(koerper.map((k) => k.id)).size === koerper.length);
+  p('jeder Körper hat eine Ruhelage abseits seines Platzes',
+    koerper.every((k) => k.von
+      && Math.hypot(k.von.x, k.von.y, k.von.z) > 30),
+    koerper.filter((k) => !k.von
+      || Math.hypot(k.von.x, k.von.y, k.von.z) <= 30)
+      .map((k) => k.id).join(', '));
+  p('die Abspielfolge nennt jeden Körper genau einmal',
+    B.REIHENFOLGE.length === koerper.length
+    && koerper.every((k) => B.REIHENFOLGE.indexOf(k.id) >= 0));
+  const FORMEN = ['quader', 'rohr', 'keil', 'winkel', 'dach', 'gesenk',
+    'platte', 'flanke', 'ringSegment'];
+  p('jeder Körper nennt eine bekannte Form',
+    koerper.every((k) => FORMEN.indexOf(k.form) >= 0),
+    koerper.filter((k) => FORMEN.indexOf(k.form) < 0)
+      .map((k) => k.form).join(', '));
+
+  console.log('\nDie Montagewege');
+
+  /* Der eigentliche Beweis: Keine Reihenfolge, die der Montageplan zulässt,
+     darf ein Teil durch ein anderes hindurchfliegen lassen.
+
+     Geprüft wird paarweise und damit für alle Reihenfolgen auf einmal: Wenn
+     Teil A vor Teil B liegen darf - wenn also keine Vorrangbeziehung das
+     Gegenteil erzwingt -, dann muss B seinen Weg zurücklegen können,
+     während A schon da ist. Erlaubt ist eine Überschneidung nur, wo das
+     eine im anderen steckt; und was ineinandersteckt, sagt das
+     Strukturnetz. */
+  const huelle = (k) => {
+    const m = k.masse, l = k.lage;
+    const halb = (a, b, c) => ({ x: a / 2, y: b / 2, z: c / 2 });
+    let h;
+    if (k.form === 'rohr' || k.form === 'ringSegment') {
+      const r = m.d / 2, hl = m.l / 2;
+      h = k.achse === 'x' ? halb(m.l, m.d, m.d)
+        : k.achse === 'z' ? halb(m.d, m.d, m.l) : halb(m.d, m.l, m.d);
+      void r; void hl;
+    } else if (k.form === 'quader' && k.dreh && k.dreh.y) {
+      /* Um 90 Grad gestellt: Länge und Dicke tauschen die Achse. */
+      h = halb(m.z, m.y, m.x);
+    } else {
+      h = halb(m.x, m.y, m.z);
+    }
+    const k1 = { x1: l.x - h.x, x2: l.x + h.x, y1: l.y - h.y, y2: l.y + h.y,
+      z1: l.z - h.z, z2: l.z + h.z };
+    if (k.form === 'flanke') {
+      /* Die Flanke liegt nicht mittig: Sie beginnt an der Nutmitte und
+         reicht nach einer Seite. */
+      const nachHinten = k.dreh && k.dreh.y < 0;
+      k1.z1 = nachHinten ? l.z : l.z - m.z;
+      k1.z2 = nachHinten ? l.z + m.z : l.z;
+    }
+    return k1;
+  };
+
+  const weg = (k) => {
+    const a = huelle(k);
+    const v = k.von || { x: 0, y: 0, z: 0 };
+    return {
+      x1: Math.min(a.x1, a.x1 + v.x), x2: Math.max(a.x2, a.x2 + v.x),
+      y1: Math.min(a.y1, a.y1 + v.y), y2: Math.max(a.y2, a.y2 + v.y),
+      z1: Math.min(a.z1, a.z1 + v.z), z2: Math.max(a.z2, a.z2 + v.z),
+    };
+  };
+
+  /* Zwei Quader überschneiden sich - mit einem halben Millimeter Nachsicht,
+     denn Teile, die aneinander anliegen, berühren sich eben. */
+  const trifft = (a, b) => {
+    const s = 0.5;
+    return a.x1 < b.x2 - s && b.x1 < a.x2 - s
+      && a.y1 < b.y2 - s && b.y1 < a.y2 - s
+      && a.z1 < b.z2 - s && b.z1 < a.z2 - s;
+  };
+
+  /* Ob "vorher" zwingend vor "nachher" kommt - auch über Umwege -, steht
+     schon in vorherNoetig; der Graph ist oben als kreisfrei nachgewiesen. */
+
+  p('jeder Körper kommt aus einer Richtung, nicht aus dem Nichts',
+    koerper.every((k) => k.von && [k.von.x, k.von.y, k.von.z]
+      .filter((a) => Math.abs(a) > 0.001).length === 1),
+    koerper.filter((k) => !k.von || [k.von.x, k.von.y, k.von.z]
+      .filter((a) => Math.abs(a) > 0.001).length !== 1)
+      .map((k) => k.id).join(', '));
+
+  const kreuzt = [];
+  koerper.forEach((b) => {
+    const wb = weg(b);
+    koerper.forEach((a) => {
+      if (a.pos === b.pos) return;
+      /* Muss b vor a? Dann kann a nicht im Weg liegen. */
+      if (vorherNoetig[a.pos].has(b.pos)) return;
+      if (B.darfDurchdringen(a.pos, b.pos)) return;
+      if (trifft(wb, huelle(a))) {
+        kreuzt.push(b.id + ' (Pos. ' + b.pos + ') durch '
+          + a.id + ' (Pos. ' + a.pos + ')');
+      }
+    });
+  });
+  p('kein Teil fliegt auf seinem Weg durch ein anderes',
+    !kreuzt.length, [...new Set(kreuzt)].slice(0, 6).join(' · '));
+
+  /* Und umgekehrt: Was sich am Ende durchdringt, muss auch zusammengehören.
+     Ein Quader, der in einem anderen steckt, ohne dass das Strukturnetz
+     davon weiß, ist ein Modellfehler. */
+  const fremd = [];
+  koerper.forEach((b, i) => {
+    koerper.slice(i + 1).forEach((a) => {
+      if (a.pos === b.pos) return;
+      if (B.darfDurchdringen(a.pos, b.pos)) return;
+      if (trifft(huelle(b), huelle(a))) {
+        fremd.push(a.pos + '/' + b.pos);
+      }
+    });
+  });
+  p('am Ende steckt nichts in etwas, das nichts davon weiß',
+    !fremd.length, [...new Set(fremd)].join(', '));
+}
+
 async function main() {
   console.log('\nDie Bausteine');
 
@@ -397,27 +530,7 @@ async function main() {
 
   console.log('\nDas Modell');
 
-  p('jede Position kommt im Modell vor',
-    P.TEILE.every((t) => koerper.some((k) => k.pos === t.pos)),
-    P.TEILE.filter((t) => !koerper.some((k) => k.pos === t.pos))
-      .map((t) => t.pos).join(','));
-  p('jeder Körper hat eine eigene Kennung',
-    new Set(koerper.map((k) => k.id)).size === koerper.length);
-  p('jeder Körper hat eine Ruhelage abseits seines Platzes',
-    koerper.every((k) => k.von
-      && Math.hypot(k.von.x, k.von.y, k.von.z) > 30),
-    koerper.filter((k) => !k.von
-      || Math.hypot(k.von.x, k.von.y, k.von.z) <= 30)
-      .map((k) => k.id).join(', '));
-  p('die Abspielfolge nennt jeden Körper genau einmal',
-    P.REIHENFOLGE.length === koerper.length
-    && koerper.every((k) => P.REIHENFOLGE.indexOf(k.id) >= 0));
-  const FORMEN = ['quader', 'rohr', 'keil', 'winkel', 'dach', 'gesenk',
-    'platte', 'flanke', 'ringSegment'];
-  p('jeder Körper nennt eine bekannte Form',
-    koerper.every((k) => FORMEN.indexOf(k.form) >= 0),
-    koerper.filter((k) => FORMEN.indexOf(k.form) < 0)
-      .map((k) => k.form).join(', '));
+  modellPruefen(P, vorherNoetig);
 
   /* Wo ein Teil durch ein anderes gesteckt wird, hat das andere ein Loch.
      Das ist der Befund, mit dem diese Runde angefangen hat. */
@@ -457,106 +570,6 @@ async function main() {
     platte.masse.loecher.length === 10,
     platte.masse.loecher.length + '');
 
-  console.log('\nDie Montagewege');
-
-  /* Der eigentliche Beweis: Keine Reihenfolge, die der Montageplan zulässt,
-     darf ein Teil durch ein anderes hindurchfliegen lassen.
-
-     Geprüft wird paarweise und damit für alle Reihenfolgen auf einmal: Wenn
-     Teil A vor Teil B liegen darf - wenn also keine Vorrangbeziehung das
-     Gegenteil erzwingt -, dann muss B seinen Weg zurücklegen können,
-     während A schon da ist. Erlaubt ist eine Überschneidung nur, wo das
-     eine im anderen steckt; und was ineinandersteckt, sagt das
-     Strukturnetz. */
-  const huelle = (k) => {
-    const m = k.masse, l = k.lage;
-    const halb = (a, b, c) => ({ x: a / 2, y: b / 2, z: c / 2 });
-    let h;
-    if (k.form === 'rohr' || k.form === 'ringSegment') {
-      const r = m.d / 2, hl = m.l / 2;
-      h = k.achse === 'x' ? halb(m.l, m.d, m.d)
-        : k.achse === 'z' ? halb(m.d, m.d, m.l) : halb(m.d, m.l, m.d);
-      void r; void hl;
-    } else if (k.form === 'quader' && k.dreh && k.dreh.y) {
-      /* Um 90 Grad gestellt: Länge und Dicke tauschen die Achse. */
-      h = halb(m.z, m.y, m.x);
-    } else {
-      h = halb(m.x, m.y, m.z);
-    }
-    const k1 = { x1: l.x - h.x, x2: l.x + h.x, y1: l.y - h.y, y2: l.y + h.y,
-      z1: l.z - h.z, z2: l.z + h.z };
-    if (k.form === 'flanke') {
-      /* Die Flanke liegt nicht mittig: Sie beginnt an der Nutmitte und
-         reicht nach einer Seite. */
-      const nachHinten = k.dreh && k.dreh.y < 0;
-      k1.z1 = nachHinten ? l.z : l.z - m.z;
-      k1.z2 = nachHinten ? l.z + m.z : l.z;
-    }
-    return k1;
-  };
-
-  const weg = (k) => {
-    const a = huelle(k);
-    const v = k.von || { x: 0, y: 0, z: 0 };
-    return {
-      x1: Math.min(a.x1, a.x1 + v.x), x2: Math.max(a.x2, a.x2 + v.x),
-      y1: Math.min(a.y1, a.y1 + v.y), y2: Math.max(a.y2, a.y2 + v.y),
-      z1: Math.min(a.z1, a.z1 + v.z), z2: Math.max(a.z2, a.z2 + v.z),
-    };
-  };
-
-  /* Zwei Quader überschneiden sich - mit einem halben Millimeter Nachsicht,
-     denn Teile, die aneinander anliegen, berühren sich eben. */
-  const trifft = (a, b) => {
-    const s = 0.5;
-    return a.x1 < b.x2 - s && b.x1 < a.x2 - s
-      && a.y1 < b.y2 - s && b.y1 < a.y2 - s
-      && a.z1 < b.z2 - s && b.z1 < a.z2 - s;
-  };
-
-  /* Ob "vorher" zwingend vor "nachher" kommt - auch über Umwege -, steht
-     schon in vorherNoetig; der Graph ist oben als kreisfrei nachgewiesen. */
-
-  p('jeder Körper kommt aus einer Richtung, nicht aus dem Nichts',
-    koerper.every((k) => k.von && [k.von.x, k.von.y, k.von.z]
-      .filter((a) => Math.abs(a) > 0.001).length === 1),
-    koerper.filter((k) => !k.von || [k.von.x, k.von.y, k.von.z]
-      .filter((a) => Math.abs(a) > 0.001).length !== 1)
-      .map((k) => k.id).join(', '));
-
-  const kreuzt = [];
-  koerper.forEach((b) => {
-    const wb = weg(b);
-    koerper.forEach((a) => {
-      if (a.pos === b.pos) return;
-      /* Muss b vor a? Dann kann a nicht im Weg liegen. */
-      if (vorherNoetig[a.pos].has(b.pos)) return;
-      if (P.darfDurchdringen(a.pos, b.pos)) return;
-      if (trifft(wb, huelle(a))) {
-        kreuzt.push(b.id + ' (Pos. ' + b.pos + ') durch '
-          + a.id + ' (Pos. ' + a.pos + ')');
-      }
-    });
-  });
-  p('kein Teil fliegt auf seinem Weg durch ein anderes',
-    !kreuzt.length, [...new Set(kreuzt)].slice(0, 6).join(' · '));
-
-  /* Und umgekehrt: Was sich am Ende durchdringt, muss auch zusammengehören.
-     Ein Quader, der in einem anderen steckt, ohne dass das Strukturnetz
-     davon weiß, ist ein Modellfehler. */
-  const fremd = [];
-  koerper.forEach((b, i) => {
-    koerper.slice(i + 1).forEach((a) => {
-      if (a.pos === b.pos) return;
-      if (P.darfDurchdringen(a.pos, b.pos)) return;
-      if (trifft(huelle(b), huelle(a))) {
-        fremd.push(a.pos + '/' + b.pos);
-      }
-    });
-  });
-  p('am Ende steckt nichts in etwas, das nichts davon weiß',
-    !fremd.length, [...new Set(fremd)].join(', '));
-
   /* ----------------------------------------------------------------------
      Die beiden anderen Baugruppen. Sie haben kein 3D-Modell und keine
      Maßkette, die etwas zusammenhalten müsste - aber Stückliste, Netz,
@@ -572,7 +585,8 @@ async function main() {
       B.TEILE.length + '');
     stuecklistePruefen(B);
     netzPruefen(B);
-    vorrangPruefen(B, MP);
+    const { noetig } = vorrangPruefen(B, MP);
+    if (B.teile3d) modellPruefen(B, noetig);
     p('die Baugruppe nennt ihren Namen und ihre Zeichnungsnummer',
       (B.name || '').length > 3 && /^TBK-\d{4}-\d{3}$/.test(B.nummer || ''),
       B.name + ' / ' + B.nummer);

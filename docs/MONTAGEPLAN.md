@@ -167,7 +167,10 @@ nur einen Fall.
 Alle drei haben denselben Bauplan — `M`, `TEILE`, `STRUKTUR`, `NETZ_LAGE`,
 `VORRANG`, `zeichnen()`, `teil()`, `darfDurchdringen()` —, und
 `pruefungen/test-montage.js` prüft alle drei mit denselben Funktionen.
-Ein 3D-Modell (`teile3d()`, `REIHENFOLGE`) hat nur die Presse.
+Ein 3D-Modell (`teile3d()`, `REIHENFOLGE`) haben die Presse und die
+Bohrvorrichtung; für sie rechnet die Prüfung zusätzlich jeden Montageweg
+durch. Der Klappanschlag hat keins — die Übungen brauchen keines, und ein
+Modell, das niemand benutzt, veraltet unbemerkt.
 
 Die gemeinsamen Zeichnungsteile — geschnittener Umriss, Positionsnummer,
 Schnittmarke, Schriftfeld — stehen in `assets/zusammenstellung.js` und
