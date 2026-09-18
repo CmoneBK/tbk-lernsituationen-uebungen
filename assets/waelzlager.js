@@ -511,22 +511,28 @@
     };
     var leer = 'var(--card, #ffffff)';
 
-    /* --- Gehäuse: zwei Blöcke, in denen die Außenringe sitzen ---------- */
-    [[xA, lA], [xB, lB]].forEach(function (e) {
-      var x = e[0], l = e[1], hb = l.B / 2 + 6;
-      [1, -1].forEach(function (v) {
-        Zt(g, [[vx(x - hb), vy(v * l.D / 2)],
-          [vx(x + hb), vy(v * l.D / 2)],
-          [vx(x + hb), vy(v * gehaeuse)],
-          [vx(x - hb), vy(v * gehaeuse)]], sch.geh);
-      });
+    /* --- Wo wird gehalten? ---------------------------------------------
+       Nicht die Lager machen die Anordnung, sondern ihr Sitz. Ein
+       Schrägkugellager kann nur in eine Richtung tragen; welche das ist,
+       entscheidet sich daran, gegen welche Schulter sein Außenring und
+       gegen welche sein Innenring drückt. Deshalb gehören beide in die
+       Zeichnung - ohne sie steht dort eine Lagerung, die es so nicht gibt. */
+    var hA = halten(anordnung, 0), hB = halten(anordnung, 1);
+
+    /* --- Gehäuse: zwei Blöcke mit Schulter ----------------------------- */
+    [[xA, lA, hA], [xB, lB, hB]].forEach(function (e) {
+      gehaeuseZeichnen(g, vx, vy, e[0], e[1], gehaeuse, e[2].gehaeuse,
+        sch.geh);
     });
 
-    /* --- Welle: längs geschnitten, also blank -------------------------- */
-    var wx1 = xA - lA.B / 2 - 30, wx2 = xB + lB.B / 2 + 30;
+    /* --- Welle: längs geschnitten, also blank --------------------------
+       Wo der Innenring von innen gehalten wird, steht ein Wellenabsatz;
+       wo von außen, eine Nutmutter. Beides ist Teil der Aussage. */
+    var wx1 = xA - lA.B / 2 - 34, wx2 = xB + lB.B / 2 + 34;
     var rw = Math.min(lA.d, lB.d) / 2;
-    Zt(g, [[vx(wx1), vy(rw)], [vx(wx2), vy(rw)],
-      [vx(wx2), vy(-rw)], [vx(wx1), vy(-rw)]], leer);
+    var hs = Math.max(lA.h || 0, lB.h || 0)
+      || (Math.max(lA.D, lB.D) - rw * 2) * 0.12;
+    wellenzug(g, vx, vy, wx1, wx2, rw, hs, xA, lA, hA, xB, lB, hB, leer);
 
     /* --- Die Lager ----------------------------------------------------- */
     lagerZeichnen(g, vx, vy, s, xA, lA, sch.a, leer);
@@ -534,12 +540,17 @@
 
     /* --- Loslager: der Außenring darf wandern -------------------------- */
     if (anordnung === 'festlos') {
+      /* Der Außenring des Loslagers hat Luft im Gehäuse - das ist die
+         ganze Aussage dieser Bauart, also steht es auch da. */
       var hb2 = lB.B / 2;
       [1, -1].forEach(function (v) {
-        linie(g, vx(xB + hb2 + 4), vy(v * (lB.D / 2 + 1)),
-          vx(xB + hb2 + 12), vy(v * (lB.D / 2 + 1)), SCHMAL);
-        pfeil(g, vx(xB + hb2 + 12), vy(v * (lB.D / 2 + 1)), 1, 0);
+        var y = vy(v * (gehaeuse + 9));
+        linie(g, vx(xB - hb2 - 14), y, vx(xB + hb2 + 14), y, SCHMAL);
+        pfeil(g, vx(xB - hb2 - 14), y, -1, 0);
+        pfeil(g, vx(xB + hb2 + 14), y, 1, 0);
       });
+      txt(g, vx(xB), vy(gehaeuse + 9) - 7, 'Loslager: wandert',
+        {groesse: 11});
     }
 
     /* --- Drucklinien und Stützbasis ------------------------------------ */
@@ -552,10 +563,120 @@
     if (o.unterschrift !== false) {
       var f = document.createElement('figcaption');
       f.innerHTML = o.unterschrift || (lA.bezeichnung + ' und '
-        + lB.bezeichnung + ', ' + anordnungName(anordnung) + '.');
+        + lB.bezeichnung + ', ' + anordnungName(anordnung) + '. '
+        + sitzText(anordnung));
       ziel.appendChild(f);
     }
     return svg;
+  }
+
+  /* Die Haltestellen eines Lagers.
+
+     "gehaeuse" und "welle" sagen, auf welcher Seite die Schulter liegt:
+     -1 links, +1 rechts, 2 auf beiden Seiten, 0 gar nicht. "mutter" heißt:
+     dort sitzt eine Nutmutter statt eines Wellenabsatzes - so muss es sein,
+     wo von außen gehalten wird, denn einen Absatz außerhalb des äußersten
+     Lagers bekäme man nicht mehr montiert.
+
+     Die Regel stammt aus den Einbaubeispielen der Fachkunde: Die
+     Gehäuseschulter liegt auf der Seite, die von S wegzeigt; der
+     Wellenabsatz oder die Mutter auf der Seite, auf der S liegt. */
+  function halten(anordnung, nr) {
+    var r = richtungVon(anordnung, nr);
+    if (anordnung === 'O' || anordnung === 'X') {
+      return { gehaeuse: -r, welle: r, mutter: r < 0 && nr === 0
+        ? true : (r > 0 && nr === 1) };
+    }
+    if (anordnung === 'festlos') {
+      return nr === 0
+        ? { gehaeuse: 2, welle: 2, mutter: true }
+        : { gehaeuse: 0, welle: 2, mutter: false };
+    }
+    /* schwimmend: beide Außenringe haben Luft, die Innenringe sitzen fest */
+    return { gehaeuse: 0, welle: 2, mutter: false };
+  }
+
+  /* Das Gehäuse um ein Lager, mit Schulter auf der angegebenen Seite. Die
+     Schulter reicht bis an die Innenkante des Außenrings - weiter darf sie
+     nicht, sonst streift sie den Käfig. */
+  function gehaeuseZeichnen(g, vx, vy, x, l, gehaeuse, seite, fuell) {
+    var ra = l.D / 2, dick = (ra - l.d / 2) * 0.27;
+    var hb = l.B / 2, rand = 10;
+    var rs = ra - dick;
+    [1, -1].forEach(function (v) {
+      var p = [];
+      function zu(mm, r) { p.push([vx(mm), vy(v * r)]); }
+      if (seite === -1 || seite === 2) {
+        zu(x - hb - rand, rs); zu(x - hb, rs); zu(x - hb, ra);
+      } else {
+        zu(x - hb - rand, ra);
+      }
+      if (seite === 1 || seite === 2) {
+        zu(x + hb, ra); zu(x + hb, rs); zu(x + hb + rand, rs);
+      } else {
+        zu(x + hb + rand, ra);
+      }
+      zu(x + hb + rand, gehaeuse);
+      zu(x - hb - rand, gehaeuse);
+      Zt(g, p, fuell);
+    });
+  }
+
+  /* Die Welle als ein Zug: gerade, wo die Lager sitzen, mit einem Absatz
+     dort, wo ein Innenring von innen gehalten wird. Die Muttern kommen
+     danach obendrauf. */
+  function wellenzug(g, vx, vy, wx1, wx2, rw, hs, xA, lA, hA, xB, lB, hB,
+    leer) {
+    /* Abschnitte als [von, bis, Radius] */
+    var ab = [];
+    var aInnen = hA.welle === 1 || hA.welle === 2;
+    var bInnen = hB.welle === -1 || hB.welle === 2;
+    var von = xA + lA.B / 2, bis = xB - lB.B / 2;
+    if (aInnen && bInnen && bis > von) {
+      ab.push([wx1, von, rw], [von, bis, rw + hs], [bis, wx2, rw]);
+    } else {
+      ab.push([wx1, wx2, rw]);
+    }
+    /* Ein geschlossener Umriss über beide Hälften. Zwei halbe Wellen
+       ergäben eine Kante auf der Achse, und dort ist keine. */
+    var p = [];
+    ab.forEach(function (e) {
+      p.push([vx(e[0]), vy(e[2])], [vx(e[1]), vy(e[2])]);
+    });
+    ab.slice().reverse().forEach(function (e) {
+      p.push([vx(e[1]), vy(-e[2])], [vx(e[0]), vy(-e[2])]);
+    });
+    Zt(g, p, leer);
+
+    /* Nutmuttern, wo von außen gehalten wird. */
+    [[xA, lA, hA, -1], [xB, lB, hB, 1]].forEach(function (e) {
+      if (!e[2].mutter) return;
+      var l = e[1], r = e[3];
+      var x1 = e[0] + r * (l.B / 2), x2 = x1 + r * 11;
+      [1, -1].forEach(function (v) {
+        Zt(g, [[vx(x1), vy(v * rw)], [vx(x2), vy(v * rw)],
+          [vx(x2), vy(v * (rw + hs * 1.5))],
+          [vx(x1), vy(v * (rw + hs * 1.5))]], leer);
+      });
+    });
+  }
+
+  /* Was die Schultern im Bild bedeuten - in einem Satz, damit die
+     Zeichnung nicht nur richtig, sondern auch lesbar ist. */
+  function sitzText(a) {
+    if (a === 'O') {
+      return 'Die Geh\u00e4useschultern liegen innen, die Nutmuttern '
+        + 'halten die Innenringe von au\u00dfen.';
+    }
+    if (a === 'X') {
+      return 'Die Geh\u00e4useschultern liegen au\u00dfen, der '
+        + 'Wellenabsatz h\u00e4lt die Innenringe von innen.';
+    }
+    if (a === 'festlos') {
+      return 'Der Au\u00dfenring des Festlagers liegt beidseitig an, der '
+        + 'des Loslagers an keiner Seite.';
+    }
+    return 'Beide Au\u00dfenringe haben Luft im Geh\u00e4use.';
   }
 
   function anordnungName(a) {
@@ -625,8 +746,12 @@
          Drucklinien, denn die enden ja im Punkt S. Und weil bei einer
          engen X-Anordnung beide Punkte dicht beieinander liegen, steht das
          eine oben und das andere unten. */
+      /* Der Punkt S liegt auf der Wellenachse, also mitten auf der Welle.
+         Ausweichen kann der Buchstabe deshalb nicht - er bekommt einen Hof
+         in der Hintergrundfarbe und steht damit lesbar auf dem Werkstoff.
+         So macht es die Fachkunde in ihrem Einbaubeispiel auch. */
       txt(g, vx(sx) + r * 15, vy(0) + (i === 0 ? -10 : 22), 'S',
-        {groesse: 13, fett: true});
+        {groesse: 13, fett: true, hof: true});
     });
 
     /* Die Stützbasis wird bemaßt - sie ist die Aussage des Bildes.
@@ -702,6 +827,7 @@
     LAST: LAST,
     EMPFOHLEN: EMPFOHLEN,
     ALPHA: ALPHA,
+    sitzText: sitzText,
     zerlegen: zerlegen,
     lager: lager,
     lebensdauer: lebensdauer,

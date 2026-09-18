@@ -50,7 +50,8 @@
 
     <div class="box auftrag">
       <p><strong>Ein Lager wird nicht nach Gefühl gewählt, sondern nach der Kraft, die auf es wirkt.</strong> Radial, axial oder beides &ndash; und dazu: Wie viel Platz ist da, wie schnell dreht es, und muss es Fluchtfehler ausgleichen?</p>
-      <p>Acht Fälle aus acht verschiedenen Maschinen. Zu jedem gibt es eine Bauform, die besser passt als alle anderen. In der Lösung steht, warum.</p>
+      <p>Acht Fälle aus acht verschiedenen Maschinen. <strong>Manchmal passt mehr als eine Bauform</strong> &ndash; dann zählt jede davon als richtig, und in der Lösung steht, welche man in der Werkstatt nehmen würde und warum.</p>
+      <p>Das ist keine Nachlässigkeit der Aufgabe, sondern der Normalfall: Eine Lagerstelle hat selten genau eine Lösung. Entschieden wird nach Bauraum, Preis und danach, was der Betrieb ohnehin auf Lager hat.</p>
     </div>
 
     <h2><span class="nr">1</span>Acht Einbaufälle</h2>
@@ -98,8 +99,11 @@ var FRAGEN = [
   },
   {
     "frage": "Eine <strong>Kegelritzelwelle</strong> im Winkelgetriebe. Große Radial- und große Axialkraft, und es darf nichts kippen.",
-    "loesung": "Kegelrollenlager",
-    "warum": "Kegelrollen tragen radial und axial zugleich, und paarweise in O-Anordnung ergeben sie die größte Stützbasis. Genau dafür sitzen sie an jedem Kegelritzel."
+    "loesung": [
+      "Kegelrollenlager",
+      "Schrägkugellager"
+    ],
+    "warum": "Beide tragen radial und axial zugleich und arbeiten paarweise in einer angestellten Lagerung. Bei dieser Radialkraft ist das <strong>Kegelrollenlager" + " die bessere Wahl - Linienberührung statt Punktberührung. Das Schrägkugellager könnte man bauen, es wäre nur größer."
   },
   {
     "frage": "Das <strong>Loslager</strong> einer Getriebewelle. Große Radialkraft, und axial darf es nichts aufnehmen.",
@@ -108,18 +112,24 @@ var FRAGEN = [
   },
   {
     "frage": "Die Welle eines <strong>Schwingsiebs</strong>. Sie biegt sich unter Last merklich durch.",
-    "loesung": "Pendelrollenlager",
-    "warum": "Pendelrollenlager gleichen Wellendurchbiegung und Wellenversatz aus - die Laufbahn des Außenrings ist kugelig. Ein Rillenkugellager würde an der Kante tragen und früh ausfallen."
+    "loesung": [
+      "Pendelrollenlager",
+      "Pendelkugellager"
+    ],
+    "warum": "Beide haben eine kugelige Außenringlaufbahn und gleichen Wellenversatz aus. Bei der Last eines Schwingsiebs nimmt man das <strong>Pendelrollenlager</strong>; das Pendelkugellager trägt weniger, ist aber nicht falsch. Ein Rillenkugellager würde an der Kante tragen und früh ausfallen."
   },
   {
-    "frage": "Eine <strong>Schleifspindel</strong>: hohe Drehzahl, mäßige Last, es soll leise sein.",
+    "frage": "Eine <strong>Lüfterwelle</strong>: hohe Drehzahl, mäßige Radiallast, keine nennenswerte Axialkraft, und es soll leise sein.",
     "loesung": "Rillenkugellager",
     "warum": "Punktberührung heißt wenig Reibung und wenig Wärme. Deshalb sind Kugellager die schnellsten Wälzlager - was sie an Tragfähigkeit nicht haben, brauchen sie hier nicht."
   },
   {
     "frage": "Ein <strong>Drehtisch</strong>. Die Last drückt von oben, radial passiert nichts.",
-    "loesung": "Axial-Rillenkugellager",
-    "warum": "Reine Längskraft in eine Richtung. Radial trägt dieses Lager nichts - der Tisch braucht deshalb zusätzlich eine radiale Führung."
+    "loesung": [
+      "Axial-Rillenkugellager",
+      "Axial-Zylinderrollenlager"
+    ],
+    "warum": "Reine Längskraft in eine Richtung. Radial trägt keines von beiden etwas - der Tisch braucht zusätzlich eine radiale Führung. Bei sehr großer Last nimmt man das <strong>Axial-Zylinder" + "rollenlager</strong>, sonst das billigere Kugellager."
   },
   {
     "frage": "Die Lagerung eines <strong>Elektromotors</strong>. Standardfall, es soll billig und leise sein.",
@@ -186,8 +196,10 @@ var WAHL = [
   });
 
   el("loesung").innerHTML = FRAGEN.map(function(f, i){
-    return "<p><strong>" + (i + 1) + ". " + f.loesung + "</strong> &ndash; "
-      + f.warum + "</p>";
+    var g = Array.isArray(f.loesung) ? f.loesung : [f.loesung];
+    return "<p><strong>" + (i + 1) + ". " + g[0] + "</strong>"
+      + (g.length > 1 ? " <em>(auch richtig: " + g.slice(1).join(", ")
+        + ")</em>" : "") + " &ndash; " + f.warum + "</p>";
   }).join("");
 }());
 
@@ -196,7 +208,10 @@ el("btnPruefen").addEventListener("click", function(){
   FRAGEN.forEach(function(f, i){
     var v = el("f" + i).value, u = el("u" + i);
     if(!v){ u.textContent = "–"; u.className = "urteil"; offen++; return; }
-    var ok = v === f.loesung;
+    /* Manchmal passt mehr als ein Lager. Dann steht in "loesung" eine
+       Liste, und die erste ist die, die in der Begründung empfohlen wird. */
+    var gilt = Array.isArray(f.loesung) ? f.loesung : [f.loesung];
+    var ok = gilt.indexOf(v) >= 0;
     u.textContent = ok ? "richtig" : "nein";
     u.className = "urteil " + (ok ? "ja" : "nein");
     if(ok) r++;

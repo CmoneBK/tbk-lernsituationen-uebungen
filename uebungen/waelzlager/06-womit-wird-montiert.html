@@ -197,8 +197,10 @@ var WAHL = [
   });
 
   el("loesung").innerHTML = FRAGEN.map(function(f, i){
-    return "<p><strong>" + (i + 1) + ". " + f.loesung + "</strong> &ndash; "
-      + f.warum + "</p>";
+    var g = Array.isArray(f.loesung) ? f.loesung : [f.loesung];
+    return "<p><strong>" + (i + 1) + ". " + g[0] + "</strong>"
+      + (g.length > 1 ? " <em>(auch richtig: " + g.slice(1).join(", ")
+        + ")</em>" : "") + " &ndash; " + f.warum + "</p>";
   }).join("");
 }());
 
@@ -207,7 +209,10 @@ el("btnPruefen").addEventListener("click", function(){
   FRAGEN.forEach(function(f, i){
     var v = el("f" + i).value, u = el("u" + i);
     if(!v){ u.textContent = "–"; u.className = "urteil"; offen++; return; }
-    var ok = v === f.loesung;
+    /* Manchmal passt mehr als ein Lager. Dann steht in "loesung" eine
+       Liste, und die erste ist die, die in der Begründung empfohlen wird. */
+    var gilt = Array.isArray(f.loesung) ? f.loesung : [f.loesung];
+    var ok = gilt.indexOf(v) >= 0;
     u.textContent = ok ? "richtig" : "nein";
     u.className = "urteil " + (ok ? "ja" : "nein");
     if(ok) r++;

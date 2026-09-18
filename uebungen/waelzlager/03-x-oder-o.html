@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>X oder O?</title>
-<meta name="description" content="Acht Fälle: welche Lagerungsart, und warum. Stützbasis, Kippspiel und was die Wärme mit dem Lagerspiel macht.">
+<meta name="description" content="Zehn Fälle: welche Lagerungsart, und warum. Stützbasis, Kippspiel und was die Wärme mit dem Lagerspiel macht.">
 <meta name="dauer" content="25 min">
 <meta name="quellen" content="tabellenbuch fachkunde-im katalog">
 <meta name="normen" content="DIN 623-1, DIN 625-1, DIN 628-1, DIN 720, DIN 981, DIN 5406 und DIN 5418">
@@ -63,7 +63,7 @@
       <figure class="bild" id="bildX"></figure>
     </div>
 
-    <h2><span class="nr">2</span>Acht Fälle</h2>
+    <h2><span class="nr">2</span>Zehn Fälle</h2>
 
     <div class="tabellenrahmen">
       <table class="fr">
@@ -122,6 +122,16 @@ var FRAGEN = [
     "warum": "Das Rad hängt seitlich am Lagerpaar, und in der Kurve wirkt ein großes Kippmoment. Die große Stützbasis der O-Anordnung ist der einzige Grund, warum zwei kleine Lager das aushalten."
   },
   {
+    "frage": "In einer Zeichnung liegen die <strong>Gehäuseschultern innen</strong>, zwischen den beiden Lagern, und zwei Nutmuttern halten die Innenringe von außen. Welche Anordnung ist das?",
+    "loesung": "O-Anordnung – die Stützbasis wird größer als der Lagerabstand",
+    "warum": "Am Sitz erkennt man es, nicht am Lager. Die Gehäuseschulter liegt immer auf der Seite, die von S wegzeigt – liegt sie innen, liegt S außen, und das ist die O-Anordnung. Dasselbe Lagerpaar ergibt andersherum eingebaut eine X-Anordnung."
+  },
+  {
+    "frage": "Warum bekommt ein <strong>Schrägkugellager</strong> seine Richtung erst durch den Einbau, ein <strong>Rillenkugellager</strong> aber nicht?",
+    "loesung": "weil das Schrägkugellager axial nur in eine Richtung trägt",
+    "warum": "Die schräge Drucklinie kann die Axialkraft nur in eine Richtung weiterleiten; wogegen die Ringe drücken, entscheidet der Sitz. Ein Rillenkugellager trägt axial in beide Richtungen – bei ihm steckt die Richtung in der eigenen Geometrie, nicht im Einbau. Und ein Zylinderrollenlager der Form NU trägt axial in keine."
+  },
+  {
     "frage": "Bei welcher Anordnung zeigen die Drucklinien <strong>nach innen</strong>?",
     "loesung": "X-Anordnung – die Punkte S liegen zwischen den Lagern",
     "warum": "Die Drucklinien bilden ein X. Sie schneiden die Wellenachse zwischen den Lagern, und deshalb ist H kleiner als der Lagerabstand."
@@ -154,7 +164,11 @@ var WAHL = [
   "Fest-Loslagerung",
   "schwimmende Lagerung",
   "angestellte Lagerung mit Federvorspannung",
-  "zwei Festlager – das hält am besten"
+  "zwei Festlager – das hält am besten",
+  "weil das Schrägkugellager axial nur in eine Richtung trägt",
+  "weil das Schrägkugellager größere Kräfte trägt",
+  "weil das Rillenkugellager einen Käfig hat",
+  "weil der Innenring beim Schrägkugellager loser sitzt"
 ];
 
 Waelzlager.lagerung("bildO", {
@@ -207,8 +221,10 @@ Waelzlager.lagerung("bildX", {
   });
 
   el("loesung").innerHTML = FRAGEN.map(function(f, i){
-    return "<p><strong>" + (i + 1) + ". " + f.loesung + "</strong> &ndash; "
-      + f.warum + "</p>";
+    var g = Array.isArray(f.loesung) ? f.loesung : [f.loesung];
+    return "<p><strong>" + (i + 1) + ". " + g[0] + "</strong>"
+      + (g.length > 1 ? " <em>(auch richtig: " + g.slice(1).join(", ")
+        + ")</em>" : "") + " &ndash; " + f.warum + "</p>";
   }).join("");
 }());
 
@@ -217,7 +233,10 @@ el("btnPruefen").addEventListener("click", function(){
   FRAGEN.forEach(function(f, i){
     var v = el("f" + i).value, u = el("u" + i);
     if(!v){ u.textContent = "–"; u.className = "urteil"; offen++; return; }
-    var ok = v === f.loesung;
+    /* Manchmal passt mehr als ein Lager. Dann steht in "loesung" eine
+       Liste, und die erste ist die, die in der Begründung empfohlen wird. */
+    var gilt = Array.isArray(f.loesung) ? f.loesung : [f.loesung];
+    var ok = gilt.indexOf(v) >= 0;
     u.textContent = ok ? "richtig" : "nein";
     u.className = "urteil " + (ok ? "ja" : "nein");
     if(ok) r++;
