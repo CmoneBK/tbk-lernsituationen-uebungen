@@ -69,6 +69,7 @@ const THEMA = 'assets/thema.js';
 const FEEDBACK = 'assets/feedback.js';
 const WETTKAMPF = 'assets/wettkampf.js';
 const QUELLEN = 'assets/quellen.js';
+const TABELLENBUCH = 'assets/tabellenbuch.js';
 
 /* ---------- kleine Helfer ---------- */
 
@@ -107,6 +108,8 @@ const metaWert = (text, name) => {
  *      Felder zum Ausfuellen hat - ausser bei Trainings.
  *   5. Die fehlende Einbindung von assets/quellen.js, sobald die Seite im
  *      Kopf sagt, woher ihre Zahlen stammen.
+ *   6. Die fehlende Einbindung von assets/tabellenbuch.js, sobald die Seite
+ *      etwas fuer den Fall auszeichnet, dass kein Tabellenbuch vorliegt.
  * Mit --check wird nur gemeldet, nicht geschrieben.
  */
 async function seiteLesen(datei, { imPaket = false, baukasten = false } = {}) {
@@ -142,6 +145,12 @@ async function seiteLesen(datei, { imPaket = false, baukasten = false } = {}) {
      einzubinden, und keine Seite traegt es ohne Grund. */
   if (/<meta[^>]+name=["'](?:quellen|normen)["']/i.test(text)) {
     noetig.push({ pfad: QUELLEN, attr: '' });
+  }
+  /* Wer etwas fuer den Fall auszeichnet, dass kein Tabellenbuch vorliegt,
+     bekommt den Schalter dazu. Er muss vor dem Baukasten stehen: Der fragt
+     ihn, wenn er sein Fenster baut. */
+  if (/<meta[^>]+name=["']tb["']|\sdata-tb=/i.test(text)) {
+    noetig.push({ pfad: TABELLENBUCH, attr: '' });
   }
   /* Wer etwas ausfuellt, soll es nicht bei jedem Tabwechsel verlieren.
      Trainings bleiben aussen vor: Dort ist jede Runde eine neue Aufgabe,
@@ -228,6 +237,10 @@ async function seiteLesen(datei, { imPaket = false, baukasten = false } = {}) {
     // Bildungsgaenge, fuer die die Seite nicht vorgesehen ist. Uebersicht und
     // Paketseite blenden sie dann aus.
     bgOhne: metaWert(text, 'bg-ohne'),
+    /* Braucht die Seite das Tabellenbuch? Dann faellt sie aus der Uebersicht,
+       solange "ohne Tabellenbuch - Aufgaben weglassen" eingestellt ist. Mit
+       Auszuegen bleibt sie stehen. */
+    tb: metaWert(text, 'tb'),
     /* Wo die Karte in ihrer Gruppe steht. Alphabetisch waere fachlich oft
        falsch: Ein Ueberblick gehoert vor das einzelne Verfahren, und die
        Antriebswelle kommt vor der Abtriebswelle, obwohl das Alphabet es
@@ -522,10 +535,19 @@ function karteHtml(e, typ) {
   return `<a class="card" href="${escHtml(e.url)}"` +
          ` data-typ="${escHtml(e.typ)}" data-thema="${escHtml(themaSchluessel(e))}"` +
          ` data-suche="${escHtml(suche)}"` +
-         (ohne ? ` data-bg-ohne="${escHtml(ohne)}"` : '') + zahlen + '>' +
+         (ohne ? ` data-bg-ohne="${escHtml(ohne)}"` : '') +
+         (tbGemeinsam(e) ? ' data-tb="noetig"' : '') + zahlen + '>' +
          `<span class="kartenname">${escHtml(e.name)}</span>` +
          (e.untertitel ? `<span class="kartensub">${escHtml(e.untertitel)}</span>` : '') +
          `${zusatz}</a>`;
+}
+
+/* Ein Paket faellt nur dann ganz weg, wenn jede einzelne Uebung darin das
+   Tabellenbuch braucht. Sonst bleibt die Karte stehen, und die Paketseite
+   zeigt, was uebrig ist - genau wie beim Bildungsgang. */
+function tbGemeinsam(e) {
+  if (!e.inhalt.length) return e.tb === 'noetig';
+  return e.inhalt.every((i) => i.tb === 'noetig');
 }
 
 /* Dieselben Schluessel wie in assets/bildungsgang.js. Hier wird nur gezaehlt,
@@ -689,8 +711,9 @@ function paketInhalt(e) {
     const dauer = i.dauer ? `<span class="dauer">${escHtml(i.dauer)}</span>` : '';
     const besch = i.beschreibung ? `<span class="besch">${escHtml(i.beschreibung)}</span>` : '';
     const ohne = i.bgOhne ? ` data-bg-ohne="${escHtml(i.bgOhne)}"` : '';
+    const tb = i.tb === 'noetig' ? ' data-tb="noetig"' : '';
     zeilen.push(
-      `        <li${ohne}><a class="eintrag" href="${escHtml(i.datei)}">` +
+      `        <li${ohne}${tb}><a class="eintrag" href="${escHtml(i.datei)}">` +
       `<span class="eintrag-kopf"><span class="eintrag-name">${escHtml(i.titel)}</span>${dauer}</span>` +
       `${besch}</a></li>`,
     );

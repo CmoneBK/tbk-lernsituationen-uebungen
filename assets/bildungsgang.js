@@ -277,6 +277,7 @@
     SCHLUESSEL: SCHLUESSEL,
     PARAM: PARAM,
     kennt: kennt,
+    stil: stil,
     eintrag: eintrag,
     lesen: lesen,
     schreiben: schreiben,

@@ -464,6 +464,55 @@ unbekannte Schlüssel, fehlende oder überflüssige Einbindung, Schiefes im Feld
 `normen`. Und, solange `tabellenbuch/daten.json` lokal vorliegt, ob irgendwo
 eine Verlagstabelle nahezu vollständig nachgebaut ist.
 
+## 📕 Wenn kein Tabellenbuch auf dem Tisch liegt
+
+Das Material setzt durchgehend voraus, dass jemand nachschlagen kann. In der
+Berufsfachschule, Stufe HS10, ist das oft nicht der Fall. Dann steht ein Teil
+der Aufgaben still – nicht, weil der Stoff zu schwer wäre, sondern weil die
+Quelle fehlt.
+
+`assets/tabellenbuch.js` kennt dafür drei Zustände:
+
+| Zustand | Was passiert |
+| --- | --- |
+| `mit` | Das Buch liegt vor. Alles wie bisher – die Vorgabe. |
+| `ohne` | Kein Buch. Was ohne Buch nicht geht, fällt weg. |
+| `auszug` | Kein Buch. Die gebrauchten Zeilen stehen in der Aufgabe. |
+
+Der Schalter steht neben dem Bildungsgang: auf der Startseite, auf jeder
+Paketseite und im Fenster „Übung anpassen“ bzw. „Lektion anpassen“. Er lässt
+sich als `?tb=…` weitergeben. **Wer `bfs-hs10` wählt, bekommt `ohne`
+vorgeschlagen** – vorgeschlagen, nicht gesetzt: Eine eigene Wahl gilt vor dem
+Vorschlag, auch `mit`.
+
+Eine Seite spielt so mit:
+
+```html
+<details data-tb="noetig">…</details>     <!-- fällt bei "ohne" weg -->
+<div class="tb-auszug" data-tb="auszug">…</div>  <!-- nur bei "auszug" -->
+<meta name="tb" content="noetig">         <!-- die ganze Seite braucht es -->
+```
+
+`data-tb` darf an **jedem** Element stehen – an einer Aufgabe, einer
+Teilaufgabe, einer Tabellenzeile. Nur an einer `h2` meint es den ganzen
+Abschnitt bis zur nächsten `h2`, sonst verschwände bloß die Überschrift.
+
+Drei Regeln für einen Auszug:
+
+* **Mit Nachbarzeilen.** Die gebrauchte Zeile plus je eine darüber und
+  darunter – die richtige zu finden bleibt die Aufgabe.
+* **Ohne Hervorhebung.** Im Buch ist auch nichts hervorgehoben.
+* **Nicht in einem `<details>`.** Dort stünde er hinter der Lösung.
+
+Ein Auszug ist **immer** verborgen, außer im Zustand `auszug` – auch „alle
+Inhalte zeigen“ holt ihn nicht hervor. Er ist kein weggelassener Teil, sondern
+ein Ersatz für etwas, das sonst auf dem Tisch liegt. Und er bleibt ein Auszug:
+ein paar Zeilen mit Quellenangabe, keine nachgebaute Tabelle – siehe oben,
+„Woher die Zahlen stammen“.
+
+[`pruefungen/test-ohne-tabellenbuch.js`](pruefungen/test-ohne-tabellenbuch.js)
+prüft beides: die Mechanik und die Auszeichnung.
+
 ## ↩️ Rücklink zur Übersicht
 
 Jede Seite bekommt oben links eine schwebende Schaltfläche **„← Übersicht“**

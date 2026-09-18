@@ -172,7 +172,32 @@
           Die Größe bestimmt nur, wie groß die Beträge insgesamt werden.</p>
       </details>
 
-      <details>
+      <!-- Der Auszug steht VOR der Aufgabe und nicht darin: In einem
+           details wäre er erst zu sehen, wenn die Lösung schon aufgeklappt
+           ist. Er zeigt drei Zeilen, nicht eine - die richtige zu finden
+           bleibt die Aufgabe. -->
+      <div class="tb-auszug" data-tb="auszug">
+        <h4>Auszug statt Tabellenbuch</h4>
+        <div class="tb-rahmen">
+          <table>
+            <thead><tr><th>Gewinde</th><th class="zahl">A<sub>S</sub> in mm&sup2;</th>
+              <th class="zahl">F<sub>M,zul</sub> in kN</th>
+              <th class="zahl">M<sub>A</sub> in N&middot;m</th></tr></thead>
+            <tbody>
+              <tr><td>M8</td><td class="zahl">36,6</td><td class="zahl">18,6</td><td class="zahl">24,6</td></tr>
+              <tr><td>M10</td><td class="zahl">58,0</td><td class="zahl">29,6</td><td class="zahl">48</td></tr>
+              <tr><td>M12</td><td class="zahl">84,3</td><td class="zahl">43,0</td><td class="zahl">84</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="tb-quelle">Festigkeitsklasse 8.8, &mu;&nbsp;=&nbsp;0,12
+          (phosphatiert, leicht ge&ouml;lt). Spannungsquerschnitt nach
+          DIN&nbsp;13-1, Vorspannkraft und Anziehdrehmoment nach VDI&nbsp;2230
+          Blatt&nbsp;1. Drei Zeilen aus dem <em>Tabellenbuch Metall</em>,
+          Europa-Lehrmittel &ndash; das Buch hat mehr.</p>
+      </div>
+
+      <details data-tb="noetig">
         <summary>d) Schlage im Tabellenbuch A<sub>S</sub> und M<sub>A</sub> für M12&nbsp;8.8 bei &mu;&nbsp;=&nbsp;0,12 nach und vergleiche.</summary>
         <p>A<sub>S</sub> = 84,3 mm² steht so im Tabellenbuch und stimmt genau überein.
           Beim Anziehdrehmoment wird es interessanter: Dort findest du für M12&nbsp;8.8
@@ -476,5 +501,6 @@ neuZeichnen();
 <script src="../../assets/feedback.js"></script>
 <script src="../../assets/fortschritt.js"></script>
 <script src="../../assets/quellen.js"></script>
+<script src="../../assets/tabellenbuch.js"></script>
 </body>
 </html>

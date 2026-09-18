@@ -124,6 +124,7 @@
 </style>
 <script src="../../assets/thema.js"></script>
 <script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/tabellenbuch.js"></script>
 </head>
 <body>
   <header class="wrap">
@@ -153,7 +154,7 @@
       <ol class="liste">
         <li><a class="eintrag" href="01-verfahren-erkennen.html"><span class="eintrag-kopf"><span class="eintrag-name">Verfahren erkennen</span><span class="dauer">10 min</span></span><span class="besch">Welches Drehverfahren gehört an diese Fläche? Kontur lesen, Werkzeugangaben zuordnen und die Reihenfolge begründen – an der Spannwelle.</span></a></li>
         <li><a class="eintrag" href="02-werkstoffgruppe-bestimmen.html"><span class="eintrag-kopf"><span class="eintrag-name">Werkstoffgruppe bestimmen</span><span class="dauer">8 min</span></span><span class="besch">P, M, K, N, S oder H: die Hauptanwendungsgruppe nach DIN ISO 513 aus der Werkstoffbezeichnung ableiten – der erste Schritt jeder Fertigungsplanung.</span></a></li>
-        <li data-bg-ohne="bfs-hs10"><a class="eintrag" href="03-startwert-ablesen.html"><span class="eintrag-kopf"><span class="eintrag-name">Startwert ablesen</span><span class="dauer">10 min</span></span><span class="besch">Vom Werkstoff zur Schnittgeschwindigkeit: Hauptanwendungsgruppe, die richtige Zeile, der fette Wert – und was die Bearbeitungsbedingungen daran verschieben.</span></a></li>
+        <li data-bg-ohne="bfs-hs10" data-tb="noetig"><a class="eintrag" href="03-startwert-ablesen.html"><span class="eintrag-kopf"><span class="eintrag-name">Startwert ablesen</span><span class="dauer">10 min</span></span><span class="besch">Vom Werkstoff zur Schnittgeschwindigkeit: Hauptanwendungsgruppe, die richtige Zeile, der fette Wert – und was die Bearbeitungsbedingungen daran verschieben.</span></a></li>
         <li data-bg-ohne="bfs-hs10"><a class="eintrag" href="04-drehzahl-rechnen.html"><span class="eintrag-kopf"><span class="eintrag-name">Drehzahl rechnen</span><span class="dauer">10 min</span></span><span class="besch">Von der Schnittgeschwindigkeit zur Drehzahl: n = vc/(π·d), der mittlere Durchmesser beim Plandrehen und die Anzahl der Schnitte beim Schruppen.</span></a></li>
         <li data-bg-ohne="bfs-hs10"><a class="eintrag" href="05-vorschub-und-rautiefe.html"><span class="eintrag-kopf"><span class="eintrag-name">Vorschub und Rautiefe</span><span class="dauer">10 min</span></span><span class="besch">Rth = f²/(8·rε) in beide Richtungen: welcher Vorschub eine geforderte Rautiefe schafft, welche Rautiefe ein Vorschub hinterlässt, und wann der Eckenradius nicht mehr reicht.</span></a></li>
         <li><a class="eintrag" href="06-bezeichnung-zusammensetzen.html"><span class="eintrag-kopf"><span class="eintrag-name">Die Bezeichnung zusammensetzen</span><span class="dauer">10 min</span></span><span class="besch">Die Bezeichnung einer Wendeschneidplatte nach DIN ISO 1832 lesen und bilden: Plattengeometrie, Freiwinkel, Eckenradius, Schneidrichtung.</span></a></li>
@@ -178,11 +179,21 @@
   var liste = document.querySelector('.liste');
   if (liste) liste.parentNode.insertBefore(leer, liste.nextSibling);
 
+  /* Zwei Fragen, zwei Filter: Was der Bildungsplan hergibt - und ob das
+     Tabellenbuch auf dem Tisch liegt. Eine Uebung, die ohne Buch nicht
+     geht, faellt nur im Zustand "ohne" heraus; mit Auszügen bleibt sie. */
+  function ohneBuch() {
+    var T = window.tbkTabellenbuch;
+    return !!T && T.gilt() === 'ohne';
+  }
+
   function anwenden() {
     var bg = B.lesen();
+    var kein = ohneBuch();
     var da = 0;
     zeilen.forEach(function (li) {
-      var passt = B.gilt(li, bg);
+      var passt = B.gilt(li, bg)
+        && !(kein && li.getAttribute('data-tb') === 'noetig');
       li.hidden = !passt;
       if (passt) da++;
     });
@@ -198,6 +209,14 @@
     + 'in der Übung selbst lässt sich die Wahl ändern.';
   zeile.appendChild(hinweis);
   B.beiFremderWahl(function (neu) { w.feld.value = neu; anwenden(); });
+
+  var T = window.tbkTabellenbuch;
+  if (T) {
+    var tw = T.waehler(anwenden);
+    zeile.appendChild(tw.knoten);
+    T.beiFremderWahl(function () { tw.auffrischen(); anwenden(); });
+  }
+
   anwenden();
 })();
 </script>

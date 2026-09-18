@@ -124,6 +124,7 @@
 </style>
 <script src="../../assets/thema.js"></script>
 <script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/tabellenbuch.js"></script>
 </head>
 <body>
   <header class="wrap">
@@ -171,11 +172,21 @@
   var liste = document.querySelector('.liste');
   if (liste) liste.parentNode.insertBefore(leer, liste.nextSibling);
 
+  /* Zwei Fragen, zwei Filter: Was der Bildungsplan hergibt - und ob das
+     Tabellenbuch auf dem Tisch liegt. Eine Uebung, die ohne Buch nicht
+     geht, faellt nur im Zustand "ohne" heraus; mit Auszügen bleibt sie. */
+  function ohneBuch() {
+    var T = window.tbkTabellenbuch;
+    return !!T && T.gilt() === 'ohne';
+  }
+
   function anwenden() {
     var bg = B.lesen();
+    var kein = ohneBuch();
     var da = 0;
     zeilen.forEach(function (li) {
-      var passt = B.gilt(li, bg);
+      var passt = B.gilt(li, bg)
+        && !(kein && li.getAttribute('data-tb') === 'noetig');
       li.hidden = !passt;
       if (passt) da++;
     });
@@ -191,6 +202,14 @@
     + 'in der Übung selbst lässt sich die Wahl ändern.';
   zeile.appendChild(hinweis);
   B.beiFremderWahl(function (neu) { w.feld.value = neu; anwenden(); });
+
+  var T = window.tbkTabellenbuch;
+  if (T) {
+    var tw = T.waehler(anwenden);
+    zeile.appendChild(tw.knoten);
+    T.beiFremderWahl(function () { tw.auffrischen(); anwenden(); });
+  }
+
   anwenden();
 })();
 </script>

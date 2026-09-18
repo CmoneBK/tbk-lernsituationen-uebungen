@@ -124,6 +124,7 @@
 </style>
 <script src="../../assets/thema.js"></script>
 <script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/tabellenbuch.js"></script>
 </head>
 <body>
   <header class="wrap">
@@ -148,7 +149,7 @@
         <li><a class="eintrag" href="04-reicht-die-laenge.html"><span class="eintrag-kopf"><span class="eintrag-name">Reicht die Länge?</span><span class="dauer">15 min</span></span><span class="besch">Zufallsaufgaben zur Schraubenlänge: Klemmlänge, Scheibe, Mutter und Überstand zusammenzählen – und die nächste Normlänge wählen.</span></a></li>
         <li><a class="eintrag" href="05-klasse-und-zahl.html"><span class="eintrag-kopf"><span class="eintrag-name">Klasse und Zahl</span><span class="dauer">10 min</span></span><span class="besch">Festigkeitsklassen in beide Richtungen: aus der Klasse die beiden Kennwerte, aus den Kennwerten die Klasse – und was sie für die Schraube bedeuten.</span></a></li>
         <li data-bg-ohne="bfs-hs10 bfs-for"><a class="eintrag" href="06-haelt-oder-rutscht.html"><span class="eintrag-kopf"><span class="eintrag-name">Hält oder rutscht?</span><span class="dauer">15 min</span></span><span class="besch">Zufallsaufgaben zur Querkraft: Reibkraft aus Reibungszahl, Vorspannkraft, Schraubenzahl und Trennfugen – und die Entscheidung, ob die Verbindung hält.</span></a></li>
-        <li><a class="eintrag" href="07-im-tabellenbuch-nachschlagen.html"><span class="eintrag-kopf"><span class="eintrag-name">Im Tabellenbuch nachschlagen</span><span class="dauer">10 min</span></span><span class="besch">Schnellsuche im Tabellenbuch: zu einem Gewinde die gefragte Größe finden – Steigung, Kerndurchmesser, Spannungsquerschnitt, Bohrer, Durchgangsloch, Schlüsselweite.</span></a></li>
+        <li data-tb="noetig"><a class="eintrag" href="07-im-tabellenbuch-nachschlagen.html"><span class="eintrag-kopf"><span class="eintrag-name">Im Tabellenbuch nachschlagen</span><span class="dauer">10 min</span></span><span class="besch">Schnellsuche im Tabellenbuch: zu einem Gewinde die gefragte Größe finden – Steigung, Kerndurchmesser, Spannungsquerschnitt, Bohrer, Durchgangsloch, Schlüsselweite.</span></a></li>
       </ol>
   </main>
 
@@ -167,11 +168,21 @@
   var liste = document.querySelector('.liste');
   if (liste) liste.parentNode.insertBefore(leer, liste.nextSibling);
 
+  /* Zwei Fragen, zwei Filter: Was der Bildungsplan hergibt - und ob das
+     Tabellenbuch auf dem Tisch liegt. Eine Uebung, die ohne Buch nicht
+     geht, faellt nur im Zustand "ohne" heraus; mit Auszügen bleibt sie. */
+  function ohneBuch() {
+    var T = window.tbkTabellenbuch;
+    return !!T && T.gilt() === 'ohne';
+  }
+
   function anwenden() {
     var bg = B.lesen();
+    var kein = ohneBuch();
     var da = 0;
     zeilen.forEach(function (li) {
-      var passt = B.gilt(li, bg);
+      var passt = B.gilt(li, bg)
+        && !(kein && li.getAttribute('data-tb') === 'noetig');
       li.hidden = !passt;
       if (passt) da++;
     });
@@ -187,6 +198,14 @@
     + 'in der Übung selbst lässt sich die Wahl ändern.';
   zeile.appendChild(hinweis);
   B.beiFremderWahl(function (neu) { w.feld.value = neu; anwenden(); });
+
+  var T = window.tbkTabellenbuch;
+  if (T) {
+    var tw = T.waehler(anwenden);
+    zeile.appendChild(tw.knoten);
+    T.beiFremderWahl(function () { tw.auffrischen(); anwenden(); });
+  }
+
   anwenden();
 })();
 </script>

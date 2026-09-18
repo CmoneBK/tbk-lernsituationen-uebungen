@@ -126,6 +126,7 @@
 </style>
 <script src="assets/thema.js"></script>
 <script src="assets/bildungsgang.js"></script>
+<script src="assets/tabellenbuch.js"></script>
 </head>
 <body>
   <header class="wrap">
@@ -384,9 +385,15 @@
     var bg = B ? B.lesen() : '';
     zahlenNachziehen(bg);
 
+    /* Eine Seite, die ohne Tabellenbuch nicht geht, fällt nur im Zustand
+       "ohne" heraus - mit Auszügen bleibt sie stehen. */
+    var T = window.tbkTabellenbuch;
+    var keinBuch = !!T && T.gilt() === 'ohne';
+
     karten.forEach(function (k) {
       /* Was der Bildungsplan nicht hergibt, steht hier gar nicht erst. */
       var passt = (!B || B.gilt(k, bg)) &&
+                  !(keinBuch && k.getAttribute('data-tb') === 'noetig') &&
                   (typ === 'alle' || k.dataset.typ === typ) &&
                   (thema === 'alle' || k.dataset.thema === thema) &&
                   (!q || k.dataset.suche.indexOf(q) !== -1);
@@ -433,6 +440,17 @@
     zeile.appendChild(hinweis);
     window.tbkBildungsgang.beiFremderWahl(function (neu) {
       w.feld.value = neu;
+      anwenden();
+    });
+  }
+
+  /* Und daneben: ob das Tabellenbuch auf dem Tisch liegt. Die Wahl gilt
+     ebenso für die ganze Seite und wirkt in den Übungen weiter. */
+  if (window.tbkTabellenbuch) {
+    var tw = window.tbkTabellenbuch.waehler(function () { anwenden(); });
+    document.getElementById('tbk-bg').appendChild(tw.knoten);
+    window.tbkTabellenbuch.beiFremderWahl(function () {
+      tw.auffrischen();
       anwenden();
     });
   }
