@@ -76,13 +76,17 @@ const weg = (d, id) => d.getElementById(id).hidden;
 (async function () {
   console.log('\nDrei Zustände');
   {
-    const mit = await seite(KOERPER);
-    p('Vorgabe: alles da außer dem Auszug',
+    /* Alle drei Zustände gelten nur bei HS10 - deshalb steht der
+       Bildungsgang in jedem dieser Fälle dabei. */
+    const HS = { bg: 'bfs-hs10' };
+
+    const mit = await seite(KOERPER, { bg: 'bfs-hs10', tb: 'mit' });
+    p('mit Buch: alles da außer dem Auszug',
       !weg(mit, 'a') && !weg(mit, 'a1') && !weg(mit, 'd') && weg(mit, 'aus'));
-    p('Vorgabe heißt "mit"',
+    p('und der Zustand heißt "mit"',
       mit.documentElement.getAttribute('data-tb-zustand') === 'mit');
 
-    const ohne = await seite(KOERPER, { tb: 'ohne' });
+    const ohne = await seite(KOERPER, Object.assign({ tb: 'ohne' }, HS));
     p('ohne Buch: der Abschnitt fällt weg',
       weg(ohne, 'a') && weg(ohne, 'a1'));
     p('ohne Buch: auch die Teilaufgabe', weg(ohne, 'd'));
@@ -90,7 +94,7 @@ const weg = (d, id) => d.getElementById(id).hidden;
     p('ohne Buch: der andere Abschnitt bleibt',
       !weg(ohne, 'b') && !weg(ohne, 'b1'));
 
-    const aus = await seite(KOERPER, { tb: 'auszug' });
+    const aus = await seite(KOERPER, Object.assign({ tb: 'auszug' }, HS));
     p('mit Auszügen: der Abschnitt bleibt',
       !weg(aus, 'a') && !weg(aus, 'a1') && !weg(aus, 'd'));
     p('mit Auszügen: der Auszug steht da', !weg(aus, 'aus'));
@@ -98,37 +102,51 @@ const weg = (d, id) => d.getElementById(id).hidden;
 
   console.log('\nDer Abschnitt endet an der nächsten Überschrift');
   {
-    const ohne = await seite(KOERPER, { tb: 'ohne' });
+    const ohne = await seite(KOERPER, { bg: 'bfs-hs10', tb: 'ohne' });
     p('der zweite Abschnitt ist nicht mit verschwunden', !weg(ohne, 'b1'));
   }
 
-  console.log('\nHS10 schlägt vor, die eigene Wahl geht vor');
+  console.log('\nDie Frage stellt sich nur bei HS10');
   {
     const hs = await seite(KOERPER, { bg: 'bfs-hs10' });
     p('HS10 ohne eigene Wahl: ohne Buch',
       hs.documentElement.getAttribute('data-tb-zustand') === 'ohne');
+
     const hsMit = await seite(KOERPER, { bg: 'bfs-hs10', tb: 'mit' });
-    p('eigene Wahl "mit" gilt vor dem Vorschlag',
+    p('eigene Wahl "mit" gilt vor der Voreinstellung',
       hsMit.documentElement.getAttribute('data-tb-zustand') === 'mit'
       && !weg(hsMit, 'a'));
-    const im = await seite(KOERPER, { bg: 'im' });
-    p('ein anderer Bildungsgang schlägt nichts vor',
-      im.documentElement.getAttribute('data-tb-zustand') === 'mit');
+
+    /* Der Punkt, an dem es sonst schiefginge: Wer den Schalter nicht sieht,
+       darf auch nicht von ihm betroffen sein. Sonst fiele die halbe Seite
+       weg und niemand fände den Weg zurück. */
+    const im = await seite(KOERPER, { bg: 'im', tb: 'ohne' });
+    p('ein anderer Bildungsgang: der Schalter wirkt nicht',
+      im.documentElement.getAttribute('data-tb-zustand') === 'mit'
+      && !weg(im, 'a') && !weg(im, 'd'));
+
+    const keiner = await seite(KOERPER, { tb: 'ohne' });
+    p('ohne Bildungsgangwahl ebenso',
+      keiner.documentElement.getAttribute('data-tb-zustand') === 'mit');
   }
 
   console.log('\nEine ganze Seite, die ohne Buch nicht geht');
   {
     const ohne = await seite('<p>nichts ausgezeichnet</p>',
-      { tb: 'ohne', meta: 'noetig' });
+      { bg: 'bfs-hs10', tb: 'ohne', meta: 'noetig' });
     p('bekommt einen Hinweis statt einer leeren Seite',
       !!ohne.getElementById('tb-seite'));
     p('und der sagt, dass auch kein Auszug hilft',
       /kein Auszug/.test((ohne.getElementById('tb-seite') || {}).textContent || ''));
-    const mit = await seite('<p>x</p>', { meta: 'noetig' });
+    const mit = await seite('<p>x</p>', { bg: 'bfs-hs10', tb: 'mit', meta: 'noetig' });
     p('mit Buch kein Hinweis', !mit.getElementById('tb-seite'));
-    const auszug = await seite(KOERPER, { tb: 'auszug', meta: 'noetig' });
+    const auszug = await seite(KOERPER,
+      { bg: 'bfs-hs10', tb: 'auszug', meta: 'noetig' });
     p('wer Auszüge mitbringt, braucht keinen Hinweis',
       !auszug.getElementById('tb-seite'));
+    const andere = await seite('<p>x</p>', { bg: 'im', meta: 'noetig' });
+    p('für andere Bildungsgänge gar kein Hinweis',
+      !andere.getElementById('tb-seite'));
   }
 
   /* ---------- Die Auszeichnung im Material ---------- */

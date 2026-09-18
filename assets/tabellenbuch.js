@@ -20,9 +20,10 @@
  *   ohne     Kein Buch. Was ohne Buch nicht geht, fällt weg.
  *   auszug   Kein Buch. Die gebrauchten Zeilen stehen in der Aufgabe.
  *
- * Wer `bfs-hs10` als Bildungsgang wählt und den Schalter noch nie angefasst
- * hat, bekommt "ohne" vorgeschlagen. Vorgeschlagen, nicht gesetzt: Sobald
- * jemand selbst wählt, gilt seine Wahl - auch "mit".
+ * Der Schalter erscheint NUR, wenn `bfs-hs10` als Bildungsgang gewählt ist,
+ * und er wirkt auch nur dort. Alle anderen Bildungsgänge arbeiten mit dem
+ * Buch. Voreingestellt ist dann "ohne"; sobald jemand selbst wählt, gilt
+ * seine Wahl - auch "mit".
  *
  * Wie eine Seite mitspielt
  * ------------------------
@@ -93,20 +94,37 @@
     } catch (e) { /* privates Fenster: gilt dann nur für diese Seite */ }
   }
 
-  /* Was der Bildungsgang nahelegt, solange niemand selbst gewählt hat. */
-  function vorschlag() {
+  /* Die Frage stellt sich nur dort, wo sie sich stellt.
+     ------------------------------------------------
+     Kein Tabellenbuch auf dem Tisch - das ist die Lage der HS10-Stufe. Alle
+     anderen Bildungsgänge arbeiten mit dem Buch; dort wäre der Schalter eine
+     Möglichkeit, aus Versehen die halbe Seite abzuschalten. Er erscheint
+     deshalb nur bei `bfs-hs10` - und er WIRKT auch nur dort. Beides gehört
+     zusammen: Ein Schalter, der unsichtbar weiterwirkt, wäre schlimmer als
+     gar keiner, denn niemand fände den Weg zurück. */
+  function fuerWen() {
     var B = global.tbkBildungsgang;
     if (!B) return '';
-    try { return B.lesen() === 'bfs-hs10' ? 'ohne' : ''; } catch (e) { return ''; }
+    try { return B.lesen(); } catch (e) { return ''; }
+  }
+
+  function zustaendig() {
+    return fuerWen() === 'bfs-hs10';
+  }
+
+  /* Was der Bildungsgang nahelegt, solange niemand selbst gewählt hat. */
+  function vorschlag() {
+    return zustaendig() ? 'ohne' : '';
   }
 
   /* Der Zustand, der wirklich gilt. */
   function gilt() {
-    return lesen() || vorschlag() || 'mit';
+    if (!zustaendig()) return 'mit';
+    return lesen() || 'ohne';
   }
 
   function ausVorschlag() {
-    return !lesen() && !!vorschlag();
+    return zustaendig() && !lesen();
   }
 
   /* ---------- Anwenden ---------- */
@@ -281,9 +299,12 @@
     hinweis.className = 'bg-hinweis';
 
     function hinweisSetzen() {
+      block.hidden = !zustaendig();
+      feld.value = gilt();
       hinweis.textContent = ausVorschlag()
-        ? 'Vorgeschlagen, weil der Bildungsgang HS10 gewählt ist. Eine '
-          + 'eigene Wahl hier gilt vor dem Vorschlag.'
+        ? 'Voreingestellt, weil der Bildungsgang HS10 gewählt ist – dort '
+          + 'liegt oft kein Buch auf dem Tisch. Eine eigene Wahl hier gilt '
+          + 'vor der Voreinstellung.'
         : '';
       hinweis.hidden = !hinweis.textContent;
     }

@@ -167,6 +167,8 @@
   /* Zwei Fragen, zwei Filter: Was der Bildungsplan hergibt - und ob das
      Tabellenbuch auf dem Tisch liegt. Eine Uebung, die ohne Buch nicht
      geht, faellt nur im Zustand "ohne" heraus; mit Auszügen bleibt sie. */
+  var tw = null;
+
   function ohneBuch() {
     var T = window.tbkTabellenbuch;
     return !!T && T.gilt() === 'ohne';
@@ -185,7 +187,13 @@
     leer.hidden = da > 0;
   }
 
-  var w = B.waehler(anwenden);
+  var w = B.waehler(function () {
+    if (window.tbkTabellenbuch && tw) {
+      tw.auffrischen();
+      window.tbkTabellenbuch.anwenden();
+    }
+    anwenden();
+  });
   var zeile = document.getElementById('tbk-bg');
   zeile.appendChild(w.knoten);
   var hinweis = document.createElement('p');
@@ -197,7 +205,7 @@
 
   var T = window.tbkTabellenbuch;
   if (T) {
-    var tw = T.waehler(anwenden);
+    tw = T.waehler(anwenden);
     zeile.appendChild(tw.knoten);
     T.beiFremderWahl(function () { tw.auffrischen(); anwenden(); });
   }

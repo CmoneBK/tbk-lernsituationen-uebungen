@@ -375,6 +375,8 @@
     });
   }
 
+  var tw = null;
+
   function sichtbar(el) { return !el.hidden; }
 
   function anwenden() {
@@ -430,7 +432,15 @@
   /* Der Bildungsgang gilt fuer die ganze Seite t-bk.de - hier wird er
      gewaehlt, in den Uebungen wirkt er weiter. */
   if (window.tbkBildungsgang) {
-    var w = window.tbkBildungsgang.waehler(function () { anwenden(); });
+    var w = window.tbkBildungsgang.waehler(function () {
+      /* Der Tabellenbuch-Schalter gilt nur fuer HS10 und muss sich hier
+         zeigen oder verschwinden. */
+      if (window.tbkTabellenbuch && tw) {
+        tw.auffrischen();
+        window.tbkTabellenbuch.anwenden();
+      }
+      anwenden();
+    });
     var zeile = document.getElementById('tbk-bg');
     zeile.appendChild(w.knoten);
     var hinweis = document.createElement('p');
@@ -447,7 +457,7 @@
   /* Und daneben: ob das Tabellenbuch auf dem Tisch liegt. Die Wahl gilt
      ebenso für die ganze Seite und wirkt in den Übungen weiter. */
   if (window.tbkTabellenbuch) {
-    var tw = window.tbkTabellenbuch.waehler(function () { anwenden(); });
+    tw = window.tbkTabellenbuch.waehler(function () { anwenden(); });
     document.getElementById('tbk-bg').appendChild(tw.knoten);
     window.tbkTabellenbuch.beiFremderWahl(function () {
       tw.auffrischen();

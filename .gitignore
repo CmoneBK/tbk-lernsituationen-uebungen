@@ -15,3 +15,7 @@ bildungsgaenge/
 .env
 .env.*
 *feedback-lese-key*
+
+# Zwischendateien der Beschriftungspruefung. Sie raeumt selbst auf - aber
+# wer waehrend eines Laufs "git add -A" tippt, haette sie sonst im Commit.
+_beschriftung-*.html
