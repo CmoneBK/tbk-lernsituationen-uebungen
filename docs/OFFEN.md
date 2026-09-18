@@ -1,6 +1,6 @@
 # Was offen ist
 
-**Stand:** 18.09.2026
+**Stand:** 18.09.2026 — der Quellennachweis ist seit diesem Tag erledigt und hier gestrichen.
 
 Diese Liste sammelt Arbeiten, die begonnen und bewusst nicht zu Ende geführt
 wurden — weil der Mechanismus stand, die Anwendung auf den Rest des Materials
@@ -9,44 +9,7 @@ erledigt ist, wird hier gestrichen und nicht abgehakt.
 
 ---
 
-## 1. Quellennachweis auf das übrige Material ausweiten — **dringend**
-
-`assets/quellen.js` steht und wird von der Wälzlager-Einheit benutzt: Zwei
-Meta-Felder im Kopf einer Seite, und unter der Seite erscheint die
-Quellenzeile.
-
-```html
-<meta name="quellen" content="tabellenbuch fachkunde-im katalog">
-<meta name="normen" content="DIN 625-1, DIN 628-1">
-```
-
-**Offen ist die Anwendung auf alle übrigen Einheiten.** Wo Zahlen aus dem
-Tabellenbuch Metall stehen, gehört der Verweis auf den Europa-Verlag dazu.
-Betroffen sind mindestens:
-
-| Ort | was dort steht |
-| --- | --- |
-| Lektion Schraubverbindungen (`tools/`) | Tabelle M4…M36 mit d, P, s, k, dw, Dh — reine Normwerte, geringes Risiko, Verweis fehlt trotzdem |
-| Übungen und Trainings Schraubverbindungen | Spannungsquerschnitte, Festigkeitsklassen, Anziehdrehmomente |
-| Drehprozess (Übungen, Trainings, Lektion) | Schnittdaten, Plattenbezeichnungen, Rautiefen |
-| Schweißen, Löten und Kleben | Verfahrensnummern, Richtwerte, Lote, Klebstoffe |
-| Lernsituationen | durchgängig |
-
-**Die Regel dazu** steht im Kopfkommentar von `assets/quellen.js`:
-
-* Normmaße dürfen stehen, mit der **Norm** als Quelle.
-* Kennwerte, die kein Normwert sind (Tragzahlen etwa), gehören in die
-  Aufgabe oder stehen als kleine Auswahl mit dem Hinweis auf den
-  Herstellerkatalog.
-* Zusammenstellungen eines Verlags werden gekürzt auf das, was gebraucht
-  wird, und tragen ihren Nachweis.
-
-Beim Durchgehen ist also nicht nur das Meta-Feld zu setzen, sondern auch zu
-prüfen, ob irgendwo eine Verlagstabelle vollständig nachgebaut ist.
-
----
-
-## 2. Bildungsgänge für die übrigen Einheiten — **dringend**
+## 1. Bildungsgänge für die übrigen Einheiten — **dringend**
 
 Getaggt sind bisher nur **Schraubverbindungen** und **Wälzlager**. Ohne
 Attribut heißt: gehört überall dazu — und das stimmt für die folgenden

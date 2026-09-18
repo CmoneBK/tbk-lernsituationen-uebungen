@@ -417,7 +417,8 @@ Kein `npm install` nötig – der Generator kommt ohne Abhängigkeiten aus
   bei einem Feld vom Typ `number` oder `range`, und in Übungen, Trainings wie
   Lernsituationen `bildungsgang.js`, `qr.js`, `baukasten.js`, `pdf.js`,
   `export.js` – in dieser Reihenfolge, weil der Baukasten die Wahl des
-  Bildungsgangs liest.
+  Bildungsgangs liest. Dazu `assets/quellen.js`, sobald die Seite im Kopf
+  sagt, woher ihre Zahlen stammen (siehe unten).
 * **Front-Matter entfernen.** Ein `--- … ---`-Block am Dateianfang stammt aus dem
   Jekyll-Workflow des Werkzeuge-Repos. Ohne Jekyll stünde er als Text auf der
   Seite; er wird entfernt, ein dort notierter `title` aber vorher übernommen.
@@ -427,6 +428,41 @@ Jede dieser Änderungen wird auf der Konsole gemeldet.
 Wird Material **direkt auf GitHub** abgelegt (Web-Oberfläche, API, Make.com),
 übernimmt der Workflow [`.github/workflows/uebersicht.yml`](.github/workflows/uebersicht.yml)
 denselben Build und committet das Ergebnis zurück.
+
+## 📖 Woher die Zahlen stammen
+
+Normmaße sind frei – sie stehen in der Norm und in jedem Herstellerkatalog.
+Die **Zusammenstellung** eines Verlags ist es nicht: welche Zeilen, welche
+Spalten, welche Auswahl – das ist die Arbeit, die jemand hineingesteckt hat.
+Deshalb gilt im ganzen Material:
+
+* Normmaße dürfen stehen, mit der **Norm** als Quelle.
+* Kennwerte, die kein Normwert sind – Tragzahlen, Schnittdaten, Lote –
+  gehören in die Aufgabe oder stehen als kleine Auswahl mit dem Hinweis auf
+  den **Herstellerkatalog**.
+* Zusammenstellungen eines Verlags werden **gekürzt** auf das, was gebraucht
+  wird, und tragen ihren Nachweis.
+
+Eine Seite sagt das in zwei Feldern im `head`:
+
+```html
+<meta name="quellen" content="tabellenbuch hersteller">
+<meta name="normen" content="DIN EN ISO 4063, DIN EN ISO 6947">
+```
+
+Daraus baut `assets/quellen.js` eine Zeile über der Fußzeile, die auch beim
+Ausdruck mitkommt. Die Schlüssel für `quellen` stehen in der Registry `TEXTE`
+desselben Bausteins: `tabellenbuch`, `fachkunde-im`, `katalog`, `hersteller`,
+`vdi2230`. **Eine Richtlinie ist keine Norm** – VDI 2230 hat deshalb einen
+eigenen Schlüssel und gehört nicht in das Feld `normen`.
+
+Eine Seite **ohne** fremde Zahlen bekommt kein Feld: Die Simulationen zu den
+Messmitteln zeigen ein Messprinzip und schlagen nichts nach.
+
+[`pruefungen/test-quellen.js`](pruefungen/test-quellen.js) hält das nach –
+unbekannte Schlüssel, fehlende oder überflüssige Einbindung, Schiefes im Feld
+`normen`. Und, solange `tabellenbuch/daten.json` lokal vorliegt, ob irgendwo
+eine Verlagstabelle nahezu vollständig nachgebaut ist.
 
 ## ↩️ Rücklink zur Übersicht
 

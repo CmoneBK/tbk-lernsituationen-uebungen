@@ -68,6 +68,7 @@ const ZAHLENFELD = 'assets/zahlenfeld.js';
 const THEMA = 'assets/thema.js';
 const FEEDBACK = 'assets/feedback.js';
 const WETTKAMPF = 'assets/wettkampf.js';
+const QUELLEN = 'assets/quellen.js';
 
 /* ---------- kleine Helfer ---------- */
 
@@ -104,6 +105,8 @@ const metaWert = (text, name) => {
  *      einen Werkzeug-Link (data-werkzeug) enthaelt.
  *   4. Die fehlende Einbindung von assets/fortschritt.js, sobald die Seite
  *      Felder zum Ausfuellen hat - ausser bei Trainings.
+ *   5. Die fehlende Einbindung von assets/quellen.js, sobald die Seite im
+ *      Kopf sagt, woher ihre Zahlen stammen.
  * Mit --check wird nur gemeldet, nicht geschrieben.
  */
 async function seiteLesen(datei, { imPaket = false, baukasten = false } = {}) {
@@ -133,6 +136,13 @@ async function seiteLesen(datei, { imPaket = false, baukasten = false } = {}) {
   /* Wer den Wettkampf-Vertrag zusagt, braucht auch den Baustein dazu. Die
      Seite sagt das selbst - so muss der Typ hier nicht durchgereicht werden. */
   if (/TBK_WETTKAMPF/.test(text)) noetig.push({ pfad: WETTKAMPF, attr: '' });
+  /* Wer sagt, woher seine Zahlen stammen, bekommt die Zeile dazu. Die Seite
+     sagt es im Kopf (meta quellen / meta normen), der Baustein setzt sie
+     ueber die Fusszeile - so muss niemand daran denken, das Skript
+     einzubinden, und keine Seite traegt es ohne Grund. */
+  if (/<meta[^>]+name=["'](?:quellen|normen)["']/i.test(text)) {
+    noetig.push({ pfad: QUELLEN, attr: '' });
+  }
   /* Wer etwas ausfuellt, soll es nicht bei jedem Tabwechsel verlieren.
      Trainings bleiben aussen vor: Dort ist jede Runde eine neue Aufgabe,
      und eine wiederhergestellte Antwort gehoerte zur Aufgabe von gestern.

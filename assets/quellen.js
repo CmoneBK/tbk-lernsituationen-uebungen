@@ -24,6 +24,11 @@
  *     Herstellerkatalog gilt.
  *   - Zusammenstellungen eines Verlags werden gekürzt auf das, was
  *     gebraucht wird, und tragen ihren Nachweis.
+ *   - Eine Richtlinie ist keine Norm. VDI 2230 gehört deshalb nicht in das
+ *     Feld "normen", sondern bekommt ihren eigenen Satz.
+ *
+ * Eine Seite ohne fremde Zahlen bleibt ohne Meta-Feld - die Simulationen
+ * zu den Messmitteln etwa zeigen ein Messprinzip und schlagen nichts nach.
  *
  * Dieselbe Datei liegt in zwei Repos - wird sie geändert, gehört sie in
  * beide kopiert.
@@ -39,7 +44,9 @@
     katalog: 'Tragzahlen C und C₀ sind Richtwerte zum Üben. '
       + 'Für eine Auslegung gilt der Katalog des Lagerherstellers.',
     hersteller: 'Kennwerte einzelner Erzeugnisse stehen im Katalog des '
-      + 'Herstellers; die Werte hier sind Richtwerte zum Üben.'
+      + 'Herstellers; die Werte hier sind Richtwerte zum Üben.',
+    vdi2230: 'Der vereinfachte Rechenweg zur Schraubenberechnung folgt '
+      + '<em>VDI 2230 Blatt 1</em> – eine Richtlinie, keine Norm.'
   };
 
   function feld(name) {
