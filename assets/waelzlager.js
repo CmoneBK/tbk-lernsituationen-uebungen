@@ -327,7 +327,7 @@
     var s = [];
 
     var hilf = C0 > 0 ? (f0 * Fa) / C0 : 0;
-    s.push({ was: '(f₀ · F_a) / C₀', rechnung: rund(f0, 4) + ' · '
+    s.push({ was: '(f₀ · Fₐ) / C₀', rechnung: rund(f0, 4) + ' · '
       + rund(Fa, 4) + ' kN / ' + rund(C0, 4) + ' kN', wert: rund(hilf, 4) });
 
     var e = zwischen(hilf, LAST.stuetz, LAST.e);
@@ -335,27 +335,27 @@
       + 'Stützstellen interpoliert', wert: rund(e, 4) });
 
     var q = Fr > 0 ? Fa / Fr : Infinity;
-    s.push({ was: 'F_a / F_r', rechnung: rund(Fa, 4) + ' kN / '
+    s.push({ was: 'Fₐ / Fᵣ', rechnung: rund(Fa, 4) + ' kN / '
       + rund(Fr, 4) + ' kN', wert: rund(q, 4) });
 
     var X, Y;
     if (Fa <= 0) {
       X = 1; Y = 0;
-      s.push({ was: 'X und Y', rechnung: 'ohne Axialkraft ist P = F_r',
+      s.push({ was: 'X und Y', rechnung: 'ohne Axialkraft ist P = Fᵣ',
         wert: 'X = 1, Y = 0' });
     } else if (q > e) {
       X = LAST.X;
       Y = zwischen(hilf, LAST.stuetz, LAST.Y);
-      s.push({ was: 'X und Y', rechnung: 'F_a/F_r > e, also X = 0,56 und '
+      s.push({ was: 'X und Y', rechnung: 'Fₐ/Fᵣ > e, also X = 0,56 und '
         + 'Y aus derselben Spalte', wert: 'X = 0,56, Y = ' + rund(Y, 4) });
     } else {
       X = 1; Y = 0;
-      s.push({ was: 'X und Y', rechnung: 'F_a/F_r ≤ e, die Axialkraft '
+      s.push({ was: 'X und Y', rechnung: 'Fₐ/Fᵣ ≤ e, die Axialkraft '
         + 'zählt nicht mit', wert: 'X = 1, Y = 0' });
     }
 
     var P = X * Fr + Y * Fa;
-    s.push({ was: 'P = X · F_r + Y · F_a', rechnung: rund(X, 4) + ' · '
+    s.push({ was: 'P = X · Fᵣ + Y · Fₐ', rechnung: rund(X, 4) + ' · '
       + rund(Fr, 4) + ' kN + ' + rund(Y, 4) + ' · ' + rund(Fa, 4) + ' kN',
       wert: rund(P, 3) + ' kN' });
 
