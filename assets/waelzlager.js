@@ -15,10 +15,22 @@
  *
  * Drei Dinge stehen hier:
  *
- *   1. NORM - die abgelesenen Tabellen aus dem Tabellenbuch Metall
- *      (50. Auflage), Kapitel 5.10 Lager, Seiten 281 bis 286. Der Ordner
- *      tabellenbuch/ steht in .gitignore; was das Material braucht, muss
- *      also hier stehen.
+ *   1. ZAHLEN - und die sind nicht alle gleicher Herkunft:
+ *
+ *      NORMMASSE (Außen-Ø, Breite, Kantenabstand, Nutmuttergewinde) stehen
+ *      in DIN 623-1, DIN 625-1, DIN 628-1, DIN 720, DIN 981 und DIN 5406.
+ *      Sie sind in jedem Herstellerkatalog frei einzusehen; die Quelle ist
+ *      die Norm und nicht das Buch, in dem man sie nachschlägt.
+ *
+ *      TRAGZAHLEN C und C0 sind KEINE Normwerte. Jeder Hersteller gibt sie
+ *      für sein Lager selbst an. Hier steht eine kleine Auswahl als
+ *      Übungsgröße - für eine Auslegung gilt immer der Katalog des Lagers,
+ *      das eingebaut wird. Das gehört auch so gelehrt.
+ *
+ *      RICHTWERTE aus dem Tabellenbuch Metall (Europa-Lehrmittel) sind
+ *      Zusammenstellungen des Verlags. Sie stehen hier gekürzt auf das,
+ *      was das Material braucht, und mit Quellenangabe. Wer sie erweitert,
+ *      soll sich vorher fragen, ob er die Tabelle nachbaut.
  *   2. Rechnen - Bezeichnung zerlegen, äquivalente Belastung, Lebensdauer,
  *      Stützbasis. Alles nachvollziehbar in Schritten, weil die Schritte
  *      der Lerninhalt sind und nicht das Ergebnis.
@@ -33,7 +45,8 @@
      1  WAS IM BUCH STEHT
      ====================================================================== */
 
-  /* Seite 281, Bezeichnung von Wälzlagern, vgl. DIN 623-1 (2020-06) */
+  /* Bezeichnung von Wälzlagern nach DIN 623-1 (2020-06). Die Systematik
+     ist Norminhalt und steht in jedem Katalog vorn. */
   var LAGERART = {
     '0': 'Schrägkugellager, zweireihig',
     '1': 'Pendelkugellager, zweireihig',
@@ -83,7 +96,8 @@
     '21': 105, '22': 110, '24': 120
   };
 
-  /* Seite 283, Rillenkugellager (Auswahl), vgl. DIN 625-1 (2011-04).
+  /* Rillenkugellager nach DIN 625-1. Normmaße - dieselben Zahlen stehen
+     in jedem Herstellerkatalog.
      d: [D, B, r max, h min] in mm */
   var RKL = {
     '60': {
@@ -117,30 +131,30 @@
     }
   };
 
-  /* Seite 282, Richtwerte für Tragzahlen von Rillenkugellagern.
-     d: [C in kN, C0 in kN, f0]
+  /* Tragzahlen: eine Auswahl, kein Katalog.
 
-     Tabelliert sind nur acht Bohrungsdurchmesser. Wer eine Aufgabe mit
-     d = 25 stellt, muss die Tragzahl erfinden - also stellt er sie nicht. */
+     C und C0 sind keine Normwerte. Sie hängen an Werkstoff, Wärmebehandlung
+     und Innengeometrie und stehen deshalb im Katalog des Herstellers - für
+     genau das Lager, das eingebaut wird. Hier stehen zwölf Richtwerte zum
+     Üben: drei Bohrungsdurchmesser über alle drei Reihen, dazu die Lager,
+     mit denen das Material rechnet.
+
+     Wer eine Aufgabe mit einem Lager stellen will, das hier fehlt, schreibt
+     C, C0 und f0 in die Aufgabe - so, wie der Katalog sie liefert. Das ist
+     nicht nur sauberer, es ist auch die Arbeitsweise, die gelehrt werden
+     soll.
+
+     d: [C in kN, C0 in kN, f0] */
   var TRAG = {
-    '60': {
-      20: [10.6, 5, 13.8], 30: [14.5, 8.3, 14.8], 40: [17.8, 11.5, 15.2],
-      50: [22, 15.8, 15.6], 60: [31.5, 23.2, 15.6], 70: [40.5, 31, 15.6],
-      80: [51, 40, 15.7], 100: [64, 54, 15.8]
-    },
-    '62': {
-      20: [14.7, 6.6, 13.1], 30: [22, 11.3, 13.8], 40: [31.5, 17.8, 14.0],
-      50: [38, 23.2, 14.4], 60: [57, 36.5, 14.5], 70: [66, 44, 14.4],
-      80: [77, 55, 15.0], 100: [130, 93, 14.4]
-    },
-    '63': {
-      20: [16.9, 7.9, 12.4], 30: [32, 16.2, 13.0], 40: [47, 25, 13.0],
-      50: [68, 38, 13.1], 60: [89, 52, 13.2], 70: [115, 69, 13.4],
-      80: [131, 87, 13.3], 100: [177, 137, 13.7]
-    }
+    '60': {30: [14.5, 8.3, 14.8], 50: [22, 15.8, 15.6], 80: [51, 40, 15.7]},
+    '62': {30: [22, 11.3, 13.8], 40: [31.5, 17.8, 14.0],
+           50: [38, 23.2, 14.4], 70: [66, 44, 14.4], 80: [77, 55, 15.0],
+           100: [130, 93, 14.4]},
+    '63': {30: [32, 16.2, 13.0], 50: [68, 38, 13.1], 80: [131, 87, 13.3]}
   };
 
-  /* Seite 283, Schrägkugellager, Ausführung B: Berührungswinkel 40°.
+  /* Schrägkugellager nach DIN 628-1, Ausführung B mit Berührungswinkel
+     40°. Normmaße.
      d: [D, B] in mm */
   var SKL = {
     '72': {
@@ -159,8 +173,9 @@
     }
   };
 
-  /* Seite 285, Kegelrollenlager, Lagerreihe 302, vgl. DIN 720.
-     d: [D, B, C, T, d1] in mm */
+  /* Kegelrollenlager der Lagerreihe 302 nach DIN 720, Einbaumaße nach
+     DIN 5418. Normmaße. d: [D, B, C, T, d1] in mm - das C ist hier die
+     Breite des Innenrings und nicht die Tragzahl. */
   var KRL = {
     '302': {
       20: [47, 14, 12, 15.25, 33.2], 25: [52, 15, 13, 16.25, 37.4],
@@ -174,8 +189,8 @@
     }
   };
 
-  /* Seite 286, Nutmuttern DIN 981 und die Sicherungsbleche DIN 5406 dazu.
-     Kurzzeichen: [Gewinde, d2, h] */
+  /* Nutmuttern nach DIN 981 und die Sicherungsbleche DIN 5406 dazu.
+     Normmaße. Kurzzeichen: [Gewinde, d2, h] */
   var NUTMUTTER = {
     KM0: ['M10 × 0,75', 18, 4], KM1: ['M12 × 1', 22, 4],
     KM2: ['M15 × 1', 25, 5], KM3: ['M17 × 1', 28, 5],
@@ -190,7 +205,9 @@
     KM20: ['M100 × 2', 130, 18]
   };
 
-  /* Seite 282, Radiallastfaktor X, Axiallastfaktor Y für Rillenkugellager */
+  /* Radiallastfaktor X und Axiallastfaktor Y für Rillenkugellager. Die
+     Stützstellen folgen der Rechnung nach DIN ISO 281; dieselbe Tabelle
+     steht in den Katalogen der Lagerhersteller. */
   var LAST = {
     stuetz: [0.3, 0.5, 0.9, 1.6, 3, 6],
     e: [0.22, 0.24, 0.28, 0.32, 0.36, 0.43],
@@ -198,27 +215,25 @@
     X: 0.56
   };
 
-  /* Seite 282, empfohlene nominelle Lebensdauer L10h in Stunden */
+  /* Empfohlene nominelle Lebensdauer L10h in Stunden - Richtwerte, keine
+     Normwerte.
+
+     Eine Auswahl der Betriebsfälle, mit denen dieses Material arbeitet.
+     Ausführlichere Zusammenstellungen stehen im Tabellenbuch Metall
+     (Europa-Lehrmittel) und in den Katalogen der Lagerhersteller. */
   var EMPFOHLEN = {
-    'Elektrische Haushaltsgeräte': [1500, 3000],
     'Universalgetriebe (mittel)': [4000, 14000],
     'E-Motoren, mittel (5…100 kW)': [21000, 30000],
     'Dreh-, Frässpindeln': [14000, 46000],
     'Bohrspindeln': [14000, 32000],
     'Elektro- und Druckluftwerkzeuge': [4000, 14000],
     'Hebezeuge, Fördermaschinen': [10000, 15000],
-    'Verbrennungsmotoren': [900, 4000],
-    'Motorräder': [400, 2000],
     'Pkw-Radlager': [1400, 5300],
-    'Mittelschwere Lkw': [2900, 5300],
-    'Schwere Lkw': [4000, 8800],
-    'Omnibusse': [2900, 11000],
     'Schienenfahrzeuggetriebe': [14000, 46000]
   };
 
-  /* Seite 220 der Fachkunde: Längenausdehnungskoeffizienten für die
-     Warmmontage. Dieselben Zahlen stehen im Tabellenbuch bei den
-     Werkstoffen. */
+  /* Längenausdehnungskoeffizienten für die Warmmontage. Werkstoffkennwerte,
+     wie sie in jedem Tabellenwerk und jedem Datenblatt stehen. */
   var ALPHA = {
     'Unlegierter Stahl (E335)': 0.000011,
     'Legierter Stahl (41Cr4)': 0.000010,
@@ -658,7 +673,23 @@
       'stroke-width': BREIT, 'stroke-linejoin': 'miter'}, g);
   }
 
+  /* Was unter einer Seite stehen soll, die mit diesen Zahlen arbeitet.
+     assets/quellen.js setzt daraus die Fußzeile. */
+  var QUELLEN = {
+    normen: 'Ma\u00dfe nach DIN 623-1, DIN 625-1, DIN 628-1, DIN 720, '
+      + 'DIN 981, DIN 5406 und DIN 5418.',
+    tragzahlen: 'Die Tragzahlen C und C\u2080 sind Richtwerte zum '
+      + '\u00dcben. F\u00fcr eine Auslegung gilt der Katalog des '
+      + 'Lagerherstellers.',
+    buch: 'Richtwerte und Rechenweg nach Tabellenbuch Metall, '
+      + 'Europa-Lehrmittel, Kapitel 5.10 Lager.',
+    fachkunde: 'Lagerungsarten, Anordnung und Anstellung nach '
+      + 'Fachkenntnisse Industriemechaniker LF 5\u201315, '
+      + 'Verlag Handwerk und Technik, Lernfeld 7.'
+  };
+
   global.Waelzlager = {
+    QUELLEN: QUELLEN,
     LAGERART: LAGERART,
     VORSETZ: VORSETZ,
     NACHSETZ: NACHSETZ,

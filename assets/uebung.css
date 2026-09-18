@@ -172,3 +172,11 @@ footer a{color:var(--muted)}
 }
 .bg-zeile:empty{ display: none }
 @media print{ .bg-zeile{ display: none } }
+
+/* Der Quellennachweis unter der Seite. Klein, aber er gehoert dahin: Wer
+   Zahlen aus einem Tabellenwerk benutzt, nennt es. */
+.quellen{
+  width:100%; max-width:760px; margin:26px auto 0; padding:0 20px;
+  font-size:12.5px; line-height:1.5; color:var(--muted);
+}
+.quellen em{font-style:italic}
