@@ -7,6 +7,9 @@
 <meta name="description" content="Zehn Montageschritte am Klappanschlag und das Betriebsmittel dazu. Die Schlüsselweiten stehen im Tabellenbuch – raten führt hier zuverlässig daneben.">
 <meta name="dauer" content="20 min">
 <link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/zeichnen.js"></script>
+<script src="../../assets/zusammenstellung.js"></script>
+<script src="../../assets/klappanschlag.js"></script>
 <style>
   /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
   .bild{margin:16px 0 4px}
@@ -52,7 +55,12 @@
     </div>
 
 
-    <h2><span class="nr">1</span>Zehn Schritte am Klappanschlag</h2>
+    <h2><span class="nr">1</span>Die Baugruppe</h2>
+
+    <figure class="bild" id="bild"></figure>
+
+
+    <h2><span class="nr">2</span>Zehn Schritte am Klappanschlag</h2>
 
     <div class="tabellenrahmen">
       <table class="fr">
@@ -178,6 +186,8 @@ var WAHL = [
   "Schraubstock ohne Schutzbacken",
   "von Hand, ohne Werkzeug"
 ];
+
+ANSCHLAG.zeichnen("bild", {unterschrift: "Der Klappanschlag. Welche Schraube wo sitzt, steht hier &ndash; welchen Schlüssel sie braucht, im Tabellenbuch."});
 
 
 /* --------------------------------------------------------------------------

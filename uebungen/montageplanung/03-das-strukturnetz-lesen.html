@@ -7,6 +7,8 @@
 <meta name="description" content="Zehn Verbindungen des Klappanschlags: berühren sich die Teile, und bewegen sie sich dabei gegeneinander?">
 <meta name="dauer" content="20 min">
 <link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/zeichnen.js"></script>
+<script src="../../assets/zusammenstellung.js"></script>
 <script src="../../assets/klappanschlag.js"></script>
 <script src="../../assets/montageplan.js"></script>
 <style>
@@ -57,13 +59,18 @@
       <p>Was es <em>nicht</em> zeigt: die Reihenfolge der Montage, die Stückzahl und die Maße. Wer das sucht, schaut in den Montageplan oder in die Stückliste.</p>
     </div>
 
-    <h2><span class="nr">1</span>Das Netz des Klappanschlags</h2>
+    <h2><span class="nr">1</span>Die Baugruppe</h2>
+
+    <figure class="bild" id="bild"></figure>
+
+
+    <h2><span class="nr">2</span>Das Netz des Klappanschlags</h2>
 
     <div class="netz" id="netz"></div>
     <p class="fussnote">Alle 14 Verbindungen des Klappanschlags. Zwei davon sind unterbrochen gezeichnet &ndash; und beide hängen am Schwenkarm. Er ist das einzige Teil, das sich bewegt.</p>
 
 
-    <h2><span class="nr">2</span>Zehn Verbindungen</h2>
+    <h2><span class="nr">3</span>Zehn Verbindungen</h2>
 
     <div class="tabellenrahmen">
       <table class="fr">
@@ -153,6 +160,8 @@ var FRAGEN = [
   }
 ];
 var WAHL = ["fest verbunden", "beweglich verbunden", "berühren sich nicht"];
+
+ANSCHLAG.zeichnen("bild", {unterschrift: "Der Klappanschlag im Schnitt A&ndash;A und in der Draufsicht. Ob zwei Teile einander berühren, steht hier &ndash; das Netz sagt es nur noch einmal kürzer."});
 
 Montageplan.netz("netz", {
   teile: ANSCHLAG.TEILE,

@@ -7,6 +7,9 @@
 <meta name="description" content="Demontage des Klappanschlags: rückwärts denken, den Durchtreiber richtig wählen, das Einstellmaß sichern und die Laschen kennzeichnen.">
 <meta name="dauer" content="20 min">
 <link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/zeichnen.js"></script>
+<script src="../../assets/zusammenstellung.js"></script>
+<script src="../../assets/klappanschlag.js"></script>
 <style>
   /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
   .bild{margin:16px 0 4px}
@@ -52,7 +55,12 @@
     </div>
 
 
-    <h2><span class="nr">1</span>Acht Fragen zur Demontage</h2>
+    <h2><span class="nr">1</span>Die Baugruppe</h2>
+
+    <figure class="bild" id="bild"></figure>
+
+
+    <h2><span class="nr">2</span>Acht Fragen zur Demontage</h2>
 
     <div class="tabellenrahmen">
       <table class="fr">
@@ -171,6 +179,8 @@ var WAHL = [
   "er ist für diese Baugruppe zu schwer",
   "er hinterlässt Farbspuren auf dem Stahl"
 ];
+
+ANSCHLAG.zeichnen("bild", {unterschrift: "Der Klappanschlag, montiert und geprüft. Jetzt rückwärts: Was zuletzt kam, geht zuerst."});
 
 
 /* --------------------------------------------------------------------------

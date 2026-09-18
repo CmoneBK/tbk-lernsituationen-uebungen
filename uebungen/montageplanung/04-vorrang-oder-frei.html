@@ -7,6 +7,9 @@
 <meta name="description" content="Zehn Paare von Montageschritten am Klappanschlag: Muss der eine vor dem anderen kommen – und warum? Drei Fälle sind frei.">
 <meta name="dauer" content="25 min">
 <link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/zeichnen.js"></script>
+<script src="../../assets/zusammenstellung.js"></script>
+<script src="../../assets/klappanschlag.js"></script>
 <style>
   /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
   .bild{margin:16px 0 4px}
@@ -58,7 +61,12 @@
     </div>
 
 
-    <h2><span class="nr">1</span>Zehn Paare</h2>
+    <h2><span class="nr">1</span>Die Baugruppe</h2>
+
+    <figure class="bild" id="bild"></figure>
+
+
+    <h2><span class="nr">2</span>Zehn Paare</h2>
 
     <div class="tabellenrahmen">
       <table class="fr">
@@ -164,6 +172,8 @@ var WAHL = [
   "der Zylinderstift muss vorher",
   "die Reihenfolge ist frei"
 ];
+
+ANSCHLAG.zeichnen("bild", {unterschrift: "Der Klappanschlag. Die Reihenfolge steht nicht in der Zeichnung &ndash; aber alles, woraus sie folgt: was worin steckt, was worauf steht und was sich wegklappen lässt."});
 
 
 /* --------------------------------------------------------------------------

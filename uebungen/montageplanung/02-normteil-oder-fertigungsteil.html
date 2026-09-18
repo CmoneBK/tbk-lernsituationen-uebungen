@@ -7,6 +7,9 @@
 <meta name="description" content="Zehn Positionen des Klappanschlags einordnen – und den Unterschied begründen können, auch bei den drei Fällen, die täuschen.">
 <meta name="dauer" content="15 min">
 <link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/zeichnen.js"></script>
+<script src="../../assets/zusammenstellung.js"></script>
+<script src="../../assets/klappanschlag.js"></script>
 <style>
   /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
   .bild{margin:16px 0 4px}
@@ -51,7 +54,12 @@
     </div>
 
 
-    <h2><span class="nr">1</span>Zehn Positionen</h2>
+    <h2><span class="nr">1</span>Die Zeichnung</h2>
+
+    <figure class="bild" id="bild"></figure>
+
+
+    <h2><span class="nr">2</span>Zehn Positionen</h2>
 
     <div class="tabellenrahmen">
       <table class="fr">
@@ -141,6 +149,8 @@ var FRAGEN = [
   }
 ];
 var WAHL = ["Normteil", "Fertigungsteil"];
+
+ANSCHLAG.zeichnen("bild", {unterschrift: "Der Klappanschlag mit seinen zehn Positionsnummern. Die Stückliste sagt, was jede Nummer ist &ndash; die Zeichnung sagt, wo sie sitzt."});
 
 
 /* --------------------------------------------------------------------------

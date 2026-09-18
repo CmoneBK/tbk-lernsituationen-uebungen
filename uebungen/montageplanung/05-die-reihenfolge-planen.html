@@ -7,10 +7,16 @@
 <meta name="description" content="Zehn Positionen des Klappanschlags in eine gültige Montagereihenfolge bringen – geprüft wird gegen die Vorrangbeziehungen, nicht gegen eine Musterlösung.">
 <meta name="dauer" content="30 min">
 <link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/zeichnen.js"></script>
+<script src="../../assets/zusammenstellung.js"></script>
 <script src="../../assets/klappanschlag.js"></script>
 <script src="../../assets/montageplan.js"></script>
 <style>
   /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .bild{margin:16px 0 4px}
+  .bild svg{width:100%; height:auto; display:block}
+  .bild figcaption{font-size:13px; color:var(--muted); margin-top:6px;
+    text-align:center}
   .mp-vorrat{display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 0}
   .mp-teil{
     font:inherit; font-size:14px; padding:8px 12px; border-radius:9px;
@@ -84,7 +90,12 @@
       ist eure Entscheidung, und sie ist dann auch richtig.</p>
     </div>
 
-    <h2><span class="nr">1</span>Wie viele Lösungen gibt es?</h2>
+    <h2><span class="nr">1</span>Die Baugruppe</h2>
+
+    <figure class="bild" id="bild"></figure>
+
+
+    <h2><span class="nr">2</span>Wie viele Lösungen gibt es?</h2>
 
     <p>Bevor ihr anfangt, eine Zahl, die die Frage beantwortet, die in jeder
     Klasse kommt:</p>
@@ -101,7 +112,7 @@
       Werkzeugwechseln, nach dem, was sich gut greifen lässt.</p>
     </div>
 
-    <h2><span class="nr">2</span>Euer Plan</h2>
+    <h2><span class="nr">3</span>Euer Plan</h2>
 
     <div class="box">
       <div class="modus">
@@ -128,7 +139,7 @@
       <div id="loesung"></div>
     </details>
 
-    <h2><span class="nr">3</span>Eine Reihenfolge ist noch kein Plan</h2>
+    <h2><span class="nr">4</span>Eine Reihenfolge ist noch kein Plan</h2>
 
     <div class="box">
       <p>Was ihr oben gebaut habt, ist die <strong>Reihenfolge</strong>. Ein
@@ -180,6 +191,8 @@ var MODUS = {
     + "abgelehnt und begründet. So läuft es an der Werkbank: Dort merkt man "
     + "es auch sofort, nur unangenehmer."
 };
+
+ANSCHLAG.zeichnen("bild", {unterschrift: "Die zehn Positionen, die zu montieren sind. Wer die Reihenfolge plant, sucht hier nach dem, was sich gegenseitig den Weg verstellt."});
 
 var plan = null;
 
