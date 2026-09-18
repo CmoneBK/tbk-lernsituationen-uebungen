@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Welches Lager passt hierher?</title>
+<meta name="description" content="Acht Einbaufälle, acht Maschinen: Welche Bauform nimmt die Last auf, die dort wirkt?">
+<meta name="dauer" content="20 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .bild{margin:16px 0 4px}
+  .bild svg{width:100%; height:auto; display:block}
+  .bild figcaption{font-size:13px; color:var(--muted); margin-top:6px;
+    text-align:center}
+  .zwei{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  @media (max-width:760px){ .zwei{grid-template-columns:1fr} }
+  table.fr td:first-child{line-height:1.5}
+  table.fr select{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:7px 8px; border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  table.fr input[type="number"]{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:7px 8px; border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  table.fr select:focus-visible, table.fr input:focus-visible{
+    outline:2px solid var(--accent); outline-offset:1px}
+  .urteil{font-size:13.5px; line-height:1.4; font-weight:600;
+    white-space:nowrap}
+  .urteil.ja{color:var(--ok)}
+  .urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+  .lagerbez{font-variant-numeric:tabular-nums; font-weight:700}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Wälzlager</p>
+    <h1>Welches Lager passt hierher?</h1>
+    <p class="lead">Die erste Frage ist nie &bdquo;welches Lager?&ldquo;, sondern &bdquo;welche Kraft?&ldquo;</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Ein Lager wird nicht nach Gefühl gewählt, sondern nach der Kraft, die auf es wirkt.</strong> Radial, axial oder beides &ndash; und dazu: Wie viel Platz ist da, wie schnell dreht es, und muss es Fluchtfehler ausgleichen?</p>
+      <p>Acht Fälle aus acht verschiedenen Maschinen. Zu jedem gibt es eine Bauform, die besser passt als alle anderen. In der Lösung steht, warum.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Acht Einbaufälle</h2>
+
+    <div class="tabellenrahmen">
+      <table class="fr">
+        <thead><tr><th>Der Fall</th><th>Welche Bauform?</th><th></th></tr></thead>
+        <tbody id="tabFragen"></tbody>
+      </table>
+    </div>
+
+    <p>
+      <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+      <button type="button" class="knopf leise" id="btnLoesung">Lösung zeigen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz">Noch nichts gewählt.</p>
+
+    <details id="loesungBox">
+      <summary>Lösung mit Begründung</summary>
+      <div id="loesung"></div>
+    </details>
+
+
+    <h3>Weiterarbeiten</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="maschinenelemente-lager-waelzlager-auswaehlen.html">Werkzeug &#8222;Wälzlager auswählen&#8220; öffnen</a>
+    </p>
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot;
+    <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+function el(id){ return document.getElementById(id); }
+
+var FRAGEN = [
+  {
+    "frage": "Eine <strong>Laufrolle</strong> am Förderband. Nur Radiallast, aber radial ist fast kein Platz.",
+    "loesung": "Nadellager",
+    "warum": "Nadelrollen sind lang und dünn: Sie tragen auf einer Linie und brauchen dabei kaum Bauraum in radialer Richtung. Axial nehmen sie nichts auf - hier auch nicht nötig."
+  },
+  {
+    "frage": "Eine <strong>Kegelritzelwelle</strong> im Winkelgetriebe. Große Radial- und große Axialkraft, und es darf nichts kippen.",
+    "loesung": "Kegelrollenlager",
+    "warum": "Kegelrollen tragen radial und axial zugleich, und paarweise in O-Anordnung ergeben sie die größte Stützbasis. Genau dafür sitzen sie an jedem Kegelritzel."
+  },
+  {
+    "frage": "Das <strong>Loslager</strong> einer Getriebewelle. Große Radialkraft, und axial darf es nichts aufnehmen.",
+    "loesung": "Zylinderrollenlager Form NU",
+    "warum": "Die Form NU hat am Innenring keine Borde: Die Rollen wandern auf der Laufbahn, und der Längenausgleich passiert <em>im</em> Lager statt zwischen Außenring und Gehäuse. Das ideale Loslager."
+  },
+  {
+    "frage": "Die Welle eines <strong>Schwingsiebs</strong>. Sie biegt sich unter Last merklich durch.",
+    "loesung": "Pendelrollenlager",
+    "warum": "Pendelrollenlager gleichen Wellendurchbiegung und Wellenversatz aus - die Laufbahn des Außenrings ist kugelig. Ein Rillenkugellager würde an der Kante tragen und früh ausfallen."
+  },
+  {
+    "frage": "Eine <strong>Schleifspindel</strong>: hohe Drehzahl, mäßige Last, es soll leise sein.",
+    "loesung": "Rillenkugellager",
+    "warum": "Punktberührung heißt wenig Reibung und wenig Wärme. Deshalb sind Kugellager die schnellsten Wälzlager - was sie an Tragfähigkeit nicht haben, brauchen sie hier nicht."
+  },
+  {
+    "frage": "Ein <strong>Drehtisch</strong>. Die Last drückt von oben, radial passiert nichts.",
+    "loesung": "Axial-Rillenkugellager",
+    "warum": "Reine Längskraft in eine Richtung. Radial trägt dieses Lager nichts - der Tisch braucht deshalb zusätzlich eine radiale Führung."
+  },
+  {
+    "frage": "Die Lagerung eines <strong>Elektromotors</strong>. Standardfall, es soll billig und leise sein.",
+    "loesung": "Rillenkugellager",
+    "warum": "Der häufigste Fall und deshalb das häufigste Lager: radial gut, axial in beide Richtungen etwas, dazu billig, leise und in jeder Größe zu haben."
+  },
+  {
+    "frage": "Eine <strong>Werkzeugmaschinenspindel</strong>: hohe Genauigkeit, Radial- und Axiallast, angestellt.",
+    "loesung": "Schrägkugellager",
+    "warum": "Schrägkugellager lassen sich paarweise anstellen und damit spielfrei einstellen - die Voraussetzung für Genauigkeit. Einzeln können sie nicht laufen."
+  }
+];
+var WAHL = [
+  "Rillenkugellager",
+  "Rillenkugellager, zweireihig",
+  "Schrägkugellager",
+  "Schrägkugellager, zweireihig",
+  "Pendelkugellager",
+  "Kegelrollenlager",
+  "Pendelrollenlager",
+  "Zylinderrollenlager Form NU",
+  "Zylinderrollenlager Form NUP",
+  "Nadellager",
+  "Axial-Rillenkugellager",
+  "Axial-Zylinderrollenlager",
+  "Vierpunktlager",
+  "Tonnenlager"
+];
+
+/* --------------------------------------------------------------------------
+   Die Fragen: je eine Zeile mit einer Auswahl. Geprüft wird auf Knopfdruck,
+   nicht bei jeder Wahl - wer zwischendurch die Meinung ändert, soll das
+   ohne rote Zwischenrufe tun können.
+   -------------------------------------------------------------------------- */
+(function fragenAufbauen(){
+  var tb = el("tabFragen");
+  FRAGEN.forEach(function(f, i){
+    var tr = document.createElement("tr");
+
+    var td0 = document.createElement("td");
+    td0.innerHTML = f.frage;
+    tr.appendChild(td0);
+
+    var td1 = document.createElement("td");
+    var s = document.createElement("select");
+    s.id = "f" + i;
+    s.setAttribute("aria-label", "Antwort zu Frage " + (i + 1));
+    var leer = document.createElement("option");
+    leer.value = ""; leer.textContent = "– bitte wählen –";
+    s.appendChild(leer);
+    (f.wahl || WAHL).forEach(function(w){
+      var o = document.createElement("option");
+      o.value = w; o.textContent = w;
+      s.appendChild(o);
+    });
+    td1.appendChild(s);
+    tr.appendChild(td1);
+
+    var td2 = document.createElement("td");
+    td2.className = "urteil"; td2.id = "u" + i; td2.textContent = "–";
+    tr.appendChild(td2);
+
+    tb.appendChild(tr);
+  });
+
+  el("loesung").innerHTML = FRAGEN.map(function(f, i){
+    return "<p><strong>" + (i + 1) + ". " + f.loesung + "</strong> &ndash; "
+      + f.warum + "</p>";
+  }).join("");
+}());
+
+el("btnPruefen").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  FRAGEN.forEach(function(f, i){
+    var v = el("f" + i).value, u = el("u" + i);
+    if(!v){ u.textContent = "–"; u.className = "urteil"; offen++; return; }
+    var ok = v === f.loesung;
+    u.textContent = ok ? "richtig" : "nein";
+    u.className = "urteil " + (ok ? "ja" : "nein");
+    if(ok) r++;
+  });
+  el("bilanz").textContent = r + " von " + FRAGEN.length + " richtig."
+    + (offen ? " (" + offen + " noch offen.)" : "");
+  if(r === FRAGEN.length) el("loesungBox").open = true;
+});
+
+el("btnLoesung").addEventListener("click", function(){
+  el("loesungBox").open = true;
+});
+</script>
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/fortschritt.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

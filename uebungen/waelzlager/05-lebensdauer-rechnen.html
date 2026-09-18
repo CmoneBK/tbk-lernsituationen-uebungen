@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lebensdauer rechnen</title>
+<meta name="description" content="Fünf Lagerstellen aus fünf Maschinen: äquivalente Belastung und nominelle Lebensdauer nach dem Weg des Tabellenbuchs.">
+<meta name="dauer" content="35 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .bild{margin:16px 0 4px}
+  .bild svg{width:100%; height:auto; display:block}
+  .bild figcaption{font-size:13px; color:var(--muted); margin-top:6px;
+    text-align:center}
+  .zwei{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  @media (max-width:760px){ .zwei{grid-template-columns:1fr} }
+  table.fr td:first-child{line-height:1.5}
+  table.fr select{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:7px 8px; border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  table.fr input[type="number"]{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:7px 8px; border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  table.fr select:focus-visible, table.fr input:focus-visible{
+    outline:2px solid var(--accent); outline-offset:1px}
+  .urteil{font-size:13.5px; line-height:1.4; font-weight:600;
+    white-space:nowrap}
+  .urteil.ja{color:var(--ok)}
+  .urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+  .lagerbez{font-variant-numeric:tabular-nums; font-weight:700}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Wälzlager</p>
+    <h1>Lebensdauer rechnen</h1>
+    <p class="lead">Erst die äquivalente Belastung, dann die Lebensdauer &ndash; und am Ende die Frage, ob das reicht.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Der Weg ist immer derselbe.</strong> Erst die Hilfsgröße (f<sub>0</sub> &middot; F<sub>a</sub>) / C<sub>0</sub> bilden, daraus <em>e</em> ablesen und zwischen den Stützstellen interpolieren. Dann prüfen, ob F<sub>a</sub>/F<sub>r</sub> größer ist als <em>e</em>. Ist es das, gilt X = 0,56 und Y aus derselben Spalte; sonst X = 1 und Y = 0.</p>
+      <p>Daraus die äquivalente Belastung P = X &middot; F<sub>r</sub> + Y &middot; F<sub>a</sub>, daraus L<sub>10</sub> = (C/P)&sup3; &middot; 10<sup>6</sup> Umdrehungen und daraus L<sub>10h</sub> = L<sub>10</sub> / (60 &middot; n).</p>
+      <p><strong>Zur Eingabe:</strong> Kommazahlen mit Punkt oder Komma, beides geht. Geprüft wird mit einer Toleranz &ndash; wer zwischendurch rundet, bekommt trotzdem recht.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Fünf Lagerstellen</h2>
+
+    <div class="tabellenrahmen">
+      <table class="fr">
+        <thead><tr><th>Aufgabe</th><th>Ergebnis</th><th></th></tr></thead>
+        <tbody id="tabFragen"></tbody>
+      </table>
+    </div>
+
+    <p>
+      <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+      <button type="button" class="knopf leise" id="btnLoesung">Lösung zeigen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz">Noch nichts gewählt.</p>
+
+    <details id="loesungBox">
+      <summary>Lösung mit Begründung</summary>
+      <div id="loesung"></div>
+    </details>
+
+
+    <h3>Weiterarbeiten</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="maschinenelemente-lager-waelzlager-auswaehlen.html">Werkzeug &#8222;Wälzlager auswählen&#8220; öffnen</a>
+    </p>
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot;
+    <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+function el(id){ return document.getElementById(id); }
+
+var FRAGEN = [
+  {
+    "frage": "<strong>a)</strong> Förderbandrolle mit <span class=\"lagerbez\">6208</span>: F<sub>r</sub> = 4,2 kN, keine Axialkraft, n = 1450 1/min.<br>Äquivalente Belastung <strong>P</strong> in kN?",
+    "loesung": 4.2,
+    "toleranz": 0.05,
+    "schritt": "0.01",
+    "einheit": "kN",
+    "warum": "Ohne Axialkraft ist X = 1 und Y = 0, also P = F<sub>r</sub>. Die halbe Rechnung fällt weg - das ist der häufigste Fall und der einfachste."
+  },
+  {
+    "frage": "<strong>a)</strong> Und die nominelle Lebensdauer <strong>L<sub>10h</sub></strong> in Stunden? (C = 31,5 kN)",
+    "loesung": 4849,
+    "toleranz": 60,
+    "schritt": "1",
+    "einheit": "h",
+    "warum": "L<sub>10</sub> = (31,5/4,2)³ = 421,9 Millionen Umdrehungen. L<sub>10h</sub> = 421,9 · 10⁶ / (60 · 1450) = 4849 h. Für Hebezeuge und Fördermaschinen empfiehlt das Buch 10 000 bis 15 000 h - das Lager ist also zu klein gewählt."
+  },
+  {
+    "frage": "<strong>b)</strong> Getriebewelle mit <span class=\"lagerbez\">6310</span>: F<sub>r</sub> = 6 kN, F<sub>a</sub> = 2,5 kN, n = 960 1/min. (C = 68 kN, C<sub>0</sub> = 38 kN, f<sub>0</sub> = 13,1)<br>Äquivalente Belastung <strong>P</strong> in kN?",
+    "loesung": 7.36,
+    "toleranz": 0.15,
+    "schritt": "0.01",
+    "einheit": "kN",
+    "warum": "(f<sub>0</sub> · F<sub>a</sub>)/C<sub>0</sub> = 13,1 · 2,5/38 = 0,862. Interpoliert: e = 0,276. F<sub>a</sub>/F<sub>r</sub> = 0,417 > e, also X = 0,56 und Y = 1,601. P = 0,56 · 6 + 1,601 · 2,5 = 7,36 kN."
+  },
+  {
+    "frage": "<strong>b)</strong> Und <strong>L<sub>10h</sub></strong> in Stunden?",
+    "loesung": 13678,
+    "toleranz": 400,
+    "schritt": "1",
+    "einheit": "h",
+    "warum": "L<sub>10</sub> = (68/7,36)³ = 788 Millionen Umdrehungen, L<sub>10h</sub> = 788 · 10⁶/(60 · 960) = 13 678 h. Für ein Universalgetriebe (4000 bis 14 000 h) passt das."
+  },
+  {
+    "frage": "<strong>c)</strong> Schwere Seilrolle mit <span class=\"lagerbez\">6016</span>: F<sub>r</sub> = 8 kN, F<sub>a</sub> = 3 kN, n = 600 1/min. (C = 51 kN, C<sub>0</sub> = 40 kN, f<sub>0</sub> = 15,7)<br><strong>P</strong> in kN?",
+    "loesung": 9.01,
+    "toleranz": 0.2,
+    "schritt": "0.01",
+    "einheit": "kN",
+    "warum": "(15,7 · 3)/40 = 1,178; e = 0,296; F<sub>a</sub>/F<sub>r</sub> = 0,375 > e; Y = 1,509. P = 0,56 · 8 + 1,509 · 3 = 9,01 kN."
+  },
+  {
+    "frage": "<strong>c)</strong> Und <strong>L<sub>10h</sub></strong> in Stunden?",
+    "loesung": 5045,
+    "toleranz": 200,
+    "schritt": "1",
+    "einheit": "h",
+    "warum": "L<sub>10</sub> = (51/9,01)³ = 181,6; L<sub>10h</sub> = 181,6 · 10⁶/(60 · 600) = 5045 h. Für Hebezeuge zu wenig - die nächste Durchmesserreihe wäre fällig."
+  },
+  {
+    "frage": "<strong>d)</strong> Kleine Handkreissäge mit <span class=\"lagerbez\">6006</span>: F<sub>r</sub> = 1,8 kN, F<sub>a</sub> = 0,6 kN, n = 2800 1/min. (C = 14,5 kN, C<sub>0</sub> = 8,3 kN, f<sub>0</sub> = 14,8)<br><strong>L<sub>10h</sub></strong> in Stunden?",
+    "loesung": 2525,
+    "toleranz": 120,
+    "schritt": "1",
+    "einheit": "h",
+    "warum": "P = 1,93 kN, L<sub>10</sub> = (14,5/1,93)³ = 424; L<sub>10h</sub> = 424 · 10⁶/(60 · 2800) = 2525 h. Für Elektrowerkzeuge empfiehlt das Buch 4000 bis 14 000 h. Zu klein - oder die Kräfte sind zu hoch angesetzt."
+  },
+  {
+    "frage": "<strong>e)</strong> Grosse Windensrolle mit <span class=\"lagerbez\">6220</span>: F<sub>r</sub> = 22 kN, F<sub>a</sub> = 9 kN, n = 300 1/min. (C = 130 kN, C<sub>0</sub> = 93 kN, f<sub>0</sub> = 14,4)<br><strong>L<sub>10h</sub></strong> in Stunden?",
+    "loesung": 7450,
+    "toleranz": 300,
+    "schritt": "1",
+    "einheit": "h",
+    "warum": "P = 25,4 kN, L<sub>10</sub> = (130/25,4)³ = 134; L<sub>10h</sub> = 134 · 10⁶/(60 · 300) = 7450 h. Knapp unter dem Richtwert für Hebezeuge."
+  }
+];
+
+/* --------------------------------------------------------------------------
+   Zahleneingaben. Geprüft wird mit einer Toleranz, denn wer von Hand mit
+   einer Zwischenrundung rechnet, kommt nicht auf dieselbe Nachkommastelle
+   wie der Rechner - und hat trotzdem recht.
+   -------------------------------------------------------------------------- */
+(function fragenAufbauen(){
+  var tb = el("tabFragen");
+  FRAGEN.forEach(function(f, i){
+    var tr = document.createElement("tr");
+    var td0 = document.createElement("td");
+    td0.innerHTML = f.frage;
+    tr.appendChild(td0);
+
+    var td1 = document.createElement("td");
+    var e = document.createElement("input");
+    e.type = "number"; e.id = "f" + i; e.step = f.schritt || "0.1";
+    e.setAttribute("inputmode", "decimal");
+    e.setAttribute("autocomplete", "off");
+    e.setAttribute("aria-label", "Antwort zu Frage " + (i + 1));
+    td1.appendChild(e);
+    tr.appendChild(td1);
+
+    var td2 = document.createElement("td");
+    td2.className = "urteil"; td2.id = "u" + i; td2.textContent = "–";
+    tr.appendChild(td2);
+    tb.appendChild(tr);
+  });
+
+  el("loesung").innerHTML = FRAGEN.map(function(f, i){
+    return "<p><strong>" + (i + 1) + ". "
+      + String(f.loesung).replace(".", ",") + " " + (f.einheit || "")
+      + "</strong> &ndash; " + f.warum + "</p>";
+  }).join("");
+}());
+
+el("btnPruefen").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  FRAGEN.forEach(function(f, i){
+    var roh = el("f" + i).value, u = el("u" + i);
+    if(roh === ""){ u.textContent = "–"; u.className = "urteil"; offen++; return; }
+    var v = Number(roh);
+    var ok = isFinite(v) && Math.abs(v - f.loesung) <= f.toleranz;
+    u.textContent = ok ? "richtig" : "nein";
+    u.className = "urteil " + (ok ? "ja" : "nein");
+    if(ok) r++;
+  });
+  el("bilanz").textContent = r + " von " + FRAGEN.length + " richtig."
+    + (offen ? " (" + offen + " noch offen.)" : "");
+  if(r === FRAGEN.length) el("loesungBox").open = true;
+});
+
+el("btnLoesung").addEventListener("click", function(){
+  el("loesungBox").open = true;
+});
+</script>
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/fortschritt.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

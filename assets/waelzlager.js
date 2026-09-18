@@ -594,7 +594,7 @@
     var winkel = Number(o.winkel) || lA.winkel || 40;
     var sp = [];
     [[xA, lA, richtungVon(anordnung, 0)],
-     [xB, lB, richtungVon(anordnung, 1)]].forEach(function (e) {
+     [xB, lB, richtungVon(anordnung, 1)]].forEach(function (e, i) {
       var x = e[0], l = e[1], r = e[2];
       var rm = (l.d / 2 + l.D / 2) / 2;
       var a = rm / Math.tan(winkel * Math.PI / 180);
@@ -606,14 +606,44 @@
       });
       svgEl('circle', {cx: vx(sx), cy: vy(0), r: 3.2,
         fill: 'currentColor'}, g);
-      txt(g, vx(sx), vy(0) - 10, 'S', {groesse: 13, fett: true});
+      /* Das S steht von seinem Lager weg gerückt: Dorthin laufen keine
+         Drucklinien, denn die enden ja im Punkt S. Und weil bei einer
+         engen X-Anordnung beide Punkte dicht beieinander liegen, steht das
+         eine oben und das andere unten. */
+      txt(g, vx(sx) + r * 15, vy(0) + (i === 0 ? -10 : 22), 'S',
+        {groesse: 13, fett: true});
     });
 
-    /* Die Stützbasis wird bemaßt - sie ist die Aussage des Bildes. */
+    /* Die Stützbasis wird bemaßt - sie ist die Aussage des Bildes.
+
+       Bei der X-Anordnung kann H sehr klein werden; dann ist die Maßzahl
+       breiter als das Maß und läge auf den eigenen Maßhilfslinien. In dem
+       Fall rückt sie nach rechts daneben - so macht man es auf dem Papier
+       auch. */
     var yH = vy(0) + (Math.max(lA.D, lB.D) / 2 + 26)
       * (Number(o.masstab) || 2.2);
-    mass(g, vx(sp[0]), vx(sp[1]), yH,
-      'H = ' + Math.round(Math.abs(sp[1] - sp[0])) + ' mm', vy(0));
+    var x1 = vx(Math.min(sp[0], sp[1])), x2 = vx(Math.max(sp[0], sp[1]));
+    var text = 'H = ' + Math.round(Math.abs(sp[1] - sp[0])) + ' mm';
+    var k = svgEl('g', {}, g);
+    [x1, x2].forEach(function (x) {
+      linie(k, x, vy(0), x, yH + 7, SCHMAL);
+    });
+    var eng = (x2 - x1) < text.length * 8 + 20;
+    /* Die Masslinie selbst laeuft immer von Pfeilspitze zu Pfeilspitze -
+       daran erkennt pruefungen/test-zeichnungen.js ein Mass. Bei engen
+       Massen kommen nach aussen nur noch zwei Stummel dazu. */
+    linie(k, x1, yH, x2, yH, SCHMAL);
+    pfeil(k, x1, yH, eng ? 1 : -1, 0);
+    pfeil(k, x2, yH, eng ? -1 : 1, 0);
+    if (eng) {
+      linie(k, x1 - 14, yH, x1, yH, SCHMAL);
+      linie(k, x2, yH, x2 + 14, yH, SCHMAL);
+    }
+    if (eng) {
+      txt(k, x2 + 22, yH + 4, text, {anker: 'start'});
+    } else {
+      txt(k, (x1 + x2) / 2, yH - 5, text);
+    }
   }
 
   /* Ein geschnittenes Teil als geschlossener Umriss. Dieselbe Idee wie in

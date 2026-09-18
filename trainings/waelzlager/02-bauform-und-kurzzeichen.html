@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bauform und Kurzzeichen</title>
+<meta name="description" content="Lagerart, Bohrungskennzahl, Vor- und Nachsetzzeichen nach DIN 623-1 – im Kopf, mit Rückmeldung und Wiederholung der Fehler.">
+<meta name="dauer" content="10 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .frage{font-size:15px; color:var(--muted); margin:0 0 4px}
+  .gefragt{font-size:23px; font-weight:700; margin:0 0 16px; line-height:1.3}
+  .auswahl{display:grid; gap:10px; grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+  .auswahl button{
+    font:600 15px/1.4 inherit; text-align:left; cursor:pointer;
+    background:var(--bg); color:var(--fg);
+    border:1px solid var(--border-stark); border-radius:10px; padding:12px 14px;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .auswahl button:hover:not(:disabled){border-color:var(--accent)}
+  .auswahl button:disabled{cursor:default}
+  .auswahl button.richtig{border-color:var(--ok); background:rgba(22,163,74,.14)}
+  .auswahl button.falsch{border-color:var(--bad); background:rgba(220,38,38,.12)}
+
+  .fortschritt{
+    height:8px; border-radius:999px; background:var(--border);
+    overflow:hidden; margin:0 0 14px;
+  }
+  .fortschritt i{display:block; height:100%; background:var(--accent); transition:width .2s ease}
+  .zaehler{display:flex; justify-content:space-between; font-size:13px;
+    color:var(--muted); margin:0 0 6px}
+  .bilanz{font-size:19px; font-weight:700; margin:0 0 8px}
+
+  /* Der Schalter ueber dem Durchgang. */
+  .stellkopf{margin:0 0 12px; font-size:15px}
+  .stellkopf .fussnote{margin-left:8px}
+
+  /* Warnschild vor der Tafel, solange der Durchgang noch laeuft. */
+  .warnschild{
+    display:flex; gap:12px; align-items:flex-start;
+    border:1px solid var(--warn); border-left-width:4px; border-radius:10px;
+    background:var(--card); padding:12px 16px; margin:0 0 14px; font-size:15px;
+  }
+  .warnschild::before{content:"\26A0"; font-size:20px; line-height:1.1; color:var(--warn)}
+  .warnschild strong{display:block}
+  @media (prefers-reduced-motion:reduce){.fortschritt i{transition:none}}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Wälzlager</p>
+    <h1>Bauform und Kurzzeichen</h1>
+    <p class="lead">Die erste Ziffer sagt, was es ist. Die letzten zwei sagen, wie groß. Das sitzt schneller, als man denkt.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Worum es geht:</strong> Jede Bauart und jedes Zusatzzeichen hat
+        drei Ebenen &ndash; wie man es <em>beschreibt</em>, wie es <em>heißt</em>
+        und welches <em>Kurzzeichen</em> dafür steht. Gefragt wird immer nach
+        einer davon.</p>
+      <p>Schwierigkeit, Richtung und Umfang stellst du unten selbst ein.
+        Falsch beantwortete Begriffe kommen am Ende noch einmal.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Durchgang</h2>
+
+    <div class="box">
+      <p class="stellkopf"><strong>So wird gefragt</strong>
+        <span class="fussnote">Jede Änderung beginnt einen neuen Durchgang.</span></p>
+      <div class="felder">
+        <label class="feld">Schwierigkeit
+          <select id="wahlStufe">
+            <option value="einfach">Einfach</option>
+            <option value="mittel">Mittel</option>
+            <option value="schwer">Schwer</option>
+          </select>
+        </label>
+        <label class="feld">Woran üben
+          <select id="wahlModus">
+            <option value="mix">Mix</option>
+            <option value="begriffe">Nur Bedeutung</option>
+            <option value="zeichen">Nur Kurzzeichen</option>
+          </select>
+        </label>
+        <label class="feld">Umfang
+          <input type="number" id="wahlUmfang" min="5" max="16" step="1" value="16">
+          <span class="fussnote" id="umfangMax">5 bis 16 Begriffe</span>
+        </label>
+      </div>
+      <p class="fussnote" style="margin:12px 0 0">
+        <strong>Einfach:</strong> die falschen Antworten kommen aus dem ganzen Feld.
+        <strong>Mittel:</strong> teils naheliegende Verwechslungen.
+        <strong>Schwer:</strong> nur noch Begriffe, die dasselbe meinen könnten &ndash;
+        aber etwas anderes bedeuten. &ndash;
+        <strong>Mix</strong> fragt Bedeutung und Formelzeichen,
+        die beiden anderen jeweils nur das eine.
+      </p>
+    </div>
+
+    <div class="box">
+      <div class="zaehler">
+        <span id="stand">&ndash;</span>
+        <span id="punkte"></span>
+      </div>
+      <div class="fortschritt"><i id="balken" style="width:0%"></i></div>
+
+      <p class="frage" id="frage">&ndash;</p>
+      <p class="gefragt" id="gefragt">&ndash;</p>
+      <div class="auswahl" id="auswahl"></div>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+
+      <p style="margin-top:16px">
+        <button type="button" class="knopf" id="btnWeiter" hidden>Weiter</button>
+        <button type="button" class="knopf leise" id="btnNeu">Von vorn</button>
+      </p>
+    </div>
+
+    <div id="ende" hidden>
+      <h3>Ergebnis</h3>
+      <div class="box">
+        <p class="bilanz" id="bilanz">&ndash;</p>
+        <p id="urteil"></p>
+        <div id="fehlerliste"></div>
+        <p style="margin-top:14px">
+          <button type="button" class="knopf" id="btnFehler" hidden>Nur die Fehler wiederholen</button>
+          <button type="button" class="knopf leise" id="btnNochmal">Ganzen Durchgang wiederholen</button>
+        </p>
+      </div>
+    </div>
+
+    <h2><span class="nr">2</span>Die Tafel</h2>
+    <p>Zum Nachschlagen &ndash; und zum Ausdrucken, falls die Begriffe noch neu sind.
+      Nach dem Durchgang steht sie von selbst offen.</p>
+
+    <p id="tafelSchalter">
+      <button type="button" class="knopf leise" id="btnTafel">Tafel einblenden</button>
+    </p>
+
+    <div id="tafelBox" hidden>
+      <div class="warnschild" id="tafelWarnung" hidden>
+        <span><strong>Der Durchgang läuft noch.</strong>
+          Wer jetzt hier nachsieht, übt das Nachschlagen statt des Erinnerns &ndash;
+          und das Ergebnis sagt hinterher wenig. Wenn du nicht weiterweißt, ist
+          es oft lehrreicher, falsch zu tippen: Der Begriff kommt am Ende noch
+          einmal.</span>
+      </div>
+
+      <div class="tabellenrahmen">
+        <table>
+          <thead>
+            <tr><th>So beschreibt man es</th><th>So heißt es</th><th>So steht es in der Bezeichnung</th></tr>
+          </thead>
+          <tbody id="tafel"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <h2><span class="nr">3</span>Warum diese Systematik?</h2>
+
+    <details>
+      <summary>1. Wozu die Kurzzeichen, wenn es Namen gibt?</summary>
+      <p>Weil ein Lager mit einem einzigen Zeichenstrang bestellbar sein
+        soll. <strong>6208&ndash;2Z&ndash;P2</strong> sagt: Rillenkugellager,
+        einreihig, Breitenreihe 0, Durchmesserreihe 2, Bohrung 40 mm, zwei
+        Deckscheiben, h&ouml;chste Genauigkeit. In Worten w&auml;re das ein
+        Satz &ndash; und in jeder Sprache ein anderer.</p>
+    </details>
+
+    <details>
+      <summary>2. Warum gilt die Regel &bdquo;Kennzahl mal 5&ldquo; nicht
+        immer?</summary>
+      <p>Unter 20 mm w&uuml;rde sie zu krummen Werten f&uuml;hren, und die
+        gibt es als Lagerbohrung nicht. Deshalb stehen die vier kleinen
+        Gr&ouml;&szlig;en fest in der Tabelle: 00 = 10, 01 = 12, 02 = 15 und
+        03 = 17 mm. &Uuml;ber 500 mm h&ouml;rt die Regel ebenfalls auf.</p>
+      <p>Das sind vier Zahlen, und sie kommen in jeder Pr&uuml;fung vor.</p>
+    </details>
+
+    <details>
+      <summary>3. Vorn oder hinten &ndash; wo steht was?</summary>
+      <p><strong>Vorsetzzeichen</strong> sagen, woraus oder woraus wovon das
+        Lager besteht: S f&uuml;r nichtrostenden Stahl, K f&uuml;r den
+        K&auml;fig mit W&auml;lzk&ouml;rpern, L f&uuml;r einen freien Ring.
+        <strong>Nachsetzzeichen</strong> sagen, wie es ausgef&uuml;hrt ist:
+        Deck- und Dichtscheiben, kegelige Bohrung, verst&auml;rkte Bauart,
+        Genauigkeitsklasse.</p>
+      <p>Ein K vorn und ein K hinten bedeuten deshalb Verschiedenes. Das ist
+        die h&auml;ufigste Verwechslung &ndash; und der Grund, warum in
+        diesem Training beide vorkommen.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Die erste Ziffer sagt, <em>was</em> es ist.
+      Die letzten zwei sagen, <em>wie gro&szlig;</em>. Dazwischen steht, wie
+      kr&auml;ftig es gebaut ist.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>In der Lektion l&auml;sst sich jede Bezeichnung eintippen und
+      zerlegen &ndash; mit den Ma&szlig;en aus dem Tabellenbuch dazu.</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="maschinenelemente-lager-waelzlager-auswaehlen.html"
+         data-fach="1">Werkzeug W&auml;lzlager ausw&auml;hlen &ouml;ffnen</a>
+    </p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Die Begriffe in drei Ebenen. Sie decken sich mit dem Sprachumschalter des
+   Werkzeugs "Maschinenelemente: Schrauben - Schraubverbindungen", damit beides
+   dieselbe Sprache spricht. Ein leeres Zeichen heißt: dafür gibt es keines.
+
+   "nah" sammelt je Ebene die naheliegenden Verwechslungen: Ausdrücke, die vom
+   Wortlaut oder von der Bedeutung her dasselbe meinen könnten, es aber nicht
+   tun. Sie tragen die Schwierigkeitsgrade Mittel und Schwer. Wer die Liste
+   erweitert, sollte hier mitziehen - sonst füllt der Durchgang mit Ablenkern
+   aus dem ganzen Feld auf, und die schwere Stufe wird stellenweise leicht. */
+var BEGRIFFE = [
+  {alltag:"Kugeln in einer Rille, einreihig - der Standardfall", fach:"Rillenkugellager, einreihig", zeichen:"6",
+   nah:{fach:["Rillenkugellager, zweireihig", "Schrägkugellager, einreihig", "Pendelkugellager, zweireihig"],
+        alltag:["Kugeln in zwei Reihen nebeneinander", "Kugeln, die schräg tragen", "Kugeln auf einer kugeligen Laufbahn"],
+        zeichen:["4", "7", "1"]}},
+
+  {alltag:"Kugeln, die schräg tragen - nur paarweise zu gebrauchen", fach:"Schrägkugellager, einreihig", zeichen:"7",
+   nah:{fach:["Rillenkugellager, einreihig", "Kegelrollenlager", "Vierpunktlager"],
+        alltag:["Kugeln in einer Rille, einreihig", "kegelige Rollen, die schräg tragen", "Kugeln, die an vier Punkten tragen"],
+        zeichen:["6", "3", "QJ"]}},
+
+  {alltag:"kegelige Rollen, die radial und axial zugleich tragen", fach:"Kegelrollenlager", zeichen:"3",
+   nah:{fach:["Zylinderrollenlager", "Schrägkugellager, einreihig", "Pendelrollenlager"],
+        alltag:["gerade Rollen, die nur radial tragen", "Kugeln, die schräg tragen", "tonnenförmige Rollen"],
+        zeichen:["NU", "7", "2"]}},
+
+  {alltag:"tonnenförmige Rollen auf kugeliger Laufbahn - gleicht Wellenversatz aus", fach:"Tonnen- und Pendelrollenlager", zeichen:"2",
+   nah:{fach:["Kegelrollenlager", "Zylinderrollenlager", "Pendelkugellager, zweireihig"],
+        alltag:["kegelige Rollen", "gerade Rollen", "Kugeln auf kugeliger Laufbahn"],
+        zeichen:["3", "NU", "1"]}},
+
+  {alltag:"nimmt nur Längskraft auf, und nur in eine Richtung", fach:"Axial-Rillenkugellager", zeichen:"5",
+   nah:{fach:["Axial-Zylinderrollenlager", "Rillenkugellager, einreihig", "Vierpunktlager"],
+        alltag:["nimmt Längskraft mit Rollen auf", "nimmt Quer- und Längskraft auf", "trägt an vier Punkten"],
+        zeichen:["8", "6", "QJ"]}},
+
+  {alltag:"gerade Rollen ohne Bord am Innenring - das ideale Loslager", fach:"Zylinderrollenlager Form NU", zeichen:"NU",
+   nah:{fach:["Zylinderrollenlager Form NUP", "Nadellager", "Kegelrollenlager"],
+        alltag:["gerade Rollen mit Borden auf beiden Seiten", "sehr dünne, lange Rollen", "kegelige Rollen"],
+        zeichen:["NUP", "NA", "3"]}},
+
+  {alltag:"sehr dünne, lange Rollen - wenn radial kaum Platz ist", fach:"Nadellager", zeichen:"NA",
+   nah:{fach:["Zylinderrollenlager Form NU", "Tonnenlager", "Rillenkugellager, einreihig"],
+        alltag:["gerade Rollen normaler Dicke", "tonnenförmige Rollen", "Kugeln in einer Rille"],
+        zeichen:["NU", "2", "6"]}},
+
+  {alltag:"Lager mit Deckscheibe auf beiden Seiten", fach:"Nachsetzzeichen 2Z", zeichen:"2Z",
+   nah:{fach:["Nachsetzzeichen Z", "Nachsetzzeichen 2RS", "Nachsetzzeichen RS"],
+        alltag:["Lager mit Deckscheibe auf einer Seite", "Lager mit Dichtscheibe auf beiden Seiten", "Lager mit Dichtscheibe auf einer Seite"],
+        zeichen:["Z", "2RS", "RS"]}},
+
+  {alltag:"Lager mit Dichtscheibe auf beiden Seiten", fach:"Nachsetzzeichen 2RS", zeichen:"2RS",
+   nah:{fach:["Nachsetzzeichen 2Z", "Nachsetzzeichen RS", "Nachsetzzeichen E"],
+        alltag:["Lager mit Deckscheibe auf beiden Seiten", "Lager mit Dichtscheibe auf einer Seite", "verstärkte Ausführung"],
+        zeichen:["2Z", "RS", "E"]}},
+
+  {alltag:"Lager mit kegeliger Bohrung", fach:"Nachsetzzeichen K", zeichen:"K",
+   nah:{fach:["Vorsetzzeichen K", "Nachsetzzeichen E", "Nachsetzzeichen P2"],
+        alltag:["Käfig mit Wälzkörpern", "verstärkte Ausführung", "höchste Genauigkeit"],
+        zeichen:["E", "P2", "S"]}},
+
+  {alltag:"höchste Maß-, Form- und Laufgenauigkeit", fach:"Nachsetzzeichen P2", zeichen:"P2",
+   nah:{fach:["Nachsetzzeichen E", "Nachsetzzeichen K", "Vorsetzzeichen S"],
+        alltag:["verstärkte Ausführung", "kegelige Bohrung", "nichtrostender Stahl"],
+        zeichen:["E", "K", "S"]}},
+
+  {alltag:"aus nichtrostendem Stahl - und es steht VOR dem Basiszeichen", fach:"Vorsetzzeichen S", zeichen:"S",
+   nah:{fach:["Nachsetzzeichen P2", "Vorsetzzeichen K", "Vorsetzzeichen L"],
+        alltag:["höchste Genauigkeit", "Käfig mit Wälzkörpern", "freier Ring"],
+        zeichen:["P2", "K", "L"]}},
+
+  {alltag:"Bohrungsdurchmesser 30 mm", fach:"Bohrungskennzahl 06", zeichen:"06",
+   nah:{fach:["Bohrungskennzahl 30", "Bohrungskennzahl 05", "Bohrungskennzahl 07"],
+        alltag:["Bohrungsdurchmesser 150 mm", "Bohrungsdurchmesser 25 mm", "Bohrungsdurchmesser 35 mm"],
+        zeichen:["30", "05", "07"]}},
+
+  {alltag:"Bohrungsdurchmesser 15 mm - hier gilt die Regel noch nicht", fach:"Bohrungskennzahl 02", zeichen:"02",
+   nah:{fach:["Bohrungskennzahl 03", "Bohrungskennzahl 01", "Bohrungskennzahl 15"],
+        alltag:["Bohrungsdurchmesser 17 mm", "Bohrungsdurchmesser 12 mm", "Bohrungsdurchmesser 10 mm"],
+        zeichen:["03", "01", "15"]}},
+
+  {alltag:"Bohrungsdurchmesser 100 mm", fach:"Bohrungskennzahl 20", zeichen:"20",
+   nah:{fach:["Bohrungskennzahl 100", "Bohrungskennzahl 19", "Bohrungskennzahl 22"],
+        alltag:["Bohrungsdurchmesser 500 mm", "Bohrungsdurchmesser 95 mm", "Bohrungsdurchmesser 110 mm"],
+        zeichen:["100", "19", "22"]}}
+];
+
+/* Formelzeichen lesbar machen: F(M,zul) wird zu F mit tiefgestelltem M,zul. */
+function zeichenHtml(z){
+  return z.replace(/\(([^)]*)\)/g, "<sub>$1</sub>");
+}
+
+function el(id){ return document.getElementById(id); }
+
+function mischen(liste){
+  var a = liste.slice();
+  for(var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var h = a[i]; a[i] = a[j]; a[j] = h;
+  }
+  return a;
+}
+
+/* ---------- Die Tafel zum Nachschlagen ---------- */
+
+el("tafel").innerHTML = BEGRIFFE.map(function(b){
+  return "<tr><td>" + b.alltag + "</td><td><strong>" + b.fach + "</strong></td>"
+       + "<td>" + (b.zeichen ? zeichenHtml(b.zeichen) : "&ndash;") + "</td></tr>";
+}).join("");
+
+/* ---------- Der Durchgang ---------- */
+
+/* Vier Fragerichtungen. Die ersten beiden drehen sich um die Bedeutung, die
+   letzten beiden um das Formelzeichen - daran entscheidet der Schalter
+   "Woran üben", was drankommt. Gefragt wird nie nach einem leeren
+   Formelzeichen, sonst wäre die Frage nicht beantwortbar. */
+var RICHTUNGEN = [
+  {von:"alltag",  nach:"fach",    art:"begriffe",
+   frage:"Wie heißt das im Fachbegriff?"},
+  {von:"fach",    nach:"alltag",  art:"begriffe",
+   frage:"Was ist damit gemeint?"},
+  {von:"fach",    nach:"zeichen", art:"zeichen",
+   frage:"Welches Kurzzeichen gehört dazu?"},
+  {von:"zeichen", nach:"fach",    art:"zeichen",
+   frage:"Welche Bauart steht hinter diesem Zeichen?"}
+];
+
+/* Wie viele der drei falschen Antworten naheliegende Verwechslungen sind.
+   Einfach: keine - die Ablenker kommen aus dem ganzen Feld und lassen sich oft
+   schon dem Thema nach ausschließen. Schwer: alle drei, dann hilft nur noch,
+   den Begriff wirklich zu kennen. Mittel liegt dazwischen. */
+var STUFEN = {einfach:0, mittel:2, schwer:3};
+
+var runde = [];
+var nr = 0;
+var richtig = 0;
+var fehler = [];
+var jeFertig = false;
+
+function stufe(){ return STUFEN[el("wahlStufe").value] || 0; }
+
+function richtungen(){
+  var m = el("wahlModus").value;
+  return RICHTUNGEN.filter(function(r){ return m === "mix" || r.art === m; });
+}
+
+function passt(b, r){ return !!b[r.von] && !!b[r.nach]; }
+
+/* Welche Begriffe kommen im gewählten Modus überhaupt in Frage? Nach dem
+   Formelzeichen eines Begriffs zu fragen, der keines hat, geht nicht. */
+function vorrat(){
+  var rs = richtungen();
+  return BEGRIFFE.filter(function(b){
+    return rs.some(function(r){ return passt(b, r); });
+  });
+}
+
+/* Drei falsche Antworten: erst so viele naheliegende, wie die Stufe vorsieht,
+   dann auffüllen aus dem ganzen Feld - und falls das nicht reicht (kleiner
+   Vorrat), doch wieder mit naheliegenden. */
+function ablenker(begriff, ebene, wieviel){
+  var genommen = [begriff[ebene]];
+  var aus = [];
+
+  function dazu(liste, bis){
+    mischen(liste).forEach(function(text){
+      if(aus.length >= bis || !text) return;
+      if(genommen.indexOf(text) !== -1) return;
+      genommen.push(text);
+      aus.push(text);
+    });
+  }
+
+  var nah = (begriff.nah && begriff.nah[ebene]) || [];
+  var feld = BEGRIFFE.filter(function(b){ return b !== begriff && b[ebene]; })
+    .map(function(b){ return b[ebene]; });
+
+  dazu(nah, Math.min(wieviel, 3));
+  dazu(feld, 3);
+  dazu(nah, 3);
+  return aus;
+}
+
+function aufgabeBauen(begriff){
+  var moeglich = richtungen().filter(function(r){ return passt(begriff, r); });
+  var r = moeglich[Math.floor(Math.random() * moeglich.length)];
+
+  var optionen = ablenker(begriff, r.nach, stufe()).map(function(text){
+    return {text:text, richtig:false};
+  });
+  optionen.push({text:begriff[r.nach], richtig:true});
+
+  return {richtung:r, begriff:begriff, optionen:mischen(optionen)};
+}
+
+function standZeigen(){
+  el("stand").textContent = "Begriff " + Math.min(nr + 1, runde.length)
+    + " von " + runde.length;
+  el("punkte").textContent = nr ? richtig + " richtig" : "";
+  el("balken").style.width = (100 * nr / runde.length) + "%";
+}
+
+function zeigen(){
+  if(nr >= runde.length) return abschluss();
+
+  var a = aufgabeBauen(runde[nr]);
+  standZeigen();
+  el("frage").textContent = a.richtung.frage;
+  el("gefragt").innerHTML = a.richtung.von === "zeichen"
+    ? zeichenHtml(a.begriff.zeichen)
+    : a.begriff[a.richtung.von];
+
+  el("auswahl").innerHTML = "";
+  a.optionen.forEach(function(o){
+    var k = document.createElement("button");
+    k.type = "button";
+    k.innerHTML = a.richtung.nach === "zeichen" ? zeichenHtml(o.text) : o.text;
+    k.addEventListener("click", function(){ antwort(a, o, k); });
+    el("auswahl").appendChild(k);
+  });
+
+  el("rueck").hidden = true;
+  el("btnWeiter").hidden = true;
+}
+
+function antwort(a, gewaehlt, knopf){
+  var knoepfe = [].slice.call(el("auswahl").children);
+  knoepfe.forEach(function(k){ k.disabled = true; });
+
+  var stimmt = gewaehlt.richtig;
+  knopf.className = stimmt ? "richtig" : "falsch";
+  if(!stimmt){
+    /* Die richtige Antwort mit markieren - sonst bleibt offen, was gestimmt hätte. */
+    knoepfe.forEach(function(k, i){
+      if(a.optionen[i].richtig) k.className = "richtig";
+    });
+    fehler.push(a.begriff);
+  } else {
+    richtig++;
+  }
+
+  var r = el("rueck");
+  r.className = "rueckmeldung " + (stimmt ? "ja" : "nein");
+  r.innerHTML = "<strong>" + (stimmt ? "Richtig." : "Nicht ganz.") + "</strong>"
+    + a.begriff.alltag.charAt(0).toUpperCase() + a.begriff.alltag.slice(1)
+    + " heißt <strong>" + a.begriff.fach + "</strong>"
+    + (a.begriff.zeichen ? " und steht als " + zeichenHtml(a.begriff.zeichen)
+        + " in der Formel." : ". Ein eigenes Formelzeichen hat der Begriff nicht.");
+  r.hidden = false;
+
+  nr++;
+  standZeigen();
+  el("btnWeiter").hidden = false;
+  el("btnWeiter").textContent = nr >= runde.length ? "Ergebnis" : "Weiter";
+  el("btnWeiter").focus();
+}
+
+function abschluss(){
+  el("ende").hidden = false;
+  el("balken").style.width = "100%";
+  el("bilanz").textContent = richtig + " von " + runde.length + " richtig";
+
+  var anteil = richtig / runde.length;
+  el("urteil").textContent = anteil === 1
+    ? "Vollständig. Die Begriffe sitzen."
+    : anteil >= 0.8
+      ? "Fast vollständig – die wenigen offenen Begriffe lohnen eine Wiederholung."
+      : anteil >= 0.5
+        ? "Die Hälfte sitzt. Geh die Tafel unten einmal durch und wiederhole dann."
+        : "Noch wacklig. Die Tafel unten hat alle Begriffe – und danach noch einmal.";
+
+  var einzeln = [];
+  fehler.forEach(function(b){ if(einzeln.indexOf(b) === -1) einzeln.push(b); });
+  el("fehlerliste").innerHTML = einzeln.length
+    ? "<p>Offen geblieben: <strong>"
+      + einzeln.map(function(b){ return b.fach; }).join("</strong>, <strong>")
+      + "</strong></p>"
+    : "";
+  el("btnFehler").hidden = !einzeln.length;
+  el("btnWeiter").hidden = true;
+
+  /* Jetzt darf die Tafel offen stehen - nachgeschlagen wird danach, nicht
+     mittendrin. Nur wenn dieser Teil weggeschnitten wurde (Baukasten), bleibt
+     alles, wie es ist. */
+  jeFertig = true;
+  if(!el("tafelSchalter").hidden) tafelZeigen(true);
+
+  /* Laeuft ein Wettkampf, gehoert das Ergebnis dort hinein. */
+  document.dispatchEvent(new CustomEvent("tbk-durchgang-ende",
+    {detail:{richtig: richtig, gesamt: runde.length}}));
+
+  el("ende").scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+function starten(liste){
+  runde = mischen(liste);
+  nr = 0;
+  richtig = 0;
+  fehler = [];
+  el("ende").hidden = true;
+  zeigen();
+}
+
+/* ---------- Einstellungen ---------- */
+
+/* Der Umfang richtet sich nach dem Vorrat: "Nur Formelzeichen" hat weniger
+   Begriffe zu bieten als der Mix, weil vier von ihnen keines haben. */
+function umfangGrenzen(hoechstens){
+  var f = el("wahlUmfang");
+  f.max = String(hoechstens);
+  var wert = Number(f.value);
+  if(!wert || wert > hoechstens) f.value = String(hoechstens);
+  else if(wert < 5) f.value = String(Math.min(5, hoechstens));
+  el("umfangMax").textContent = "5 bis " + hoechstens + " Begriffe";
+}
+
+/* Wettkampf (assets/wettkampf.js): Dieses Training hat seinen Durchgang
+   schon - feste Rundenzahl, Uhr und Ergebnisbild. Der Baustein sorgt hier
+   nur dafuer, dass alle mit demselben Code dieselben Begriffe in derselben
+   Reihenfolge bekommen; den Ergebniscode haengt er unten an das eigene
+   Ergebnisbild, und abschluss() sagt ihm, wie der Durchgang ausging. */
+window.TBK_WETTKAMPF = { neu: function(){ neuerDurchgang(); }, ergebnisAn: "ende" };
+
+function neuerDurchgang(){
+  var v = vorrat();
+  umfangGrenzen(v.length);
+  starten(mischen(v).slice(0, Number(el("wahlUmfang").value)));
+}
+
+/* Beim Tippen und beim Drehen am Mausrad kommt eine Änderung nach der anderen.
+   Ein kurzer Aufschub sorgt dafür, dass daraus ein neuer Durchgang wird und
+   nicht zehn. */
+var wartend = null;
+function baldNeu(){
+  clearTimeout(wartend);
+  wartend = setTimeout(neuerDurchgang, 250);
+}
+
+el("wahlStufe").addEventListener("change", neuerDurchgang);
+el("wahlModus").addEventListener("change", neuerDurchgang);
+el("wahlUmfang").addEventListener("change", baldNeu);
+
+/* ---------- Die Tafel ---------- */
+
+/* Sie steht nicht von vornherein offen: Wer beim Durchgang danebenschaut, übt
+   das Nachschlagen statt des Erinnerns. Abrufbar ist sie trotzdem jederzeit -
+   dann aber mit Warnschild. */
+function tafelZeigen(an){
+  el("tafelBox").hidden = !an;
+  el("btnTafel").textContent = an ? "Tafel ausblenden" : "Tafel einblenden";
+  el("tafelWarnung").hidden = !an || jeFertig;
+}
+
+el("btnTafel").addEventListener("click", function(){
+  tafelZeigen(el("tafelBox").hidden);
+});
+
+el("btnWeiter").addEventListener("click", zeigen);
+el("btnNeu").addEventListener("click", neuerDurchgang);
+el("btnNochmal").addEventListener("click", neuerDurchgang);
+el("btnFehler").addEventListener("click", function(){
+  var einzeln = [];
+  fehler.forEach(function(b){ if(einzeln.indexOf(b) === -1) einzeln.push(b); });
+  starten(einzeln);
+});
+
+neuerDurchgang();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/wettkampf.js"></script>
+</body>
+</html>

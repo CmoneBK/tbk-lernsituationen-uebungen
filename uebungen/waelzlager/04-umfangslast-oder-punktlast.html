@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Umfangslast oder Punktlast?</title>
+<meta name="description" content="Acht Fälle: welcher Ring wandert unter der Last, und welche Toleranz braucht sein Sitz nach DIN 5425-1?">
+<meta name="dauer" content="25 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .bild{margin:16px 0 4px}
+  .bild svg{width:100%; height:auto; display:block}
+  .bild figcaption{font-size:13px; color:var(--muted); margin-top:6px;
+    text-align:center}
+  .zwei{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  @media (max-width:760px){ .zwei{grid-template-columns:1fr} }
+  table.fr td:first-child{line-height:1.5}
+  table.fr select{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:7px 8px; border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  table.fr input[type="number"]{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:7px 8px; border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  table.fr select:focus-visible, table.fr input:focus-visible{
+    outline:2px solid var(--accent); outline-offset:1px}
+  .urteil{font-size:13.5px; line-height:1.4; font-weight:600;
+    white-space:nowrap}
+  .urteil.ja{color:var(--ok)}
+  .urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+  .lagerbez{font-variant-numeric:tabular-nums; font-weight:700}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Wälzlager</p>
+    <h1>Umfangslast oder Punktlast?</h1>
+    <p class="lead">Die Frage entscheidet, welcher Ring fest sitzen muss &ndash; und sie hängt nicht am Lager, sondern daran, was sich dreht.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Umfangslast</strong> hat ein Ring, wenn die Last nacheinander über seinen ganzen Umfang wandert. <strong>Punktlast</strong> hat er, wenn sie immer an derselben Stelle drückt.</p>
+      <p>Der Ring mit Umfangslast braucht eine <strong>feste Passung</strong> &ndash; sonst wandert er auf seinem Sitz und reibt ihn auf (Passungsrost). Der Ring mit Punktlast darf lose sitzen, und beim Loslager <em>muss</em> er es sogar.</p>
+      <p><strong>Zur Auswahl:</strong> Sie enthält alle Toleranzgruppen, die DIN 5425-1 nennt. Kleinbuchstaben sind Wellen, Großbuchstaben Bohrungen &ndash; mehr verrät sie nicht. Schlagt die Tabelle <em>Wälzlagerpassungen</em> nach.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Acht Fälle</h2>
+
+    <div class="tabellenrahmen">
+      <table class="fr">
+        <thead><tr><th>Der Fall</th><th>Antwort</th><th></th></tr></thead>
+        <tbody id="tabFragen"></tbody>
+      </table>
+    </div>
+
+    <p>
+      <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+      <button type="button" class="knopf leise" id="btnLoesung">Lösung zeigen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz">Noch nichts gewählt.</p>
+
+    <details id="loesungBox">
+      <summary>Lösung mit Begründung</summary>
+      <div id="loesung"></div>
+    </details>
+
+
+    <h3>Weiterarbeiten</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="maschinenelemente-lager-lagerungen-gestalten.html">Werkzeug &#8222;Lagerungen gestalten&#8220; öffnen</a>
+    </p>
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot;
+    <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+function el(id){ return document.getElementById(id); }
+
+var FRAGEN = [
+  {
+    "frage": "<strong>Welle mit Gewichtsbelastung.</strong> Innenring dreht, Außenring steht, die Last kommt immer von oben. Welche Toleranz braucht der <em>Wellensitz</em>? (mittlere Last)",
+    "loesung": "j, k, m",
+    "warum": "Der Innenring dreht sich unter der stehenden Last hindurch - die Last wandert also um seinen Umfang. Umfangslast verlangt eine feste Passung; bei mittlerer Belastung sind das j, k oder m."
+  },
+  {
+    "frage": "Dieselbe Welle: Welche Toleranz braucht die <em>Gehäusebohrung</em>?",
+    "loesung": "J, H, G, F",
+    "warum": "Der Außenring steht still und die Last drückt immer an dieselbe Stelle: Punktlast. Eine Spielpassung ist zulässig, und zwar beliebig groß - beim Loslager ist sie sogar nötig."
+  },
+  {
+    "frage": "<strong>Kfz-Vorderrad.</strong> Der Außenring dreht sich mit dem Rad, die Last kommt von der Fahrbahn und steht. Welche Toleranz braucht die <em>Nabenbohrung</em>? (mittlere Last)",
+    "loesung": "K, M, N",
+    "warum": "Jetzt hat der <em>Außenring</em> Umfangslast - er dreht sich unter der stehenden Last hindurch. Also feste Passung im Gehäuse, und der Innenring darf lose sitzen. Genau umgekehrt wie beim ersten Fall."
+  },
+  {
+    "frage": "<strong>Zentrifuge mit großer Unwucht.</strong> Innenring dreht, und die Fliehkraft dreht mit. Welche Toleranz braucht der <em>Wellensitz</em>?",
+    "loesung": "j, h, g, f",
+    "warum": "Die Last dreht mit dem Innenring mit, drückt also immer auf dieselbe Stelle des Innenrings: Punktlast. Spielpassung zulässig. Der Außenring steht still und bekommt die Umfangslast ab."
+  },
+  {
+    "frage": "<strong>Nabenlagerung mit großer Unwucht.</strong> Außenring dreht, die Last dreht mit. Welcher Ring hat Umfangslast?",
+    "loesung": "der Innenring",
+    "warum": "Die Last dreht mit dem Außenring mit - für ihn ist sie Punktlast. Der stehende Innenring bekommt sie nacheinander über seinen ganzen Umfang ab."
+  },
+  {
+    "frage": "Ein <strong>Laufrad</strong> am Kran, schwer beladen. Der Außenring dreht unter stehender Last. Welche Toleranz braucht die <em>Bohrung</em>? (hohe Last)",
+    "loesung": "N, P",
+    "warum": "Umfangslast am Außenring bei hoher Belastung. Je größer die Last, desto fester muss der Sitz sein - sonst wandert der Ring und frisst sich den Sitz auf."
+  },
+  {
+    "frage": "Eine Getriebewelle, <strong>niedrige Last</strong>, Innenring dreht unter stehender Last. Welche Toleranz braucht der <em>Wellensitz</em>?",
+    "loesung": "h, k",
+    "warum": "Umfangslast, aber niedrige Belastung: eine Übergangs- oder Übermaßpassung genügt. Mehr wäre nur teurer und beim Ausbau ärgerlich."
+  },
+  {
+    "frage": "Welchen Grundtoleranzgrad nimmt man für den <em>Wellensitz</em> im Normalfall?",
+    "loesung": "IT6",
+    "warum": "Für Wellen meist IT6, für Bohrungen meist IT7. Bei erhöhten Anforderungen an Laufruhe und Laufgenauigkeit werden auch kleinere Grade verwendet."
+  }
+];
+var WAHL = [
+  "h, k",
+  "j, k, m",
+  "m, n, p, r",
+  "j, h, g, f",
+  "J, H, G, F",
+  "J, K",
+  "K, M, N",
+  "N, P",
+  "der Innenring",
+  "der Außenring",
+  "beide Ringe",
+  "keiner von beiden",
+  "IT5",
+  "IT6",
+  "IT7",
+  "IT8"
+];
+
+/* --------------------------------------------------------------------------
+   Die Fragen: je eine Zeile mit einer Auswahl. Geprüft wird auf Knopfdruck,
+   nicht bei jeder Wahl - wer zwischendurch die Meinung ändert, soll das
+   ohne rote Zwischenrufe tun können.
+   -------------------------------------------------------------------------- */
+(function fragenAufbauen(){
+  var tb = el("tabFragen");
+  FRAGEN.forEach(function(f, i){
+    var tr = document.createElement("tr");
+
+    var td0 = document.createElement("td");
+    td0.innerHTML = f.frage;
+    tr.appendChild(td0);
+
+    var td1 = document.createElement("td");
+    var s = document.createElement("select");
+    s.id = "f" + i;
+    s.setAttribute("aria-label", "Antwort zu Frage " + (i + 1));
+    var leer = document.createElement("option");
+    leer.value = ""; leer.textContent = "– bitte wählen –";
+    s.appendChild(leer);
+    (f.wahl || WAHL).forEach(function(w){
+      var o = document.createElement("option");
+      o.value = w; o.textContent = w;
+      s.appendChild(o);
+    });
+    td1.appendChild(s);
+    tr.appendChild(td1);
+
+    var td2 = document.createElement("td");
+    td2.className = "urteil"; td2.id = "u" + i; td2.textContent = "–";
+    tr.appendChild(td2);
+
+    tb.appendChild(tr);
+  });
+
+  el("loesung").innerHTML = FRAGEN.map(function(f, i){
+    return "<p><strong>" + (i + 1) + ". " + f.loesung + "</strong> &ndash; "
+      + f.warum + "</p>";
+  }).join("");
+}());
+
+el("btnPruefen").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  FRAGEN.forEach(function(f, i){
+    var v = el("f" + i).value, u = el("u" + i);
+    if(!v){ u.textContent = "–"; u.className = "urteil"; offen++; return; }
+    var ok = v === f.loesung;
+    u.textContent = ok ? "richtig" : "nein";
+    u.className = "urteil " + (ok ? "ja" : "nein");
+    if(ok) r++;
+  });
+  el("bilanz").textContent = r + " von " + FRAGEN.length + " richtig."
+    + (offen ? " (" + offen + " noch offen.)" : "");
+  if(r === FRAGEN.length) el("loesungBox").open = true;
+});
+
+el("btnLoesung").addEventListener("click", function(){
+  el("loesungBox").open = true;
+});
+</script>
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/fortschritt.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

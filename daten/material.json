@@ -466,6 +466,57 @@
     ]
   },
   {
+    "typ": "uebungen",
+    "bereich": "Maschinenelemente",
+    "kategorie": "Lager",
+    "name": "Wälzlager und Lagerungen",
+    "platz": 1,
+    "untertitel": "Sieben Übungen zu Wälzlagern: Bezeichnung, Bauform, X und O, Passung, Lebensdauer, Montage und Schadensbilder.",
+    "url": "uebungen/waelzlager/index.html",
+    "werkzeuge": [
+      {
+        "datei": "maschinenelemente-lager-waelzlager-auswaehlen.html",
+        "name": "Wälzlager auswählen",
+        "art": "lektion"
+      },
+      {
+        "datei": "maschinenelemente-lager-lagerungen-gestalten.html",
+        "name": "Lagerungen gestalten",
+        "art": "lektion"
+      }
+    ],
+    "inhalt": [
+      {
+        "titel": "Die Bezeichnung lesen",
+        "url": "uebungen/waelzlager/01-die-bezeichnung-lesen.html"
+      },
+      {
+        "titel": "Welches Lager passt hierher?",
+        "url": "uebungen/waelzlager/02-welches-lager-passt-hierher.html"
+      },
+      {
+        "titel": "X oder O?",
+        "url": "uebungen/waelzlager/03-x-oder-o.html"
+      },
+      {
+        "titel": "Umfangslast oder Punktlast?",
+        "url": "uebungen/waelzlager/04-umfangslast-oder-punktlast.html"
+      },
+      {
+        "titel": "Lebensdauer rechnen",
+        "url": "uebungen/waelzlager/05-lebensdauer-rechnen.html"
+      },
+      {
+        "titel": "Womit wird montiert?",
+        "url": "uebungen/waelzlager/06-womit-wird-montiert.html"
+      },
+      {
+        "titel": "Was ist hier schiefgegangen?",
+        "url": "uebungen/waelzlager/07-was-ist-hier-schiefgegangen.html"
+      }
+    ]
+  },
+  {
     "typ": "trainings",
     "bereich": "Fertigungstechnik",
     "kategorie": "Zerspanung",
@@ -725,6 +776,37 @@
       {
         "titel": "Verfahren und Kennzahl",
         "url": "trainings/schweissen/05-verfahren-und-kennzahl.html"
+      }
+    ]
+  },
+  {
+    "typ": "trainings",
+    "bereich": "Maschinenelemente",
+    "kategorie": "Lager",
+    "name": "Wälzlager",
+    "platz": 1,
+    "untertitel": "Wiederholung mit Rückmeldung – Formelzeichen der Lebensdauerrechnung und Kurzzeichen nach DIN 623-1.",
+    "url": "trainings/waelzlager/index.html",
+    "werkzeuge": [
+      {
+        "datei": "maschinenelemente-lager-waelzlager-auswaehlen.html",
+        "name": "Wälzlager auswählen",
+        "art": "lektion"
+      },
+      {
+        "datei": "maschinenelemente-lager-lagerungen-gestalten.html",
+        "name": "Lagerungen gestalten",
+        "art": "lektion"
+      }
+    ],
+    "inhalt": [
+      {
+        "titel": "Begriffe und Formelzeichen",
+        "url": "trainings/waelzlager/01-begriffe-und-formelzeichen.html"
+      },
+      {
+        "titel": "Bauform und Kurzzeichen",
+        "url": "trainings/waelzlager/02-bauform-und-kurzzeichen.html"
       }
     ]
   }

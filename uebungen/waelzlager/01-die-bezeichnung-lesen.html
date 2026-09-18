@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Die Bezeichnung lesen</title>
+<meta name="description" content="Zehn Wälzlagerbezeichnungen nach DIN 623-1 zerlegen: Lagerart, Maßreihe, Bohrungskennzahl, Vor- und Nachsetzzeichen.">
+<meta name="dauer" content="20 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .bild{margin:16px 0 4px}
+  .bild svg{width:100%; height:auto; display:block}
+  .bild figcaption{font-size:13px; color:var(--muted); margin-top:6px;
+    text-align:center}
+  .zwei{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  @media (max-width:760px){ .zwei{grid-template-columns:1fr} }
+  table.fr td:first-child{line-height:1.5}
+  table.fr select{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:7px 8px; border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  table.fr input[type="number"]{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:7px 8px; border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  table.fr select:focus-visible, table.fr input:focus-visible{
+    outline:2px solid var(--accent); outline-offset:1px}
+  .urteil{font-size:13.5px; line-height:1.4; font-weight:600;
+    white-space:nowrap}
+  .urteil.ja{color:var(--ok)}
+  .urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+  .lagerbez{font-variant-numeric:tabular-nums; font-weight:700}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Wälzlager</p>
+    <h1>Die Bezeichnung lesen</h1>
+    <p class="lead">Vier Ziffern, vier Aussagen &ndash; und eine Regel, die bei den kleinen Lagern nicht gilt.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Eine Wälzlagerbezeichnung ist kein Name, sondern eine Beschreibung.</strong> Wer sie lesen kann, weiß ohne Katalog, welche Bauart vor ihm liegt und wie groß die Bohrung ist.</p>
+      <p>Von hinten gelesen: Die letzten zwei Ziffern sind die <strong>Bohrungskennzahl</strong>, davor stehen Durchmesser- und Breitenreihe, ganz vorn die <strong>Lagerart</strong>. Was davor und dahinter steht, sind Vor- und Nachsetzzeichen.</p>
+      <p><strong>Zur Auswahl:</strong> Sie enthält alle Bohrungsdurchmesser der Tabelle und alle Lagerarten. Aus der Bezeichnung lässt sich nichts erraten &ndash; schlagt nach: <em>Wälzlager, Bezeichnung</em> im Tabellenbuch.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Zehn Bezeichnungen</h2>
+
+    <div class="tabellenrahmen">
+      <table class="fr">
+        <thead><tr><th>Bezeichnung und Frage</th><th>Antwort</th><th></th></tr></thead>
+        <tbody id="tabFragen"></tbody>
+      </table>
+    </div>
+
+    <p>
+      <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+      <button type="button" class="knopf leise" id="btnLoesung">Lösung zeigen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz">Noch nichts gewählt.</p>
+
+    <details id="loesungBox">
+      <summary>Lösung mit Begründung</summary>
+      <div id="loesung"></div>
+    </details>
+
+
+    <h3>Weiterarbeiten</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="maschinenelemente-lager-waelzlager-auswaehlen.html">Werkzeug &#8222;Wälzlager auswählen&#8220; öffnen</a>
+    </p>
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot;
+    <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+function el(id){ return document.getElementById(id); }
+
+var FRAGEN = [
+  {
+    "frage": "<span class=\"lagerbez\">6008</span> &ndash; welchen Bohrungsdurchmesser hat das Lager?",
+    "loesung": "40 mm",
+    "warum": "Kennzahl 08, und ab 04 gilt d = Kennzahl × 5 mm. 08 × 5 mm = 40 mm."
+  },
+  {
+    "frage": "<span class=\"lagerbez\">30208</span> &ndash; welche Lagerart ist das?",
+    "loesung": "Kegelrollenlager",
+    "warum": "Die erste Ziffer ist die Lagerart: 3 steht für Kegelrollenlager. Danach kommen Breitenreihe 0, Durchmesserreihe 2 und die Kennzahl 08."
+  },
+  {
+    "frage": "<span class=\"lagerbez\">7205 B</span> &ndash; was sagt das B?",
+    "loesung": "Berührungswinkel 40°",
+    "warum": "Das B ist ein Nachsetzzeichen und kennzeichnet die Ausführung mit 40° Berührungswinkel. Ohne ihn wüsste man nicht, wie steil die Drucklinie steht - und damit nicht, wie groß die Stützbasis wird."
+  },
+  {
+    "frage": "<span class=\"lagerbez\">6304&ndash;2Z</span> &ndash; was sagt das 2Z?",
+    "loesung": "Deckscheibe auf zwei Seiten",
+    "warum": "Z ist eine Deckscheibe, 2Z sind zwei. Eine Deckscheibe berührt den Innenring nicht - sie hält groben Schmutz draußen, dichtet aber nicht. Dafür gibt es RS und 2RS."
+  },
+  {
+    "frage": "<span class=\"lagerbez\">NU 312 E</span> &ndash; welchen Bohrungsdurchmesser hat das Lager?",
+    "loesung": "60 mm",
+    "warum": "Buchstaben vorn sind die Lagerart; die Kennzahl steht trotzdem hinten. 12 × 5 mm = 60 mm."
+  },
+  {
+    "frage": "<span class=\"lagerbez\">51210</span> &ndash; welche Lagerart ist das?",
+    "loesung": "Axial-Rillenkugellager",
+    "warum": "Lagerart 5. Es nimmt nur Längskraft auf und in nur einer Richtung - radial trägt es nichts."
+  },
+  {
+    "frage": "<span class=\"lagerbez\">6002</span> &ndash; welchen Bohrungsdurchmesser hat das Lager?",
+    "loesung": "15 mm",
+    "warum": "Hier greift die Regel nicht: Unter der Kennzahl 04 stehen feste Werte in der Tabelle. 00 = 10, 01 = 12, 02 = 15, 03 = 17 mm. 02 × 5 wären 10 mm - und das ist falsch."
+  },
+  {
+    "frage": "<span class=\"lagerbez\">22308</span> &ndash; welche Lagerart ist das?",
+    "loesung": "Tonnen- und Pendelrollenlager",
+    "warum": "Lagerart 2. Diese Lager gleichen Wellenversatz und Durchbiegung aus - dafür sind sie da."
+  },
+  {
+    "frage": "<span class=\"lagerbez\">S 6004</span> &ndash; was sagt das S?",
+    "loesung": "nichtrostender Stahl",
+    "warum": "S ist ein <em>Vorsetzzeichen</em> und steht deshalb vor dem Basiszeichen. Vorn steht, woraus es ist; hinten, wie es ausgeführt ist."
+  },
+  {
+    "frage": "<span class=\"lagerbez\">6210</span> und <span class=\"lagerbez\">6310</span> &ndash; worin unterscheiden sie sich?",
+    "loesung": "in der Durchmesserreihe",
+    "warum": "Beide haben die Kennzahl 10, also d = 50 mm. Die zweite Ziffer ist die Durchmesserreihe: 6210 hat D = 90 mm und C = 38 kN, 6310 hat D = 110 mm und C = 68 kN. Dieselbe Welle, fast die doppelte Tragzahl."
+  }
+];
+var WAHL = [
+  "10 mm",
+  "12 mm",
+  "15 mm",
+  "17 mm",
+  "20 mm",
+  "25 mm",
+  "30 mm",
+  "35 mm",
+  "40 mm",
+  "45 mm",
+  "50 mm",
+  "55 mm",
+  "60 mm",
+  "65 mm",
+  "70 mm",
+  "80 mm",
+  "100 mm",
+  "Rillenkugellager, einreihig",
+  "Rillenkugellager, zweireihig",
+  "Schrägkugellager, einreihig",
+  "Schrägkugellager, zweireihig",
+  "Pendelkugellager, zweireihig",
+  "Tonnen- und Pendelrollenlager",
+  "Kegelrollenlager",
+  "Axial-Rillenkugellager",
+  "Axial-Zylinderrollenlager",
+  "Zylinderrollenlager",
+  "Nadellager",
+  "Vierpunktlager",
+  "Berührungswinkel 40°",
+  "verstärkte Ausführung",
+  "kegelige Bohrung",
+  "Deckscheibe auf einer Seite",
+  "Deckscheibe auf zwei Seiten",
+  "Dichtscheibe auf einer Seite",
+  "Dichtscheibe auf beiden Seiten",
+  "höchste Maß-, Form- und Laufgenauigkeit",
+  "nichtrostender Stahl",
+  "Käfig mit Wälzkörpern",
+  "in der Lagerart",
+  "in der Breitenreihe",
+  "in der Durchmesserreihe",
+  "im Bohrungsdurchmesser"
+];
+
+/* --------------------------------------------------------------------------
+   Die Fragen: je eine Zeile mit einer Auswahl. Geprüft wird auf Knopfdruck,
+   nicht bei jeder Wahl - wer zwischendurch die Meinung ändert, soll das
+   ohne rote Zwischenrufe tun können.
+   -------------------------------------------------------------------------- */
+(function fragenAufbauen(){
+  var tb = el("tabFragen");
+  FRAGEN.forEach(function(f, i){
+    var tr = document.createElement("tr");
+
+    var td0 = document.createElement("td");
+    td0.innerHTML = f.frage;
+    tr.appendChild(td0);
+
+    var td1 = document.createElement("td");
+    var s = document.createElement("select");
+    s.id = "f" + i;
+    s.setAttribute("aria-label", "Antwort zu Frage " + (i + 1));
+    var leer = document.createElement("option");
+    leer.value = ""; leer.textContent = "– bitte wählen –";
+    s.appendChild(leer);
+    (f.wahl || WAHL).forEach(function(w){
+      var o = document.createElement("option");
+      o.value = w; o.textContent = w;
+      s.appendChild(o);
+    });
+    td1.appendChild(s);
+    tr.appendChild(td1);
+
+    var td2 = document.createElement("td");
+    td2.className = "urteil"; td2.id = "u" + i; td2.textContent = "–";
+    tr.appendChild(td2);
+
+    tb.appendChild(tr);
+  });
+
+  el("loesung").innerHTML = FRAGEN.map(function(f, i){
+    return "<p><strong>" + (i + 1) + ". " + f.loesung + "</strong> &ndash; "
+      + f.warum + "</p>";
+  }).join("");
+}());
+
+el("btnPruefen").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  FRAGEN.forEach(function(f, i){
+    var v = el("f" + i).value, u = el("u" + i);
+    if(!v){ u.textContent = "–"; u.className = "urteil"; offen++; return; }
+    var ok = v === f.loesung;
+    u.textContent = ok ? "richtig" : "nein";
+    u.className = "urteil " + (ok ? "ja" : "nein");
+    if(ok) r++;
+  });
+  el("bilanz").textContent = r + " von " + FRAGEN.length + " richtig."
+    + (offen ? " (" + offen + " noch offen.)" : "");
+  if(r === FRAGEN.length) el("loesungBox").open = true;
+});
+
+el("btnLoesung").addEventListener("click", function(){
+  el("loesungBox").open = true;
+});
+</script>
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/fortschritt.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

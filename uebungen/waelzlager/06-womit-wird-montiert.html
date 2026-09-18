@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Womit wird montiert?</title>
+<meta name="description" content="Acht Handgriffe an Wälzlagern und das Betriebsmittel dazu – von der Schlagbüchse bis zur Hydraulikpumpe.">
+<meta name="dauer" content="20 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .bild{margin:16px 0 4px}
+  .bild svg{width:100%; height:auto; display:block}
+  .bild figcaption{font-size:13px; color:var(--muted); margin-top:6px;
+    text-align:center}
+  .zwei{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  @media (max-width:760px){ .zwei{grid-template-columns:1fr} }
+  table.fr td:first-child{line-height:1.5}
+  table.fr select{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:7px 8px; border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  table.fr input[type="number"]{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:7px 8px; border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  table.fr select:focus-visible, table.fr input:focus-visible{
+    outline:2px solid var(--accent); outline-offset:1px}
+  .urteil{font-size:13.5px; line-height:1.4; font-weight:600;
+    white-space:nowrap}
+  .urteil.ja{color:var(--ok)}
+  .urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+  .lagerbez{font-variant-numeric:tabular-nums; font-weight:700}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Wälzlager</p>
+    <h1>Womit wird montiert?</h1>
+    <p class="lead">Ein Satz entscheidet über alle: Montagekräfte dürfen nicht über die Wälzkörper geleitet werden.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Wer das Lager über den falschen Ring auf die Welle treibt, drückt jede Kugel einmal in die Laufbahn.</strong> Die Vertiefungen sieht man nicht &ndash; man hört sie später. Deshalb greift die Kraft immer an dem Ring an, der den festen Sitz bekommt, und nur an ihm.</p>
+      <p>Acht Handgriffe, acht Betriebsmittel. In der Auswahl stehen auch Werkzeuge, die es gibt, die aber an dieser Stelle Schaden anrichten &ndash; eine Lötlampe zum Beispiel erwärmt alles, nur nicht gleichmäßig.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Acht Handgriffe</h2>
+
+    <div class="tabellenrahmen">
+      <table class="fr">
+        <thead><tr><th>Schritt</th><th>Womit?</th><th></th></tr></thead>
+        <tbody id="tabFragen"></tbody>
+      </table>
+    </div>
+
+    <p>
+      <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+      <button type="button" class="knopf leise" id="btnLoesung">Lösung zeigen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz">Noch nichts gewählt.</p>
+
+    <details id="loesungBox">
+      <summary>Lösung mit Begründung</summary>
+      <div id="loesung"></div>
+    </details>
+
+
+    <h3>Weiterarbeiten</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="maschinenelemente-lager-lagerungen-gestalten.html">Werkzeug &#8222;Lagerungen gestalten&#8220; öffnen</a>
+    </p>
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot;
+    <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+function el(id){ return document.getElementById(id); }
+
+var FRAGEN = [
+  {
+    "frage": "Ein <span class=\"lagerbez\">6206</span> (d = 30) bei Raumtemperatur auf den Lagersitz bringen",
+    "loesung": "Schlagbüchse und Montagescheibe",
+    "warum": "Bis etwa 80 mm Bohrungsdurchmesser lassen sich übliche Festsitze bei Raumtemperatur aufpressen. Die Schlagbüchse setzt die Kraft am <em>Innenring</em> an - dem Ring mit dem festen Sitz."
+  },
+  {
+    "frage": "Ein <span class=\"lagerbez\">6310</span> (d = 50) mit festem Sitz montieren, ohne zu schlagen",
+    "loesung": "induktives Anwärmgerät",
+    "warum": "Erwärmen weitet die Bohrung auf, und das Lager gleitet auf den Sitz. Induktiv geht es gleichmäßig - das vermeidet Wärmespannungen und die Maßabweichungen, die daraus folgen."
+  },
+  {
+    "frage": "Ein Pendelrollenlager mit kegeliger Bohrung auf eine Spannhülse ziehen",
+    "loesung": "Spannhülsenmutter mit Hakenschlüssel",
+    "warum": "Die Mutter zieht das Lager auf den Kegel. Ein zuvor eingesetztes Sicherungsblech verhindert - nach dem Umschlagen einer Blechnase in eine Nut der Mutter - deren Lösen."
+  },
+  {
+    "frage": "Das Lagerspiel dabei prüfen",
+    "loesung": "Fühlerlehre",
+    "warum": "Beim Aufschieben auf den Kegel wird der Innenring aufgeweitet, und das Spiel zwischen Wälzkörpern und Laufbahn schrumpft messbar mit. Geprüft wird es mit der Fühlerlehre."
+  },
+  {
+    "frage": "Das <strong>Axialspiel</strong> einer angestellten Lagerung einstellen",
+    "loesung": "Messuhr mit Magnetstativ",
+    "warum": "Uhr gegen die Stirnfläche der Welle, Welle axial hin und her drücken, Ausschlag ablesen. Das ist die einzige Methode, die eine Zahl liefert."
+  },
+  {
+    "frage": "Eine Nutmutter <span class=\"lagerbez\">KM8</span> anziehen",
+    "loesung": "Hakenschlüssel",
+    "warum": "Nutmuttern nach DIN 981 haben Nuten am Umfang, keine Schlüsselflächen. KM8 hat M40 × 1,5 - ein Feingewinde, damit sich das Anstellen fein dosieren lässt."
+  },
+  {
+    "frage": "Den Innenring eines kleinen Lagers von der Welle ziehen",
+    "loesung": "mechanische Abziehvorrichtung",
+    "warum": "Für kleine Lager reicht die mechanische Kraft. Bei größeren wird sie zu groß; dann wird der Innenring erwärmt - gleichmäßig und nur kurz, sonst dehnt sich die Welle mit."
+  },
+  {
+    "frage": "Ein Lager mit kegeliger Bohrung hydraulisch aufschieben",
+    "loesung": "Hydraulikpumpe über den Ölkanal in der Welle",
+    "warum": "Über Kanäle in der Welle wird Öl direkt in den Lagersitz gedrückt. Der Innenring weitet sich auf, und die Reibung sinkt so weit, dass sich das Lager leicht aufschieben lässt."
+  }
+];
+var WAHL = [
+  "Schlagbüchse und Montagescheibe",
+  "Kunststoffhammer",
+  "Schlosserhammer",
+  "mechanische Presse",
+  "hydraulische Presse",
+  "induktives Anwärmgerät",
+  "Heizplatte",
+  "Wärmeschrank",
+  "Ölbad",
+  "Anwärmring",
+  "Lötlampe",
+  "mechanische Abziehvorrichtung",
+  "Austreibdorn",
+  "Spannhülsenmutter mit Hakenschlüssel",
+  "Hakenschlüssel",
+  "Innensechskantschlüssel SW 6",
+  "Drehmomentschlüssel",
+  "Messuhr mit Magnetstativ",
+  "Fühlerlehre",
+  "Messschieber",
+  "Tiefenmaß",
+  "Haarwinkel",
+  "Hydraulikpumpe über den Ölkanal in der Welle",
+  "Schraubstock mit Schutzbacken",
+  "von Hand, ohne Werkzeug"
+];
+
+/* --------------------------------------------------------------------------
+   Die Fragen: je eine Zeile mit einer Auswahl. Geprüft wird auf Knopfdruck,
+   nicht bei jeder Wahl - wer zwischendurch die Meinung ändert, soll das
+   ohne rote Zwischenrufe tun können.
+   -------------------------------------------------------------------------- */
+(function fragenAufbauen(){
+  var tb = el("tabFragen");
+  FRAGEN.forEach(function(f, i){
+    var tr = document.createElement("tr");
+
+    var td0 = document.createElement("td");
+    td0.innerHTML = f.frage;
+    tr.appendChild(td0);
+
+    var td1 = document.createElement("td");
+    var s = document.createElement("select");
+    s.id = "f" + i;
+    s.setAttribute("aria-label", "Antwort zu Frage " + (i + 1));
+    var leer = document.createElement("option");
+    leer.value = ""; leer.textContent = "– bitte wählen –";
+    s.appendChild(leer);
+    (f.wahl || WAHL).forEach(function(w){
+      var o = document.createElement("option");
+      o.value = w; o.textContent = w;
+      s.appendChild(o);
+    });
+    td1.appendChild(s);
+    tr.appendChild(td1);
+
+    var td2 = document.createElement("td");
+    td2.className = "urteil"; td2.id = "u" + i; td2.textContent = "–";
+    tr.appendChild(td2);
+
+    tb.appendChild(tr);
+  });
+
+  el("loesung").innerHTML = FRAGEN.map(function(f, i){
+    return "<p><strong>" + (i + 1) + ". " + f.loesung + "</strong> &ndash; "
+      + f.warum + "</p>";
+  }).join("");
+}());
+
+el("btnPruefen").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  FRAGEN.forEach(function(f, i){
+    var v = el("f" + i).value, u = el("u" + i);
+    if(!v){ u.textContent = "–"; u.className = "urteil"; offen++; return; }
+    var ok = v === f.loesung;
+    u.textContent = ok ? "richtig" : "nein";
+    u.className = "urteil " + (ok ? "ja" : "nein");
+    if(ok) r++;
+  });
+  el("bilanz").textContent = r + " von " + FRAGEN.length + " richtig."
+    + (offen ? " (" + offen + " noch offen.)" : "");
+  if(r === FRAGEN.length) el("loesungBox").open = true;
+});
+
+el("btnLoesung").addEventListener("click", function(){
+  el("loesungBox").open = true;
+});
+</script>
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/fortschritt.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

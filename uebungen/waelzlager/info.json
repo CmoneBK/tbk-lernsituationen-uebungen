@@ -1,0 +1,27 @@
+{
+  "titel": "Maschinenelemente: Lager - Wälzlager und Lagerungen",
+  "platz": 1,
+  "lead": "Sieben Übungen zu Wälzlagern: die Bezeichnung lesen, die Bauform wählen, X von O unterscheiden, Umfangs- von Punktlast trennen, die Lebensdauer rechnen, richtig montieren und am ausgebauten Lager erkennen, was schiefging.",
+  "untertitel": "Sieben Übungen zu Wälzlagern: Bezeichnung, Bauform, X und O, Passung, Lebensdauer, Montage und Schadensbilder.",
+  "werkzeuge": [
+    {
+      "datei": "maschinenelemente-lager-waelzlager-auswaehlen.html",
+      "name": "Wälzlager auswählen",
+      "art": "lektion"
+    },
+    {
+      "datei": "maschinenelemente-lager-lagerungen-gestalten.html",
+      "name": "Lagerungen gestalten",
+      "art": "lektion"
+    }
+  ],
+  "reihenfolge": [
+    "01-die-bezeichnung-lesen.html",
+    "02-welches-lager-passt-hierher.html",
+    "03-x-oder-o.html",
+    "04-umfangslast-oder-punktlast.html",
+    "05-lebensdauer-rechnen.html",
+    "06-womit-wird-montiert.html",
+    "07-was-ist-hier-schiefgegangen.html"
+  ]
+}

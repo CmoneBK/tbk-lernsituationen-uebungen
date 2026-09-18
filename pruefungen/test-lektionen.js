@@ -15,6 +15,8 @@ const LEKTIONEN = [
   'fertigungstechnik-fuegeverfahren-schweissen.html',
   'fertigungstechnik-fuegeverfahren-ueberblick.html',
   'maschinenelemente-schrauben-schraubverbindungen.html',
+  'maschinenelemente-lager-waelzlager-auswaehlen.html',
+  'maschinenelemente-lager-lagerungen-gestalten.html',
 ];
 
 let fehler = 0;

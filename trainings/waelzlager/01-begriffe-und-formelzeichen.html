@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Begriffe und Formelzeichen</title>
+<meta name="description" content="Tragzahl, äquivalente Belastung, Lebensdauer, Umfangs- und Punktlast – Alltagssprache, Fachbegriff und Formelzeichen mit Rückmeldung.">
+<meta name="dauer" content="10 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .frage{font-size:15px; color:var(--muted); margin:0 0 4px}
+  .gefragt{font-size:23px; font-weight:700; margin:0 0 16px; line-height:1.3}
+  .auswahl{display:grid; gap:10px; grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+  .auswahl button{
+    font:600 15px/1.4 inherit; text-align:left; cursor:pointer;
+    background:var(--bg); color:var(--fg);
+    border:1px solid var(--border-stark); border-radius:10px; padding:12px 14px;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .auswahl button:hover:not(:disabled){border-color:var(--accent)}
+  .auswahl button:disabled{cursor:default}
+  .auswahl button.richtig{border-color:var(--ok); background:rgba(22,163,74,.14)}
+  .auswahl button.falsch{border-color:var(--bad); background:rgba(220,38,38,.12)}
+
+  .fortschritt{
+    height:8px; border-radius:999px; background:var(--border);
+    overflow:hidden; margin:0 0 14px;
+  }
+  .fortschritt i{display:block; height:100%; background:var(--accent); transition:width .2s ease}
+  .zaehler{display:flex; justify-content:space-between; font-size:13px;
+    color:var(--muted); margin:0 0 6px}
+  .bilanz{font-size:19px; font-weight:700; margin:0 0 8px}
+
+  /* Der Schalter ueber dem Durchgang. */
+  .stellkopf{margin:0 0 12px; font-size:15px}
+  .stellkopf .fussnote{margin-left:8px}
+
+  /* Warnschild vor der Tafel, solange der Durchgang noch laeuft. */
+  .warnschild{
+    display:flex; gap:12px; align-items:flex-start;
+    border:1px solid var(--warn); border-left-width:4px; border-radius:10px;
+    background:var(--card); padding:12px 16px; margin:0 0 14px; font-size:15px;
+  }
+  .warnschild::before{content:"\26A0"; font-size:20px; line-height:1.1; color:var(--warn)}
+  .warnschild strong{display:block}
+  @media (prefers-reduced-motion:reduce){.fortschritt i{transition:none}}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; Wälzlager</p>
+    <h1>Begriffe und Formelzeichen</h1>
+    <p class="lead">C, C<sub>0</sub>, P, L<sub>10h</sub> &ndash; vier Zeichen, die man nicht verwechseln darf. Und zwei Wörter für dieselbe Kraft, die trotzdem Verschiedenes meinen.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Worum es geht:</strong> Jeder Begriff hat drei Ebenen &ndash;
+        wie man ihn <em>sagt</em>, wie er <em>heißt</em> und wie er in der Formel
+        <em>steht</em>. Gefragt wird immer nach einer davon.</p>
+      <p>Schwierigkeit, Richtung und Umfang stellst du unten selbst ein.
+        Falsch beantwortete Begriffe kommen am Ende noch einmal.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Durchgang</h2>
+
+    <div class="box">
+      <p class="stellkopf"><strong>So wird gefragt</strong>
+        <span class="fussnote">Jede Änderung beginnt einen neuen Durchgang.</span></p>
+      <div class="felder">
+        <label class="feld">Schwierigkeit
+          <select id="wahlStufe">
+            <option value="einfach">Einfach</option>
+            <option value="mittel">Mittel</option>
+            <option value="schwer">Schwer</option>
+          </select>
+        </label>
+        <label class="feld">Woran üben
+          <select id="wahlModus">
+            <option value="mix">Mix</option>
+            <option value="begriffe">Nur Bedeutung</option>
+            <option value="zeichen">Nur Formelzeichen</option>
+          </select>
+        </label>
+        <label class="feld">Umfang
+          <input type="number" id="wahlUmfang" min="5" max="16" step="1" value="16">
+          <span class="fussnote" id="umfangMax">5 bis 16 Begriffe</span>
+        </label>
+      </div>
+      <p class="fussnote" style="margin:12px 0 0">
+        <strong>Einfach:</strong> die falschen Antworten kommen aus dem ganzen Feld.
+        <strong>Mittel:</strong> teils naheliegende Verwechslungen.
+        <strong>Schwer:</strong> nur noch Begriffe, die dasselbe meinen könnten &ndash;
+        aber etwas anderes bedeuten. &ndash;
+        <strong>Mix</strong> fragt Bedeutung und Formelzeichen,
+        die beiden anderen jeweils nur das eine.
+      </p>
+    </div>
+
+    <div class="box">
+      <div class="zaehler">
+        <span id="stand">&ndash;</span>
+        <span id="punkte"></span>
+      </div>
+      <div class="fortschritt"><i id="balken" style="width:0%"></i></div>
+
+      <p class="frage" id="frage">&ndash;</p>
+      <p class="gefragt" id="gefragt">&ndash;</p>
+      <div class="auswahl" id="auswahl"></div>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+
+      <p style="margin-top:16px">
+        <button type="button" class="knopf" id="btnWeiter" hidden>Weiter</button>
+        <button type="button" class="knopf leise" id="btnNeu">Von vorn</button>
+      </p>
+    </div>
+
+    <div id="ende" hidden>
+      <h3>Ergebnis</h3>
+      <div class="box">
+        <p class="bilanz" id="bilanz">&ndash;</p>
+        <p id="urteil"></p>
+        <div id="fehlerliste"></div>
+        <p style="margin-top:14px">
+          <button type="button" class="knopf" id="btnFehler" hidden>Nur die Fehler wiederholen</button>
+          <button type="button" class="knopf leise" id="btnNochmal">Ganzen Durchgang wiederholen</button>
+        </p>
+      </div>
+    </div>
+
+    <h2><span class="nr">2</span>Die Tafel</h2>
+    <p>Zum Nachschlagen &ndash; und zum Ausdrucken, falls die Begriffe noch neu sind.
+      Nach dem Durchgang steht sie von selbst offen.</p>
+
+    <p id="tafelSchalter">
+      <button type="button" class="knopf leise" id="btnTafel">Tafel einblenden</button>
+    </p>
+
+    <div id="tafelBox" hidden>
+      <div class="warnschild" id="tafelWarnung" hidden>
+        <span><strong>Der Durchgang läuft noch.</strong>
+          Wer jetzt hier nachsieht, übt das Nachschlagen statt des Erinnerns &ndash;
+          und das Ergebnis sagt hinterher wenig. Wenn du nicht weiterweißt, ist
+          es oft lehrreicher, falsch zu tippen: Der Begriff kommt am Ende noch
+          einmal.</span>
+      </div>
+
+      <div class="tabellenrahmen">
+        <table>
+          <thead>
+            <tr><th>So sagt man es</th><th>So heißt es</th><th>So steht es in der Formel</th></tr>
+          </thead>
+          <tbody id="tafel"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <h2><span class="nr">3</span>Warum die Zeichen?</h2>
+
+    <details>
+      <summary>1. Reicht &bdquo;die Tragzahl&ldquo; nicht?</summary>
+      <p>Nein, denn es gibt zwei. Die <em>dynamische</em> Tragzahl C gilt
+        f&uuml;r das drehende Lager und f&uuml;hrt zur Lebensdauer. Die
+        <em>statische</em> Tragzahl C<sub>0</sub> gilt f&uuml;r das stehende
+        und sagt, wann die W&auml;lzk&ouml;rper bleibende Eindr&uuml;cke
+        hinterlassen. Wer sie verwechselt, rechnet mit der falschen Zahl und
+        merkt es nicht &ndash; das Ergebnis sieht ja plausibel aus.</p>
+      <p>C<sub>0</sub> taucht in der Lebensdauerrechnung trotzdem auf: in
+        der Hilfsgr&ouml;&szlig;e (f<sub>0</sub> &middot; F<sub>a</sub>) /
+        C<sub>0</sub>, aus der der Grenzwert <em>e</em> folgt. Beide Zahlen
+        werden also gebraucht, nur an verschiedenen Stellen.</p>
+    </details>
+
+    <details>
+      <summary>2. Was bedeutet die 10 in L<sub>10</sub>?</summary>
+      <p>Zehn Prozent. So viele Lager d&uuml;rfen vor Erreichen dieser
+        Lebensdauer ausfallen &ndash; die Erlebenswahrscheinlichkeit
+        betr&auml;gt 90 Prozent. Wer 20 000 Stunden rechnet, hat nicht
+        20 000 Stunden garantiert; er hat neun von zehn Lagern, die sie
+        schaffen. In einer Anlage mit vierzig Lagerstellen sind das
+        rechnerisch vier, die es nicht tun.</p>
+    </details>
+
+    <details>
+      <summary>3. Umfangslast und Punktlast &ndash; warum zwei W&ouml;rter
+        f&uuml;r dasselbe Gewicht?</summary>
+      <p>Weil es nicht dasselbe ist. Ob eine Last f&uuml;r einen Ring
+        Umfangslast oder Punktlast ist, h&auml;ngt nicht an ihrer
+        Gr&ouml;&szlig;e, sondern daran, was sich dreht: der Ring oder die
+        Last. Dieselbe Kraft ist f&uuml;r den Innenring Umfangslast und
+        f&uuml;r den Au&szlig;enring Punktlast &ndash; und genau daraus
+        folgt, welcher Ring fest sitzen muss.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> C sagt, was das Lager tr&auml;gt.
+      P sagt, was es tragen muss. L<sub>10h</sub> sagt, wie lange das
+      gutgeht.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>In der Lektion l&auml;sst sich derselbe Rechenweg Schritt f&uuml;r
+      Schritt nachfahren &ndash; mit dem durchgerechneten Beispiel des
+      Tabellenbuchs als Probe.</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="maschinenelemente-lager-waelzlager-auswaehlen.html"
+         data-fach="1">Werkzeug W&auml;lzlager ausw&auml;hlen &ouml;ffnen</a>
+    </p>
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot; <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+/* Die Begriffe in drei Ebenen. Sie decken sich mit dem Sprachumschalter des
+   Werkzeugs "Maschinenelemente: Schrauben - Schraubverbindungen", damit beides
+   dieselbe Sprache spricht. Ein leeres Zeichen heißt: dafür gibt es keines.
+
+   "nah" sammelt je Ebene die naheliegenden Verwechslungen: Ausdrücke, die vom
+   Wortlaut oder von der Bedeutung her dasselbe meinen könnten, es aber nicht
+   tun. Sie tragen die Schwierigkeitsgrade Mittel und Schwer. Wer die Liste
+   erweitert, sollte hier mitziehen - sonst füllt der Durchgang mit Ablenkern
+   aus dem ganzen Feld auf, und die schwere Stufe wird stellenweise leicht. */
+var BEGRIFFE = [
+  {alltag:"die Kraft, die ein Lager für eine Million Umdrehungen aushält", fach:"dynamische Tragzahl", zeichen:"C",
+   nah:{fach:["statische Tragzahl", "äquivalente Belastung", "Radiallast"],
+        alltag:["die Kraft, die das stehende Lager aushält", "die gedachte Kraft aus Radial- und Axiallast", "die Kraft, bei der der Ring bricht"],
+        zeichen:["C0", "P", "Fr"]}},
+
+  {alltag:"die Kraft, die das stehende Lager ohne bleibende Eindrücke aushält", fach:"statische Tragzahl", zeichen:"C0",
+   nah:{fach:["dynamische Tragzahl", "Grenzlast", "Bruchlast"],
+        alltag:["die Kraft für eine Million Umdrehungen", "die Kraft, mit der angestellt wird", "die Kraft, die der Käfig aushält"],
+        zeichen:["C", "P", "Fa"]}},
+
+  {alltag:"die gedachte Kraft, die dieselbe Beanspruchung erzeugt wie Radial- und Axiallast zusammen", fach:"äquivalente Belastung", zeichen:"P",
+   nah:{fach:["dynamische Tragzahl", "Ersatzkraft", "Gesamtlast"],
+        alltag:["die Summe aus Radial- und Axialkraft", "die Kraft, die das Lager gerade noch aushält", "die Kraft am größten Wälzkörper"],
+        zeichen:["C", "C0", "Fr"]}},
+
+  {alltag:"die Last quer zur Welle", fach:"Radialkraft", zeichen:"Fr",
+   nah:{fach:["Axialkraft", "Querkraft", "Umfangskraft"],
+        alltag:["die Last längs der Welle", "die Kraft, mit der angestellt wird", "die Kraft am Umfang des Innenrings"],
+        zeichen:["Fa", "P", "C"]}},
+
+  {alltag:"die Last längs der Welle", fach:"Axialkraft", zeichen:"Fa",
+   nah:{fach:["Radialkraft", "Längskraft", "Schubkraft"],
+        alltag:["die Last quer zur Welle", "die Kraft am Umfang", "die Kraft, die den Käfig belastet"],
+        zeichen:["Fr", "P", "C0"]}},
+
+  {alltag:"die Zahl, mit der die Radiallast in die Rechnung eingeht", fach:"Radiallastfaktor", zeichen:"X",
+   nah:{fach:["Axiallastfaktor", "Betriebsfaktor", "Lastfaktor"],
+        alltag:["die Zahl für die Axiallast", "der Grenzwert, ab dem die Axiallast mitzählt", "der Faktor aus der Tragzahltabelle"],
+        zeichen:["Y", "e", "f0"]}},
+
+  {alltag:"die Zahl, mit der die Axiallast in die Rechnung eingeht", fach:"Axiallastfaktor", zeichen:"Y",
+   nah:{fach:["Radiallastfaktor", "Betriebsfaktor", "Belastungsfaktor"],
+        alltag:["die Zahl für die Radiallast", "der Grenzwert aus der Tabelle", "die Zahl, die zur Tragzahl gehört"],
+        zeichen:["X", "e", "f0"]}},
+
+  {alltag:"der Grenzwert, ab dem die Axiallast mitzählt", fach:"Grenzwert e", zeichen:"e",
+   nah:{fach:["Radiallastfaktor", "Axiallastfaktor", "Beiwert der Tragzahl"],
+        alltag:["die Zahl für die Radiallast", "die Zahl für die Axiallast", "die Erlebenswahrscheinlichkeit"],
+        zeichen:["X", "Y", "f0"]}},
+
+  {alltag:"die Lebensdauer, die 90 von 100 Lagern erreichen, in Millionen Umdrehungen", fach:"nominelle Lebensdauer", zeichen:"L10",
+   nah:{fach:["Gebrauchsdauer", "Betriebsdauer", "erweiterte Lebensdauer"],
+        alltag:["die Lebensdauer in Betriebsstunden", "die Zeit bis zum ersten Ausfall", "die Zeit bis zum Nachschmieren"],
+        zeichen:["L10h", "C", "n"]}},
+
+  {alltag:"dieselbe Lebensdauer, aber in Betriebsstunden", fach:"nominelle Lebensdauer in Stunden", zeichen:"L10h",
+   nah:{fach:["nominelle Lebensdauer", "Gebrauchsdauer", "Nachschmierfrist"],
+        alltag:["die Lebensdauer in Millionen Umdrehungen", "die Zeit bis zum ersten Ausfall", "die Laufzeit bis zur Inspektion"],
+        zeichen:["L10", "n", "P"]}},
+
+  {alltag:"wie oft sich die Welle in der Minute dreht", fach:"Drehzahl", zeichen:"n",
+   nah:{fach:["Umfangsgeschwindigkeit", "Drehfrequenz", "Winkelgeschwindigkeit"],
+        alltag:["wie schnell der Umfang läuft", "wie viele Umdrehungen das Lager aushält", "wie viele Stunden es läuft"],
+        zeichen:["L10", "P", "C"]}},
+
+  {alltag:"die Last wandert nacheinander über den ganzen Umfang des Rings", fach:"Umfangslast", zeichen:"",
+   nah:{fach:["Punktlast", "Wechsellast", "Umlauflast"],
+        alltag:["die Last drückt immer an dieselbe Stelle", "die Last wechselt zwischen zwei Richtungen", "die Last dreht sich mit dem Ring mit"],
+        zeichen:[]}},
+
+  {alltag:"die Last drückt immer an dieselbe Stelle des Rings", fach:"Punktlast", zeichen:"",
+   nah:{fach:["Umfangslast", "Ruhelast", "Stelllast"],
+        alltag:["die Last wandert über den ganzen Umfang", "die Last wirkt nur beim Anlaufen", "die Last greift punktförmig am Wälzkörper an"],
+        zeichen:[]}},
+
+  {alltag:"der Abstand der Druckkegelspitzen einer angestellten Lagerung", fach:"Stützbasis", zeichen:"H",
+   nah:{fach:["Lagerabstand", "Stützweite", "Kipplänge"],
+        alltag:["der Abstand der beiden Lagermitten", "die Breite des Lagers", "der Abstand der Wälzkörper"],
+        zeichen:["L", "B", "T"]}},
+
+  {alltag:"das Spiel zwischen Wälzkörpern und Laufbahnen", fach:"Lagerluft", zeichen:"",
+   nah:{fach:["Vorspannung", "Axialspiel", "Passung"],
+        alltag:["die Kraft, mit der die Ringe zusammengedrückt sind", "das Spiel zwischen Ring und Gehäuse", "der Abstand der beiden Lager"],
+        zeichen:[]}},
+
+  {alltag:"das Lager ist ab Einbau zusammengedrückt, es hat kein Spiel mehr", fach:"Vorspannung", zeichen:"",
+   nah:{fach:["Lagerluft", "Anstellung", "Klemmkraft"],
+        alltag:["das Spiel zwischen Wälzkörpern und Laufbahnen", "das Einstellen des Lagerspiels beim Einbau", "die Kraft, mit der die Nutmutter angezogen wird"],
+        zeichen:[]}}
+];
+
+/* Formelzeichen lesbar machen: F(M,zul) wird zu F mit tiefgestelltem M,zul. */
+function zeichenHtml(z){
+  return z.replace(/\(([^)]*)\)/g, "<sub>$1</sub>");
+}
+
+function el(id){ return document.getElementById(id); }
+
+function mischen(liste){
+  var a = liste.slice();
+  for(var i = a.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var h = a[i]; a[i] = a[j]; a[j] = h;
+  }
+  return a;
+}
+
+/* ---------- Die Tafel zum Nachschlagen ---------- */
+
+el("tafel").innerHTML = BEGRIFFE.map(function(b){
+  return "<tr><td>" + b.alltag + "</td><td><strong>" + b.fach + "</strong></td>"
+       + "<td>" + (b.zeichen ? zeichenHtml(b.zeichen) : "&ndash;") + "</td></tr>";
+}).join("");
+
+/* ---------- Der Durchgang ---------- */
+
+/* Vier Fragerichtungen. Die ersten beiden drehen sich um die Bedeutung, die
+   letzten beiden um das Formelzeichen - daran entscheidet der Schalter
+   "Woran üben", was drankommt. Gefragt wird nie nach einem leeren
+   Formelzeichen, sonst wäre die Frage nicht beantwortbar. */
+var RICHTUNGEN = [
+  {von:"alltag",  nach:"fach",    art:"begriffe",
+   frage:"Wie heißt das im Fachbegriff?"},
+  {von:"fach",    nach:"alltag",  art:"begriffe",
+   frage:"Was ist damit gemeint?"},
+  {von:"fach",    nach:"zeichen", art:"zeichen",
+   frage:"Welches Formelzeichen gehört dazu?"},
+  {von:"zeichen", nach:"fach",    art:"zeichen",
+   frage:"Welcher Begriff steht hinter diesem Zeichen?"}
+];
+
+/* Wie viele der drei falschen Antworten naheliegende Verwechslungen sind.
+   Einfach: keine - die Ablenker kommen aus dem ganzen Feld und lassen sich oft
+   schon dem Thema nach ausschließen. Schwer: alle drei, dann hilft nur noch,
+   den Begriff wirklich zu kennen. Mittel liegt dazwischen. */
+var STUFEN = {einfach:0, mittel:2, schwer:3};
+
+var runde = [];
+var nr = 0;
+var richtig = 0;
+var fehler = [];
+var jeFertig = false;
+
+function stufe(){ return STUFEN[el("wahlStufe").value] || 0; }
+
+function richtungen(){
+  var m = el("wahlModus").value;
+  return RICHTUNGEN.filter(function(r){ return m === "mix" || r.art === m; });
+}
+
+function passt(b, r){ return !!b[r.von] && !!b[r.nach]; }
+
+/* Welche Begriffe kommen im gewählten Modus überhaupt in Frage? Nach dem
+   Formelzeichen eines Begriffs zu fragen, der keines hat, geht nicht. */
+function vorrat(){
+  var rs = richtungen();
+  return BEGRIFFE.filter(function(b){
+    return rs.some(function(r){ return passt(b, r); });
+  });
+}
+
+/* Drei falsche Antworten: erst so viele naheliegende, wie die Stufe vorsieht,
+   dann auffüllen aus dem ganzen Feld - und falls das nicht reicht (kleiner
+   Vorrat), doch wieder mit naheliegenden. */
+function ablenker(begriff, ebene, wieviel){
+  var genommen = [begriff[ebene]];
+  var aus = [];
+
+  function dazu(liste, bis){
+    mischen(liste).forEach(function(text){
+      if(aus.length >= bis || !text) return;
+      if(genommen.indexOf(text) !== -1) return;
+      genommen.push(text);
+      aus.push(text);
+    });
+  }
+
+  var nah = (begriff.nah && begriff.nah[ebene]) || [];
+  var feld = BEGRIFFE.filter(function(b){ return b !== begriff && b[ebene]; })
+    .map(function(b){ return b[ebene]; });
+
+  dazu(nah, Math.min(wieviel, 3));
+  dazu(feld, 3);
+  dazu(nah, 3);
+  return aus;
+}
+
+function aufgabeBauen(begriff){
+  var moeglich = richtungen().filter(function(r){ return passt(begriff, r); });
+  var r = moeglich[Math.floor(Math.random() * moeglich.length)];
+
+  var optionen = ablenker(begriff, r.nach, stufe()).map(function(text){
+    return {text:text, richtig:false};
+  });
+  optionen.push({text:begriff[r.nach], richtig:true});
+
+  return {richtung:r, begriff:begriff, optionen:mischen(optionen)};
+}
+
+function standZeigen(){
+  el("stand").textContent = "Begriff " + Math.min(nr + 1, runde.length)
+    + " von " + runde.length;
+  el("punkte").textContent = nr ? richtig + " richtig" : "";
+  el("balken").style.width = (100 * nr / runde.length) + "%";
+}
+
+function zeigen(){
+  if(nr >= runde.length) return abschluss();
+
+  var a = aufgabeBauen(runde[nr]);
+  standZeigen();
+  el("frage").textContent = a.richtung.frage;
+  el("gefragt").innerHTML = a.richtung.von === "zeichen"
+    ? zeichenHtml(a.begriff.zeichen)
+    : a.begriff[a.richtung.von];
+
+  el("auswahl").innerHTML = "";
+  a.optionen.forEach(function(o){
+    var k = document.createElement("button");
+    k.type = "button";
+    k.innerHTML = a.richtung.nach === "zeichen" ? zeichenHtml(o.text) : o.text;
+    k.addEventListener("click", function(){ antwort(a, o, k); });
+    el("auswahl").appendChild(k);
+  });
+
+  el("rueck").hidden = true;
+  el("btnWeiter").hidden = true;
+}
+
+function antwort(a, gewaehlt, knopf){
+  var knoepfe = [].slice.call(el("auswahl").children);
+  knoepfe.forEach(function(k){ k.disabled = true; });
+
+  var stimmt = gewaehlt.richtig;
+  knopf.className = stimmt ? "richtig" : "falsch";
+  if(!stimmt){
+    /* Die richtige Antwort mit markieren - sonst bleibt offen, was gestimmt hätte. */
+    knoepfe.forEach(function(k, i){
+      if(a.optionen[i].richtig) k.className = "richtig";
+    });
+    fehler.push(a.begriff);
+  } else {
+    richtig++;
+  }
+
+  var r = el("rueck");
+  r.className = "rueckmeldung " + (stimmt ? "ja" : "nein");
+  r.innerHTML = "<strong>" + (stimmt ? "Richtig." : "Nicht ganz.") + "</strong>"
+    + a.begriff.alltag.charAt(0).toUpperCase() + a.begriff.alltag.slice(1)
+    + " heißt <strong>" + a.begriff.fach + "</strong>"
+    + (a.begriff.zeichen ? " und steht als " + zeichenHtml(a.begriff.zeichen)
+        + " in der Formel." : ". Ein eigenes Formelzeichen hat der Begriff nicht.");
+  r.hidden = false;
+
+  nr++;
+  standZeigen();
+  el("btnWeiter").hidden = false;
+  el("btnWeiter").textContent = nr >= runde.length ? "Ergebnis" : "Weiter";
+  el("btnWeiter").focus();
+}
+
+function abschluss(){
+  el("ende").hidden = false;
+  el("balken").style.width = "100%";
+  el("bilanz").textContent = richtig + " von " + runde.length + " richtig";
+
+  var anteil = richtig / runde.length;
+  el("urteil").textContent = anteil === 1
+    ? "Vollständig. Die Begriffe sitzen."
+    : anteil >= 0.8
+      ? "Fast vollständig – die wenigen offenen Begriffe lohnen eine Wiederholung."
+      : anteil >= 0.5
+        ? "Die Hälfte sitzt. Geh die Tafel unten einmal durch und wiederhole dann."
+        : "Noch wacklig. Die Tafel unten hat alle Begriffe – und danach noch einmal.";
+
+  var einzeln = [];
+  fehler.forEach(function(b){ if(einzeln.indexOf(b) === -1) einzeln.push(b); });
+  el("fehlerliste").innerHTML = einzeln.length
+    ? "<p>Offen geblieben: <strong>"
+      + einzeln.map(function(b){ return b.fach; }).join("</strong>, <strong>")
+      + "</strong></p>"
+    : "";
+  el("btnFehler").hidden = !einzeln.length;
+  el("btnWeiter").hidden = true;
+
+  /* Jetzt darf die Tafel offen stehen - nachgeschlagen wird danach, nicht
+     mittendrin. Nur wenn dieser Teil weggeschnitten wurde (Baukasten), bleibt
+     alles, wie es ist. */
+  jeFertig = true;
+  if(!el("tafelSchalter").hidden) tafelZeigen(true);
+
+  /* Laeuft ein Wettkampf, gehoert das Ergebnis dort hinein. */
+  document.dispatchEvent(new CustomEvent("tbk-durchgang-ende",
+    {detail:{richtig: richtig, gesamt: runde.length}}));
+
+  el("ende").scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+function starten(liste){
+  runde = mischen(liste);
+  nr = 0;
+  richtig = 0;
+  fehler = [];
+  el("ende").hidden = true;
+  zeigen();
+}
+
+/* ---------- Einstellungen ---------- */
+
+/* Der Umfang richtet sich nach dem Vorrat: "Nur Formelzeichen" hat weniger
+   Begriffe zu bieten als der Mix, weil vier von ihnen keines haben. */
+function umfangGrenzen(hoechstens){
+  var f = el("wahlUmfang");
+  f.max = String(hoechstens);
+  var wert = Number(f.value);
+  if(!wert || wert > hoechstens) f.value = String(hoechstens);
+  else if(wert < 5) f.value = String(Math.min(5, hoechstens));
+  el("umfangMax").textContent = "5 bis " + hoechstens + " Begriffe";
+}
+
+/* Wettkampf (assets/wettkampf.js): Dieses Training hat seinen Durchgang
+   schon - feste Rundenzahl, Uhr und Ergebnisbild. Der Baustein sorgt hier
+   nur dafuer, dass alle mit demselben Code dieselben Begriffe in derselben
+   Reihenfolge bekommen; den Ergebniscode haengt er unten an das eigene
+   Ergebnisbild, und abschluss() sagt ihm, wie der Durchgang ausging. */
+window.TBK_WETTKAMPF = { neu: function(){ neuerDurchgang(); }, ergebnisAn: "ende" };
+
+function neuerDurchgang(){
+  var v = vorrat();
+  umfangGrenzen(v.length);
+  starten(mischen(v).slice(0, Number(el("wahlUmfang").value)));
+}
+
+/* Beim Tippen und beim Drehen am Mausrad kommt eine Änderung nach der anderen.
+   Ein kurzer Aufschub sorgt dafür, dass daraus ein neuer Durchgang wird und
+   nicht zehn. */
+var wartend = null;
+function baldNeu(){
+  clearTimeout(wartend);
+  wartend = setTimeout(neuerDurchgang, 250);
+}
+
+el("wahlStufe").addEventListener("change", neuerDurchgang);
+el("wahlModus").addEventListener("change", neuerDurchgang);
+el("wahlUmfang").addEventListener("change", baldNeu);
+
+/* ---------- Die Tafel ---------- */
+
+/* Sie steht nicht von vornherein offen: Wer beim Durchgang danebenschaut, übt
+   das Nachschlagen statt des Erinnerns. Abrufbar ist sie trotzdem jederzeit -
+   dann aber mit Warnschild. */
+function tafelZeigen(an){
+  el("tafelBox").hidden = !an;
+  el("btnTafel").textContent = an ? "Tafel ausblenden" : "Tafel einblenden";
+  el("tafelWarnung").hidden = !an || jeFertig;
+}
+
+el("btnTafel").addEventListener("click", function(){
+  tafelZeigen(el("tafelBox").hidden);
+});
+
+el("btnWeiter").addEventListener("click", zeigen);
+el("btnNeu").addEventListener("click", neuerDurchgang);
+el("btnNochmal").addEventListener("click", neuerDurchgang);
+el("btnFehler").addEventListener("click", function(){
+  var einzeln = [];
+  fehler.forEach(function(b){ if(einzeln.indexOf(b) === -1) einzeln.push(b); });
+  starten(einzeln);
+});
+
+neuerDurchgang();
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/wettkampf.js"></script>
+</body>
+</html>

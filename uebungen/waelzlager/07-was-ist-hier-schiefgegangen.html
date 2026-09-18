@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Was ist hier schiefgegangen?</title>
+<meta name="description" content="Acht Schadensbilder an Wälzlagern und ihre Ursache – von der Brinellierung bis zum festgefressenen Loslager.">
+<meta name="dauer" content="25 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .bild{margin:16px 0 4px}
+  .bild svg{width:100%; height:auto; display:block}
+  .bild figcaption{font-size:13px; color:var(--muted); margin-top:6px;
+    text-align:center}
+  .zwei{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  @media (max-width:760px){ .zwei{grid-template-columns:1fr} }
+  table.fr td:first-child{line-height:1.5}
+  table.fr select{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:7px 8px; border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  table.fr input[type="number"]{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:7px 8px; border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  table.fr select:focus-visible, table.fr input:focus-visible{
+    outline:2px solid var(--accent); outline-offset:1px}
+  .urteil{font-size:13.5px; line-height:1.4; font-weight:600;
+    white-space:nowrap}
+  .urteil.ja{color:var(--ok)}
+  .urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+  .lagerbez{font-variant-numeric:tabular-nums; font-weight:700}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Wälzlager</p>
+    <h1>Was ist hier schiefgegangen?</h1>
+    <p class="lead">Ein ausgebautes Lager erzählt, was mit ihm gemacht wurde. Man muss es nur lesen können.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Ein Lager fällt selten einfach so aus.</strong> Fast immer steht am Anfang ein Fehler bei der Montage, bei der Passung oder beim Anstellen &ndash; und fast immer hinterlässt dieser Fehler ein Muster, an dem man ihn wiedererkennt.</p>
+      <p>Acht Befunde aus der Instandhaltung. Zu jedem gibt es genau eine Ursache, die das Muster erklärt. Die Auswahl enthält auch Antworten, die richtig klingen und das Bild trotzdem nicht erklären.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Acht Befunde</h2>
+
+    <div class="tabellenrahmen">
+      <table class="fr">
+        <thead><tr><th>Das Schadensbild</th><th>Die Ursache</th><th></th></tr></thead>
+        <tbody id="tabFragen"></tbody>
+      </table>
+    </div>
+
+    <p>
+      <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+      <button type="button" class="knopf leise" id="btnLoesung">Lösung zeigen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz">Noch nichts gewählt.</p>
+
+    <details id="loesungBox">
+      <summary>Lösung mit Begründung</summary>
+      <div id="loesung"></div>
+    </details>
+
+
+    <h3>Weiterarbeiten</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="maschinenelemente-lager-lagerungen-gestalten.html">Werkzeug &#8222;Lagerungen gestalten&#8220; öffnen</a>
+    </p>
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot;
+    <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+function el(id){ return document.getElementById(id); }
+
+var FRAGEN = [
+  {
+    "frage": "Auf der Laufbahn des Innenrings sitzen <strong>gleichmäßig verteilte Eindrücke</strong> im Abstand der Kugeln.",
+    "loesung": "Die Montagekraft lief über die Wälzkörper.",
+    "warum": "Jede Kugel wurde einmal in die Laufbahn gedrückt - das Muster verrät die Ursache eindeutig, denn nur beim Stillstand stehen die Kugeln in gleichem Abstand. Der Fachbegriff dafür ist Brinellierung."
+  },
+  {
+    "frage": "Der Lagersitz auf der Welle ist <strong>rotbraun und rau</strong>, das Lager sitzt lose.",
+    "loesung": "Der Ring mit Umfangslast hatte eine zu lose Passung.",
+    "warum": "Passungsrost. Der Ring ist auf seinem Sitz gewandert; die Mikrobewegung reibt Werkstoff ab, der sofort oxidiert. Wer Umfangslast mit einer Spielpassung baut, bekommt das zuverlässig."
+  },
+  {
+    "frage": "Feine, quer verlaufende <strong>Riefen auf der Laufbahn</strong>, regelmäßig wie ein Waschbrett.",
+    "loesung": "Stromdurchgang durch das Lager.",
+    "warum": "Ströme suchen den Weg über die Wälzkörper, und an jeder Berührstelle schmilzt etwas Werkstoff. Typisch an Elektromotoren mit Frequenzumrichter."
+  },
+  {
+    "frage": "Das Lager ist <strong>blau angelaufen</strong> und das Fett verkokt.",
+    "loesung": "Die Vorspannung war zu hoch.",
+    "warum": "Zu kleine Lagerluft führt zu erhöhten Druckspannungen zwischen Wälzkörpern und Ringen. Daraus wird Reibung, daraus Wärme - und über 120 °C verliert der Wälzlagerstahl seine Härte."
+  },
+  {
+    "frage": "Eine angestellte Lagerung läuft nach einer Stunde <strong>heiß</strong>. Kalt war sie leichtgängig.",
+    "loesung": "X-Anordnung: die Welle wurde wärmer und das Spiel verschwand.",
+    "warum": "Bei der X-Anordnung verringert sich das Lagerspiel, wenn die Welle wärmer wird als das Gehäuse. Wer ohne Reserve anstellt, hat nach der Aufwärmphase eine Vorspannung, die dort nicht hingehört."
+  },
+  {
+    "frage": "Die Welle <strong>eiert</strong>, obwohl die Lager neu sind. Die Wälzkörper tragen ungleichmäßig.",
+    "loesung": "Die Lagerluft ist zu groß.",
+    "warum": "Bei zu großer Lagerluft tragen die Wälzkörper nicht mehr gleichmäßig über ihren Umfang. Das führt zu Ungenauigkeiten bei der Wellenführung - und zu Verschleiß, genau wie bei zu wenig Luft."
+  },
+  {
+    "frage": "Ein neues Lager rauscht schon nach kurzer Zeit. Im Fett stecken <strong>metallische Partikel</strong>.",
+    "loesung": "Beim Einbau kam Schmutz ins Lager.",
+    "warum": "Verunreinigungen innerhalb des Lagers setzen die Lebensdauer erheblich herab: Die Wälzbewegung presst sie in die Lauffläche ein. Deshalb wird der Montageplatz staubfrei gehalten und das Lager erst kurz vor dem Einbau ausgepackt."
+  },
+  {
+    "frage": "Der Außenring eines <strong>Loslagers</strong> hat sich im Gehäuse festgefressen.",
+    "loesung": "Die Gehäusepassung war zu eng.",
+    "warum": "Ein Loslager muss wandern können - das ist seine ganze Aufgabe. Sitzt der Außenring fest, nimmt die Welle die Wärmedehnung auf, und dann drückt sie gegen beide Lager."
+  }
+];
+var WAHL = [
+  "Die Montagekraft lief über die Wälzkörper.",
+  "Der Ring mit Umfangslast hatte eine zu lose Passung.",
+  "Der Ring mit Punktlast hatte eine zu feste Passung.",
+  "Stromdurchgang durch das Lager.",
+  "Die Vorspannung war zu hoch.",
+  "Die Lagerluft ist zu groß.",
+  "X-Anordnung: die Welle wurde wärmer und das Spiel verschwand.",
+  "O-Anordnung: die Welle wurde wärmer und das Spiel verschwand.",
+  "Beim Einbau kam Schmutz ins Lager.",
+  "Die Gehäusepassung war zu eng.",
+  "Das Lager wurde zu stark geölt.",
+  "Das Lager wurde über 120 °C erwärmt.",
+  "Die Welle war zu weich.",
+  "Das Lager lief zu langsam."
+];
+
+/* --------------------------------------------------------------------------
+   Die Fragen: je eine Zeile mit einer Auswahl. Geprüft wird auf Knopfdruck,
+   nicht bei jeder Wahl - wer zwischendurch die Meinung ändert, soll das
+   ohne rote Zwischenrufe tun können.
+   -------------------------------------------------------------------------- */
+(function fragenAufbauen(){
+  var tb = el("tabFragen");
+  FRAGEN.forEach(function(f, i){
+    var tr = document.createElement("tr");
+
+    var td0 = document.createElement("td");
+    td0.innerHTML = f.frage;
+    tr.appendChild(td0);
+
+    var td1 = document.createElement("td");
+    var s = document.createElement("select");
+    s.id = "f" + i;
+    s.setAttribute("aria-label", "Antwort zu Frage " + (i + 1));
+    var leer = document.createElement("option");
+    leer.value = ""; leer.textContent = "– bitte wählen –";
+    s.appendChild(leer);
+    (f.wahl || WAHL).forEach(function(w){
+      var o = document.createElement("option");
+      o.value = w; o.textContent = w;
+      s.appendChild(o);
+    });
+    td1.appendChild(s);
+    tr.appendChild(td1);
+
+    var td2 = document.createElement("td");
+    td2.className = "urteil"; td2.id = "u" + i; td2.textContent = "–";
+    tr.appendChild(td2);
+
+    tb.appendChild(tr);
+  });
+
+  el("loesung").innerHTML = FRAGEN.map(function(f, i){
+    return "<p><strong>" + (i + 1) + ". " + f.loesung + "</strong> &ndash; "
+      + f.warum + "</p>";
+  }).join("");
+}());
+
+el("btnPruefen").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  FRAGEN.forEach(function(f, i){
+    var v = el("f" + i).value, u = el("u" + i);
+    if(!v){ u.textContent = "–"; u.className = "urteil"; offen++; return; }
+    var ok = v === f.loesung;
+    u.textContent = ok ? "richtig" : "nein";
+    u.className = "urteil " + (ok ? "ja" : "nein");
+    if(ok) r++;
+  });
+  el("bilanz").textContent = r + " von " + FRAGEN.length + " richtig."
+    + (offen ? " (" + offen + " noch offen.)" : "");
+  if(r === FRAGEN.length) el("loesungBox").open = true;
+});
+
+el("btnLoesung").addEventListener("click", function(){
+  el("loesungBox").open = true;
+});
+</script>
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/fortschritt.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>

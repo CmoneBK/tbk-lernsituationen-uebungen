@@ -1,0 +1,22 @@
+{
+  "titel": "Maschinenelemente: Lager - Wälzlager",
+  "platz": 1,
+  "lead": "Wiederholung mit Rückmeldung – die Formelzeichen der Lebensdauerrechnung und die Kurzzeichen der Bezeichnung nach DIN 623-1.",
+  "untertitel": "Wiederholung mit Rückmeldung – Formelzeichen der Lebensdauerrechnung und Kurzzeichen nach DIN 623-1.",
+  "werkzeuge": [
+    {
+      "datei": "maschinenelemente-lager-waelzlager-auswaehlen.html",
+      "name": "Wälzlager auswählen",
+      "art": "lektion"
+    },
+    {
+      "datei": "maschinenelemente-lager-lagerungen-gestalten.html",
+      "name": "Lagerungen gestalten",
+      "art": "lektion"
+    }
+  ],
+  "reihenfolge": [
+    "01-begriffe-und-formelzeichen.html",
+    "02-bauform-und-kurzzeichen.html"
+  ]
+}

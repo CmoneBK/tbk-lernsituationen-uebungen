@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>X oder O?</title>
+<meta name="description" content="Acht Fälle: welche Lagerungsart, und warum. Stützbasis, Kippspiel und was die Wärme mit dem Lagerspiel macht.">
+<meta name="dauer" content="25 min">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/zeichnen.js"></script>
+<script src="../../assets/waelzlager.js"></script>
+<style>
+  /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .bild{margin:16px 0 4px}
+  .bild svg{width:100%; height:auto; display:block}
+  .bild figcaption{font-size:13px; color:var(--muted); margin-top:6px;
+    text-align:center}
+  .zwei{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+  @media (max-width:760px){ .zwei{grid-template-columns:1fr} }
+  table.fr td:first-child{line-height:1.5}
+  table.fr select{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:7px 8px; border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  table.fr input[type="number"]{
+    width:100%; box-sizing:border-box; font:inherit; font-size:14px;
+    padding:7px 8px; border-radius:8px; color:inherit; background:var(--bg);
+    border:1px solid var(--border-stark);
+  }
+  table.fr select:focus-visible, table.fr input:focus-visible{
+    outline:2px solid var(--accent); outline-offset:1px}
+  .urteil{font-size:13.5px; line-height:1.4; font-weight:600;
+    white-space:nowrap}
+  .urteil.ja{color:var(--ok)}
+  .urteil.nein{color:var(--bad)}
+  .bilanzzeile{font-weight:700; margin:14px 0 0}
+  .lagerbez{font-variant-numeric:tabular-nums; font-weight:700}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Übung &middot; Wälzlager</p>
+    <h1>X oder O?</h1>
+    <p class="lead">Zwei gleiche Lager, zweimal herum gedreht &ndash; und zwei ganz verschiedene Lagerungen.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Der Unterschied zwischen X und O ist eine Strecke:</strong> die Stützbasis H, gemessen zwischen den Schnittpunkten der Drucklinien mit der Wellenachse.</p>
+      <p>Bei der <strong>O-Anordnung</strong> zeigen die Drucklinien nach außen, die Punkte S liegen außerhalb der Lager, und H wird größer als der Lagerabstand. Bei der <strong>X-Anordnung</strong> ist es umgekehrt.</p>
+      <p>Daraus folgt beides: das Kippspiel &ndash; und was passiert, wenn die Welle wärmer wird als das Gehäuse.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Dieselben zwei Lager 7210 B, Abstand 100 mm</h2>
+
+    <div class="zwei">
+      <figure class="bild" id="bildO"></figure>
+      <figure class="bild" id="bildX"></figure>
+    </div>
+
+    <h2><span class="nr">2</span>Acht Fälle</h2>
+
+    <div class="tabellenrahmen">
+      <table class="fr">
+        <thead><tr><th>Der Fall</th><th>Was ist richtig?</th><th></th></tr></thead>
+        <tbody id="tabFragen"></tbody>
+      </table>
+    </div>
+
+    <p>
+      <button type="button" class="knopf" id="btnPruefen">Prüfen</button>
+      <button type="button" class="knopf leise" id="btnLoesung">Lösung zeigen</button>
+    </p>
+    <p class="bilanzzeile" id="bilanz">Noch nichts gewählt.</p>
+
+    <details id="loesungBox">
+      <summary>Lösung mit Begründung</summary>
+      <div id="loesung"></div>
+    </details>
+
+
+    <h3>Weiterarbeiten</h3>
+    <p>
+      <a class="werkzeug" data-werkzeug="maschinenelemente-lager-lagerungen-gestalten.html">Werkzeug &#8222;Lagerungen gestalten&#8220; öffnen</a>
+    </p>
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot;
+    <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+function el(id){ return document.getElementById(id); }
+
+var FRAGEN = [
+  {
+    "frage": "Ein fliegend angebautes <strong>Kegelritzel</strong>, Lagerabstand nur 90 mm. Es darf möglichst wenig kippen.",
+    "loesung": "O-Anordnung – die Stützbasis wird größer als der Lagerabstand",
+    "warum": "Bei der O-Anordnung zeigen die Drucklinien nach außen, die Punkte S liegen also außerhalb der Lager. Die Stützbasis H wird größer als der Lagerabstand - und daraus folgt das geringere Kippspiel."
+  },
+  {
+    "frage": "Dieselbe Welle, aber sie wird im Betrieb <strong>40 K wärmer</strong> als das Gehäuse. Das Lagerspiel darf nicht verschwinden.",
+    "loesung": "O-Anordnung – bei Erwärmung der Welle wird das Lagerspiel größer",
+    "warum": "Das ist der zweite Grund für O. Wird die Welle wärmer als das Gehäuse, vergrößert sich bei der O-Anordnung das Lagerspiel. Bei X wäre es umgekehrt - und genau das wäre hier gefährlich."
+  },
+  {
+    "frage": "Eine lange Welle, die sich unter Last merklich <strong>durchbiegt</strong>.",
+    "loesung": "X-Anordnung – die kleinere Stützbasis ist hier ein Vorteil",
+    "warum": "Eine kleine Stützbasis ist nachgiebiger gegen Winkelfehler. Die Lager verkanten weniger, wenn sich die Welle biegt. Was bei O ein Vorteil ist, wäre hier einer zu viel."
+  },
+  {
+    "frage": "Ein <strong>Pkw-Radlager</strong> mit zwei Kegelrollenlagern.",
+    "loesung": "O-Anordnung – die Stützbasis wird größer als der Lagerabstand",
+    "warum": "Das Rad hängt seitlich am Lagerpaar, und in der Kurve wirkt ein großes Kippmoment. Die große Stützbasis der O-Anordnung ist der einzige Grund, warum zwei kleine Lager das aushalten."
+  },
+  {
+    "frage": "Bei welcher Anordnung zeigen die Drucklinien <strong>nach innen</strong>?",
+    "loesung": "X-Anordnung – die Punkte S liegen zwischen den Lagern",
+    "warum": "Die Drucklinien bilden ein X. Sie schneiden die Wellenachse zwischen den Lagern, und deshalb ist H kleiner als der Lagerabstand."
+  },
+  {
+    "frage": "Eine Welle von zwei Metern Länge, große Temperaturunterschiede, Genauigkeit unwichtig.",
+    "loesung": "Fest-Loslagerung",
+    "warum": "Eine angestellte Lagerung wäre hier falsch: Sie ist für ständig wechselnde Betriebstemperaturen ungeeignet, und zwei Meter Stahl dehnen sich merklich. Das Loslager nimmt die Längenänderung auf."
+  },
+  {
+    "frage": "Eine <strong>Lüfterwelle</strong>. Es kommt auf nichts an außer auf den Preis.",
+    "loesung": "schwimmende Lagerung",
+    "warum": "Zwei Rillenkugellager, beide mit etwas Luft im Gehäuse - fertig. Die Welle darf um dieses Maß wandern, und das stört hier niemanden."
+  },
+  {
+    "frage": "Eine angestellte Lagerung soll ihre Vorspannung <strong>unabhängig von der Temperatur</strong> behalten.",
+    "loesung": "angestellte Lagerung mit Federvorspannung",
+    "warum": "Eine Wellfeder oder Tellerfeder hält die Vorspannung nach, wenn sich die Längen ändern. Das ist der Ausweg, wenn weder X noch O mit der Temperatur zurechtkommen."
+  }
+];
+var WAHL = [
+  "O-Anordnung – die Stützbasis wird größer als der Lagerabstand",
+  "O-Anordnung – die Stützbasis wird kleiner als der Lagerabstand",
+  "O-Anordnung – bei Erwärmung der Welle wird das Lagerspiel größer",
+  "O-Anordnung – bei Erwärmung der Welle wird das Lagerspiel kleiner",
+  "X-Anordnung – die kleinere Stützbasis ist hier ein Vorteil",
+  "X-Anordnung – die größere Stützbasis ist hier ein Vorteil",
+  "X-Anordnung – die Punkte S liegen zwischen den Lagern",
+  "X-Anordnung – die Punkte S liegen außerhalb der Lager",
+  "Fest-Loslagerung",
+  "schwimmende Lagerung",
+  "angestellte Lagerung mit Federvorspannung",
+  "zwei Festlager – das hält am besten"
+];
+
+Waelzlager.lagerung("bildO", {
+  links: "7210 B", rechts: "7210 B", abstand: 100, anordnung: "O",
+  drucklinien: true,
+  unterschrift: "<strong>O-Anordnung</strong> &ndash; die Drucklinien zeigen "
+    + "nach au\u00dfen, die Punkte S liegen drau\u00dfen."
+});
+Waelzlager.lagerung("bildX", {
+  links: "7210 B", rechts: "7210 B", abstand: 100, anordnung: "X",
+  drucklinien: true,
+  unterschrift: "<strong>X-Anordnung</strong> &ndash; die Drucklinien zeigen "
+    + "nach innen, die Punkte S liegen dazwischen."
+});
+
+/* --------------------------------------------------------------------------
+   Die Fragen: je eine Zeile mit einer Auswahl. Geprüft wird auf Knopfdruck,
+   nicht bei jeder Wahl - wer zwischendurch die Meinung ändert, soll das
+   ohne rote Zwischenrufe tun können.
+   -------------------------------------------------------------------------- */
+(function fragenAufbauen(){
+  var tb = el("tabFragen");
+  FRAGEN.forEach(function(f, i){
+    var tr = document.createElement("tr");
+
+    var td0 = document.createElement("td");
+    td0.innerHTML = f.frage;
+    tr.appendChild(td0);
+
+    var td1 = document.createElement("td");
+    var s = document.createElement("select");
+    s.id = "f" + i;
+    s.setAttribute("aria-label", "Antwort zu Frage " + (i + 1));
+    var leer = document.createElement("option");
+    leer.value = ""; leer.textContent = "– bitte wählen –";
+    s.appendChild(leer);
+    (f.wahl || WAHL).forEach(function(w){
+      var o = document.createElement("option");
+      o.value = w; o.textContent = w;
+      s.appendChild(o);
+    });
+    td1.appendChild(s);
+    tr.appendChild(td1);
+
+    var td2 = document.createElement("td");
+    td2.className = "urteil"; td2.id = "u" + i; td2.textContent = "–";
+    tr.appendChild(td2);
+
+    tb.appendChild(tr);
+  });
+
+  el("loesung").innerHTML = FRAGEN.map(function(f, i){
+    return "<p><strong>" + (i + 1) + ". " + f.loesung + "</strong> &ndash; "
+      + f.warum + "</p>";
+  }).join("");
+}());
+
+el("btnPruefen").addEventListener("click", function(){
+  var r = 0, offen = 0;
+  FRAGEN.forEach(function(f, i){
+    var v = el("f" + i).value, u = el("u" + i);
+    if(!v){ u.textContent = "–"; u.className = "urteil"; offen++; return; }
+    var ok = v === f.loesung;
+    u.textContent = ok ? "richtig" : "nein";
+    u.className = "urteil " + (ok ? "ja" : "nein");
+    if(ok) r++;
+  });
+  el("bilanz").textContent = r + " von " + FRAGEN.length + " richtig."
+    + (offen ? " (" + offen + " noch offen.)" : "");
+  if(r === FRAGEN.length) el("loesungBox").open = true;
+});
+
+el("btnLoesung").addEventListener("click", function(){
+  el("loesungBox").open = true;
+});
+</script>
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/fortschritt.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+</body>
+</html>
