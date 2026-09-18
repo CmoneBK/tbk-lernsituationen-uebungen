@@ -1066,9 +1066,27 @@
       von: {x: 0, y: 165, z: 0}});
 
     /* --- 3 Exzenterwelle, von oben zwischen die Ständer --------------- */
+    /* Die Welle in drei Stücken: Der rechte Zapfen wird vom Kegelstift
+       durchbohrt, und eine Querbohrung entsteht hier aus zwei Segmenten mit
+       Platz dazwischen. Die Kappe ganz außen schließt die Stirnfläche - sonst
+       klaffte dort der Schlitz. Zu sehen ist von alledem nichts: Dieses Stück
+       steckt vollständig in der Hebelnabe. Richtig sein muss es trotzdem,
+       sonst steckt der Stift in vollem Werkstoff. */
+    var qVon = M.stX + M.stB, qBis = M.wellBis - 1;
     nimm({id: 'welle', pos: 3, name: 'Exzenterwelle', form: 'rohr',
-      achse: 'x', masse: {d: M.wellD, di: 0, l: M.wellBis - M.wellVon},
-      lage: {x: (M.wellVon + M.wellBis) / 2, y: M.wellY, z: 0},
+      achse: 'x', masse: {d: M.wellD, di: 0, l: qVon - M.wellVon},
+      lage: {x: (M.wellVon + qVon) / 2, y: M.wellY, z: 0},
+      von: {x: 0, y: 200, z: 0}});
+    [true, false].forEach(function (oben) {
+      nimm({id: 'welleQuer' + (oben ? 'O' : 'U'), pos: 3,
+        name: 'Exzenterwelle', form: 'ringSegment', achse: 'x',
+        masse: {d: M.wellD, di: 0, l: qBis - qVon, schlitz: 5, oben: oben},
+        lage: {x: (qVon + qBis) / 2, y: M.wellY, z: 0},
+        von: {x: 0, y: 200, z: 0}});
+    });
+    nimm({id: 'welleKappe', pos: 3, name: 'Exzenterwelle', form: 'rohr',
+      achse: 'x', masse: {d: M.wellD, di: 0, l: M.wellBis - qBis},
+      lage: {x: (qBis + M.wellBis) / 2, y: M.wellY, z: 0},
       von: {x: 0, y: 200, z: 0}});
     nimm({id: 'exzenter', pos: 3, name: 'Exzenterbund', form: 'rohr',
       achse: 'x', masse: {d: M.exzD, di: 0, l: M.exzB},
@@ -1109,9 +1127,27 @@
     });
 
     /* --- 7 Handhebel, seitlich auf den Zapfen ------------------------- */
-    nimm({id: 'nabe', pos: 7, name: 'Hebelnabe', form: 'rohr', achse: 'x',
-      masse: {d: M.nabeD, di: M.wellD, l: M.nabeB},
-      lage: {x: nx, y: M.wellY, z: 0}, von: {x: 240, y: 0, z: 0}});
+    /* Die Nabe in drei Scheiben: Nur die mittlere ist geschlitzt, und sie
+       ist genau so breit wie der Stift dick ist. Ginge der Schlitz durch die
+       ganze Nabe, sähe sie aus, als wäre sie zersägt - so sieht man, was es
+       ist: eine Bohrung. Hier ist sie auch zu sehen; man nimmt den Stift
+       zurück und schaut hinein. */
+    var stiftD = 5;
+    var qa = nx - stiftD / 2, qb = nx + stiftD / 2;
+    [[M.stX + M.stB, qa], [qb, M.stX + M.stB + M.nabeB]].forEach(function (e) {
+      nimm({id: 'nabe' + (e[0] < nx ? 'V' : 'H'), pos: 7, name: 'Hebelnabe',
+        form: 'rohr', achse: 'x',
+        masse: {d: M.nabeD, di: M.wellD, l: e[1] - e[0]},
+        lage: {x: (e[0] + e[1]) / 2, y: M.wellY, z: 0},
+        von: {x: 240, y: 0, z: 0}});
+    });
+    [true, false].forEach(function (oben) {
+      nimm({id: 'nabe' + (oben ? 'O' : 'U'), pos: 7, name: 'Hebelnabe',
+        form: 'ringSegment', achse: 'x',
+        masse: {d: M.nabeD, di: M.wellD, l: stiftD, schlitz: stiftD,
+          oben: oben},
+        lage: {x: nx, y: M.wellY, z: 0}, von: {x: 240, y: 0, z: 0}});
+    });
     nimm({id: 'hebel', pos: 7, name: 'Handhebel', form: 'quader',
       masse: {x: M.hebelD, y: M.hebelL - M.nabeD / 2, z: M.hebelB},
       lage: {x: nx, y: M.wellY + M.nabeD / 2

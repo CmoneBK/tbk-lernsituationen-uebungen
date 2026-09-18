@@ -218,6 +218,42 @@
       return g;
     },
 
+    ringSegment: function (m, achse) {
+      /* Die obere oder untere Haelfte eines Rings, waagerecht abgeschnitten.
+         Zwei davon ergeben einen Ring mit einem Schlitz in der Mitte - und
+         der Schlitz ist die Querbohrung, durch die ein Stift geht.
+
+         Das ist eine Naeherung, und sie soll benannt sein: Eine echte
+         Bohrung waere rund, dieser Schlitz ist es an den Ecken nicht. Bei
+         einem Stift von fuenf Millimetern in einer Nabe von sechsunddreissig
+         bleiben davon zwei Splitter von je anderthalb Millimetern neben dem
+         Stift. Eine runde Querbohrung braeuchte echtes Verschneiden, und das
+         kann dieser Baustein nicht. */
+      var ra = m.d / 2, ri = (m.di || 0) / 2, h = m.schlitz / 2;
+      var s = m.oben === false ? -1 : 1;
+      var wa = Math.asin(Math.min(1, h / ra));
+      var wi = ri > h ? Math.asin(Math.min(1, h / ri)) : 0;
+      var form = new THREE.Shape();
+      var n = 32, i, w;
+      for (i = 0; i <= n; i++) {
+        w = wa + (Math.PI - 2 * wa) * i / n;
+        var x = ra * Math.cos(w), y = s * ra * Math.sin(w);
+        if (i === 0) form.moveTo(x, y); else form.lineTo(x, y);
+      }
+      if (ri > h) {
+        for (i = 0; i <= n; i++) {
+          w = (Math.PI - wi) - (Math.PI - 2 * wi) * i / n;
+          form.lineTo(ri * Math.cos(w), s * ri * Math.sin(w));
+        }
+      }
+      form.closePath();
+      var g = new THREE.ExtrudeGeometry(form,
+        { depth: m.l, bevelEnabled: false });
+      g.translate(0, 0, -m.l / 2);
+      if (achse === "x") g.rotateY(Math.PI / 2);
+      if (achse === "y") g.rotateX(-Math.PI / 2);
+      return g;
+    },
     platte: function (m) {
       /* Eine liegende Platte: Dicke in y, Bohrungen senkrecht hindurch.
 
@@ -317,14 +353,21 @@
   /* Ein Rohr als geschlossene Hülle: Außenmantel, Innenmantel, zwei
      Stirnringe. LatheGeometry dreht das Profil um die y-Achse. */
   function rohrGeometrie(ra, ri, l) {
-    var punkte = [
-      new THREE.Vector2(ri, -l / 2),
-      new THREE.Vector2(ra, -l / 2),
-      new THREE.Vector2(ra, l / 2),
-      new THREE.Vector2(ri, l / 2),
-      new THREE.Vector2(ri, -l / 2)
-    ];
-    return new THREE.LatheGeometry(punkte, 48);
+    /* Frueher eine LatheGeometry. Die teilt sich an den Ecken des Profils
+       die Eckpunkte zwischen Mantel und Stirnflaeche, mittelt dort die
+       Normalen - und macht aus einer scharfen Kante eine weiche Rundung.
+       Eine Nabe sah dadurch aus wie ein Kieselstein. Ein ausgezogener
+       Kreisring hat das Problem nicht. */
+    var form = new THREE.Shape();
+    form.absarc(0, 0, ra, 0, Math.PI * 2, false);
+    var loch = new THREE.Path();
+    loch.absarc(0, 0, ri, 0, Math.PI * 2, true);
+    form.holes.push(loch);
+    var g = new THREE.ExtrudeGeometry(form,
+      { depth: l, bevelEnabled: false, curveSegments: 48 });
+    g.translate(0, 0, -l / 2);
+    g.rotateX(Math.PI / 2);        /* Achse auf y, wie bei CylinderGeometry */
+    return g;
   }
 
   function geometrie(teil) {

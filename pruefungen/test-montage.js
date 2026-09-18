@@ -343,7 +343,7 @@ async function main() {
     P.REIHENFOLGE.length === koerper.length
     && koerper.every((k) => P.REIHENFOLGE.indexOf(k.id) >= 0));
   const FORMEN = ['quader', 'rohr', 'keil', 'winkel', 'dach', 'gesenk',
-    'platte', 'flanke'];
+    'platte', 'flanke', 'ringSegment'];
   p('jeder Körper nennt eine bekannte Form',
     koerper.every((k) => FORMEN.indexOf(k.form) >= 0),
     koerper.filter((k) => FORMEN.indexOf(k.form) < 0)
@@ -359,10 +359,29 @@ async function main() {
   };
   [['grundplatte', 'die Grundplatte'], ['stempelhalter', 'der Stempelhalter'],
    ['gesenkBasis', 'die Basis des Gesenks'], ['staenderL', 'der Ständer'],
-   ['nabe', 'die Hebelnabe'], ['federL', 'die Druckfeder']
+   ['nabeV', 'die Hebelnabe'], ['federL', 'die Druckfeder']
   ].forEach(([id, was]) => {
     p(was + ' hat die Bohrung, durch die gesteckt wird', mitLoch(id));
   });
+
+  /* Der Kegelstift geht quer durch Nabe und Welle. Eine Bohrung quer zur
+     Ausziehrichtung kann der Baustein nicht - sie entsteht aus zwei
+     Ringsegmenten mit Platz dazwischen. Der Platz muss so breit sein wie
+     der Stift dick ist, sonst steckt er in vollem Werkstoff. */
+  const stift = koerper.filter((k) => k.id === 'kegelstift')[0];
+  [['nabe', 'die Hebelnabe'], ['welleQuer', 'die Welle']].forEach(
+    ([anfang, was]) => {
+      const segmente = koerper.filter((k) => k.form === 'ringSegment'
+        && k.id.indexOf(anfang) === 0);
+      p(was + ' ist für den Kegelstift quer aufgebohrt',
+        segmente.length === 2, segmente.length + ' Segmente');
+      p('und die Bohrung ist so weit wie der Stift dick',
+        segmente.every((k) => k.masse.schlitz === stift.masse.d),
+        segmente.map((k) => k.masse.schlitz).join('/') + ' zu '
+          + stift.masse.d);
+    });
+  p('der Kegelstift reicht durch die ganze Nabe',
+    stift.masse.l >= M.nabeD, stift.masse.l + ' zu ' + M.nabeD);
   const platte = koerper.filter((k) => k.id === 'grundplatte')[0];
   p('die Grundplatte hat zehn Bohrungen',
     platte.masse.loecher.length === 10,
@@ -383,7 +402,7 @@ async function main() {
     const m = k.masse, l = k.lage;
     const halb = (a, b, c) => ({ x: a / 2, y: b / 2, z: c / 2 });
     let h;
-    if (k.form === 'rohr') {
+    if (k.form === 'rohr' || k.form === 'ringSegment') {
       const r = m.d / 2, hl = m.l / 2;
       h = k.achse === 'x' ? halb(m.l, m.d, m.d)
         : k.achse === 'z' ? halb(m.d, m.d, m.l) : halb(m.d, m.l, m.d);

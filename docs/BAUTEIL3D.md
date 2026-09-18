@@ -95,6 +95,9 @@ Richtung, aus der das Teil einfährt.
 | `winkel` | `{x, y, z, s}` | L-Profil, Schenkeldicke `s` |
 | `dach` | `{x, y, z}` | symmetrischer Keil, Schneide unten und entlang x – ein Biegestempel |
 | `gesenk` | `{x, y, z, nut}` | Quader mit V-Nut im Rücken, 90°, Tiefe `nut`, Nut entlang x |
+| `platte` | `{x, y, z, loecher: [{d, x, z}]}` | liegende Platte, Dicke in y, beliebig viele senkrechte Bohrungen |
+| `flanke` | `{x, y, z, nut}` | die schräge Wange einer V-Nut, ausgezogen über x |
+| `ringSegment` | `{d, di, l, schlitz, oben}` | obere oder untere Hälfte eines Rings; zwei davon ergeben eine Querbohrung |
 
 Gedreht wird über `dreh: {x, y, z}` im Bogenmaß. Eine Rippe, deren senkrechte
 Kathete am Blech liegen soll, bekommt `dreh:{y:-Math.PI/2}`.
@@ -280,6 +283,12 @@ beides nebeneinanderlegt.
 
 Absehbar gebraucht, aber noch nicht gebaut:
 
+* **Echte Bohrungen quer zur Ausziehrichtung.** Der Baustein zieht Umrisse
+  aus; eine Bohrung liegt damit immer in Ausziehrichtung. Für die
+  Querbohrung des Kegelstifts gibt es deshalb `ringSegment`: zwei
+  Ringhälften mit Platz dazwischen. Das ist eine Näherung — die Öffnung ist
+  an den Ecken eckig statt rund. Eine runde Querbohrung bräuchte echtes
+  Verschneiden von Körpern (CSG), und das kann three.js nicht von sich aus.
 * **Flächen als Ziel.** Ganze Teile lassen sich inzwischen anklicken
   (`teileWaehlbar`), Kanten und Rundnähte als Marken auch. Was noch fehlt,
   ist die einzelne *Fläche* — für Fragen wie „welche Fläche ist die
