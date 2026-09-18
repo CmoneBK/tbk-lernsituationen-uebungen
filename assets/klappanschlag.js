@@ -284,10 +284,18 @@
 
     kasten(g, vx(-halbL), dz(halbT), M.gpL * s, M.gpT * s);
 
+    /* Gezeichnet wird von unten nach oben, und jedes Teil deckt mit
+       Deckfarbe zu, was unter ihm liegt. Sonst stünden hier Kanten, die
+       von oben niemand sieht: der Schwenkbolzen mitten durch den Arm, das
+       Bohrbild der Lasche mitten durch die Anschlagplatte. */
+
+    /* Der Gewindestift steht frei auf der Grundplatte. */
+    Z.bohrung(g, vx(M.gsX), dz(0), M.gsGew / 2 * s, 0, leer);
+
     /* Die beiden Laschen mit ihrem Bohrbild */
     [-1, 1].forEach(function (v) {
       kasten(g, vx(-M.laL / 2), dz(v * M.laZ + M.laB / 2), M.laL * s,
-        M.laB * s);
+        M.laB * s, {fuell: leer});
       M.schraubeX.forEach(function (x) {
         Z.bohrung(g, vx(x), dz(v * M.laZ), 4.5 * s, 7.5 * s, leer);
       });
@@ -296,22 +304,25 @@
       });
     });
 
+    /* Der Schwenkbolzen steckt in beiden Laschen; zwischen ihnen liegt der
+       Arm und deckt ihn gleich wieder zu. */
+    kasten(g, vx(-M.bolzenGew / 2), dz(M.laZ + M.laB / 2 + 4),
+      M.bolzenGew * s, (2 * M.laZ + M.laB + 8) * s, {fuell: leer});
+
     /* Der Arm liegt zwischen den Laschen; von oben sieht man seinen
        Rücken und die Nase. */
-    kasten(g, vx(-M.armB / 2), dz(M.armZ / 2), M.armB * s, M.armZ * s);
+    kasten(g, vx(-M.armB / 2), dz(M.armZ / 2), M.armB * s, M.armZ * s,
+      {fuell: leer});
     kasten(g, vx(M.armB / 2), dz(M.armZ / 2),
-      (M.nasenX - M.armB / 2) * s, M.armZ * s);
+      (M.nasenX - M.armB / 2) * s, M.armZ * s, {fuell: leer});
 
-    /* Die Anschlagplatte steht quer darüber. */
-    kasten(g, vx(-M.armB / 2 - M.apB), dz(M.apT / 2), M.apB * s, M.apT * s);
-
-    /* Schwenkbolzen und Mutter */
-    kasten(g, vx(-M.bolzenGew / 2), dz(M.laZ + M.laB / 2 + 4),
-      M.bolzenGew * s, (2 * M.laZ + M.laB + 8) * s);
-    Z.bohrung(g, vx(M.gsX), dz(0), M.gsGew / 2 * s, 0, leer);
+    /* Und ganz oben, quer über allem, die Anschlagplatte. */
+    kasten(g, vx(-M.armB / 2 - M.apB), dz(M.apT / 2), M.apB * s, M.apT * s,
+      {fuell: leer});
 
     [-1, 1].forEach(function (v) {
-      achse(g, vx(-M.laL / 2 - 10), vx(M.laL / 2 + 10), dz(v * M.laZ));
+      achse(g, vx(-M.armB / 2 - M.apB - 4), vx(M.laL / 2 + 10),
+        dz(v * M.laZ));
     });
     achse(g, vx(-halbL - 10), vx(halbL + 10), dz(0));
     Z.achseV(g, vx(0), dz(halbT + 10), dz(-halbT - 4));
@@ -368,17 +379,17 @@
   /* ------------------------------------------- Positionsnummern -------- */
   function positionsnummern(g) {
     var oben = 152;
-    [[4, -M.armB / 2 - M.apB + 4, M.apOben - 10, 180],
+    [[2, -M.laL / 2 + 3, M.laOben - 8, 180],
      [10, -M.armB / 2 - M.apB + 1, M.schraubeApY[1], 244],
-     [3, 0, M.armOben - 16, 308],
-     [5, 0, M.achseY, 372],
-     [2, -M.laL / 2 + 6, M.laOben - 8, 436],
+     [4, -M.armB / 2 - M.apB + 4, M.apOben - 10, 308],
+     [3, 0, M.armOben - 16, 372],
+     [5, 0, M.achseY, 436],
      [7, M.gsX, M.gsOben - 6, 500]
     ].forEach(function (e) {
       Z.posNr(g, e[0], vx(e[1]), vy(e[2]), e[3], oben);
     });
     var unten = dz(-M.gpT / 2) + 106;
-    [[9, M.stiftX[0], -M.laZ, 250], [8, M.schraubeX[0], -M.laZ, 380],
+    [[8, M.schraubeX[0], -M.laZ, 250], [9, M.stiftX[0], -M.laZ, 380],
      [6, 0, -M.laZ - M.laB / 2 - 2, 460], [1, 55, -30, 540]
     ].forEach(function (e) {
       Z.posNr(g, e[0], vx(e[1]), dz(e[2]), e[3], unten);

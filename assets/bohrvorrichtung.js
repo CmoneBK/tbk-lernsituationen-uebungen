@@ -55,7 +55,7 @@
 
     saD: 20, saH: 46, saX: 65,             /* Distanzsäule, zwei Stück */
 
-    bpL: 160, bpT: 70, bpD: 14,            /* Bohrplatte */
+    bpL: 160, bpT: 80, bpD: 14,            /* Bohrplatte */
     fuehrD: 8.2, fuehrA: 40, fuehrM: -4,   /* Führungsbohrungen */
 
     spGew: 12, spL: 80, spX: -4,           /* Spannschraube M12 × 80 */
@@ -195,29 +195,53 @@
   /* ======================================================================
      5  DIE ZUSAMMENSTELLUNGSZEICHNUNG
      ----------------------------------------------------------------------
-     Zwei Ansichten in Projektionsmethode 1: oben der Vollschnitt A-A durch
-     die Mitte, darunter die Draufsicht. Der Schnittverlauf steht in der
-     Draufsicht.
+     Drei Darstellungen, und die dritte gibt es aus einem Grund:
 
-     Warum ein Vollschnitt? Weil die Vorrichtung von außen nichts zeigt, was
-     sie ausmacht: dass die Bohrplatte auf zwei Säulen steht, dass die
-     Spannschraube durch sie hindurchgeht und dass zwischen ihr und dem
-     Werkstück genau die Luft bleibt, die man zum Einlegen braucht.
+         Schnitt A-A   senkrecht durch die Mitte - der Aufbau
+         Draufsicht    was man von oben wirklich sieht
+         Schnitt B-B   waagerecht, knapp unter der Bohrplatte
+
+     Von oben deckt die Bohrplatte alles zu, was die Vorrichtung ausmacht:
+     die beiden Anschlagleisten, ihr Bohrbild, das Werkstück. Zeichnete man
+     das trotzdem als Volllinien ein, stünde dort etwas, was niemand sehen
+     kann - und gestrichelt wäre es ein Gestrüpp. Also wird waagerecht
+     geschnitten: In B-B ist die Bohrplatte weg, und darunter liegt alles
+     offen.
+
+     Die Schnittebene von B-B liegt bei y = 40 mm. Dort trifft sie nur die
+     beiden Distanzsäulen - die M8-Schrauben beginnen erst bei 45 mm, die
+     Leisten hören bei 35 mm auf. Ein Schnitt, der wenig trifft, zeigt viel.
      ====================================================================== */
-  var s = 2.4;                       /* Bildpunkte je Millimeter */
-  var MX = 360, VY0 = 470;
-  var DZ0 = 700;
+  var s = 2.2;                       /* Bildpunkte je Millimeter */
+  var MX = 380, VY0 = 480;           /* Schnitt A-A: x = 0 und y = 0 */
+  var DZ0 = 810;                     /* Draufsicht: z = 0 */
+  var DZ2 = 1240;                    /* Schnitt B-B: z = 0 */
+  var BB = 40;                       /* Höhe der waagerechten Schnittebene */
 
   function vx(mm) { return MX + mm * s; }
   function vy(mm) { return VY0 - mm * s; }
   /* Methode 1: Was dem Betrachter der Vorderansicht am nächsten ist - also
      -z -, steht in der Draufsicht unten. */
   function dz(mm) { return DZ0 - mm * s; }
+  function dz2(mm) { return DZ2 - mm * s; }
 
-  /* Ein liegender Riegel im Schnitt, in Millimetern angegeben. */
   function riegel(g, x1, x2, y1, y2, fuell) {
     Z.schnittTeil(g, [[vx(x1), vy(y1)], [vx(x2), vy(y1)],
       [vx(x2), vy(y2)], [vx(x1), vy(y2)]], fuell);
+  }
+
+  /* Ein Sechskant von oben, über Eck gemessen e, mit Schlüsselflächen oben
+     und unten. Eine Mutter von oben ist kein Kreis. */
+  function sechskant(g, cx, cy, e, breit, fuell) {
+    var r = e / 2, d = [];
+    for (var i = 0; i < 6; i++) {
+      var w = i * Math.PI / 3;
+      d.push((i ? 'L' : 'M') + (cx + r * Math.cos(w)).toFixed(1) + ','
+        + (cy + r * Math.sin(w)).toFixed(1));
+    }
+    svgEl('path', {d: d.join(' ') + ' Z', fill: fuell || 'none',
+      stroke: 'currentColor',
+      'stroke-width': breit ? BREIT : SCHMAL}, g);
   }
 
   function zeichnen(zielId, opt) {
@@ -226,18 +250,19 @@
     if (!ziel) return null;
     ziel.textContent = '';
 
-    var svg = svgEl('svg', {viewBox: '0 0 980 984', role: 'img',
+    var svg = svgEl('svg', {viewBox: '0 0 980 1530', role: 'img',
       'aria-label': 'Zusammenstellungszeichnung der Bohrvorrichtung: oben '
-        + 'der Vollschnitt A-A mit Grundplatte, zwei Anschlagleisten, zwei '
-        + 'Distanzsäulen, Bohrplatte, Spannschraube und Kreuzgriff, darunter '
-        + 'die Draufsicht mit dem Bohrbild; mit den Hauptmaßen und zehn '
-        + 'Positionsnummern'}, ziel);
+        + 'der Vollschnitt A-A mit Grundplatte, Anschlagleisten, '
+        + 'Distanzsäulen, Bohrplatte und Spannschraube, darunter die '
+        + 'Draufsicht auf die Bohrplatte und darunter der waagerechte '
+        + 'Schnitt B-B mit abgenommener Bohrplatte'}, ziel);
     if (opt.unterschrift !== false) {
       var f = document.createElement('figcaption');
       f.innerHTML = opt.unterschrift || 'Die Bohrvorrichtung, '
         + 'Zusammenstellungszeichnung in Projektionsmethode 1. Gezeichnet '
-        + 'mit eingelegtem Werkstück &ndash; die Lasche liegt in der Ecke '
-        + 'der beiden Anschlagleisten und wird von oben gespannt.';
+        + 'mit eingelegtem Werkst&uuml;ck &ndash; die Lasche liegt in der '
+        + 'Ecke der beiden Anschlagleisten und wird von oben gespannt. '
+        + 'Schnitt B&ndash;B zeigt, was unter der Bohrplatte liegt.';
       ziel.appendChild(f);
     }
     var g = svgEl('g', {}, svg);
@@ -245,17 +270,20 @@
     var sch = {
       gp: schraffur(svg, zielId + '_gp', 45),
       al: schraffur(svg, zielId + '_al', -45),
-      bp: schraffur(svg, zielId + '_bp', -45)
+      bp: schraffur(svg, zielId + '_bp', 45),
+      sa: schraffur(svg, zielId + '_sa', -45)
     };
     var leer = 'var(--card, #ffffff)';
 
     txt(g, vx(0), 118, 'Schnitt A–A', {groesse: 17, fett: true});
     schnittAA(g, sch, leer);
     draufsicht(g, leer);
+    txt(g, vx(0), DZ2 - 170, 'Schnitt B–B', {groesse: 17, fett: true});
+    schnittBB(g, sch, leer);
     bemassung(g);
     if (opt.posnummern !== false) positionsnummern(g);
     if (opt.schriftfeld !== false) {
-      Z.schriftfeld(g, {x: 600, y: 840, benennung: 'Bohrvorrichtung',
+      Z.schriftfeld(g, {x: 610, y: 1150, benennung: 'Bohrvorrichtung',
         nummer: 'TBK-2026-042'});
     }
     return svg;
@@ -266,11 +294,23 @@
     var halbL = M.gpL / 2, halbBp = M.bpL / 2;
     var f1 = M.fuehrM - M.fuehrA / 2, f2 = M.fuehrM + M.fuehrA / 2;
     var fr = M.fuehrD / 2, sr = M.spGew / 2;
+    var zr = 5;                      /* Radius des Gewindezapfens M10 */
 
-    /* --- Grundplatte --------------------------------------------------- */
-    riegel(g, -halbL, halbL, 0, M.gpD, sch.gp);
+    /* --- Grundplatte ---------------------------------------------------- */
+    /* Ein einziger geschlossener Umriss, und in ihm stecken die beiden
+       Grundlöcher für die Gewindezapfen der Säulen. Als voller Riegel
+       gezeichnet liefe die Schraffur mitten durch die Zapfen. */
+    var p = [[-halbL, M.gpD]];
+    [-1, 1].forEach(function (v) {
+      var m = v * M.saX;
+      p.push([m - zr, M.gpD], [m - zr, 2], [m + zr, 2], [m + zr, M.gpD]);
+    });
+    p.push([halbL, M.gpD], [halbL, 0], [-halbL, 0]);
+    Z.schnittTeil(g, p.map(function (e) {
+      return [vx(e[0]), vy(e[1])];
+    }), sch.gp);
 
-    /* --- Anschlagleisten ----------------------------------------------- */
+    /* --- Anschlagleisten ------------------------------------------------ */
     /* Die quer liegende wird geschnitten. Die längs liegende steht dahinter
        und ist deshalb nur zu sehen - Umriss ohne Schraffur. */
     riegel(g, M.alBx - M.alB / 2, M.alBx + M.alB / 2, M.gpD, M.alOben,
@@ -282,7 +322,7 @@
     [-1, 1].forEach(function (v) {
       var m = v * M.saX, r = M.saD / 2;
       riegel(g, m - r, m + r, M.gpD, M.saOben, leer);
-      Z.gewindeZapfen(g, vx(m), vy(M.gpD), vy(2), 5 * s, 4.2 * s);
+      Z.gewindeZapfen(g, vx(m), vy(M.gpD), vy(2), zr * s, 4.2 * s);
     });
 
     /* --- Bohrplatte ----------------------------------------------------- */
@@ -297,6 +337,17 @@
     });
     riegel(g, kante, halbBp, M.saOben, M.bpOben, sch.bp);
 
+    /* Durch eine leere Bohrung sieht man auf ihre Rückwand, und wo die auf
+       die Plattenfläche trifft, liegt eine umlaufende Kante. Im Schnitt
+       erscheint sie als Strich quer über die Bohrung - die Fläche der
+       Platte läuft also durch. Die beiden Führungsbohrungen sind die
+       einzigen, die offen bleiben; in allen anderen steckt etwas. */
+    [f1, f2].forEach(function (x) {
+      [M.saOben, M.bpOben].forEach(function (y) {
+        linie(g, vx(x - fr), vy(y), vx(x + fr), vy(y), BREIT);
+      });
+    });
+
     /* --- Zylinderschrauben M8, von oben in die Säulen ------------------- */
     [-1, 1].forEach(function (v) {
       var m = v * M.saX;
@@ -304,77 +355,142 @@
       riegel(g, m - 4, m + 4, M.saOben - 16, M.bpOben, leer);
     });
 
-    /* --- Spannschraube, Kontermutter, Kreuzgriff ------------------------ */
-    var sp = M.spX, spOben = M.spOben;
-    riegel(g, sp - sr, sp + sr, M.wsOben, spOben, leer);
-    riegel(g, sp - 10, sp + 10, M.bpOben, M.bpOben + 10, leer);
-    var gy = M.griffY;
-    riegel(g, sp - 9, sp + 9, gy - 6, gy + 8, leer);
+    /* --- Kreuzgriff, Kontermutter, Spannschraube ------------------------ */
+    /* In dieser Reihenfolge: Die Spannschraube steckt in beiden, also wird
+       sie zuletzt gezeichnet. Sonst verschwände ihr Umriss unter der
+       Mutter, und die Mutter säße auf nichts. */
+    var sp = M.spX, gy = M.griffY;
+    /* Der Kreuzgriff steht um 45 Grad gedreht - in der Draufsicht läge er
+       sonst genau auf den beiden Führungsbohrungen, und ausgerechnet die
+       machen die Vorrichtung aus. Ein Griff, der sich dreht, darf das.
+       Von vorn sieht man deshalb nicht die volle Armlänge, sondern ihre
+       Projektion; und geschnitten sind die Arme nicht, sie stehen davor. */
+    var ap = (M.griffD / 2 + 6) / Math.SQRT2;
     [-1, 1].forEach(function (v) {
       Z.schnittTeil(g, [[vx(sp + v * 9), vy(gy + 4)],
-        [vx(sp + v * M.griffD / 2), vy(gy + 2)],
-        [vx(sp + v * M.griffD / 2), vy(gy - 2)],
+        [vx(sp + v * ap), vy(gy + 2)],
+        [vx(sp + v * ap), vy(gy - 2)],
         [vx(sp + v * 9), vy(gy - 4)]], leer);
     });
-    Z.achseV(g, vx(sp), vy(spOben + 12), vy(M.wsOben - 10));
+    riegel(g, sp - 9, sp + 9, gy - 6, gy + 8, leer);
+    riegel(g, sp - 10, sp + 10, M.bpOben, M.bpOben + 10, leer);
+    riegel(g, sp - sr, sp + sr, M.wsOben, M.spOben, leer);
+    Z.achseV(g, vx(sp), vy(M.spOben + 12), vy(M.wsOben - 10));
 
     /* --- Das Werkstück -------------------------------------------------- */
     /* Es gehört nicht zur Stückliste - es wird gebohrt. */
     var bg = svgEl('g', {'class': 'erklaer', opacity: 0.5}, g);
     kasten(bg, vx(M.wsX1), vy(M.wsOben), M.wsL * s, M.wsD * s,
       {fuell: 'currentColor', ohneRand: true});
+
+    /* --- Der Verlauf von B-B -------------------------------------------- */
+    [34, vx(halbL) + 150].forEach(function (x) {
+      Z.schnittmarke(g, {x: x, y: vy(BB), richtung: 'unten', name: 'B'});
+    });
   }
 
   /* --------------------------------------------------- Draufsicht ------ */
+  /* Was man von oben wirklich sieht - nicht mehr. Die Reihenfolge ist die
+     Reihenfolge der Schichten: erst die Grundplatte, dann die Leiste, die
+     hinten unter der Bohrplatte hervorschaut, dann die Bohrplatte mit
+     Deckfarbe darüber. Was sie verdeckt, ist damit verdeckt. */
   function draufsicht(g, leer) {
-    var halbL = M.gpL / 2, halbT = M.gpT / 2;
+    var halbL = M.gpL / 2, halbT = M.gpT / 2, halbBp = M.bpT / 2;
     var f1 = M.fuehrM - M.fuehrA / 2, f2 = M.fuehrM + M.fuehrA / 2;
+    var sp = M.spX;
 
     kasten(g, vx(-halbL), dz(halbT), M.gpL * s, M.gpT * s);
-
-    /* Die beiden Anschlagleisten über Eck */
-    kasten(g, vx(M.alAx1), dz(M.alAz + M.alB / 2),
-      (M.alAx2 - M.alAx1) * s, M.alB * s);
     kasten(g, vx(M.alBx - M.alB / 2), dz(M.alBz2), M.alB * s,
       (M.alBz2 - M.alBz1) * s);
 
-    /* Das Werkstück in der Ecke */
-    var bg = svgEl('g', {'class': 'erklaer', opacity: 0.45}, g);
-    kasten(bg, vx(M.wsX1), dz(M.wsZ2), M.wsL * s, M.wsT * s,
-      {fuell: 'currentColor', ohneRand: true});
+    kasten(g, vx(-halbL), dz(halbBp), M.bpL * s, M.bpT * s, {fuell: leer});
 
-    /* Stifte und Schrauben der Leisten */
-    M.stiftAx.forEach(function (x) {
-      Z.bohrung(g, vx(x), dz(M.alAz), 2.5 * s, 0, leer);
-    });
-    M.schraubeAx.forEach(function (x) {
-      Z.bohrung(g, vx(x), dz(M.alAz), 3 * s, 5.5 * s, leer);
-    });
-    M.stiftBz.forEach(function (z) {
-      Z.bohrung(g, vx(M.alBx), dz(z), 2.5 * s, 0, leer);
-    });
-    M.schraubeBz.forEach(function (z) {
-      Z.bohrung(g, vx(M.alBx), dz(z), 3 * s, 5.5 * s, leer);
-    });
-
-    /* Die Bohrplatte liegt darüber und verdeckt fast alles - deshalb nur
-       ihr Umriss und das, was in ihr steckt. */
-    kasten(g, vx(-M.bpL / 2), dz(M.bpT / 2), M.bpL * s, M.bpT * s);
-    [-1, 1].forEach(function (v) {
-      Z.bohrung(g, vx(v * M.saX), dz(0), 4.5 * s, M.saD / 2 * s, leer);
-    });
+    /* Die beiden Führungsbohrungen bleiben offen - alles andere ist
+       besetzt: in den Ecken die Schraubenköpfe, in der Mitte die
+       Spannschraube. */
     [f1, f2].forEach(function (x) {
       Z.bohrung(g, vx(x), dz(0), M.fuehrD / 2 * s, 0, leer);
     });
-    Z.bohrung(g, vx(M.spX), dz(0), M.spGew / 2 * s, 0, leer);
-    achse(g, vx(-M.bpL / 2 - 10), vx(M.bpL / 2 + 10), dz(0));
-    Z.achseV(g, vx(M.spX), dz(M.bpT / 2 + 8), dz(-M.bpT / 2 - 8));
+    [-1, 1].forEach(function (v) {
+      var m = vx(v * M.saX);
+      Z.bohrung(g, m, dz(0), 6.5 * s, 0, leer);
+      sechskant(g, m, dz(0), 6.9 * s, false);
+    });
+
+    /* Kontermutter und Kreuzgriff: Der Griff liegt darüber und deckt sie
+       teilweise zu. Deshalb erst die Mutter, dann der Griff mit Deckfarbe. */
+    sechskant(g, vx(sp), dz(0), 20 * s, true);
+    var a = M.griffD / 2 * s, b = 6 * s, cx = vx(sp), cy = dz(0), d = [];
+    var c45 = Math.SQRT1_2;
+    [[b, b], [a, b], [a, -b], [b, -b], [b, -a], [-b, -a], [-b, -b],
+     [-a, -b], [-a, b], [-b, b], [-b, a], [b, a]].forEach(function (e, i) {
+      var ex = (e[0] - e[1]) * c45, ey = (e[0] + e[1]) * c45;
+      d.push((i ? 'L' : 'M') + (cx + ex).toFixed(1) + ','
+        + (cy + ey).toFixed(1));
+    });
+    svgEl('path', {d: d.join(' ') + ' Z', fill: leer, stroke: 'currentColor',
+      'stroke-width': BREIT, 'stroke-linejoin': 'miter'}, g);
+    svgEl('circle', {cx: cx, cy: cy, r: 9 * s, fill: leer,
+      stroke: 'currentColor', 'stroke-width': BREIT}, g);
+
+    achse(g, vx(-halbL - 10), vx(halbL + 10), dz(0));
+    Z.achseV(g, vx(sp), dz(halbT + 10), dz(-halbT - 10));
+    [f1, f2].forEach(function (x) {
+      Z.achseV(g, vx(x), dz(M.fuehrD / 2 + 8), dz(-M.fuehrD / 2 - 8));
+    });
 
     /* Schnittverlauf A-A: Die Pfeile zeigen in die Blickrichtung der
        Hauptansicht, nach +z, und das ist hier nach oben. */
-    [vx(-halbL) - 150, vx(halbL) + 150].forEach(function (x) {
+    [vx(-halbL) - 128, vx(halbL) + 128].forEach(function (x) {
       Z.schnittmarke(g, {x: x, y: dz(0), richtung: 'oben', name: 'A'});
     });
+  }
+
+  /* --------------------------------------------------- Schnitt B-B ----- */
+  /* Waagerecht bei y = 40 mm, Blick nach unten. Getroffen werden nur die
+     beiden Distanzsäulen; alles andere liegt darunter und ist zu sehen. */
+  function schnittBB(g, sch, leer) {
+    var halbL = M.gpL / 2, halbT = M.gpT / 2;
+
+    kasten(g, vx(-halbL), dz2(halbT), M.gpL * s, M.gpT * s);
+
+    var bg = svgEl('g', {'class': 'erklaer', opacity: 0.45}, g);
+    kasten(bg, vx(M.wsX1), dz2(M.wsZ2), M.wsL * s, M.wsT * s,
+      {fuell: 'currentColor', ohneRand: true});
+
+    /* Die beiden Anschlagleisten über Eck, von oben */
+    kasten(g, vx(M.alAx1), dz2(M.alAz + M.alB / 2),
+      (M.alAx2 - M.alAx1) * s, M.alB * s);
+    kasten(g, vx(M.alBx - M.alB / 2), dz2(M.alBz2), M.alB * s,
+      (M.alBz2 - M.alBz1) * s);
+
+    /* Stifte und Schrauben der Leisten. Über dem Schraubenkopf steht die
+       Senkung, im Kopf der Innensechskant SW 5. */
+    M.stiftAx.forEach(function (x) {
+      Z.bohrung(g, vx(x), dz2(M.alAz), 2.5 * s, 0, leer);
+    });
+    M.schraubeAx.forEach(function (x) {
+      Z.bohrung(g, vx(x), dz2(M.alAz), 5 * s, M.senkD / 2 * s, leer);
+      sechskant(g, vx(x), dz2(M.alAz), 5.8 * s, false);
+    });
+    M.stiftBz.forEach(function (z) {
+      Z.bohrung(g, vx(M.alBx), dz2(z), 2.5 * s, 0, leer);
+    });
+    M.schraubeBz.forEach(function (z) {
+      Z.bohrung(g, vx(M.alBx), dz2(z), 5 * s, M.senkD / 2 * s, leer);
+      sechskant(g, vx(M.alBx), dz2(z), 5.8 * s, false);
+    });
+
+    /* Die Distanzsäulen sind quer geschnitten - also schraffiert. Derselbe
+       Bolzen, der in A-A blank bleibt. */
+    [-1, 1].forEach(function (v) {
+      svgEl('circle', {cx: vx(v * M.saX), cy: dz2(0), r: M.saD / 2 * s,
+        fill: sch.sa, stroke: 'currentColor', 'stroke-width': BREIT}, g);
+    });
+
+    achse(g, vx(-halbL - 10), vx(halbL + 10), dz2(0));
+    achse(g, vx(M.alAx1 - 10), vx(M.alAx2 + 10), dz2(M.alAz));
+    Z.achseV(g, vx(M.alBx), dz2(M.alBz2 + 10), dz2(M.alBz1 - 10));
   }
 
   /* --------------------------------------------------- Bemassung ------- */
@@ -386,7 +502,7 @@
     var LINKS = vx(-halbL), RECHTS = vx(halbL);
 
     mass(g, vx(-M.saX), vx(M.saX), vy(0) + 34, (2 * M.saX) + '', vy(M.gpD));
-    mass(g, LINKS, RECHTS, vy(0) + 64, M.gpL + '', vy(0));
+    mass(g, LINKS, RECHTS, vy(0) + 70, M.gpL + '', vy(0));
 
     massV(g, vy(M.gpD), vy(0), LINKS - 28, M.gpD + '', LINKS, true);
     massV(g, vy(M.alOben), vy(M.gpD), LINKS - 58, M.alH + '',
@@ -403,47 +519,51 @@
     massV(g, vy(M.wsOben), vy(M.gpD), RECHTS + 88, M.wsD + '',
       [vx(M.wsX2), RECHTS], false);
 
-    Z.massHinweis(g, vx(-M.saX + M.saD / 2), vy(50), 44, -30,
-      '⌀' + M.saD);
-    Z.massHinweis(g, vx(M.spX + M.spGew / 2), vy(40), 60, 0, 'M12');
+    Z.massHinweis(g, vx(M.spX + M.spGew / 2), vy(52), 58, 0, 'M12');
 
     /* Tiefen an der Draufsicht */
     massV(g, dz(halbT), dz(-halbT), LINKS - 28, M.gpT + '', vx(-halbL), true);
     massV(g, dz(M.bpT / 2), dz(-M.bpT / 2), LINKS - 58, M.bpT + '',
-      vx(-M.bpL / 2), true);
-    massV(g, dz(M.alAz), dz(0), RECHTS + 28, M.alAz + '',
-      [vx(M.bpL / 2), vx(M.bpL / 2)], false);
+      vx(-halbL), true);
     mass(g, vx(M.fuehrM - M.fuehrA / 2), vx(M.fuehrM + M.fuehrA / 2),
       dz(-halbT) + 36, M.fuehrA + '', dz(0));
-    mass(g, vx(-M.gpL / 2), vx(M.alBx), dz(-halbT) + 66,
-      (M.gpL / 2 + M.alBx) + '', dz(0));
-    mass(g, vx(M.stiftAx[0]), vx(M.stiftAx[1]), dz(-halbT) + 96,
-      (M.stiftAx[1] - M.stiftAx[0]) + '', dz(M.alAz));
-    Z.massHinweis(g, vx(M.fuehrM + M.fuehrA / 2), dz(M.fuehrD / 2), 140,
-      130, '2 × ⌀' + M.fuehrD);
+    Z.massHinweis(g, vx(M.fuehrM + M.fuehrA / 2), dz(M.fuehrD / 2), 132,
+      118, '2 × ⌀' + M.fuehrD);
+
+    /* Und an B-B, wo die Leisten liegen */
+    massV(g, dz2(M.alAz), dz2(0), RECHTS + 28, M.alAz + '',
+      [vx(M.alAx2), vx(M.alAx2)], false);
+    mass(g, vx(-halbL), vx(M.alBx), dz2(-halbT) + 36,
+      (halbL + M.alBx) + '', dz2(0));
+    mass(g, vx(M.stiftAx[0]), vx(M.stiftAx[1]), dz2(-halbT) + 70,
+      (M.stiftAx[1] - M.stiftAx[0]) + '', dz2(M.alAz));
+    Z.massHinweis(g, vx(-M.saX) - M.saD / 2 * s + 3, dz2(0) + 12,
+      -76, -58, '⌀' + M.saD);
   }
 
   /* ------------------------------------------- Positionsnummern -------- */
-  /* Eine Reihe über der Hauptansicht, in derselben Reihenfolge wie die
-     Teile, auf die sie zeigen - so kreuzt keine Hinweislinie eine andere. */
+  /* Eine Reihe über dem Schnitt A-A, sortiert nach der Lage ihrer
+     Hinweisstellen von links nach rechts - so kreuzt keine Hinweislinie
+     eine andere. Geprüft wird das nicht nach Augenmaß: Die Prüfung rechnet
+     jedes Paar durch. */
   function positionsnummern(g) {
-    var oben = 152;
-    [[1, -60, M.gpD / 2, 200],
-     [3, -M.saX, M.saOben - 16, 250],
-     [2, M.alBx, M.alOben - 7, 300],
-     [4, -M.bpL / 2 + 12, (M.saOben + M.bpOben) / 2, 350],
-     [10, M.spX - 10, M.bpOben + 5, 400],
-     [5, M.spX, M.bpOben + 20, 450],
-     [6, M.spX + M.griffD / 2 - 8, M.bpOben + 21, 520],
-     [7, M.saX, M.bpOben + 4, 590]
+    var oben = 160;
+    [[1, -75, 7.5, 168],
+     [3, -71, 52, 222],
+     [4, -55, 68, 280],
+     [2, -45, 26, 338],
+     [5, -4, 44, 398],
+     [10, 4, 80, 452],
+     [6, 20, 93, 506],
+     [7, 65, 79, 562]
     ].forEach(function (e) {
       Z.posNr(g, e[0], vx(e[1]), vy(e[2]), e[3], oben);
     });
-    /* Stift und M6-Schraube sieht man nur in der Draufsicht. */
-    var unten = dz(-M.gpT / 2) + 132;
-    [[9, M.stiftAx[0], M.alAz, 250], [8, M.schraubeAx[0], M.alAz, 440]
+    /* Stift und M6-Schraube sieht man nur in B-B. */
+    var unten = dz2(-M.gpT / 2) + 118;
+    [[9, M.stiftAx[0], M.alAz, 250], [8, M.schraubeAx[1], M.alAz, 430]
     ].forEach(function (e) {
-      Z.posNr(g, e[0], vx(e[1]), dz(e[2]), e[3], unten);
+      Z.posNr(g, e[0], vx(e[1]), dz2(e[2]), e[3], unten);
     });
   }
 

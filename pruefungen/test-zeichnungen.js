@@ -423,6 +423,38 @@ function pruefe(svg, name, rel) {
       wozu + ', freies Ende bei ' + fern.map(Math.round));
   });
 
+  /* --- Hinweislinien der Positionsnummern ---
+     Nach DIN EN ISO 6433 stehen Positionsnummern uebersichtlich. Zwei
+     Hinweislinien, die einander kreuzen, sind das Gegenteil davon: An der
+     Kreuzung weiss niemand mehr, welche Linie zu welcher Nummer gehoert.
+
+     Uebersichtlich wird es, wenn die Marken in derselben Reihenfolge stehen
+     wie die Stellen, auf die sie zeigen. Das ist aber nur eine Faustregel -
+     ob es stimmt, entscheidet die Rechnung. */
+  const hinweise = [...svg.querySelectorAll('.posnr')].map((g) => {
+    const l = g.querySelector('line');
+    const t = g.querySelector('text');
+    if (!l || !t) return null;
+    return { nr: t.textContent,
+      a: { x: +l.getAttribute('x1'), y: +l.getAttribute('y1') },
+      b: { x: +l.getAttribute('x2'), y: +l.getAttribute('y2') } };
+  }).filter(Boolean);
+
+  const seite = (a, b, c) =>
+    Math.sign((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x));
+  const kreuzen = (p1, q1, p2, q2) =>
+    seite(p1, q1, p2) !== seite(p1, q1, q2)
+    && seite(p2, q2, p1) !== seite(p2, q2, q1);
+
+  const gekreuzt = [];
+  hinweise.forEach((h, i) => hinweise.slice(i + 1).forEach((k) => {
+    if (kreuzen(h.a, h.b, k.a, k.b)) gekreuzt.push(h.nr + '/' + k.nr);
+  }));
+  if (hinweise.length > 1) {
+    p(name + ': keine Hinweislinie kreuzt eine andere',
+      !gekreuzt.length, gekreuzt.join(', '));
+  }
+
   /* --- Schraffuren gegenlaeufig ---
      Falsch ist nicht "zwei gleiche Muster im Bild", sondern "zwei gleiche
      Muster an Teilen, die aneinander liegen". Ein Bild mit zwei getrennten
