@@ -314,13 +314,22 @@ console.log('\nLernsituation – Der Gehäusedeckel');
      Einheit; die Kennzeichnung tat also nichts, und der Test bestaetigte
      sie trotzdem. Geprueft wird jetzt der Ort, und dass es wirkt, prueft
      test-bildungsgang.js. */
-  const wegA = [...d.querySelectorAll('[data-bg-ohne="bfs-hs10 bfs-for"]')];
-  p('Weg A ist gekennzeichnet', wegA.length === 1,
-    wegA.length + ' Elemente');
-  p('und zwar an einer h2 – nur die liest der Baukasten',
-    wegA.length === 1 && wegA[0].tagName === 'H2'
-      && /Weg A/.test(wegA[0].textContent),
-    wegA.map((e) => e.tagName).join(' '));
+  /* Gesucht wird die Ueberschrift, nicht ein bestimmter Attributwert: Wer
+     die Zuordnung aendert - etwa um den Zerspanungsmechaniker aufzunehmen -
+     soll dafuer nicht diesen Test anfassen muessen. Geprueft wird, DASS der
+     rechnende Weg gekennzeichnet ist und WO die Kennzeichnung sitzt. */
+  const wegA = [...d.querySelectorAll('main h2')]
+    .filter((h) => /^Weg A/.test(h.textContent.trim()));
+  p('Weg A steht als eigener Abschnitt da', wegA.length === 1,
+    wegA.length + ' Überschriften');
+  p('und ist gekennzeichnet – an der h2, nur die liest der Baukasten',
+    wegA.length === 1 && wegA[0].hasAttribute('data-bg-ohne'),
+    wegA.length ? wegA[0].getAttribute('data-bg-ohne') : '');
+  p('die Berufsfachschule ist ausgenommen',
+    wegA.length === 1
+      && /bfs-hs10/.test(wegA[0].getAttribute('data-bg-ohne'))
+      && /bfs-for/.test(wegA[0].getAttribute('data-bg-ohne')),
+    wegA.length ? wegA[0].getAttribute('data-bg-ohne') : '');
   p('Weg B gilt für alle',
     ![...d.querySelectorAll('h2')]
       .some((h) => /Weg B/.test(h.textContent) && h.hasAttribute('data-bg-ohne')));

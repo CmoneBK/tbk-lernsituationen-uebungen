@@ -130,12 +130,19 @@ console.log('\nDer Baustein');
 /* ---------- 2. Ganze Seiten ---------- */
 console.log('\nGanze Seiten');
 {
+  /* Die Zuordnung folgt dem Raster in bildungsgaenge/daten.json: Ein
+     Nachweis an der Baugruppe (Stufe 6) faellt fuer die Berufsfachschule und
+     fuer den Zerspanungsmechaniker weg - der rechnet an der
+     Werkzeugmaschine, nicht an der Verbindung. Der Industriemechaniker
+     bleibt: LF 7 nennt Flaechenpressung und Festigkeitskenngroessen. */
   const SOLL = {
-    'lernsituationen/konsole-am-foerderband/index.html': 'bfs-hs10 bfs-for',
-    'trainings/schraubverbindungen/02-anziehdrehmoment-rechnen.html': 'bfs-hs10 bfs-for',
+    'lernsituationen/konsole-am-foerderband/index.html': 'bfs-hs10 bfs-for zm',
+    'trainings/schraubverbindungen/02-anziehdrehmoment-rechnen.html': 'bfs-hs10 bfs-for zm',
     'uebungen/schraubverbindungen/03-wohin-geht-das-drehmoment.html': 'bfs-hs10',
-    'uebungen/schraubverbindungen/04-gleiches-drehmoment-andere-spannkraft.html': 'bfs-hs10 bfs-for',
-    'uebungen/schraubverbindungen/05-querkraft-durch-reibung.html': 'bfs-hs10 bfs-for',
+    'uebungen/schraubverbindungen/04-gleiches-drehmoment-andere-spannkraft.html': 'bfs-hs10 bfs-for zm',
+    'uebungen/schraubverbindungen/05-querkraft-durch-reibung.html': 'bfs-hs10 bfs-for zm',
+    'uebungen/waelzlager/05-lebensdauer-rechnen.html': 'bfs-hs10 bfs-for zm',
+    'uebungen/waelzlager/03-x-oder-o.html': 'bfs-hs10 zm',
   };
   for (const [rel, soll] of Object.entries(SOLL)) {
     const roh = fs.readFileSync(path.join(MAT, rel), 'utf8');
@@ -258,8 +265,23 @@ console.log('\nLektion Schraubverbindungen');
   const zm = await tool(name, { bg: 'zm' });
   const wegZm = [...zm.d.querySelectorAll('.tabs button[data-tab]')]
     .filter((b) => b.hidden).map((b) => b.dataset.tab);
-  p('mit zm fehlt nur der fortgeschrittene Reiter',
-    wegZm.join(',') === 'fortgeschritten', wegZm.join(',') || '(keiner)');
+  /* Dem Zerspanungsmechaniker fehlen beide rechnenden Reiter: das
+     Verspannungsschaubild (Baugruppenauslegung) und der VDI-2230-Nachweis
+     (Stufe 7). Der Reiter "Ermittlung" mit dem Tabellenbuchweg bleibt. */
+  p('mit zm fehlen beide rechnenden Reiter',
+    wegZm.slice().sort().join(',') === 'berechnungen,fortgeschritten',
+    wegZm.join(',') || '(keiner)');
+  p('der Tabellenbuchweg bleibt dem zm',
+    !zm.d.querySelector('[data-tab="ermittlung"]').hidden);
+
+  /* Und dem Industriemechaniker fehlt genau einer: Sein Niveau nennt
+     ausdruecklich "kein VDI-2230-Nachweis, aber die Kenngroessen und der
+     Tabellenbuchweg". */
+  const imw = await tool(name, { bg: 'im' });
+  const wegIm = [...imw.d.querySelectorAll('.tabs button[data-tab]')]
+    .filter((b) => b.hidden).map((b) => b.dataset.tab);
+  p('mit im fehlt nur der Nachweis-Reiter',
+    wegIm.join(',') === 'berechnungen', wegIm.join(',') || '(keiner)');
 
   const tech = await tool(name, { bg: 'tech' });
   p('für den Techniker ist alles da',
