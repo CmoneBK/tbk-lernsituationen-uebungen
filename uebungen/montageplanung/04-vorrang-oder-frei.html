@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Vorrang oder frei?</title>
-<meta name="description" content="Zehn Paare von Montageschritten: Muss der eine vor dem anderen kommen – und warum? Die Hälfte der Fälle ist frei.">
+<meta name="description" content="Zehn Paare von Montageschritten am Klappanschlag: Muss der eine vor dem anderen kommen – und warum? Drei Fälle sind frei.">
 <meta name="dauer" content="25 min">
 <link rel="stylesheet" href="../../assets/uebung.css">
 <style>
@@ -54,6 +54,7 @@
         <li><strong>Die Funktion</strong> &ndash; erst ausrichten, dann festziehen.</li>
       </ul>
       <p>Wo keiner dieser Gründe greift, ist die Reihenfolge frei. Das ist keine Lücke im Plan, sondern Spielraum für die Werkstatt.</p>
+      <p><strong>Achtung bei diesem Anschlag:</strong> Der Arm klappt weg. Was sich wegklappen lässt, gibt seinen Platz wieder frei – deshalb gibt es hier weniger Vorrangbeziehungen, als man beim ersten Hinsehen vermutet.</p>
     </div>
 
 
@@ -96,57 +97,73 @@ function el(id){ return document.getElementById(id); }
 
 var FRAGEN = [
   {
-    "frage": "<strong>Druckfeder</strong> und <strong>Führungsbolzen</strong>",
-    "loesung": "der Bolzen muss vorher",
-    "warum": "Die Feder wird auf den Bolzen gesteckt. Ohne Bolzen liegt sie nur herum."
+    "frage": "<strong>Zylinderstift</strong> und <strong>Lagerlasche</strong>",
+    "loesung": "der Zylinderstift muss vorher",
+    "warum": "Die Stifte werden in die Grundplatte getrieben und richten die Lasche aus. Wer die Lasche zuerst hinstellt, hat nichts, woran er sie ausrichten könnte."
   },
   {
-    "frage": "<strong>Druckfeder</strong> und <strong>Stempelhalter</strong>",
-    "loesung": "die Feder muss vorher",
-    "warum": "Die Feder liegt unter dem Halter. Ist der Halter erst auf den Bolzen gefädelt, kommt man an die Feder nicht mehr heran."
+    "frage": "<strong>Lagerlasche</strong> und <strong>Zylinderschraube M8</strong>",
+    "loesung": "die Lagerlasche muss vorher",
+    "warum": "Erst steht die Lasche auf den Stiften, dann wird sie verschraubt. Erst ausrichten, dann festziehen – andersherum richtet man gegen eine angezogene Verbindung."
   },
   {
-    "frage": "<strong>Biegegesenk</strong> und <strong>Ständer</strong>",
+    "frage": "<strong>Schwenkarm</strong> und <strong>Schwenkbolzen</strong>",
+    "loesung": "der Schwenkarm muss vorher",
+    "warum": "Der Arm muss zwischen den Laschen liegen, bevor der Bolzen kommt. Danach bekommt man ihn nicht mehr dazwischen – der Spalt ist genau so breit wie der Arm."
+  },
+  {
+    "frage": "<strong>Schwenkbolzen</strong> und <strong>Sechskantmutter</strong>",
+    "loesung": "der Schwenkbolzen muss vorher",
+    "warum": "Die Mutter wird auf das Ende des Bolzens gedreht. Ohne Bolzen liegt sie nur herum."
+  },
+  {
+    "frage": "<strong>Anschlagplatte</strong> und <strong>Zylinderschraube M6</strong>",
+    "loesung": "die Anschlagplatte muss vorher",
+    "warum": "Die M6-Schrauben halten die Platte am Arm. Ohne Platte halten sie nichts."
+  },
+  {
+    "frage": "<strong>Gewindestift</strong> und <strong>Schwenkarm</strong>",
     "loesung": "die Reihenfolge ist frei",
-    "warum": "Beide stehen nebeneinander auf der Grundplatte und behindern sich nicht. Hier darf jeder entscheiden."
+    "warum": "Hier steckt die Falle. Der Gewindestift steht am Ende genau unter der Nase des Arms – aber der Arm klappt nach hinten weg und gibt die Stelle wieder frei. Beides geht in beliebiger Reihenfolge."
   },
   {
-    "frage": "<strong>Zylinderstift</strong> und <strong>Zylinderschraube M6</strong> am Gesenk",
-    "loesung": "der Stift muss vorher",
-    "warum": "Die Stifte richten das Gesenk aus, die Schrauben halten es fest. Wer erst schraubt, richtet gegen eine festgezogene Verbindung - und reißt am Ende das Gewinde aus."
-  },
-  {
-    "frage": "<strong>Stempelhalter</strong> und <strong>Exzenterwelle</strong>",
-    "loesung": "der Stempelhalter muss vorher",
-    "warum": "Über dem Halter liegt später die Welle mit ihrem Exzenterbund. Zwischen Bund und Grundplatte bleiben dann 51 mm - der Halter ginge nicht mehr über die 68 mm hohen Bolzen."
-  },
-  {
-    "frage": "<strong>Exzenterwelle</strong> und <strong>Ständer</strong>",
-    "loesung": "die Welle muss vorher",
-    "warum": "Der Exzenterbund ist Ø 56 und passt durch keine Ø-20-Bohrung. Die Welle wird zwischen die Ständer gelegt, dann werden die Ständer von beiden Seiten aufgeschoben."
-  },
-  {
-    "frage": "<strong>Handhebel</strong> und <strong>Kegelstift</strong>",
-    "loesung": "der Hebel muss vorher",
-    "warum": "Der Stift geht durch Nabe und Welle. Vorher gibt es nichts zu sichern - und die Bohrung dafür wird erst gerieben, wenn der Hebel sitzt."
-  },
-  {
-    "frage": "<strong>Grundplatte</strong> und <strong>Handhebel</strong>",
-    "loesung": "die Grundplatte muss vorher",
-    "warum": "Nicht unmittelbar - aber über die Kette Platte, Ständer, Welle, Hebel. Eine Vorrangbeziehung darf über Umwege gelten; im Plan reicht es, die unmittelbaren aufzuschreiben."
-  },
-  {
-    "frage": "<strong>Zylinderschraube M8</strong> und <strong>Biegegesenk</strong>",
+    "frage": "<strong>Anschlagplatte</strong> und <strong>Lagerlasche</strong>",
     "loesung": "die Reihenfolge ist frei",
-    "warum": "Die M8-Schrauben halten die Ständer, das Gesenk sitzt zwischen ihnen. Beide stören einander nicht."
+    "warum": "Die Platte sitzt oben am Arm, die Laschen unten auf der Grundplatte. Sie haben im ganzen Aufbau nichts miteinander zu tun – im Strukturnetz führt zwischen ihnen keine Linie."
   },
   {
-    "frage": "<strong>Führungsbolzen</strong> und <strong>Grundplatte</strong>",
+    "frage": "<strong>Grundplatte</strong> und <strong>Gewindestift</strong>",
     "loesung": "die Grundplatte muss vorher",
-    "warum": "Der Bolzen wird in die Platte eingeschraubt. Was nicht da ist, hat kein Gewinde."
+    "warum": "Der Stift wird in die Grundplatte eingeschraubt. Was nicht da ist, hat kein Gewinde."
+  },
+  {
+    "frage": "<strong>Zylinderstift</strong> und <strong>Zylinderschraube M8</strong>",
+    "loesung": "der Zylinderstift muss vorher",
+    "warum": "Nicht unmittelbar – aber über die Kette Stift, Lasche, Schraube. Eine Vorrangbeziehung darf über Umwege gelten; im Plan reicht es, die unmittelbaren aufzuschreiben."
+  },
+  {
+    "frage": "<strong>Sechskantmutter</strong> und <strong>Zylinderschraube M6</strong>",
+    "loesung": "die Reihenfolge ist frei",
+    "warum": "Die Mutter sichert unten den Bolzen, die M6-Schrauben halten oben die Platte. Zwei Enden derselben Baugruppe, die einander nicht im Weg stehen."
   }
 ];
-var WAHL = ["der Bolzen muss vorher", "die Feder muss vorher", "der Stift muss vorher", "der Stempelhalter muss vorher", "die Welle muss vorher", "der Hebel muss vorher", "die Grundplatte muss vorher", "die Reihenfolge ist frei"];
+
+/* Zehn Teile, also zehn mögliche Antworten der Form "X muss vorher" - und
+   dazu die elfte. Wer die Auswahl von oben nach unten durchgeht, findet zu
+   jeder Frage mindestens zwei Antworten, die zu den genannten Teilen passen. */
+var WAHL = [
+  "die Grundplatte muss vorher",
+  "die Lagerlasche muss vorher",
+  "der Schwenkarm muss vorher",
+  "die Anschlagplatte muss vorher",
+  "der Schwenkbolzen muss vorher",
+  "die Sechskantmutter muss vorher",
+  "der Gewindestift muss vorher",
+  "die Zylinderschraube M8 muss vorher",
+  "die Zylinderschraube M6 muss vorher",
+  "der Zylinderstift muss vorher",
+  "die Reihenfolge ist frei"
+];
 
 
 /* --------------------------------------------------------------------------

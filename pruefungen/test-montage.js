@@ -1,10 +1,22 @@
-/* Die Montageeinheit: Presse, Strukturnetz, Vorrang und Montageplan.
+/* Die Montageeinheit: drei Baugruppen, Strukturnetz, Vorrang, Montageplan.
  *
- * Diese Einheit hängt an einem einzigen Baustein: assets/biegepresse.js. Dort
- * stehen die Maße, die Stückliste, die Verbindungen und die
- * Vorrangbeziehungen; Zeichnung, Modell, Lektion, Übungen, Trainings und
- * Lernsituation greifen alle darauf zu. Geht dort etwas auseinander, geht es
- * überall auseinander - und genau das prüft diese Datei.
+ * Diese Einheit hängt an drei Bausteinen, einem je Baugruppe:
+ *
+ *     assets/bohrvorrichtung.js   VORRICHTUNG   die Lektion
+ *     assets/klappanschlag.js     ANSCHLAG      die Übungen
+ *     assets/biegepresse.js       PRESSE        die Lernsituation
+ *
+ * Drei, damit in den Übungen nicht die Lösungen der Lernsituation
+ * wiedererkannt werden. In jedem stehen die Maße, die Stückliste, die
+ * Verbindungen und die Vorrangbeziehungen; Zeichnung, Modell, Lektion,
+ * Übungen, Trainings und Lernsituation greifen darauf zu. Geht dort etwas
+ * auseinander, geht es überall auseinander - und genau das prüft diese
+ * Datei.
+ *
+ * Was jede Baugruppe erfüllen muss - Stückliste, Netz, Netzbild,
+ * Vorranggraph -, steht weiter unten in Funktionen und wird dreimal
+ * aufgerufen. Was nur die Presse betrifft - Maßkette, Bauraum, 3D-Modell -,
+ * steht in main().
  *
  * Fünf Dinge werden gehalten:
  *
@@ -36,13 +48,18 @@ const p = (was, ok, zusatz) => {
 
 const LS = 'lernsituationen/biegepresse/index.html';
 
+/* zusammenstellung.js kommt vor den Baugruppen: Jede greift beim Laden
+   darauf zu. montageplan.js zählt die Reihenfolgen. */
+const BAUSTEINE = ['zusammenstellung.js', 'montageplan.js', 'biegepresse.js',
+  'bohrvorrichtung.js', 'klappanschlag.js'];
+
 /* Die beiden Bausteine laufen ohne Browser - sie hängen nur an einem
    globalen Objekt. Für die Prüfung genügt eine leere Hülle. */
 function laden() {
   const welt = { window: null };
   const sand = {};
   sand.window = sand;
-  ['biegepresse.js', 'montageplan.js'].forEach((datei) => {
+  BAUSTEINE.forEach((datei) => {
     const quelle = fs.readFileSync(path.join(BASIS, 'assets', datei), 'utf8');
     // eslint-disable-next-line no-new-func
     new Function('window', quelle).call(sand, sand);
@@ -50,10 +67,168 @@ function laden() {
   return sand;
 }
 
+/* ==========================================================================
+   Was jede der drei Baugruppen erfüllen muss
+   ========================================================================== */
+
+function stuecklistePruefen(B) {
+  p('die Positionsnummern sind lückenlos von 1 bis ' + B.TEILE.length,
+    B.TEILE.every((t, i) => t.pos === i + 1),
+    B.TEILE.map((t) => t.pos).join(','));
+  p('jede Position hat eine Menge größer null',
+    B.TEILE.every((t) => t.menge >= 1));
+  p('und ist Fertigungs- oder Normteil',
+    B.TEILE.every((t) => t.art === 'fertigung' || t.art === 'norm'));
+  p('jede Position hat einen Kurznamen fürs Netzbild',
+    B.TEILE.every((t) => (t.kurz || '').length > 2),
+    B.TEILE.filter((t) => !(t.kurz || '').length).map((t) => t.pos).join(','));
+  p('mehr als eine Position kommt mehrfach vor',
+    B.TEILE.filter((t) => t.menge > 1).length >= 3,
+    B.TEILE.filter((t) => t.menge > 1).map((t) => t.pos).join(','));
+}
+
+function netzPruefen(B) {
+  const posSet = new Set(B.TEILE.map((t) => t.pos));
+  p('jede Kante des Strukturnetzes zeigt auf vorhandene Positionen',
+    B.STRUKTUR.every((k) => posSet.has(k.a) && posSet.has(k.b)));
+  p('jede Kante sagt fest oder beweglich',
+    B.STRUKTUR.every((k) => k.art === 'fest' || k.art === 'beweglich'));
+  p('und jede sagt warum',
+    B.STRUKTUR.every((k) => (k.warum || '').length > 12));
+  p('keine Verbindung steht doppelt im Netz',
+    new Set(B.STRUKTUR.map((k) => Math.min(k.a, k.b) + '-'
+      + Math.max(k.a, k.b))).size === B.STRUKTUR.length);
+  p('jede Position hat mindestens eine Verbindung',
+    B.TEILE.every((t) => B.STRUKTUR.some((k) => k.a === t.pos
+      || k.b === t.pos)),
+    B.TEILE.filter((t) => !B.STRUKTUR.some((k) => k.a === t.pos
+      || k.b === t.pos)).map((t) => t.pos).join(','));
+  p('jede Position hat einen Platz im Netzbild',
+    B.TEILE.every((t) => B.NETZ_LAGE[t.pos]));
+
+  /* Das Netzbild wird nachgemessen, nicht nach Augenmaß gesetzt.
+
+     Zwei Dinge dürfen nicht passieren: Zwei Kästchen dürfen einander nicht
+     überdecken, und eine Verbindungslinie darf durch kein fremdes Kästchen
+     laufen - dort liegt sie unter der Beschriftung, und eine Linie unter
+     einem Wort ist keine Linie. Gerechnet wird in denselben Bildpunkten,
+     in denen assets/montageplan.js zeichnet. */
+  const NB = 940, NH = 620, NR = 70;
+  const npx = (x) => NR + x / 100 * (NB - 2 * NR);
+  const npy = (y) => NR + y / 100 * (NH - 2 * NR);
+  const kasten = (t) => {
+    const l = (t.pos + '  ' + t.kurz).length;
+    const w = Math.max(104, l * 8.2 + 26), h = 40;
+    const lage = B.NETZ_LAGE[t.pos];
+    const x = npx(lage.x), y = npy(lage.y);
+    return { pos: t.pos, x, y, l: x - w / 2, r: x + w / 2,
+      o: y - h / 2, u: y + h / 2 };
+  };
+  const kaesten = B.TEILE.filter((t) => B.NETZ_LAGE[t.pos]).map(kasten);
+
+  const nah = [];
+  kaesten.forEach((a, i) => {
+    kaesten.slice(i + 1).forEach((b) => {
+      if (a.l < b.r + 8 && b.l < a.r + 8 && a.o < b.u + 8 && b.o < a.u + 8) {
+        nah.push(a.pos + '/' + b.pos);
+      }
+    });
+  });
+  p('keine zwei Kästchen liegen aufeinander', !nah.length, nah.join(', '));
+
+  const drueber = kaesten.filter((k) => k.l < 2 || k.r > NB - 2
+    || k.o < 2 || k.u > NH - 2);
+  p('jedes Kästchen bleibt im Bild', !drueber.length,
+    drueber.map((k) => k.pos).join(', '));
+
+  /* Schneidet die Strecke von (x1,y1) nach (x2,y2) den Kasten k? */
+  const schneidet = (x1, y1, x2, y2, k) => {
+    const rand = 4;
+    let t0 = 0, t1 = 1;
+    const dx = x2 - x1, dy = y2 - y1;
+    const grenzen = [[-dx, x1 - (k.l - rand)], [dx, (k.r + rand) - x1],
+      [-dy, y1 - (k.o - rand)], [dy, (k.u + rand) - y1]];
+    for (const [pp, q] of grenzen) {
+      if (pp === 0) { if (q < 0) return false; continue; }
+      const r = q / pp;
+      if (pp < 0) { if (r > t1) return false; if (r > t0) t0 = r; }
+      else { if (r < t0) return false; if (r < t1) t1 = r; }
+    }
+    return t1 > t0 + 0.02;
+  };
+  const durch = [];
+  B.STRUKTUR.forEach((kante) => {
+    const a = kaesten.filter((k) => k.pos === kante.a)[0];
+    const b = kaesten.filter((k) => k.pos === kante.b)[0];
+    if (!a || !b) return;
+    kaesten.forEach((c) => {
+      if (c.pos === kante.a || c.pos === kante.b) return;
+      if (schneidet(a.x, a.y, b.x, b.y, c)) {
+        durch.push(kante.a + '-' + kante.b + ' durch ' + c.pos);
+      }
+    });
+  });
+  p('keine Verbindungslinie läuft durch ein fremdes Kästchen',
+    !durch.length, durch.join(', '));
+}
+
+/* Welche Positionen müssen zwingend vor welchen kommen - auch über Umwege?
+   Dieselbe Hülle beantwortet zwei Fragen: ob der Graph einen Kreis hat und
+   ob ein Teil auf seinem Einbauweg an einem anderen vorbeimuss. */
+function vorherHuelle(B) {
+  const noetig = {};
+  B.TEILE.forEach((t) => { noetig[t.pos] = new Set(); });
+  B.VORRANG.forEach((v) => noetig[v.nachher].add(v.vorher));
+  let gewachsen = true;
+  while (gewachsen) {
+    gewachsen = false;
+    B.TEILE.forEach((t) => {
+      const jetzt = noetig[t.pos];
+      [...jetzt].forEach((q) => {
+        noetig[q].forEach((r) => {
+          if (!jetzt.has(r)) { jetzt.add(r); gewachsen = true; }
+        });
+      });
+    });
+  }
+  return noetig;
+}
+
+function vorrangPruefen(B, MP) {
+  const posSet = new Set(B.TEILE.map((t) => t.pos));
+  p('jede Vorrangbeziehung zeigt auf vorhandene Positionen',
+    B.VORRANG.every((v) => posSet.has(v.vorher) && posSet.has(v.nachher)));
+  p('und jede nennt ihren Grund',
+    B.VORRANG.every((v) => (v.warum || '').length > 20));
+  p('keine Vorrangbeziehung steht doppelt',
+    new Set(B.VORRANG.map((v) => v.vorher + '>' + v.nachher)).size
+      === B.VORRANG.length);
+
+  /* Ein Kreis im Vorranggraph hieße: Diese Baugruppe lässt sich nicht
+     montieren. Das fiele sonst erst auf, wenn die Übung nichts mehr
+     akzeptiert. */
+  const noetig = vorherHuelle(B);
+  p('der Vorranggraph hat keinen Kreis',
+    B.TEILE.every((t) => !noetig[t.pos].has(t.pos)),
+    B.TEILE.filter((t) => noetig[t.pos].has(t.pos))
+      .map((t) => t.pos).join(','));
+
+  let ohne = 1;
+  for (let i = 2; i <= B.TEILE.length; i++) ohne *= i;
+  const folgen = MP.wieVieleFolgen(B.TEILE, B.VORRANG, 300000);
+  p('es gibt überhaupt eine gültige Reihenfolge', folgen.zahl > 0);
+  p('und mehr als eine - sonst wäre die ganze Einheit gegenstandslos',
+    folgen.zahl > 1, folgen.zahl + '');
+  p('aber nicht beliebig viele: die Bedingungen wirken',
+    folgen.abgebrochen || folgen.zahl < ohne / 1000,
+    folgen.zahl + ' von ' + ohne);
+  return { folgen, noetig };
+}
+
 async function main() {
   console.log('\nDie Bausteine');
 
-  ['biegepresse.js', 'montageplan.js'].forEach((datei) => {
+  BAUSTEINE.forEach((datei) => {
     const hier = path.join(BASIS, 'assets', datei);
     p('assets/' + datei + ' liegt im Materialrepo', fs.existsSync(hier));
     if (teilweise(TOOLS, 'die Werkzeuge')) {
@@ -65,10 +240,13 @@ async function main() {
   });
 
   const w = laden();
-  const P = w.PRESSE, MP = w.Montageplan;
+  const P = w.PRESSE, V = w.VORRICHTUNG, A = w.ANSCHLAG, MP = w.Montageplan;
   p('PRESSE steht bereit', !!P);
+  p('VORRICHTUNG steht bereit', !!V);
+  p('ANSCHLAG steht bereit', !!A);
+  p('Zusammenstellung steht bereit', !!w.Zusammenstellung);
   p('Montageplan steht bereit', !!MP);
-  if (!P || !MP) { schluss(); return; }
+  if (!P || !V || !A || !MP) { schluss(); return; }
 
   const M = P.M;
 
@@ -133,16 +311,7 @@ async function main() {
   console.log('\nStückliste und Normteile');
 
   p('zwölf Positionen', P.TEILE.length === 12, P.TEILE.length + '');
-  p('die Positionsnummern sind lückenlos von 1 bis 12',
-    P.TEILE.every((t, i) => t.pos === i + 1),
-    P.TEILE.map((t) => t.pos).join(','));
-  p('jede Position hat eine Menge größer null',
-    P.TEILE.every((t) => t.menge >= 1));
-  p('und ist Fertigungs- oder Normteil',
-    P.TEILE.every((t) => t.art === 'fertigung' || t.art === 'norm'));
-  p('mehr als eine Position kommt mehrfach vor',
-    P.TEILE.filter((t) => t.menge > 1).length >= 3,
-    P.TEILE.filter((t) => t.menge > 1).map((t) => t.pos).join(','));
+  stuecklistePruefen(P);
 
   /* Die abgelesenen Tabellenzeilen liegen in tabellenbuch/daten.json. Der
      Ordner steht in .gitignore - wer das Repo frisch klont, hat ihn nicht,
@@ -206,107 +375,8 @@ async function main() {
 
   console.log('\nStrukturnetz und Vorrang');
 
-  const posSet = new Set(P.TEILE.map((t) => t.pos));
-  p('jede Kante des Strukturnetzes zeigt auf vorhandene Positionen',
-    P.STRUKTUR.every((k) => posSet.has(k.a) && posSet.has(k.b)));
-  p('jede Kante sagt fest oder beweglich',
-    P.STRUKTUR.every((k) => k.art === 'fest' || k.art === 'beweglich'));
-  p('und jede sagt warum',
-    P.STRUKTUR.every((k) => (k.warum || '').length > 12));
-  p('keine Verbindung steht doppelt im Netz',
-    new Set(P.STRUKTUR.map((k) => Math.min(k.a, k.b) + '-'
-      + Math.max(k.a, k.b))).size === P.STRUKTUR.length);
-  p('jede Position hat mindestens eine Verbindung',
-    P.TEILE.every((t) => P.STRUKTUR.some((k) => k.a === t.pos
-      || k.b === t.pos)),
-    P.TEILE.filter((t) => !P.STRUKTUR.some((k) => k.a === t.pos
-      || k.b === t.pos)).map((t) => t.pos).join(','));
-  p('jede Position hat einen Platz im Netzbild',
-    P.TEILE.every((t) => P.NETZ_LAGE[t.pos]));
-
-  /* Das Netzbild wird nachgemessen, nicht nach Augenmaß gesetzt.
-
-     Zwei Dinge dürfen nicht passieren: Zwei Kästchen dürfen einander nicht
-     überdecken, und eine Verbindungslinie darf durch kein fremdes Kästchen
-     laufen - dort liegt sie unter der Beschriftung, und eine Linie unter
-     einem Wort ist keine Linie. Gerechnet wird in denselben Bildpunkten,
-     in denen assets/montageplan.js zeichnet. */
-  const NB = 940, NH = 620, NR = 70;
-  const npx = (x) => NR + x / 100 * (NB - 2 * NR);
-  const npy = (y) => NR + y / 100 * (NH - 2 * NR);
-  const kasten = (t) => {
-    const l = (t.pos + '  ' + t.kurz).length;
-    const w = Math.max(104, l * 8.2 + 26), h = 40;
-    const lage = P.NETZ_LAGE[t.pos];
-    const x = npx(lage.x), y = npy(lage.y);
-    return { pos: t.pos, x, y, l: x - w / 2, r: x + w / 2,
-      o: y - h / 2, u: y + h / 2 };
-  };
-  const kaesten = P.TEILE.filter((t) => P.NETZ_LAGE[t.pos]).map(kasten);
-
-  const nah = [];
-  kaesten.forEach((a, i) => {
-    kaesten.slice(i + 1).forEach((b) => {
-      if (a.l < b.r + 8 && b.l < a.r + 8 && a.o < b.u + 8 && b.o < a.u + 8) {
-        nah.push(a.pos + '/' + b.pos);
-      }
-    });
-  });
-  p('keine zwei Kästchen liegen aufeinander', !nah.length, nah.join(', '));
-
-  const drueber = kaesten.filter((k) => k.l < 2 || k.r > NB - 2
-    || k.o < 2 || k.u > NH - 2);
-  p('jedes Kästchen bleibt im Bild', !drueber.length,
-    drueber.map((k) => k.pos).join(', '));
-
-  /* Schneidet die Strecke von (x1,y1) nach (x2,y2) den Kasten k? */
-  const schneidet = (x1, y1, x2, y2, k) => {
-    const rand = 4;
-    let t0 = 0, t1 = 1;
-    const dx = x2 - x1, dy = y2 - y1;
-    const grenzen = [[-dx, x1 - (k.l - rand)], [dx, (k.r + rand) - x1],
-      [-dy, y1 - (k.o - rand)], [dy, (k.u + rand) - y1]];
-    for (const [pp, q] of grenzen) {
-      if (pp === 0) { if (q < 0) return false; continue; }
-      const r = q / pp;
-      if (pp < 0) { if (r > t1) return false; if (r > t0) t0 = r; }
-      else { if (r < t0) return false; if (r < t1) t1 = r; }
-    }
-    return t1 > t0 + 0.02;
-  };
-  const durch = [];
-  P.STRUKTUR.forEach((kante) => {
-    const a = kaesten.filter((k) => k.pos === kante.a)[0];
-    const b = kaesten.filter((k) => k.pos === kante.b)[0];
-    if (!a || !b) return;
-    kaesten.forEach((c) => {
-      if (c.pos === kante.a || c.pos === kante.b) return;
-      if (schneidet(a.x, a.y, b.x, b.y, c)) {
-        durch.push(kante.a + '-' + kante.b + ' durch ' + c.pos);
-      }
-    });
-  });
-  p('keine Verbindungslinie läuft durch ein fremdes Kästchen',
-    !durch.length, durch.join(', '));
-
-  p('jede Vorrangbeziehung zeigt auf vorhandene Positionen',
-    P.VORRANG.every((v) => posSet.has(v.vorher) && posSet.has(v.nachher)));
-  p('und jede nennt ihren Grund',
-    P.VORRANG.every((v) => (v.warum || '').length > 20));
-  p('keine Vorrangbeziehung steht doppelt',
-    new Set(P.VORRANG.map((v) => v.vorher + '>' + v.nachher)).size
-      === P.VORRANG.length);
-
-  /* Ein Kreis im Vorranggraph hieße: Diese Baugruppe lässt sich nicht
-     montieren. Das fiele sonst erst auf, wenn die Übung nichts mehr
-     akzeptiert. */
-  const folgen = MP.wieVieleFolgen(P.TEILE, P.VORRANG, 300000);
-  p('es gibt überhaupt eine gültige Reihenfolge', folgen.zahl > 0);
-  p('und mehr als eine - sonst wäre die ganze Einheit gegenstandslos',
-    folgen.zahl > 1, folgen.zahl + '');
-  p('aber nicht beliebig viele: die Bedingungen wirken',
-    folgen.abgebrochen || folgen.zahl < 479001600 / 1000,
-    folgen.zahl + ' von 479 001 600');
+  netzPruefen(P);
+  const { folgen, noetig: vorherNoetig } = vorrangPruefen(P, MP);
 
   /* Die Reihenfolge, die das Modell abspielt, muss selbst gültig sein. */
   const koerper = P.teile3d();
@@ -444,26 +514,8 @@ async function main() {
       && a.z1 < b.z2 - s && b.z1 < a.z2 - s;
   };
 
-  /* Muss "vorher" zwingend vor "nachher" kommen? Auch über Umwege. */
-  const vorherNoetig = {};
-  P.TEILE.forEach((t1) => { vorherNoetig[t1.pos] = new Set(); });
-  P.VORRANG.forEach((v) => vorherNoetig[v.nachher].add(v.vorher));
-  let gewachsen = true;
-  while (gewachsen) {
-    gewachsen = false;
-    P.TEILE.forEach((t1) => {
-      const jetzt = vorherNoetig[t1.pos];
-      [...jetzt].forEach((q) => {
-        vorherNoetig[q].forEach((r) => {
-          if (!jetzt.has(r)) { jetzt.add(r); gewachsen = true; }
-        });
-      });
-    });
-  }
-  p('der Vorranggraph hat keinen Kreis',
-    P.TEILE.every((t1) => !vorherNoetig[t1.pos].has(t1.pos)),
-    P.TEILE.filter((t1) => vorherNoetig[t1.pos].has(t1.pos))
-      .map((t1) => t1.pos).join(','));
+  /* Ob "vorher" zwingend vor "nachher" kommt - auch über Umwege -, steht
+     schon in vorherNoetig; der Graph ist oben als kreisfrei nachgewiesen. */
 
   p('jeder Körper kommt aus einer Richtung, nicht aus dem Nichts',
     koerper.every((k) => k.von && [k.von.x, k.von.y, k.von.z]
@@ -504,6 +556,37 @@ async function main() {
   });
   p('am Ende steckt nichts in etwas, das nichts davon weiß',
     !fremd.length, [...new Set(fremd)].join(', '));
+
+  /* ----------------------------------------------------------------------
+     Die beiden anderen Baugruppen. Sie haben kein 3D-Modell und keine
+     Maßkette, die etwas zusammenhalten müsste - aber Stückliste, Netz,
+     Netzbild und Vorranggraph gelten für sie genauso. Zeichnung und
+     Beschriftung prüft pruefungen/test-zeichnungen.js an den Seiten, auf
+     denen sie stehen.
+     ---------------------------------------------------------------------- */
+
+  [['Bohrvorrichtung (Lektion)', V, 10],
+   ['Klappanschlag (Übungen)', A, 10]].forEach(([name, B, wieViele]) => {
+    console.log('\n' + name);
+    p(wieViele + ' Positionen', B.TEILE.length === wieViele,
+      B.TEILE.length + '');
+    stuecklistePruefen(B);
+    netzPruefen(B);
+    vorrangPruefen(B, MP);
+    p('die Baugruppe nennt ihren Namen und ihre Zeichnungsnummer',
+      (B.name || '').length > 3 && /^TBK-\d{4}-\d{3}$/.test(B.nummer || ''),
+      B.name + ' / ' + B.nummer);
+    p('mindestens eine Verbindung ist beweglich',
+      B.STRUKTUR.some((k) => k.art === 'beweglich'));
+
+    /* Drei Baugruppen sollen nicht dieselbe Aufgabe stellen. Wären ihre
+       Stücklisten deckungsgleich, könnte man die Lösung der einen auf die
+       andere übertragen - und genau das soll nicht gehen. */
+    const gleich = B.TEILE.filter((t) => P.TEILE.some(
+      (q) => q.benennung === t.benennung)).length;
+    p('ihre Stückliste ist nicht die der Presse',
+      gleich < B.TEILE.length / 2, gleich + ' gleiche Benennungen');
+  });
 
   console.log('\nDie Lernsituation');
 

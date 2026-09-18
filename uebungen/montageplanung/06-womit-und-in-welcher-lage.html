@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Womit wird montiert?</title>
-<meta name="description" content="Acht Montageschritte an der Biegepresse und das Betriebsmittel, das dazugehört – vom Innensechskantschlüssel bis zum Haarwinkel.">
-<meta name="dauer" content="15 min">
+<meta name="description" content="Zehn Montageschritte am Klappanschlag und das Betriebsmittel dazu. Die Schlüsselweiten stehen im Tabellenbuch – raten führt hier zuverlässig daneben.">
+<meta name="dauer" content="20 min">
 <link rel="stylesheet" href="../../assets/uebung.css">
 <style>
   /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
@@ -40,7 +40,7 @@
   <header class="wrap">
     <p class="herkunft">Übung &middot; Montageplanung</p>
     <h1>Womit wird montiert?</h1>
-    <p class="lead">Ein Montageplan nennt nicht nur den Schritt, sondern auch das Werkzeug. Sonst steht der Nächste vor der Maschine und sucht.</p>
+    <p class="lead">Ein Montageplan nennt nicht nur den Schritt, sondern auch das Werkzeug. Sonst steht der Nächste vor der Baugruppe und sucht.</p>
   </header>
 
   <main class="wrap">
@@ -48,10 +48,11 @@
     <div class="box auftrag">
       <p><strong>Ein Montageplan hat mindestens vier Spalten:</strong> die Nummer des Schrittes, was zu tun ist, womit, und woran man erkennt, dass es stimmt.</p>
       <p>Die Spalte <em>womit</em> ist die, die am häufigsten fehlt &ndash; und die, wegen der am häufigsten etwas kaputtgeht. Ein Stahlhammer auf einem Zylinderstift macht mehr Schaden als eine falsche Reihenfolge.</p>
+      <p><strong>Zur Arbeitsweise:</strong> Die Auswahl enthält alle Schlüsselweiten, die es an Schrauben dieser Größenordnung überhaupt gibt. Aus der Gewindegröße lässt sich keine davon erraten &ndash; eine M12-Schraube und eine M12-Mutter brauchen zwei verschiedene Schlüssel. Schlagt nach: <em>Zylinderschrauben mit Innensechskant</em> und <em>Sechskantmuttern</em> im Tabellenbuch.</p>
     </div>
 
 
-    <h2><span class="nr">1</span>Acht Schritte</h2>
+    <h2><span class="nr">1</span>Zehn Schritte am Klappanschlag</h2>
 
     <div class="tabellenrahmen">
       <table class="fr">
@@ -90,47 +91,93 @@ function el(id){ return document.getElementById(id); }
 
 var FRAGEN = [
   {
-    "frage": "Die vier <strong>Zylinderschrauben M8</strong> anziehen",
+    "frage": "Die vier <strong>Zylinderschrauben ISO 4762 – M8 × 25</strong> anziehen, die die Laschen halten",
     "loesung": "Innensechskantschlüssel SW 6",
-    "warum": "ISO 4762 M8 hat SW 6. Die Schlüsselweite steht im Tabellenbuch bei den Zylinderschrauben - raten kostet Schraubenköpfe."
+    "warum": "Tabellenbuch, Zylinderschrauben mit Innensechskant: M8 hat SW 6. Nicht SW 8. Die Schlüsselweite ist die des Innensechskants im Kopf und hat mit dem Gewindedurchmesser nichts zu tun."
   },
   {
-    "frage": "Die zwei <strong>Zylinderschrauben M6</strong> am Gesenk anziehen",
+    "frage": "Die zwei <strong>Zylinderschrauben ISO 4762 – M6 × 16</strong> an der Anschlagplatte anziehen",
     "loesung": "Innensechskantschlüssel SW 5",
-    "warum": "M6 hat SW 5. Zwei Größen an einer Maschine - deshalb gehören beide auf den Montageplan."
+    "warum": "M6 hat SW 5. Drei Schraubengrößen an einer Baugruppe, drei Schlüssel – deshalb gehört jeder einzeln auf den Montageplan."
   },
   {
-    "frage": "Die <strong>Zylinderstifte</strong> in die Grundplatte setzen",
+    "frage": "Den <strong>Schwenkbolzen</strong> (Zylinderschraube ISO 4762 – M12 × 70) gegenhalten",
+    "loesung": "Innensechskantschlüssel SW 10",
+    "warum": "M12 hat SW 10 – zwei Stufen über M8 mit seinem SW 6. Die Reihe geht SW 5, 6, 8, 10: sie hängt an der Kopfgröße, nicht am Gewinde."
+  },
+  {
+    "frage": "Die <strong>Sechskantmutter ISO 4032 – M12</strong> auf demselben Bolzen anziehen",
+    "loesung": "Ringschlüssel SW 18",
+    "warum": "Dieselbe Gewindegröße, ein anderer Schlüssel: Die Mutter hat SW 18, die Schraube SW 10. Wer aus dem einen auf das andere schließt, liegt um acht Millimeter daneben. (SW 19 stammt aus der alten DIN 931 und gehört nicht hierher.)"
+  },
+  {
+    "frage": "Die vier <strong>Zylinderstifte ISO 2338 – 6 m6 × 20</strong> in die Grundplatte setzen",
     "loesung": "Kunststoffhammer",
-    "warum": "Ein Zylinderstift m6 sitzt stramm. Ein Stahlhammer staucht ihn und macht einen Grat, der die Bohrung zerstört."
+    "warum": "m6 ist Übermaß: Der Stift sitzt stramm. Ein Schlosserhammer staucht seinen Kopf und treibt einen Grat vor sich her, der die Bohrung zerstört."
   },
   {
-    "frage": "Den <strong>Kegelstift</strong> wieder heraustreiben",
-    "loesung": "Splinttreiber",
-    "warum": "Ein Durchtreiber mit passendem Durchmesser, angesetzt an der dünnen Seite. Mit der Zange zieht man ihn nicht."
+    "frage": "Die <strong>Grundplatte</strong> für die Montage festsetzen",
+    "loesung": "Schraubstock mit Schutzbacken",
+    "warum": "Ohne Schutzbacken drückt die geriffelte Backe ihr Muster in den S235JR. Die Platte ist die Bezugsfläche der ganzen Baugruppe – auf ihr steht später alles."
   },
   {
-    "frage": "Prüfen, ob die <strong>Ständer senkrecht</strong> stehen",
+    "frage": "Prüfen, ob die <strong>Lagerlaschen senkrecht</strong> auf der Grundplatte stehen",
     "loesung": "Haarwinkel",
-    "warum": "Vor dem Festziehen. Danach lässt sich ein schiefer Ständer nur noch mit Gewalt richten."
+    "warum": "Vor dem Festziehen. Stehen sie schief, fluchten die beiden Bohrungen für den Schwenkbolzen nicht mehr, und der Arm klemmt."
   },
   {
-    "frage": "Die <strong>Höhe des Gesenks</strong> nachmessen",
+    "frage": "Die <strong>Höhe der Schwenkachse</strong> über der Grundplatte nachmessen (33 mm)",
     "loesung": "Messschieber",
-    "warum": "20 mm, und davon hängt der Spalt von 2 mm ab. Wer hier schätzt, biegt später falsch."
+    "warum": "Das Maß steht in der Zeichnung und bestimmt, wie weit der Arm ausschwenkt. Wer hier schätzt, bekommt einen Anschlag, der nicht an der eingestellten Stelle steht."
   },
   {
-    "frage": "Die <strong>Exzenterwelle</strong> zwischen die Ständer bringen",
+    "frage": "Den <strong>Schwenkarm</strong> zwischen die beiden Laschen bringen",
     "loesung": "von Hand, ohne Werkzeug",
-    "warum": "Die Welle liegt lose zwischen den Ständern; erst danach werden sie aufgeschoben. Wer hier Werkzeug braucht, hat die Reihenfolge falsch."
+    "warum": "Der Arm liegt lose zwischen den Laschen, bis der Bolzen kommt. Wer hier Werkzeug braucht, hat die Reihenfolge falsch – danach bekommt man ihn nicht mehr dazwischen."
   },
   {
     "frage": "Das <strong>Anziehdrehmoment</strong> der M8-Schrauben einhalten",
     "loesung": "Drehmomentschlüssel",
-    "warum": "Nach Gefühl angezogen streuen Vorspannkräfte um mehr als das Doppelte. An einer Presse, die 7 kN erzeugt, ist das keine Kleinigkeit."
+    "warum": "Nach Gefühl angezogen streuen die Vorspannkräfte um mehr als das Doppelte. Bei vier Schrauben, die eine Lasche gerade halten sollen, heißt das: eine zieht, drei schauen zu."
   }
 ];
-var WAHL = ["Innensechskantschlüssel SW 5", "Innensechskantschlüssel SW 6", "Kunststoffhammer", "Splinttreiber", "Haarwinkel", "Messschieber", "Drehmomentschlüssel", "von Hand, ohne Werkzeug"];
+
+/* Die Auswahl ist absichtlich lang. Sie enthält jede Schlüsselweite, die
+   an Schrauben und Muttern dieser Größenordnung vorkommt - auch SW 17 und
+   SW 19 aus den alten DIN-Normen. Wer aus der Gewindegröße raten will,
+   findet hier nichts, woran er sich festhalten könnte: Er muss nachschlagen. */
+var WAHL = [
+  "Innensechskantschlüssel SW 2,5",
+  "Innensechskantschlüssel SW 3",
+  "Innensechskantschlüssel SW 4",
+  "Innensechskantschlüssel SW 5",
+  "Innensechskantschlüssel SW 6",
+  "Innensechskantschlüssel SW 8",
+  "Innensechskantschlüssel SW 10",
+  "Innensechskantschlüssel SW 12",
+  "Innensechskantschlüssel SW 14",
+  "Ringschlüssel SW 8",
+  "Ringschlüssel SW 10",
+  "Ringschlüssel SW 13",
+  "Ringschlüssel SW 16",
+  "Ringschlüssel SW 17",
+  "Ringschlüssel SW 18",
+  "Ringschlüssel SW 19",
+  "Ringschlüssel SW 24",
+  "Kunststoffhammer",
+  "Schlosserhammer",
+  "Durchtreiber ⌀ 5",
+  "Durchtreiber ⌀ 6",
+  "Haarwinkel",
+  "Anschlagwinkel 90°",
+  "Winkelmesser",
+  "Messschieber",
+  "Tiefenmaß",
+  "Drehmomentschlüssel",
+  "Schraubstock mit Schutzbacken",
+  "Schraubstock ohne Schutzbacken",
+  "von Hand, ohne Werkzeug"
+];
 
 
 /* --------------------------------------------------------------------------

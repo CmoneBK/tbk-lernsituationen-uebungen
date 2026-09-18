@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Normteil oder Fertigungsteil?</title>
-<meta name="description" content="Zehn Positionen der Biegepresse einordnen – und den Unterschied begründen können, auch bei den zwei Fällen, die täuschen.">
+<meta name="description" content="Zehn Positionen des Klappanschlags einordnen – und den Unterschied begründen können, auch bei den drei Fällen, die täuschen.">
 <meta name="dauer" content="15 min">
 <link rel="stylesheet" href="../../assets/uebung.css">
 <style>
@@ -40,14 +40,14 @@
   <header class="wrap">
     <p class="herkunft">Übung &middot; Montageplanung</p>
     <h1>Normteil oder Fertigungsteil?</h1>
-    <p class="lead">Was man bestellt, ist ein Normteil. Was in der Werkstatt entsteht, ein Fertigungsteil. Zwei Positionen sehen aus wie das eine und sind das andere.</p>
+    <p class="lead">Was man bestellt, ist ein Normteil. Was in der Werkstatt entsteht, ein Fertigungsteil. Drei Positionen sehen aus wie das eine und sind das andere.</p>
   </header>
 
   <main class="wrap">
 
     <div class="box auftrag">
       <p><strong>Die Unterscheidung ist keine Spitzfindigkeit.</strong> Sie entscheidet, was eingekauft und was gefertigt wird, was eine Zeichnung braucht und was eine Bestellnummer, und ob im Strukturnetz ein Rechteck oder ein Oval steht.</p>
-      <p>Die Probe: Kann ich das Teil mit einer <strong>Normbezeichnung</strong> bestellen, ohne eine Zeichnung mitzuschicken? Dann ist es ein Normteil.</p>
+      <p>Die Probe: Kann ich das Teil mit einer <strong>Normbezeichnung</strong> bestellen, ohne eine Zeichnung mitzuschicken? Dann ist es ein Normteil. Nicht: Steht irgendwo eine Normnummer? Die steht auch auf dem Halbzeug, aus dem ein Fertigungsteil entsteht – und auf der Aufgabe, die es erfüllt.</p>
     </div>
 
 
@@ -90,54 +90,54 @@ function el(id){ return document.getElementById(id); }
 
 var FRAGEN = [
   {
-    "frage": "<span class=\"pos\">1</span>Grundplatte",
+    "frage": "<span class=\"pos\">1</span>Grundplatte 140 × 80 × 12, S235JR",
     "loesung": "Fertigungsteil",
     "warum": "Ein Stück Flachstahl, in der Werkstatt gesägt, gefräst und gebohrt. Es gibt keine Norm, unter der man es bestellen könnte."
   },
   {
-    "frage": "<span class=\"pos\">3</span>Exzenterwelle",
-    "loesung": "Fertigungsteil",
-    "warum": "Gedreht nach Zeichnung. Die Exzentrizität von 6 mm gibt es in keinem Katalog."
-  },
-  {
-    "frage": "<span class=\"pos\">8</span>Druckfeder 1,6 × 21,6 × 48,0",
+    "frage": "<span class=\"pos\">5</span>Zylinderschraube ISO 4762 – M12 × 70 – 8.8, in der Stückliste als <em>Schwenkbolzen</em> geführt",
     "loesung": "Normteil",
-    "warum": "Man bestellt sie mit Drahtdurchmesser, Außendurchmesser und Länge - drei Zahlen, und die Feder ist eindeutig."
+    "warum": "Erste Falle. Was das Teil in dieser Baugruppe <em>tut</em>, ändert nichts daran, was es <em>ist</em>: Bestellt wird eine Schraube nach ISO 4762, und jeder Händler liefert dieselbe."
   },
   {
-    "frage": "<span class=\"pos\">9</span>Zylinderschraube ISO 4762 – M8 × 20 – 8.8",
+    "frage": "<span class=\"pos\">2</span>Lagerlasche, aus Flachstahl EN 10058 – 50 × 8",
+    "loesung": "Fertigungsteil",
+    "warum": "Zweite Falle. Der <em>Flachstahl</em> ist genormt, die <em>Lasche</em> nicht: Sie wird abgelängt, gebohrt, gerieben und mit Gewinde versehen. Ein genormtes Halbzeug macht aus einem Fertigungsteil kein Normteil."
+  },
+  {
+    "frage": "<span class=\"pos\">9</span>Zylinderstift ISO 2338 – 6 m6 × 20 – St",
     "loesung": "Normteil",
-    "warum": "Die Norm legt Kopf, Gewinde und Maße fest. Jeder Händler liefert dieselbe Schraube."
+    "warum": "ISO 2338, Durchmesser, Toleranzklasse, Länge, Werkstoff – fünf Angaben, und der Stift ist eindeutig bestellbar."
   },
   {
-    "frage": "<span class=\"pos\">6</span>Führungsbolzen Ø 12 h8 mit Gewindezapfen M10",
+    "frage": "<span class=\"pos\">3</span>Schwenkarm, Flachstahl 20 dick, mit Nase",
     "loesung": "Fertigungsteil",
-    "warum": "Klingt wie ein Normteil, ist aber keins: Diese Kombination aus h8-Schaft und Gewindezapfen steht in keiner Norm. Sie wird gedreht."
+    "warum": "Die Nase wird gefräst, die Bohrung für den Bolzen gerieben. Beides steht in keinem Katalog."
   },
   {
-    "frage": "<span class=\"pos\">11</span>Zylinderstift ISO 2338 – 6 m6 × 20 – St",
+    "frage": "<span class=\"pos\">6</span>Sechskantmutter ISO 4032 – M12 – 8",
     "loesung": "Normteil",
-    "warum": "ISO 2338 - bestellbar."
+    "warum": "ISO 4032 legt Schlüsselweite, Höhe und Gewinde fest; die 8 ist die Festigkeitsklasse. Sie passt zur 8.8 der Schraube – auch das steht im Tabellenbuch."
   },
   {
-    "frage": "<span class=\"pos\">4</span>Stempelhalter mit Biegestempel",
+    "frage": "<span class=\"pos\">4</span>Anschlagplatte 60 × 40 × 10, C45, gehärtet",
     "loesung": "Fertigungsteil",
-    "warum": "Der 90°-Keil wird gefräst. Ein Biegestempel ist ein Werkzeug, kein Normteil."
+    "warum": "Dritte Falle: C45 ist ein genormter Werkstoff, und Härten ist ein genormtes Verfahren. Die Platte selbst ist trotzdem eine Zeichnungssache."
   },
   {
-    "frage": "<span class=\"pos\">12</span>Kegelstift ISO 2339 – A – 5 × 40 – St",
+    "frage": "<span class=\"pos\">7</span>Gewindestift DIN 6332 – S M10 × 40",
     "loesung": "Normteil",
-    "warum": "ISO 2339, Form A. Die Bohrung dafür wird allerdings erst beim Montieren gerieben - der Stift ist genormt, seine Bohrung nicht."
+    "warum": "Ein Normteil aus dem Vorrichtungsbau: Gewindebolzen mit Druckzapfen. Dass man ihn nicht aus dem Tabellenbuch kennt, macht ihn nicht zum Fertigungsteil – er steht im Katalog."
   },
   {
-    "frage": "<span class=\"pos\">5</span>Biegegesenk mit V-Nut 90°",
-    "loesung": "Fertigungsteil",
-    "warum": "Nach Zeichnung gefräst und gehärtet."
+    "frage": "<span class=\"pos\">10</span>Zylinderschraube ISO 4762 – M6 × 16 – 8.8, zwei Stück",
+    "loesung": "Normteil",
+    "warum": "Die Menge steht in der Stückliste und ändert an der Einordnung nichts."
   },
   {
-    "frage": "<span class=\"pos\">2</span>Ständer",
-    "loesung": "Fertigungsteil",
-    "warum": "Zweimal dasselbe Fertigungsteil. Dass es zweimal gebraucht wird, macht es nicht zum Normteil."
+    "frage": "<span class=\"pos\">8</span>Zylinderschraube ISO 4762 – M8 × 25 – 8.8, vier Stück",
+    "loesung": "Normteil",
+    "warum": "Vier gleiche Schrauben, eine Position, eine Bestellnummer. Genau dafür gibt es Normteile."
   }
 ];
 var WAHL = ["Normteil", "Fertigungsteil"];

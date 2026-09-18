@@ -4,11 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Die Zusammenstellung lesen</title>
-<meta name="description" content="Acht Fragen an die Zusammenstellungszeichnung der Biegepresse: Positionsnummer und Menge, Schraffur, Schnittverläufe, Bruchlinie und Maßstab.">
+<meta name="description" content="Acht Fragen an die Zusammenstellungszeichnung des Klappanschlags: Positionsnummer und Menge, Schraffur längs und quer, Schnittverlauf, Hauptmaße und Projektionsmethode.">
 <meta name="dauer" content="25 min">
 <link rel="stylesheet" href="../../assets/uebung.css">
 <script src="../../assets/zeichnen.js"></script>
-<script src="../../assets/biegepresse.js"></script>
+<script src="../../assets/zusammenstellung.js"></script>
+<script src="../../assets/klappanschlag.js"></script>
 <style>
   /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
   .bild{margin:16px 0 4px}
@@ -48,7 +49,7 @@
   <main class="wrap">
 
     <div class="box auftrag">
-      <p><strong>Ausgangslage:</strong> Vor euch liegt die Zeichnung TBK-2026-041 der Exzenter-Handbiegepresse. Sie trägt drei Schnitte und zwölf Positionsnummern &ndash; aber keine Fertigungsmaße.</p>
+      <p><strong>Ausgangslage:</strong> Vor euch liegt die Zeichnung TBK-2026-043 des Klappanschlags. Er sitzt an einer Tafelschere und legt die Streifenbreite fest; zum Ausräumen klappt man ihn nach hinten weg. Die Zeichnung trägt einen Schnitt, eine Draufsicht und zehn Positionsnummern &ndash; aber keine Fertigungsmaße.</p>
       <p>Das ist kein Versäumnis, sondern die Regel: Eine Zusammenstellung zeigt <strong>Hauptmaße</strong> &ndash; Gesamtabmessungen, Anschlussmaße und das, was die Funktion beschreibt. Alles andere steht auf den Einzelteilzeichnungen, und nach DIN ISO 129-1 gehört nichts doppelt in eine Zeichnung.</p>
     </div>
 
@@ -96,97 +97,57 @@ function el(id){ return document.getElementById(id); }
 
 var FRAGEN = [
   {
-    "frage": "Wie viele <strong>Ständer</strong> braucht eine Presse?",
-    "wahl": [
-      "1",
-      "2",
-      "4",
-      "steht nicht in der Zeichnung"
-    ],
+    "frage": "Wie viele <strong>Lagerlaschen</strong> hat der Anschlag?",
+    "wahl": ["1", "2", "4", "steht nicht in der Zeichnung"],
     "loesung": "2",
-    "warum": "Die Spalte <em>Menge</em> der Stückliste sagt es. In der Zeichnung steht die 2 nur einmal - eine Positionsnummer ist keine Stückzahl."
+    "warum": "In der Draufsicht stehen zwei Laschen, eine vor und eine hinter dem Arm. Im Schnitt sieht man nur eine – und die Positionsnummer 2 steht nur einmal da. Eine Positionsnummer ist keine Stückzahl."
   },
   {
-    "frage": "Welche Position trägt die Nummer <strong>6</strong>?",
-    "wahl": [
-      "Führungsbolzen",
-      "Druckfeder",
-      "Biegegesenk",
-      "Zylinderstift"
-    ],
-    "loesung": "Führungsbolzen",
-    "warum": "Die Hinweislinie der 6 zeigt auf den senkrechten Bolzen rechts neben dem Gesenk. Die Feder darum herum ist Position 8."
+    "frage": "Welche Position trägt die Nummer <strong>7</strong>?",
+    "wahl": ["Schwenkbolzen", "Gewindestift", "Zylinderstift", "Sechskantmutter"],
+    "loesung": "Gewindestift",
+    "warum": "Die Hinweislinie der 7 zeigt auf das kurze, senkrechte Teil rechts neben dem Arm, das in der Grundplatte steckt. Daneben steht sein Gewinde: M10."
   },
   {
-    "frage": "Warum ist die <strong>Exzenterwelle</strong> im Schnitt A-A nicht schraffiert?",
-    "wahl": [
-      "anderer Werkstoff",
-      "sie liegt hinter der Schnittebene",
-      "sie ist ein Vollteil, längs geschnitten",
-      "Zeichenfehler"
-    ],
-    "loesung": "sie ist ein Vollteil, längs geschnitten",
-    "warum": "Wellen, Bolzen, Schrauben, Stifte, Niete und Federn werden längs geschnitten nicht schraffiert. Quer geschnitten schon."
+    "frage": "Warum ist der <strong>Schwenkbolzen</strong> im Schnitt A&ndash;A schraffiert, obwohl Schrauben doch blank bleiben?",
+    "wahl": ["er ist aus einem anderen Werkstoff", "er ist quer geschnitten", "er ist kein Normteil", "Zeichenfehler"],
+    "loesung": "er ist quer geschnitten",
+    "warum": "Die Regel lautet vollständig: Wellen, Bolzen, Schrauben, Stifte, Niete und Federn werden <em>längs</em> geschnitten nicht schraffiert. Der Bolzen steht hier quer zur Schnittebene – also wird er schraffiert wie jedes andere Teil."
   },
   {
-    "frage": "Wo liegt die Schnittebene <strong>B-B</strong>?",
-    "wahl": [
-      "senkrecht, in der Mitte der Presse",
-      "waagerecht, dicht über der Grundplatte",
-      "waagerecht, in Höhe der Welle",
-      "senkrecht, durch den Handhebel"
-    ],
-    "loesung": "waagerecht, dicht über der Grundplatte",
-    "warum": "Die Marken B stehen links und rechts auf gleicher Höhe, und die Pfeile zeigen nach unten - man blickt also von oben auf eine waagerechte Ebene."
+    "frage": "Die beiden <strong>M6-Schrauben</strong> liegen im selben Schnitt und sind <em>nicht</em> schraffiert. Warum?",
+    "wahl": ["sie sind längs geschnitten", "sie liegen hinter der Schnittebene", "sie sind zu klein zum Schraffieren", "sie gehören nicht zur Baugruppe"],
+    "loesung": "sie sind längs geschnitten",
+    "warum": "Dieselbe Regel, andere Lage. Zwei Normteile derselben Art in einer Zeichnung, einmal schraffiert und einmal blank – daran erkennt man, dass die Regel von der Lage handelt und nicht vom Teil."
   },
   {
-    "frage": "Was zeigt <strong>C-C</strong>, was die anderen Schnitte nicht zeigen?",
-    "wahl": [
-      "die Gesamtlänge",
-      "den Winkel der V-Nut",
-      "die Lage der Ständer",
-      "die Hebellänge"
-    ],
-    "loesung": "den Winkel der V-Nut",
-    "warum": "Die Nut läuft in Blickrichtung von A-A und zeigt dort nur ihren Grund. Erst der Blick quer dazu zeigt die 90°."
+    "frage": "Wo liegt die Schnittebene <strong>A&ndash;A</strong>?",
+    "wahl": ["senkrecht, in der Mitte der Baugruppe", "waagerecht, dicht über der Grundplatte", "senkrecht, durch die vordere Lagerlasche", "waagerecht, in Höhe der Schwenkachse"],
+    "loesung": "senkrecht, in der Mitte der Baugruppe",
+    "warum": "Die Marken A stehen in der Draufsicht links und rechts auf der Mittellinie, und ihre Pfeile zeigen nach hinten. Geschnitten wird also senkrecht, mittig, von vorn nach hinten."
   },
   {
-    "frage": "Warum ist der Handhebel mit einer <strong>Freihandlinie abgebrochen</strong> gezeichnet?",
-    "wahl": [
-      "er ist beschädigt",
-      "er ist zu lang für das Blatt",
-      "er gehört nicht zur Baugruppe",
-      "er wird noch gefertigt"
-    ],
-    "loesung": "er ist zu lang für das Blatt",
-    "warum": "280 mm im Maßstab 1:1 sprengen das Blatt. Die Bruchlinie sagt: hier geht es weiter. Das Maß steht trotzdem dran - gemessen ab Wellenmitte."
+    "frage": "Wie hoch liegt die <strong>Schwenkachse</strong> über der Oberseite der Grundplatte?",
+    "wahl": ["12 mm", "33 mm", "45 mm", "57 mm"],
+    "loesung": "33 mm",
+    "warum": "Die 45 ist die Höhe der Lagerlasche, die 12 die Dicke der Grundplatte. Das Maß 33 steht eigens an der Achse – eine Zusammenstellung trägt die Maße, die die Funktion beschreiben, und die Achshöhe bestimmt, wie der Arm schwenkt."
   },
   {
-    "frage": "Der <strong>Maßstab</strong> im Schriftfeld ist 1:1. Was bedeutet dann &#8222;2:1&#8220; über dem Schnitt C-C?",
-    "wahl": [
-      "C-C ist doppelt so groß gezeichnet",
-      "C-C ist halb so groß gezeichnet",
-      "C-C zeigt zwei Teile",
-      "ein Schreibfehler"
-    ],
-    "loesung": "C-C ist doppelt so groß gezeichnet",
-    "warum": "Eine Einzelheit darf einen eigenen Maßstab haben. Er steht dann bei ihr und nicht im Schriftfeld."
+    "frage": "In der <strong>hinteren Lagerlasche</strong> fehlt im Schnitt A&ndash;A die Schraffur. Was heißt das?",
+    "wahl": ["sie steht hinter der Schnittebene und ist nur zu sehen", "sie ist aus Kunststoff", "sie ist ein Normteil", "sie ist beim Zeichnen vergessen worden"],
+    "loesung": "sie steht hinter der Schnittebene und ist nur zu sehen",
+    "warum": "Geschnitten wird nur, was die Ebene trifft. Was dahinter liegt und sichtbar bleibt, wird als Umriss gezeichnet – ohne Schraffur, aber mit Volllinie."
   },
   {
-    "frage": "Wie groß ist der <strong>Hub</strong> des Stempels?",
-    "wahl": [
-      "6 mm",
-      "12 mm",
-      "20 mm",
-      "56 mm"
-    ],
-    "loesung": "12 mm",
-    "warum": "Der Hub ist das Doppelte der Exzentrizität: 2 · 6 mm. Das Maß steht rechts am Exzenterbund."
+    "frage": "Das <strong>Projektionssymbol</strong> im Schriftfeld steht für Methode 1. Wo steht dann die Draufsicht?",
+    "wahl": ["über der Vorderansicht", "unter der Vorderansicht", "links neben der Vorderansicht", "rechts neben der Vorderansicht"],
+    "loesung": "unter der Vorderansicht",
+    "warum": "In Methode 1 wird das Bauteil auf die dahinter liegende Ebene projiziert. Man blickt von oben – das Bild entsteht unten. In Methode 3 (amerikanisch) wäre es umgekehrt, und genau deshalb steht das Symbol im Schriftfeld."
   }
 ];
 var WAHL = [];
 
-PRESSE.zeichnen("bild");
+ANSCHLAG.zeichnen("bild");
 
 /* --------------------------------------------------------------------------
    Die Fragen: je eine Zeile mit einer Auswahl. Geprüft wird auf Knopfdruck,

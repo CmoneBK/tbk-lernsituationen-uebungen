@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Das Strukturnetz lesen</title>
-<meta name="description" content="Zehn Verbindungen der Biegepresse: berühren sich die Teile, und bewegen sie sich dabei gegeneinander?">
+<meta name="description" content="Zehn Verbindungen des Klappanschlags: berühren sich die Teile, und bewegen sie sich dabei gegeneinander?">
 <meta name="dauer" content="20 min">
 <link rel="stylesheet" href="../../assets/uebung.css">
-<script src="../../assets/biegepresse.js"></script>
+<script src="../../assets/klappanschlag.js"></script>
 <script src="../../assets/montageplan.js"></script>
 <style>
   /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
@@ -57,10 +57,10 @@
       <p>Was es <em>nicht</em> zeigt: die Reihenfolge der Montage, die Stückzahl und die Maße. Wer das sucht, schaut in den Montageplan oder in die Stückliste.</p>
     </div>
 
-    <h2><span class="nr">1</span>Das Netz der Presse</h2>
+    <h2><span class="nr">1</span>Das Netz des Klappanschlags</h2>
 
     <div class="netz" id="netz"></div>
-    <p class="fussnote">Alle 18 Verbindungen der Biegepresse. Von der Grundplatte laufen die meisten Linien weg &ndash; sie trägt alles.</p>
+    <p class="fussnote">Alle 14 Verbindungen des Klappanschlags. Zwei davon sind unterbrochen gezeichnet &ndash; und beide hängen am Schwenkarm. Er ist das einzige Teil, das sich bewegt.</p>
 
 
     <h2><span class="nr">2</span>Zehn Verbindungen</h2>
@@ -102,62 +102,62 @@ function el(id){ return document.getElementById(id); }
 
 var FRAGEN = [
   {
-    "frage": "Grundplatte &ndash; Ständer",
+    "frage": "Grundplatte &ndash; Lagerlasche",
     "loesung": "fest verbunden",
-    "warum": "Der Ständer steht auf der Platte und ist verschraubt. Keine Bewegung."
+    "warum": "Die Lasche steht auf der Platte, auf Stiften ausgerichtet und verschraubt. Keine Bewegung."
   },
   {
-    "frage": "Exzenterwelle &ndash; Ständer",
+    "frage": "Schwenkarm &ndash; Schwenkbolzen",
     "loesung": "beweglich verbunden",
-    "warum": "Die Welle dreht sich in der Bohrung. Das ist die einzige Lagerstelle der Presse."
+    "warum": "Der Arm dreht sich auf dem Bolzen. Das ist die einzige Drehbewegung der ganzen Baugruppe – und der Grund, warum sie Klappanschlag heißt."
   },
   {
-    "frage": "Stempelhalter &ndash; Führungsbolzen",
+    "frage": "Lagerlasche &ndash; Schwenkbolzen",
+    "loesung": "fest verbunden",
+    "warum": "Derselbe Bolzen, ein anderer Partner: In den Laschen sitzt er fest, im Arm dreht er sich. Ein Teil kann beides sein – je nachdem, mit wem."
+  },
+  {
+    "frage": "Schwenkarm &ndash; Gewindestift",
     "loesung": "beweglich verbunden",
-    "warum": "Der Halter gleitet auf den Bolzen auf und ab."
+    "warum": "Die Nase des Arms legt sich auf den Druckzapfen und hebt beim Wegklappen wieder ab. Berührung ja – und sie geht auf und zu."
   },
   {
-    "frage": "Exzenterwelle &ndash; Stempelhalter",
-    "loesung": "beweglich verbunden",
-    "warum": "Der Exzenter wälzt sich auf der Oberseite des Halters ab. Berührung ja, und sie wandert - also beweglich."
-  },
-  {
-    "frage": "Biegegesenk &ndash; Stempelhalter",
+    "frage": "Grundplatte &ndash; Schwenkarm",
     "loesung": "berühren sich nicht",
-    "warum": "Nie. In der unteren Endlage bleiben 2 mm, und die sind für das Blech da. Berührten sie sich, wäre die Presse falsch gebaut."
+    "warum": "Zwischen beiden liegen die Laschen und der Bolzen. Der Arm endet 25 mm über der Platte; berührte er sie, könnte er nicht klappen."
   },
   {
-    "frage": "Handhebel &ndash; Kegelstift",
+    "frage": "Schwenkbolzen &ndash; Sechskantmutter",
     "loesung": "fest verbunden",
-    "warum": "Der Stift steckt in der Nabe des Hebels und in der Welle. Er verbindet beide - deshalb hat er im Netz zwei Linien."
+    "warum": "Die Mutter sitzt auf dem Gewinde des Bolzens."
   },
   {
-    "frage": "Druckfeder &ndash; Führungsbolzen",
-    "loesung": "beweglich verbunden",
-    "warum": "Die Feder sitzt auf dem Bolzen und gleitet an ihm, wenn sie federt."
-  },
-  {
-    "frage": "Druckfeder &ndash; Grundplatte",
+    "frage": "Lagerlasche &ndash; Sechskantmutter",
     "loesung": "fest verbunden",
-    "warum": "Das untere Ende steht auf der Platte und rutscht dort nicht. Dieselbe Feder ist also einmal fest und einmal beweglich verbunden - je nachdem, mit wem."
+    "warum": "Die Mutter liegt an der äußeren Lasche an – erst dadurch hält sie überhaupt etwas. Deshalb hat sie im Netz zwei Linien."
   },
   {
-    "frage": "Grundplatte &ndash; Handhebel",
+    "frage": "Anschlagplatte &ndash; Schwenkarm",
+    "loesung": "fest verbunden",
+    "warum": "Zwei M6-Schrauben am oberen Ende des Arms. Die Platte ist gehärtet, weil das Blech gegen sie stößt."
+  },
+  {
+    "frage": "Grundplatte &ndash; Anschlagplatte",
     "loesung": "berühren sich nicht",
-    "warum": "Zwischen beiden liegen Welle und Ständer. Im Strukturnetz führt kein Weg auf direktem Wege von der Platte zum Hebel."
+    "warum": "Im Strukturnetz führt zwischen ihnen keine Linie. Der Weg geht über Lasche, Bolzen und Arm – und ein Weg ist keine Verbindung."
   },
   {
-    "frage": "Zylinderstift &ndash; Biegegesenk",
+    "frage": "Zylinderstift &ndash; Lagerlasche",
     "loesung": "fest verbunden",
-    "warum": "Der Stift steckt zur Hälfte in der Platte und zur Hälfte im Gesenk. Beide Verbindungen sind fest - er richtet das Gesenk aus und hält es gegen Verschieben."
+    "warum": "Der Stift steckt zur Hälfte in der Platte und zur Hälfte in der Lasche. Beide Verbindungen sind fest – er richtet die Lasche aus und hält sie gegen Verschieben."
   }
 ];
 var WAHL = ["fest verbunden", "beweglich verbunden", "berühren sich nicht"];
 
 Montageplan.netz("netz", {
-  teile: PRESSE.TEILE,
-  kanten: PRESSE.STRUKTUR,
-  lage: PRESSE.NETZ_LAGE
+  teile: ANSCHLAG.TEILE,
+  kanten: ANSCHLAG.STRUKTUR,
+  lage: ANSCHLAG.NETZ_LAGE
 });
 
 /* --------------------------------------------------------------------------

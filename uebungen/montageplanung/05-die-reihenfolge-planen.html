@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Die Reihenfolge planen</title>
-<meta name="description" content="Zwölf Positionen in eine gültige Montagereihenfolge bringen – geprüft wird gegen die Vorrangbeziehungen, nicht gegen eine Musterlösung.">
+<meta name="description" content="Zehn Positionen des Klappanschlags in eine gültige Montagereihenfolge bringen – geprüft wird gegen die Vorrangbeziehungen, nicht gegen eine Musterlösung.">
 <meta name="dauer" content="30 min">
 <link rel="stylesheet" href="../../assets/uebung.css">
-<script src="../../assets/biegepresse.js"></script>
+<script src="../../assets/klappanschlag.js"></script>
 <script src="../../assets/montageplan.js"></script>
 <style>
   /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
@@ -67,15 +67,15 @@
   <header class="wrap">
     <p class="herkunft">Übung &middot; Montageplanung</p>
     <h1>Die Reihenfolge planen</h1>
-    <p class="lead">Zwölf Positionen, eine Presse &ndash; und mehr richtige
+    <p class="lead">Zehn Positionen, ein Klappanschlag &ndash; und mehr richtige
       Reihenfolgen, als man denkt.</p>
   </header>
 
   <main class="wrap">
 
     <div class="box auftrag">
-      <p><strong>Die Aufgabe:</strong> Bringt die zwölf Positionen der
-      Biegepresse in eine Reihenfolge, nach der man sie montieren kann.
+      <p><strong>Die Aufgabe:</strong> Bringt die zehn Positionen des
+      Klappanschlags in eine Reihenfolge, nach der man ihn montieren kann.
       Klickt dazu die Teile in der Reihenfolge an, in der sie eingebaut
       werden; das zuletzt gesetzte lässt sich zurücknehmen.</p>
       <p><strong>Wichtig:</strong> Geprüft wird nicht gegen eine
@@ -90,11 +90,11 @@
     Klasse kommt:</p>
 
     <div class="box">
-      <p>Für diese Presse gibt es <span class="zahl" id="zahlFolgen">…</span>
+      <p>Für diesen Anschlag gibt es <span class="zahl" id="zahlFolgen">…</span>
       <strong>gültige Montagereihenfolgen</strong>. Sie ergeben sich aus
-      zwölf Positionen und
+      zehn Positionen und
       <span class="zahl" id="zahlVorrang">…</span> Vorrangbeziehungen.</p>
-      <p class="fussnote">Ohne jede Bedingung wären es 12! = 479&nbsp;001&nbsp;600.
+      <p class="fussnote">Ohne jede Bedingung wären es 10! = 3&nbsp;628&nbsp;800.
       Die Vorrangbeziehungen streichen fast alle davon weg &ndash; aber eben
       nicht bis auf eine. Wer im Betrieb einen Montageplan schreibt,
       entscheidet innerhalb dieses Spielraums: nach Zugänglichkeit, nach
@@ -138,21 +138,22 @@
           <thead><tr><th>Nr.</th><th>Arbeitsschritt</th><th>Betriebsmittel</th>
             <th>Prüfen</th></tr></thead>
           <tbody>
-            <tr><td>1</td><td>Grundplatte auf die Werkbank spannen</td>
+            <tr><td>1</td><td>Grundplatte in den Schraubstock spannen</td>
               <td>Schraubstock, Schutzbacken</td><td>&ndash;</td></tr>
-            <tr><td>2</td><td>Zwei Führungsbolzen einschrauben</td>
-              <td>von Hand, dann SW 6</td>
-              <td>bis zum Bund eingeschraubt?</td></tr>
-            <tr><td>3</td><td>Zwei Druckfedern aufstecken</td>
-              <td>von Hand</td><td>sitzen sie auf der Platte auf?</td></tr>
+            <tr><td>2</td><td>Vier Zylinderstifte 6 m6 eintreiben</td>
+              <td>Kunststoffhammer</td>
+              <td>stehen sie 8 mm vor?</td></tr>
+            <tr><td>3</td><td>Zwei Lagerlaschen aufsetzen und verschrauben</td>
+              <td>Innensechskantschlüssel SW 6</td>
+              <td>stehen sie senkrecht? (Haarwinkel)</td></tr>
             <tr><td>&hellip;</td><td>&hellip;</td><td>&hellip;</td>
               <td>&hellip;</td></tr>
           </tbody>
         </table>
       </div>
       <p>Vier Spalten, und die vierte ist die, die am häufigsten fehlt.
-      Ohne sie merkt niemand, dass etwas schiefgegangen ist &ndash; bis die
-      Presse fertig ist und klemmt.</p>
+      Ohne sie merkt niemand, dass etwas schiefgegangen ist &ndash; bis der
+      Anschlag fertig ist und klemmt.</p>
     </div>
 
     <h3>Weiterarbeiten</h3>
@@ -173,10 +174,10 @@ function el(id){ return document.getElementById(id); }
 
 var MODUS = {
   ende: "Ihr dürft alles in beliebiger Reihenfolge anklicken. Erst wenn "
-    + "alle zwölf stehen, wird geprüft - und dann bekommt ihr den ersten "
+    + "alle zehn stehen, wird geprüft - und dann bekommt ihr den ersten "
     + "Verstoß genannt. So plant man am Schreibtisch.",
   sofort: "Jeder Schritt wird sofort geprüft. Was noch nicht geht, wird "
-    + "abgelehnt und begründet. So läuft es an der Maschine: Dort merkt man "
+    + "abgelehnt und begründet. So läuft es an der Werkbank: Dort merkt man "
     + "es auch sofort, nur unangenehmer."
 };
 
@@ -186,8 +187,8 @@ function planAufbauen(){
   var sofort = el("modus").value === "sofort";
   el("modustext").textContent = MODUS[el("modus").value];
   plan = Montageplan.reihenfolge("plan", {
-    teile: PRESSE.TEILE,
-    vorrang: PRESSE.VORRANG,
+    teile: ANSCHLAG.TEILE,
+    vorrang: ANSCHLAG.VORRANG,
     sofort: sofort,
     onStand: function(gesetzt, fertig){
       if(fertig){
@@ -199,15 +200,15 @@ function planAufbauen(){
 }
 
 (function zahlenZeigen(){
-  var z = Montageplan.wieVieleFolgen(PRESSE.TEILE, PRESSE.VORRANG, 300000);
+  var z = Montageplan.wieVieleFolgen(ANSCHLAG.TEILE, ANSCHLAG.VORRANG, 300000);
   el("zahlFolgen").textContent = z.abgebrochen
     ? "mehr als " + z.zahl : z.zahl;
-  el("zahlVorrang").textContent = PRESSE.VORRANG.length;
+  el("zahlVorrang").textContent = ANSCHLAG.VORRANG.length;
 }());
 
 (function loesungAufbauen(){
-  el("loesung").innerHTML = "<ol>" + PRESSE.VORRANG.map(function(v){
-    var a = PRESSE.teil(v.vorher), b = PRESSE.teil(v.nachher);
+  el("loesung").innerHTML = "<ol>" + ANSCHLAG.VORRANG.map(function(v){
+    var a = ANSCHLAG.teil(v.vorher), b = ANSCHLAG.teil(v.nachher);
     return "<li><strong>" + a.kurz + " vor " + b.kurz + ".</strong> "
       + v.warum + "</li>";
   }).join("") + "</ol><p>Mehr Bedingungen gibt es nicht. Wer sie alle "

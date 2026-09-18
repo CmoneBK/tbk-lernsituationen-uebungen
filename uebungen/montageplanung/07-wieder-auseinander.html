@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Wieder auseinander</title>
-<meta name="description" content="Demontage der Biegepresse: rückwärts denken, den Kegelstift von der richtigen Seite treiben, die Federn entspannen und die Ständer kennzeichnen.">
+<meta name="description" content="Demontage des Klappanschlags: rückwärts denken, den Durchtreiber richtig wählen, das Einstellmaß sichern und die Laschen kennzeichnen.">
 <meta name="dauer" content="20 min">
 <link rel="stylesheet" href="../../assets/uebung.css">
 <style>
@@ -46,12 +46,13 @@
   <main class="wrap">
 
     <div class="box auftrag">
-      <p><strong>Ausgangslage:</strong> Die Presse ist montiert und geprüft. Jetzt wird sie wieder zerlegt &ndash; sie geht als Bausatz in den Unterricht, und jedes Teil muss dabei heil bleiben.</p>
-      <p>Die Grundregel ist einfach: <strong>Die Demontage läuft rückwärts.</strong> Wer zuletzt kam, geht zuerst. Aber sie ist nicht nur die Umkehrung &ndash; es gibt Handgriffe, die es beim Zusammenbau gar nicht gab: entspannen, kennzeichnen, austreiben.</p>
+      <p><strong>Ausgangslage:</strong> Der Klappanschlag ist montiert und geprüft. Jetzt wird er wieder zerlegt &ndash; er geht als Bausatz in den Unterricht, und jedes Teil muss dabei heil bleiben.</p>
+      <p>Die Grundregel ist einfach: <strong>Die Demontage läuft rückwärts.</strong> Wer zuletzt kam, geht zuerst. Aber sie ist nicht nur die Umkehrung &ndash; es gibt Handgriffe, die es beim Zusammenbau gar nicht gab: Maße sichern, kennzeichnen, austreiben.</p>
+      <p><strong>Zur Auswahl:</strong> Sie ist lang und enthält zu jeder Frage mehrere Antworten, die plausibel klingen. Das ist Absicht – in der Werkstatt steht auch niemand daneben und sagt, welche drei Möglichkeiten überhaupt zur Wahl stehen.</p>
     </div>
 
 
-    <h2><span class="nr">1</span>Sieben Fragen zur Demontage</h2>
+    <h2><span class="nr">1</span>Acht Fragen zur Demontage</h2>
 
     <div class="tabellenrahmen">
       <table class="fr">
@@ -90,42 +91,86 @@ function el(id){ return document.getElementById(id); }
 
 var FRAGEN = [
   {
-    "frage": "Womit beginnt die Demontage?",
-    "loesung": "mit dem Kegelstift",
-    "warum": "Rückwärts heißt: zuerst das, was zuletzt kam und über dem nichts mehr liegt. Der Kegelstift war der letzte Handgriff."
+    "frage": "Welches Teil muss gelöst werden, bevor der <strong>Schwenkbolzen</strong> herauskommt?",
+    "loesung": "die Sechskantmutter",
+    "warum": "Rückwärts heißt: zuerst das, was zuletzt kam. Die Mutter war der letzte Handgriff an dieser Kette – vorher gab es nichts zu sichern."
   },
   {
-    "frage": "Von welcher Seite wird der Kegelstift ausgetrieben?",
-    "loesung": "von der dünnen Seite her",
-    "warum": "Ein Kegelstift verjüngt sich 1:50. Er geht nur dorthin heraus, wo er weiter wird. Von der dicken Seite geschlagen verkeilt er sich."
+    "frage": "Warum wird der <strong>Schwenkarm festgehalten</strong>, während der Bolzen herausgezogen wird?",
+    "loesung": "er fällt sonst zwischen den Laschen heraus",
+    "warum": "Der Bolzen ist die einzige Verbindung des Arms zur übrigen Baugruppe. Ist er draußen, hält den Arm nichts mehr – und die gehärtete Anschlagplatte oben am Arm schlägt hart auf."
   },
   {
-    "frage": "Was ist beim Abnehmen des Stempelhalters zu beachten?",
-    "loesung": "die Federn stehen unter Vorspannung",
-    "warum": "Auch in der oberen Lage sind sie noch 5 mm zusammengedrückt. Wer den Halter einfach abhebt, bekommt sie entgegen."
+    "frage": "Womit werden die vier <strong>Zylinderstifte 6 m6</strong> ausgetrieben?",
+    "loesung": "Durchtreiber ⌀ 5 von der Gegenseite",
+    "warum": "Der Durchtreiber muss <em>kleiner</em> sein als der Stift, sonst setzt er auf der Bohrungskante auf und staucht sie. ⌀ 6 auf ⌀ 6 geht genau einmal gut."
+  },
+  {
+    "frage": "Die beiden <strong>Lagerlaschen</strong> sehen gleich aus. Warum werden sie trotzdem gekennzeichnet?",
+    "loesung": "ihre Stiftbohrungen sind zusammen mit der Grundplatte gerieben",
+    "warum": "Gerieben wird im zusammengespannten Zustand. Die Bohrungen passen dann genau zu <em>diesem</em> Platz auf der Platte. Vertauscht man die Laschen, fluchten die Bolzenbohrungen nicht mehr. Ein Körnerschlag genügt."
   },
   {
     "frage": "Welche Verbindung ist <em>nicht</em> ohne weiteres lösbar?",
-    "loesung": "keine - alle sind lösbar",
-    "warum": "Schrauben, Stifte und Steckverbindungen: Diese Presse ist ganz aus lösbaren Verbindungen gebaut. Das ist kein Zufall, sondern Absicht - sie soll ja als Bausatz in den Unterricht."
+    "loesung": "keine – alle sind lösbar",
+    "warum": "Schrauben, Muttern, Stifte: Der ganze Anschlag ist aus lösbaren Verbindungen gebaut. Das ist kein Zufall, sondern Absicht – er soll ja als Bausatz in den Unterricht."
   },
   {
-    "frage": "Die Ständer sind abgeschraubt. Was löst sich dann von selbst?",
-    "loesung": "die Exzenterwelle",
-    "warum": "Sie wird nur von den beiden Ständerbohrungen gehalten. Deshalb gehört sie beim Abschrauben festgehalten."
+    "frage": "Die vier <strong>M8-Schrauben</strong> kommen von unten durch die Grundplatte. Was heißt das für die Demontage?",
+    "loesung": "die Baugruppe wird dazu umgedreht",
+    "warum": "An den Kopf kommt man nur von unten. Vorher wird der Arm abgenommen – sonst schlägt er beim Umdrehen um."
   },
   {
-    "frage": "Das Gesenk lässt sich nach dem Lösen der Schrauben nicht abheben. Woran liegt das?",
-    "loesung": "es sitzt auf den Zylinderstiften",
-    "warum": "Die Stifte halten es in der Lage. Es muss gerade nach oben abgezogen werden, nicht gekippt - sonst verkantet es und beschädigt die Stifte."
+    "frage": "Der <strong>Gewindestift</strong> (Pos. 7) ist eingestellt. Was tut man, bevor man ihn herausdreht?",
+    "loesung": "das Einstellmaß notieren",
+    "warum": "Er legt fest, wie weit der Arm zurückkommt – und das ist eine eingestellte Größe, keine gefertigte. Ohne Notiz beginnt das Einstellen nach dem Zusammenbau von vorn."
   },
   {
-    "frage": "Welche Teile werden beim Zerlegen gekennzeichnet?",
-    "loesung": "die beiden Ständer",
-    "warum": "Sie sehen gleich aus, sind aber zusammen mit der Welle eingelaufen. Wer sie vertauscht, bekommt eine Welle, die schwerer läuft als vorher. Ein Körnerschlag genügt."
+    "frage": "Warum liegt beim Zerlegen <em>kein Schlosserhammer</em> auf der Bank?",
+    "loesung": "er staucht die Stifte und macht Grate",
+    "warum": "Ein gestauchter Stift geht nicht mehr in seine Bohrung zurück, und der Grat reibt sie beim Heraustreiben auf. Beides merkt man erst beim nächsten Zusammenbau."
   }
 ];
-var WAHL = ["mit dem Kegelstift", "mit der Grundplatte", "mit den Führungsbolzen", "von der dünnen Seite her", "von der dicken Seite her", "die Federn stehen unter Vorspannung", "keine - alle sind lösbar", "die Exzenterwelle", "es sitzt auf den Zylinderstiften", "die beiden Ständer", "die Schrauben"];
+
+/* Eine gemeinsame Auswahl für alle acht Fragen, absichtlich lang. Zu jeder
+   Frage stehen mehrere Antworten darin, die dazu passen könnten - wer nur
+   nach der einzigen Antwort sucht, die überhaupt in die Frage passt, findet
+   sie hier nicht. */
+var WAHL = [
+  "die Sechskantmutter",
+  "der Schwenkbolzen",
+  "die beiden M6-Schrauben",
+  "die vier M8-Schrauben",
+  "der Gewindestift",
+  "die Anschlagplatte",
+  "er fällt sonst zwischen den Laschen heraus",
+  "er steht unter Federvorspannung",
+  "er verkantet sonst im Gewinde",
+  "er ist zu schwer zum Anheben",
+  "Durchtreiber ⌀ 5 von der Gegenseite",
+  "Durchtreiber ⌀ 6 von der Gegenseite",
+  "Durchtreiber ⌀ 8 von der Gegenseite",
+  "mit der Zange herausziehen",
+  "mit dem Schraubendreher heraushebeln",
+  "ihre Stiftbohrungen sind zusammen mit der Grundplatte gerieben",
+  "sie sind aus verschiedenen Werkstoffen",
+  "sie sind verschieden lang",
+  "sie sind gehärtet und dürfen nicht getauscht werden",
+  "keine – alle sind lösbar",
+  "der Schwenkbolzen ist eingeklebt",
+  "die Zylinderstifte sind eingepresst und nicht lösbar",
+  "die Anschlagplatte ist aufgeschweißt",
+  "die Baugruppe wird dazu umgedreht",
+  "der Arm wird nach hinten geklappt",
+  "die Laschen werden zuerst abgeschraubt",
+  "das Einstellmaß notieren",
+  "den Stift ölen",
+  "die Kontermutter lösen",
+  "nichts, er ist ein Normteil",
+  "er staucht die Stifte und macht Grate",
+  "er ist für diese Baugruppe zu schwer",
+  "er hinterlässt Farbspuren auf dem Stahl"
+];
 
 
 /* --------------------------------------------------------------------------

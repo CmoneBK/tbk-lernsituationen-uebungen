@@ -140,13 +140,38 @@ würde man es erst merken, wenn das Teil nicht mehr an seinen Platz geht.
 
 ## 6. Wer ihn benutzt
 
-| Ort | wofür |
-| --- | --- |
-| Lektion „Strukturnetz und Montageplan" | Netz, Reihenfolge, Zahl |
-| Simulation „Montageplaner" | Bedingungen ein- und ausschalten |
-| Übung 3 „Das Strukturnetz lesen" | Netz |
-| Übung 5 „Die Reihenfolge planen" | Reihenfolge in beiden Betriebsarten |
-| Lernsituation „Die Biegepresse" | Netz, Planen, und das Montieren in 3D |
+| Ort | Baugruppe | wofür |
+| --- | --- | --- |
+| Lektion „Strukturnetz und Montageplan" | Bohrvorrichtung | Netz, Reihenfolge, Zahl |
+| Simulation „Montageplaner" | Biegepresse | Bedingungen ein- und ausschalten |
+| Übung 3 „Das Strukturnetz lesen" | Klappanschlag | Netz |
+| Übung 5 „Die Reihenfolge planen" | Klappanschlag | Reihenfolge in beiden Betriebsarten |
+| Lernsituation „Die Biegepresse" | Biegepresse | Netz, Planen, und das Montieren in 3D |
+
+### Drei Baugruppen, nicht eine
+
+| Baustein | globales Objekt | Positionen | wo sie steht |
+| --- | --- | --- | --- |
+| `assets/bohrvorrichtung.js` | `VORRICHTUNG` | 10 | Lektion |
+| `assets/klappanschlag.js` | `ANSCHLAG` | 10 | Übungen |
+| `assets/biegepresse.js` | `PRESSE` | 12 | Lernsituation, Simulation |
+
+Der Grund ist didaktisch, nicht technisch: Wer die Übungen macht und danach
+die Lernsituation bearbeitet, soll nicht dieselben Lösungen wiedererkennen.
+Und jede zeigt etwas anderes. Die Presse übersetzt Kraft, die Vorrichtung
+hält fest, der Anschlag dreht sich. Im Schnitt der Presse ist jeder Stift
+längs geschnitten und bleibt blank; der Schwenkbolzen des Anschlags steht
+quer und wird schraffiert. Wer beides gesehen hat, kennt die Regel und nicht
+nur einen Fall.
+
+Alle drei haben denselben Bauplan — `M`, `TEILE`, `STRUKTUR`, `NETZ_LAGE`,
+`VORRANG`, `zeichnen()`, `teil()`, `darfDurchdringen()` —, und
+`pruefungen/test-montage.js` prüft alle drei mit denselben Funktionen.
+Ein 3D-Modell (`teile3d()`, `REIHENFOLGE`) hat nur die Presse.
+
+Die gemeinsamen Zeichnungsteile — geschnittener Umriss, Positionsnummer,
+Schnittmarke, Schriftfeld — stehen in `assets/zusammenstellung.js` und
+werden vor der Baugruppe eingebunden.
 
 Im letzten Fall führt der Montageplan-Baustein die Reihenfolge und
 `assets/bauteil3d.js` zeigt sie: `onSetzen` ruft `szene.einsetzen()`.
@@ -161,7 +186,8 @@ drei Drehkörper.
 * **Der Vorranggraph als Bild.** Heute sieht man die Bedingungen als Liste.
   Ein gezeichneter Graph mit Pfeilen wäre die übliche Darstellung — und die
   Frage „wo ist der kritische Pfad?" ließe sich daran stellen.
-* **Baugruppen.** Die Presse ist flach: zwölf Positionen, eine Ebene. Ein
-  Getriebe hat Vormontagen, und die will man als Block planen können.
+* **Vormontagen.** Alle drei Baugruppen sind flach: zehn bis zwölf
+  Positionen, eine Ebene. Ein Getriebe hat Vormontagen, und die will man als
+  Block planen können.
 * **Zeiten.** Ein Montageplan im Betrieb trägt Vorgabezeiten. Damit ließe
   sich fragen, welche der gültigen Reihenfolgen die schnellste ist.
