@@ -161,15 +161,21 @@ function achse(g, x1, x2, y){
 
 /* Schraffur für geschnittene Bauteile. Die ID muss je Bild eindeutig sein,
    sonst greifen alle Bilder auf dasselbe Muster zu. */
-function schraffur(svg, id, winkel){
+function schraffur(svg, id, winkel, abstand){
   /* Teilen sich mehrere Flaechen dieselbe Schraffur, wird das Muster nur
-     einmal angelegt - sonst stehen doppelte IDs im SVG. */
+     einmal angelegt - sonst stehen doppelte IDs im SVG.
+
+     "abstand" ist der Kachelabstand in Bildpunkten, normal 7. DIN ISO
+     128-50 laesst benachbarte Teile "gegenlaeufig ODER versetzt" zu: Wo
+     drei Flaechen aneinanderstossen, reichen zwei Richtungen nicht, und
+     dann hilft ein anderer Abstand bei gleicher Richtung. */
   if(svg.querySelector("#" + id)) return "url(#" + id + ")";
+  var a = abstand || 7;
   var defs = svg.querySelector("defs") || svgEl("defs", {}, svg);
-  var p = svgEl("pattern", {id:id, width:7, height:7,
+  var p = svgEl("pattern", {id:id, width:a, height:a,
     patternUnits:"userSpaceOnUse",
     patternTransform:"rotate(" + winkel + ")"}, defs);
-  svgEl("line", {x1:0, y1:0, x2:0, y2:7, stroke:"currentColor",
+  svgEl("line", {x1:0, y1:0, x2:0, y2:a, stroke:"currentColor",
     "stroke-width":SCHMAL}, p);
   return "url(#" + id + ")";
 }
