@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Umfangslast oder Punktlast?</title>
+<meta name="description" content="Sechzehn Lagerstellen als Stirnansicht: Wer dreht, wohin zeigt die Kraft - und welcher Ring muss daraufhin fest sitzen.">
+<meta name="dauer" content="10 min">
+<meta name="quellen" content="tabellenbuch fachkunde-im katalog">
+<meta name="normen" content="DIN 5425-1">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/zeichnen.js"></script>
+<script src="../../assets/waelzlager.js"></script>
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .frage{font-size:15px; color:var(--muted); margin:0 0 4px}
+  .gefragt{font-size:21px; font-weight:700; margin:0 0 16px; line-height:1.3}
+
+  /* Das Bild ist hier die Aufgabe, nicht die Verzierung - es steht oben
+     und bekommt den Platz, den eine Skizze zum Lesen braucht. */
+  .buehne{display:flex; justify-content:center; margin:0 0 6px}
+  .buehne figure{margin:0; width:100%; max-width:340px}
+  .buehne svg{width:100%; height:auto; display:block; color:var(--fg)}
+  .buehne figcaption{font-size:12px; color:var(--muted); text-align:center}
+
+  .auswahl{display:grid; gap:10px; grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+  .auswahl button{
+    font:600 15px/1.4 inherit; text-align:left; cursor:pointer;
+    background:var(--bg); color:var(--fg);
+    border:1px solid var(--border-stark); border-radius:10px; padding:12px 14px;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .auswahl button:hover:not(:disabled){border-color:var(--accent)}
+  .auswahl button:disabled{cursor:default}
+  .auswahl button.richtig{border-color:var(--ok); background:rgba(22,163,74,.14)}
+  .auswahl button.falsch{border-color:var(--bad); background:rgba(220,38,38,.12)}
+
+  .fortschritt{
+    height:8px; border-radius:999px; background:var(--border);
+    overflow:hidden; margin:0 0 14px;
+  }
+  .fortschritt i{display:block; height:100%; background:var(--accent); transition:width .2s ease}
+  .zaehler{display:flex; justify-content:space-between; font-size:13px;
+    color:var(--muted); margin:0 0 6px}
+  .bilanz{font-size:19px; font-weight:700; margin:0 0 8px}
+
+  /* Der Schalter ueber dem Durchgang. */
+  .stellkopf{margin:0 0 12px; font-size:15px}
+  .stellkopf .fussnote{margin-left:8px}
+
+  /* Warnschild vor der Tafel, solange der Durchgang noch laeuft. */
+  .warnschild{
+    display:flex; gap:12px; align-items:flex-start;
+    border:1px solid var(--warn); border-left-width:4px; border-radius:10px;
+    background:var(--card); padding:12px 16px; margin:0 0 14px; font-size:15px;
+  }
+  .warnschild::before{content:"\26A0"; font-size:20px; line-height:1.1; color:var(--warn)}
+  .warnschild strong{display:block}
+
+  /* Die Tafel zeigt hier Bilder statt Woerter - also Zeilen statt Spalten. */
+  .tafelzeile{
+    display:flex; gap:16px; align-items:center;
+    padding:12px 0; border-top:1px solid var(--border);
+  }
+  .tafelzeile:first-child{border-top:0}
+  .tafelzeile figure{margin:0; width:160px; flex:none}
+  .tafelzeile svg{width:100%; height:auto; display:block; color:var(--fg)}
+  .tafelzeile figcaption{font-size:11px; color:var(--muted); text-align:center}
+  .tafelzeile p{margin:0; font-size:14.5px}
+  .tafelzeile b{display:block; margin-bottom:2px}
+  @media (max-width:560px){
+    .tafelzeile{flex-direction:column; align-items:flex-start}
+    .tafelzeile figure{width:100%; max-width:340px}
+  }
+  @media (prefers-reduced-motion:reduce){.fortschritt i{transition:none}}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; W&auml;lzlager</p>
+    <h1>Umfangslast oder Punktlast?</h1>
+    <p class="lead">Dieselbe Kraft, zwei verschiedene Antworten &ndash; je nachdem, wer sich dreht. Und daraus folgt, welcher Ring fest sitzen muss.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Worum es geht:</strong> Jedes Bild zeigt eine
+        Lagerstelle von vorn: welcher Ring sich dreht, und wohin die Kraft
+        <em>F</em> zeigt. Mehr sieht man an einer echten Lagerstelle auch
+        nicht.</p>
+      <p>Die Frage wechselt. Mal ist nach dem Ring gefragt, mal nach dem
+        Sitz, mal nach dem Toleranzfeld &ndash; es ist dieselbe
+        &Uuml;berlegung, nur einen Schritt weiter gedacht.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Durchgang</h2>
+
+    <div class="box">
+      <p class="stellkopf"><strong>Wie viele F&auml;lle?</strong>
+        <span class="fussnote">Jede &Auml;nderung beginnt einen neuen Durchgang.</span></p>
+      <div class="felder">
+        <label class="feld">Umfang
+          <input type="number" id="wahlUmfang" min="4" max="16" step="1" value="16">
+          <span class="fussnote">4 bis 16 F&auml;lle</span>
+        </label>
+      </div>
+      <p class="fussnote" style="margin:12px 0 0">
+        Falsch beantwortete F&auml;lle kommen am Ende noch einmal. Die
+        Reihenfolge wechselt bei jedem Durchgang &ndash; sonst &uuml;bt man
+        sie mit.
+      </p>
+    </div>
+
+    <div class="box">
+      <div class="zaehler">
+        <span id="stand">&ndash;</span>
+        <span id="punkte"></span>
+      </div>
+      <div class="fortschritt"><i id="balken" style="width:0%"></i></div>
+
+      <div class="buehne"><figure id="bild"></figure></div>
+      <p class="frage" id="frage">&ndash;</p>
+      <p class="gefragt" id="gefragt">&ndash;</p>
+      <div class="auswahl" id="auswahl"></div>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+
+      <p style="margin-top:16px">
+        <button type="button" class="knopf" id="btnWeiter" hidden>Weiter</button>
+        <button type="button" class="knopf leise" id="btnNeu">Von vorn</button>
+      </p>
+    </div>
+
+    <div id="ende" hidden>
+      <h3>Ergebnis</h3>
+      <div class="box">
+        <p class="bilanz" id="bilanz">&ndash;</p>
+        <p id="urteil"></p>
+        <div id="fehlerliste"></div>
+        <p style="margin-top:14px">
+          <button type="button" class="knopf" id="btnFehler" hidden>Nur die Fehler wiederholen</button>
+          <button type="button" class="knopf leise" id="btnNochmal">Ganzen Durchgang wiederholen</button>
+        </p>
+      </div>
+    </div>
+
+    <h2><span class="nr">2</span>Die Tafel</h2>
+    <p>Die vier Umlaufverh&auml;ltnisse auf einen Blick, hier mit eingetragener Lastzone. Nach dem Durchgang steht sie von selbst offen.</p>
+
+    <p id="tafelSchalter">
+      <button type="button" class="knopf leise" id="btnTafel">Tafel einblenden</button>
+    </p>
+
+    <div id="tafelBox" hidden>
+      <div class="warnschild" id="tafelWarnung" hidden>
+        <span><strong>Der Durchgang l&auml;uft noch.</strong>
+          Wer jetzt hier nachsieht, &uuml;bt das Nachschlagen statt des
+          Erinnerns. Wenn du nicht weiterwei&szlig;t, ist es lehrreicher,
+          falsch zu tippen: Der Fall kommt am Ende noch einmal.</span>
+      </div>
+      <div id="tafel"></div>
+    </div>
+
+    <h2><span class="nr">3</span>Warum das der Reihe nach geht</h2>
+
+    <details>
+      <summary>1. Wieso reicht es nicht zu wissen, wie gro&szlig; die Kraft
+        ist?</summary>
+      <p>Weil die Gr&ouml;&szlig;e nichts dar&uuml;ber sagt, <em>wo</em> sie
+        ankommt. Dieselben 4 kN sind f&uuml;r den einen Ring Umfangslast und
+        f&uuml;r den anderen Punktlast &ndash; und daraus folgt, welcher
+        fest sitzen muss. Die Kraft geht in die Lebensdauerrechnung, das
+        Umlaufverh&auml;ltnis in die Passung. Zwei Fragen, zwei Antworten.</p>
+    </details>
+
+    <details>
+      <summary>2. Was passiert, wenn man den Ring mit Umfangslast lose
+        einbaut?</summary>
+      <p>Er wandert. Die Lastzone schiebt ihn bei jeder Umdrehung ein
+        winziges St&uuml;ck weiter, er dreht sich also langsam auf seinem
+        Sitz. Dabei reibt Werkstoff ab, der sofort oxidiert:
+        <em>Passungsrost</em>. Die Sitzfl&auml;che wird fleckig rotbraun und
+        rau, das Spiel wird gr&ouml;&szlig;er, und beim n&auml;chsten Ausbau
+        h&auml;ngt der Ring fest, obwohl er nie fest sitzen sollte.</p>
+    </details>
+
+    <details>
+      <summary>3. Und wenn der Ring mit Punktlast zu fest sitzt?</summary>
+      <p>Dann fehlt dem Lager die Ausweichm&ouml;glichkeit. Der fest
+        gepresste Ring wird aufgeweitet oder zusammengedr&uuml;ckt, die
+        Lagerluft schrumpft, und beim W&auml;rmegang bleibt nichts mehr
+        &uuml;brig. Beim Loslager kommt dazu: Wenn der Au&szlig;enring sich
+        nicht l&auml;ngs verschieben kann, verspannt sich die ganze Welle
+        zwischen ihren beiden Lagerstellen.</p>
+    </details>
+
+    <details>
+      <summary>4. Und wenn die Last ihre Richtung st&auml;ndig
+        wechselt?</summary>
+      <p>Dann hat kein Ring mehr eine ruhige Stelle: Beide bekommen die
+        Last &uuml;ber den ganzen Umfang ab. Der Fall hei&szlig;t
+        <em>unbestimmte Lastrichtung</em>, und die Antwort darauf ist
+        unbequem, aber einfach &ndash; beide Ringe fest. Typisch bei
+        sto&szlig;artiger Belastung und bei Vibrationen.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Wer sich gegen&uuml;ber der Last dreht,
+      hat Umfangslast &ndash; und muss fest sitzen. Wer gegen&uuml;ber der
+      Last steht, hat Punktlast &ndash; und darf loser sitzen.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>In der Lektion steht dasselbe an der Lagerstelle: mit Geh&auml;use,
+      Schultern und Sicherungselementen, und mit den Toleranzfeldern in
+      der Tabelle.</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="maschinenelemente-lager-lagerungen-gestalten.html"
+         data-fach="1">Werkzeug Lagerungen gestalten &ouml;ffnen</a>
+    </p>
+
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot;
+    <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+function el(id){ return document.getElementById(id); }
+
+/* ==========================================================================
+   1  DIE FÄLLE
+
+   Jeder Fall bringt sein Bild mit, seine Frage und die Knöpfe, zwischen
+   denen zu entscheiden ist. Die Knöpfe stehen beim Fall und nicht ein
+   Mal für alle, weil hier nicht immer dasselbe gefragt wird: beim einen
+   nach dem Ring, beim nächsten nach dem Sitz.
+   ========================================================================== */
+var FAELLE = [
+  {
+    "kurz": "Getriebewelle mit Stirnrad",
+    "bild": {
+      "art": "umlauf",
+      "drehtInnen": true,
+      "lastDreht": false,
+      "lastWinkel": 250
+    },
+    "frage": "Eine <strong>Getriebewelle</strong>: Die Welle dreht, die Zahnkraft des Stirnrads zeigt immer in dieselbe Richtung.",
+    "gefragt": "Welcher Ring hat Umfangslast?",
+    "wahl": [
+      "Der Innenring",
+      "Der Außenring"
+    ],
+    "loesung": "Der Innenring",
+    "grund": "Der Innenring dreht sich unter der stehenden Kraft hindurch, also wandert die Lastzone einmal je Umdrehung um seinen ganzen Umfang. <em>Ring dreht, Last steht</em> &rarr; der drehende Ring hat Umfangslast."
+  },
+  {
+    "kurz": "Laufrolle auf fester Achse",
+    "bild": {
+      "art": "umlauf",
+      "drehtInnen": false,
+      "lastDreht": false,
+      "lastWinkel": 270
+    },
+    "frage": "Die <strong>Laufrolle</strong> eines Regalbediengeräts sitzt auf einer feststehenden Achse. Die Rolle dreht sich, das Gewicht drückt nach unten.",
+    "gefragt": "Welcher Ring hat Umfangslast?",
+    "wahl": [
+      "Der Innenring",
+      "Der Außenring"
+    ],
+    "loesung": "Der Außenring",
+    "grund": "Hier dreht nicht die Welle, sondern das Gehäuse &ndash; also der Außenring in der Rolle. Er wandert unter der stehenden Last hindurch. <em>Ring dreht, Last steht</em> &rarr; der drehende Ring hat Umfangslast."
+  },
+  {
+    "kurz": "Unwuchtwelle eines Rüttelsiebs",
+    "bild": {
+      "art": "umlauf",
+      "drehtInnen": true,
+      "lastDreht": true,
+      "lastWinkel": 60
+    },
+    "frage": "Die <strong>Unwuchtwelle</strong> eines Rüttelsiebs: Die Welle dreht, und die Fliehkraft der Unwucht dreht mit ihr mit.",
+    "gefragt": "Welcher Ring hat Punktlast?",
+    "wahl": [
+      "Der Innenring",
+      "Der Außenring"
+    ],
+    "loesung": "Der Innenring",
+    "grund": "Die Fliehkraft zeigt immer auf dieselbe Stelle des Innenrings, weil beide dieselbe Drehzahl haben. <em>Ring und Last drehen beide</em> &rarr; zueinander stehen sie still; Umfangslast hat dann der <em>andere</em> Ring."
+  },
+  {
+    "kurz": "Seiltrommel eines Hubwerks",
+    "bild": {
+      "art": "umlauf",
+      "drehtInnen": true,
+      "lastDreht": false,
+      "lastWinkel": 300
+    },
+    "frage": "Die <strong>Seiltrommel</strong> eines Kranhubwerks. Trommel und Welle drehen, der Seilzug zieht nach unten.",
+    "gefragt": "Welcher Ring hat Punktlast?",
+    "wahl": [
+      "Der Innenring",
+      "Der Außenring"
+    ],
+    "loesung": "Der Außenring",
+    "grund": "Der Außenring steht im Gehäuse still, und die Kraftrichtung steht auch. Also trifft die Last immer dieselbe Stelle seiner Laufbahn &ndash; genau das heißt Punktlast."
+  },
+  {
+    "kurz": "Umlenkrolle auf festem Bolzen",
+    "bild": {
+      "art": "umlauf",
+      "drehtInnen": false,
+      "lastDreht": false,
+      "lastWinkel": 100
+    },
+    "frage": "Die <strong>Umlenkrolle</strong> einer Kette läuft auf einem fest eingespannten Bolzen. Der Kettenzug bleibt in seiner Richtung.",
+    "gefragt": "Welcher Ring hat Punktlast?",
+    "wahl": [
+      "Der Innenring",
+      "Der Außenring"
+    ],
+    "loesung": "Der Innenring",
+    "grund": "Der Innenring sitzt fest auf dem stehenden Bolzen, die Zugrichtung steht ebenfalls &ndash; die Last trifft immer denselben Punkt seiner Laufbahn."
+  },
+  {
+    "kurz": "Rundtisch mit außermittigem Werkstück",
+    "bild": {
+      "art": "umlauf",
+      "drehtInnen": false,
+      "lastDreht": true,
+      "lastWinkel": 130
+    },
+    "frage": "Ein <strong>Rundtisch</strong> dreht sich samt Werkstück um einen feststehenden Mittelzapfen. Das Werkstück sitzt außermittig, seine Fliehkraft dreht also mit dem Tisch mit.",
+    "gefragt": "Welcher Ring hat Umfangslast?",
+    "wahl": [
+      "Der Innenring",
+      "Der Außenring"
+    ],
+    "loesung": "Der Innenring",
+    "grund": "Der seltenste der vier Fälle: Außenring und Last drehen gemeinsam, zueinander stehen sie still. Der stehende Innenring dagegen sieht eine umlaufende Kraft. <em>Ring und Last drehen beide</em> &rarr; zueinander stehen sie still; Umfangslast hat dann der <em>andere</em> Ring."
+  },
+  {
+    "kurz": "Separatortrommel",
+    "bild": {
+      "art": "umlauf",
+      "drehtInnen": false,
+      "lastDreht": true,
+      "lastWinkel": 20
+    },
+    "frage": "Die <strong>Trommel eines Separators</strong> dreht sich auf einer stehenden Achse. Ein Restunwuchtanteil dreht mit der Trommel.",
+    "gefragt": "Welcher Ring hat Punktlast?",
+    "wahl": [
+      "Der Innenring",
+      "Der Außenring"
+    ],
+    "loesung": "Der Außenring",
+    "grund": "Die Unwucht zeigt immer auf dieselbe Stelle der Trommelbohrung, weil sie mitdreht. Der Außenring bekommt die Kraft also stets an einem Punkt."
+  },
+  {
+    "kurz": "Schleifspindel",
+    "bild": {
+      "art": "umlauf",
+      "drehtInnen": true,
+      "lastDreht": false,
+      "lastWinkel": 285
+    },
+    "frage": "Die <strong>Schleifspindel</strong> dreht, die Schnittkraft drückt die Scheibe von unten gegen das Werkstück und hält ihre Richtung.",
+    "gefragt": "Welcher Ring braucht die festere Passung?",
+    "wahl": [
+      "Der Innenring",
+      "Der Außenring"
+    ],
+    "loesung": "Der Innenring",
+    "grund": "Er hat Umfangslast. Ein Ring mit Umfangslast muss mit Übermaß sitzen, sonst wandert er auf seinem Sitz &ndash; und dann reibt er sich fest: Passungsrost."
+  },
+  {
+    "kurz": "Radnabe eines Anhängers",
+    "bild": {
+      "art": "umlauf",
+      "drehtInnen": false,
+      "lastDreht": false,
+      "lastWinkel": 270
+    },
+    "frage": "Die <strong>Radnabe</strong> eines Anhängers läuft auf einem feststehenden Achszapfen. Die Radlast drückt nach unten.",
+    "gefragt": "Welcher Ring muss fest sitzen?",
+    "wahl": [
+      "Der Innenring",
+      "Der Außenring"
+    ],
+    "loesung": "Der Außenring",
+    "grund": "Die Nabe dreht, also dreht der Außenring &ndash; er hat Umfangslast und braucht in der Nabenbohrung Übermaß. Der Innenring auf dem Achszapfen darf loser sitzen."
+  },
+  {
+    "kurz": "Lüfterrad mit Unwucht",
+    "bild": {
+      "art": "umlauf",
+      "drehtInnen": true,
+      "lastDreht": true,
+      "lastWinkel": 45
+    },
+    "frage": "Ein <strong>Lüfterrad</strong> auf der drehenden Motorwelle läuft mit einer bleibenden Restunwucht.",
+    "gefragt": "Welcher Ring muss fest sitzen?",
+    "wahl": [
+      "Der Innenring",
+      "Der Außenring"
+    ],
+    "loesung": "Der Außenring",
+    "grund": "Welle und Unwucht drehen gemeinsam, also hat der stehende Außenring die Umfangslast &ndash; und der braucht Übermaß im Gehäuse. Das ist genau umgekehrt zum Normalfall, und genau deshalb wird es beim Einbau gern falsch gemacht."
+  },
+  {
+    "kurz": "Exzenterpresse",
+    "bild": {
+      "art": "umlauf",
+      "drehtInnen": true,
+      "lastDreht": false,
+      "lastWinkel": 265
+    },
+    "frage": "Die <strong>Exzenterwelle</strong> einer Presse dreht sich, die Presskraft wirkt nach unten.",
+    "gefragt": "An welchen Sitz gehört das Übermaß?",
+    "wahl": [
+      "Der Wellensitz",
+      "Der Gehäusesitz"
+    ],
+    "loesung": "Der Wellensitz",
+    "grund": "Der Innenring dreht unter der stehenden Kraft &ndash; Umfangslast, also fester Sitz auf der Welle. Der Außenring hat Punktlast und darf im Gehäuse loser sitzen; das erleichtert auch das Einstellen des Loslagers."
+  },
+  {
+    "kurz": "Spannrolle eines Zahnriemens",
+    "bild": {
+      "art": "umlauf",
+      "drehtInnen": false,
+      "lastDreht": false,
+      "lastWinkel": 160
+    },
+    "frage": "Die <strong>Spannrolle</strong> eines Zahnriemens sitzt auf einem festen Bolzen. Der Riemenzug hält seine Richtung.",
+    "gefragt": "Welcher Sitz darf die losere Passung bekommen?",
+    "wahl": [
+      "Der Sitz auf dem Bolzen",
+      "Der Sitz in der Rolle"
+    ],
+    "loesung": "Der Sitz auf dem Bolzen",
+    "grund": "Auf dem Bolzen sitzt der Innenring, und der hat hier Punktlast &ndash; Bolzen und Kraftrichtung stehen beide. Fest sitzen muss stattdessen der Außenring in der Rolle."
+  },
+  {
+    "kurz": "Wellensitz bei Umfangslast",
+    "ohne": [
+      "bfs-hs10"
+    ],
+    "bild": {
+      "art": "umlauf",
+      "drehtInnen": true,
+      "lastDreht": false,
+      "lastWinkel": 240
+    },
+    "frage": "Eine <strong>Getriebewelle</strong> von 50 mm, normale Belastung. Der Innenring hat Umfangslast.",
+    "gefragt": "Welches Toleranzfeld gehört an den Wellensitz?",
+    "wahl": [
+      "k5",
+      "g6",
+      "h6",
+      "N7"
+    ],
+    "loesung": "k5",
+    "grund": "Umfangslast am Innenring heißt Übermaß. Für Wellen bis etwa 100 mm bei normaler Belastung nennt DIN 5425-1 k5 &ndash; bei hoher Belastung rückt es weiter nach oben (m5, n6). g6 und h6 wären Spiel, N7 ist ein Bohrungsfeld und gehört nie auf eine Welle."
+  },
+  {
+    "kurz": "Gehäusesitz bei Punktlast",
+    "ohne": [
+      "bfs-hs10"
+    ],
+    "bild": {
+      "art": "umlauf",
+      "drehtInnen": true,
+      "lastDreht": false,
+      "lastWinkel": 90
+    },
+    "frage": "Dieselbe Lagerstelle von außen: Der <strong>Außenring</strong> steht im Gehäuse, die Last steht ebenfalls. Das Lager soll sich beim Wärmegang längs verschieben können.",
+    "gefragt": "Welches Toleranzfeld gehört an den Gehäusesitz?",
+    "wahl": [
+      "H7",
+      "P7",
+      "N7",
+      "k5"
+    ],
+    "loesung": "H7",
+    "grund": "Punktlast am Außenring erlaubt Spiel &ndash; und ein verschiebbares Loslager braucht es sogar. H7 gibt der Wärmedehnung Platz. N7 und P7 sind Übermaßfelder, das Lager säße fest."
+  },
+  {
+    "kurz": "Gehäusesitz bei Umfangslast",
+    "ohne": [
+      "bfs-hs10"
+    ],
+    "bild": {
+      "art": "umlauf",
+      "drehtInnen": false,
+      "lastDreht": false,
+      "lastWinkel": 270
+    },
+    "frage": "Eine <strong>Laufrolle</strong>: Der Außenring dreht mit der Rolle, die Last steht. Der Ring hat also Umfangslast.",
+    "gefragt": "Welches Toleranzfeld gehört in die Rollenbohrung?",
+    "wahl": [
+      "N7",
+      "H7",
+      "J7",
+      "g6"
+    ],
+    "loesung": "N7",
+    "grund": "Umfangslast am Außenring verlangt Übermaß in der Bohrung; N7 ist der übliche Griff, bei schweren Stößen P7. H7 und J7 ließen den Ring wandern, g6 gehört auf eine Welle."
+  },
+  {
+    "kurz": "Wellensitz bei Punktlast",
+    "ohne": [
+      "bfs-hs10"
+    ],
+    "bild": {
+      "art": "umlauf",
+      "drehtInnen": false,
+      "lastDreht": false,
+      "lastWinkel": 300
+    },
+    "frage": "Der <strong>Innenring</strong> sitzt auf einem feststehenden Achszapfen, die Last steht. Er hat Punktlast, und zum Auswechseln soll er von Hand abgehen.",
+    "gefragt": "Welches Toleranzfeld gehört an den Wellensitz?",
+    "wahl": [
+      "g6",
+      "k5",
+      "m5",
+      "H7"
+    ],
+    "loesung": "g6",
+    "grund": "Punktlast am Innenring lässt Spiel zu &ndash; g6 (oder h6) erlaubt den leichten Ein- und Ausbau. k5 und m5 wären Übermaß und damit unnötige Presskraft, H7 ist ein Bohrungsfeld."
+  }
+];
+
+/* Die Tafel zum Nachschlagen - dieselbe Art Bild, aber mit der Antwort. */
+var TAFEL = [
+  {
+    "bild": {
+      "art": "umlauf",
+      "drehtInnen": true,
+      "lastDreht": false,
+      "lastWinkel": 90,
+      "zeigen": true
+    },
+    "name": "Innenring dreht, Lastrichtung steht",
+    "text": "Der <strong>Innenring</strong> hat Umfangslast und muss fest auf der Welle sitzen (k5, m5). Der Außenring hat Punktlast und darf im Gehäuse Spiel haben (H7, J7). Der Normalfall: Getriebe, Spindeln, Motoren."
+  },
+  {
+    "bild": {
+      "art": "umlauf",
+      "drehtInnen": false,
+      "lastDreht": false,
+      "lastWinkel": 90,
+      "zeigen": true
+    },
+    "name": "Außenring dreht, Lastrichtung steht",
+    "text": "Umgekehrt: Der <strong>Außenring</strong> hat Umfangslast und sitzt fest in der Bohrung (N7, P7), der Innenring darf auf dem stehenden Zapfen loser sitzen (g6, h6). Laufrollen, Umlenkrollen, Radnaben."
+  },
+  {
+    "bild": {
+      "art": "umlauf",
+      "drehtInnen": true,
+      "lastDreht": true,
+      "lastWinkel": 90,
+      "zeigen": true
+    },
+    "name": "Innenring dreht, Last dreht mit",
+    "text": "Beide drehen gleich schnell, zueinander stehen sie still. Also hat der <strong>Außenring</strong> Umfangslast und sitzt fest. Unwuchtwellen, Rüttler, Lüfterräder."
+  },
+  {
+    "bild": {
+      "art": "umlauf",
+      "drehtInnen": false,
+      "lastDreht": true,
+      "lastWinkel": 90,
+      "zeigen": true
+    },
+    "name": "Außenring dreht, Last dreht mit",
+    "text": "Spiegelbildlich dazu: Umfangslast hat der <strong>Innenring</strong>. Der seltenste Fall &ndash; Rundtische und Trommeln mit mitdrehender Unwucht auf stehender Achse."
+  }
+];
+
+/* ==========================================================================
+   2  DER MOTOR
+   ========================================================================== */
+function mischen(a){
+  var b = a.slice();
+  for(var i = b.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = b[i]; b[i] = b[j]; b[j] = t;
+  }
+  return b;
+}
+
+/* Ein Bild zeichnen - welches, sagt der Fall selbst. */
+function zeichnen(ziel, b){
+  if(b.art === "umlauf") return Waelzlager.umlaufBild(ziel, b);
+  return Waelzlager.laufspur(ziel, b.muster,
+    {titel: b.titel, unterschrift: b.unterschrift});
+}
+
+var runde = [], nr = 0, richtig = 0, fehler = [], laeuft = false;
+
+function zeigen(){
+  var f = runde[nr];
+  laeuft = true;
+  el("stand").textContent = "Fall " + (nr + 1) + " von " + runde.length;
+  el("punkte").textContent = richtig + " richtig";
+  el("balken").style.width = (nr / runde.length * 100) + "%";
+  zeichnen("bild", f.bild);
+  el("frage").innerHTML = f.frage;
+  el("gefragt").innerHTML = f.gefragt;
+  el("rueck").hidden = true;
+  el("btnWeiter").hidden = true;
+
+  var au = el("auswahl");
+  au.textContent = "";
+  mischen(f.wahl).forEach(function(w){
+    var k = document.createElement("button");
+    k.type = "button";
+    k.textContent = w;
+    k.addEventListener("click", function(){ antwort(w, k); });
+    au.appendChild(k);
+  });
+}
+
+function antwort(gesagt, knopf){
+  if(!laeuft) return;
+  laeuft = false;
+  var f = runde[nr];
+  var ok = gesagt === f.loesung;
+  if(ok) richtig++;
+  else if(fehler.indexOf(f) === -1) fehler.push(f);
+
+  var knoepfe = el("auswahl").querySelectorAll("button");
+  for(var i = 0; i < knoepfe.length; i++){
+    knoepfe[i].disabled = true;
+    if(knoepfe[i].textContent === f.loesung) knoepfe[i].className = "richtig";
+  }
+  if(!ok) knopf.className = "falsch";
+
+  var r = el("rueck");
+  r.className = "rueckmeldung " + (ok ? "ja" : "nein");
+  r.innerHTML = "<strong>" + (ok ? "Richtig: " : "") + f.loesung
+    + "</strong>" + f.grund;
+  r.hidden = false;
+  el("punkte").textContent = richtig + " richtig";
+  el("btnWeiter").hidden = false;
+  el("btnWeiter").textContent = (nr + 1 < runde.length) ? "Weiter" : "Ergebnis";
+}
+
+function weiter(){
+  nr++;
+  if(nr < runde.length){ zeigen(); return; }
+  el("balken").style.width = "100%";
+  el("stand").textContent = "fertig";
+  el("auswahl").textContent = "";
+  el("bild").textContent = "";
+  el("frage").textContent = "";
+  el("gefragt").textContent = "";
+  el("rueck").hidden = true;
+  el("btnWeiter").hidden = true;
+  el("ende").hidden = false;
+  el("tafelBox").hidden = false;
+  el("tafelWarnung").hidden = true;
+  el("btnTafel").textContent = "Tafel ausblenden";
+  el("bilanz").textContent = richtig + " von " + runde.length + " richtig.";
+  el("urteil").textContent = urteil(richtig / runde.length);
+  el("fehlerliste").innerHTML = fehler.length
+    ? "<p><strong>Diese Fälle noch einmal ansehen:</strong></p><ul>"
+      + fehler.map(function(f){
+          return "<li>" + f.kurz + " &ndash; " + f.loesung + "</li>";
+        }).join("") + "</ul>"
+    : "";
+  el("btnFehler").hidden = !fehler.length;
+  document.dispatchEvent(new CustomEvent("tbk-durchgang-ende",
+    {detail: {richtig: richtig, gesamt: runde.length}}));
+}
+
+function urteil(q){
+  if(q === 1) return "Alles richtig. Das sitzt.";
+  if(q >= 0.8) return "Gut. Die Fälle unten lohnen einen zweiten Blick.";
+  if(q >= 0.5) return "Die Hälfte sitzt. Die Tafel unten steht jetzt offen.";
+  return "Noch nicht. Sieh dir die Tafel an und fang neu an – das geht schnell.";
+}
+
+function starten(liste){
+  runde = liste;
+  nr = 0; richtig = 0; fehler = [];
+  el("ende").hidden = true;
+  el("tafelWarnung").hidden = false;
+  zeigen();
+}
+
+/* Nicht jeder Fall passt in jeden Bildungsgang: Ein Fall mit einem Feld
+   "ohne" fällt dort weg, statt die ganze Seite auszuschließen. So
+   bleibt das Bilderlesen für alle - nur die Rechenschritte dahinter
+   nicht. Der Baustein steht am Seitenende, also kann er beim ersten Lauf
+   noch fehlen; dann gilt alles. */
+function auswahl(){
+  var bg = "";
+  try {
+    bg = (window.tbkBildungsgang && window.tbkBildungsgang.lesen()) || "";
+  } catch(e){ bg = ""; }
+  if(!bg) return FAELLE;
+  return FAELLE.filter(function(f){
+    return !f.ohne || f.ohne.indexOf(bg) === -1;
+  });
+}
+
+function neuerDurchgang(){
+  var da = auswahl();
+  var feld = el("wahlUmfang");
+  if(Number(feld.max) !== da.length){
+    var voll = Number(feld.value) >= Number(feld.max);
+    feld.max = da.length;
+    if(voll || Number(feld.value) > da.length) feld.value = da.length;
+  }
+  var n = Math.max(4, Math.min(da.length, Number(feld.value) || da.length));
+  starten(mischen(da).slice(0, n));
+}
+
+/* ==========================================================================
+   3  DIE TAFEL
+
+   Sie wird einmal gebaut und danach nur noch ein- und ausgeblendet - die
+   Bilder bei jedem Klick neu zu zeichnen kostet sonst unnötig Zeit.
+   ========================================================================== */
+(function tafelBauen(){
+  var t = el("tafel");
+  TAFEL.forEach(function(e, i){
+    var z = document.createElement("div");
+    z.className = "tafelzeile";
+    var f = document.createElement("figure");
+    f.id = "tf" + i;
+    var p = document.createElement("p");
+    p.innerHTML = "<b>" + e.name + "</b>" + e.text;
+    z.appendChild(f);
+    z.appendChild(p);
+    t.appendChild(z);
+    zeichnen("tf" + i, e.bild);
+  });
+}());
+
+el("btnTafel").addEventListener("click", function(){
+  var auf = el("tafelBox").hidden;
+  el("tafelBox").hidden = !auf;
+  this.textContent = auf ? "Tafel ausblenden" : "Tafel einblenden";
+});
+el("btnWeiter").addEventListener("click", weiter);
+el("btnNeu").addEventListener("click", neuerDurchgang);
+el("btnNochmal").addEventListener("click", neuerDurchgang);
+el("btnFehler").addEventListener("click", function(){ starten(fehler.slice()); });
+el("wahlUmfang").addEventListener("change", neuerDurchgang);
+
+/* Der Wettkampf braucht nur zu wissen, wie man von vorn anfängt und wo
+   das Ergebnis steht - gezählt wird hier. */
+window.TBK_WETTKAMPF = {neu: neuerDurchgang, ergebnisAn: "ende"};
+
+neuerDurchgang();
+
+/* Und noch einmal, sobald der Bildungsgang-Baustein steht - bis dahin ist
+   noch nichts beantwortet, der Neustart kostet also nichts. */
+window.addEventListener("load", function(){
+  if(auswahl().length !== FAELLE.length) neuerDurchgang();
+});
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/quellen.js"></script>
+<script src="../../assets/wettkampf.js"></script>
+</body>
+</html>

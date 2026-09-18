@@ -813,6 +813,246 @@
       + 'Verlag Handwerk und Technik, Lernfeld 7.'
   };
 
+  /* ======================================================================
+     4  SKIZZEN
+     ----------------------------------------------------------------------
+     Kleine Bilder für Übungen und Trainings. Sie sind keine Zeichnungen
+     nach Norm, sondern Prinzipbilder: Sie sollen eine Frage stellen, nicht
+     eine Fertigung ermöglichen.
+     ====================================================================== */
+
+  /* Ein Zufall, der immer derselbe ist. Die Prüfungen rendern jede Seite
+     mehrfach und vergleichen; ein echtes Math.random() ergäbe jedes Mal ein
+     anderes Bild und damit Befunde, die es nicht gibt. */
+  function wuerfel(saat) {
+    var z = 0;
+    for (var i = 0; i < String(saat).length; i++) {
+      z = (z * 31 + String(saat).charCodeAt(i)) % 65536;
+    }
+    return function () {
+      z = (z * 1103515245 + 12345) % 2147483648;
+      return z / 2147483648;
+    };
+  }
+
+  function bogen(g, cx, cy, r, von, bis, breit) {
+    var a1 = von * Math.PI / 180, a2 = bis * Math.PI / 180;
+    var gross = Math.abs(bis - von) > 180 ? 1 : 0;
+    var d = 'M' + (cx + r * Math.cos(a1)).toFixed(1) + ','
+      + (cy - r * Math.sin(a1)).toFixed(1)
+      + ' A' + r + ',' + r + ' 0 ' + gross + ' 0 '
+      + (cx + r * Math.cos(a2)).toFixed(1) + ','
+      + (cy - r * Math.sin(a2)).toFixed(1);
+    return svgEl('path', {d: d, fill: 'none', stroke: 'currentColor',
+      'stroke-width': breit ? BREIT + 1.6 : SCHMAL,
+      'stroke-linecap': 'round'}, g);
+  }
+
+  /* Das Umlaufverhältnis als Stirnansicht.
+
+     o: {drehtInnen, lastDreht, lastWinkel, zeigen}
+
+     Welcher Ring Umfangslast hat, entscheidet nicht die Kraft, sondern die
+     Frage, wer sich gegenüber wem bewegt: Ein Ring hat Umfangslast, wenn er
+     sich relativ zur Lastrichtung dreht. Das ist genau dann der Fall, wenn
+     entweder der Ring oder die Last umläuft - aber nicht beide.
+
+     Genau das ist aber die Frage, die geübt werden soll. Deshalb bleibt die
+     Lastzone standardmäßig weg: Das Bild zeigt nur, was man an der
+     Lagerstelle sieht - wer dreht und wohin die Kraft zeigt. Erst
+     "zeigen: true" trägt die Antwort ein, für Lektion und Tafel. */
+  function umlaufBild(zielId, o) {
+    o = o || {};
+    var ziel = typeof zielId === 'string'
+      ? document.getElementById(zielId) : zielId;
+    if (!ziel) return null;
+    ziel.textContent = '';
+
+    var drehtInnen = !!o.drehtInnen, lastDreht = !!o.lastDreht;
+    var innenUmfang = drehtInnen !== lastDreht;
+    var w = Number(o.lastWinkel === undefined ? 90 : o.lastWinkel);
+
+    var B = 300, M = 150, cy = 148;
+    var Ra = 78, t = 15, dw = 18, Ri = 34;
+    var rm = (Ra - t + Ri + t) / 2;
+
+    var svg = svgEl('svg', {viewBox: '0 0 ' + B + ' 330', role: 'img',
+      'aria-label': 'Stirnansicht eines Wälzlagers: '
+        + (drehtInnen ? 'Innenring' : 'Außenring')
+        + ' dreht, die Last ' + (lastDreht ? 'dreht mit' : 'steht')
+        + (o.zeigen ? '; Umfangslast hat der '
+          + (innenUmfang ? 'Innenring' : 'Außenring') : '')}, ziel);
+    var g = svgEl('g', {}, svg);
+    var leer = 'var(--card, #ffffff)';
+
+    /* Außenring, Innenring, Wälzkörper */
+    [[Ra, BREIT], [Ra - t, SCHMAL], [Ri + t, SCHMAL], [Ri, BREIT]]
+      .forEach(function (e) {
+        svgEl('circle', {cx: M, cy: cy, r: e[0], fill: 'none',
+          stroke: 'currentColor', 'stroke-width': e[1]}, g);
+      });
+    for (var i = 0; i < 10; i++) {
+      var a = (i * 36 + 18) * Math.PI / 180;
+      svgEl('circle', {cx: M + rm * Math.cos(a), cy: cy - rm * Math.sin(a),
+        r: dw / 2, fill: leer, stroke: 'currentColor',
+        'stroke-width': SCHMAL}, g);
+    }
+
+    /* Alles Weitere erklärt das Bild, statt das Lager zu zeichnen: Kraft,
+       Drehrichtung, Beschriftung. Es gehört deshalb in eine Gruppe
+       "erklaer" - sonst hält die Zeichnungsprüfung den Kraftpfeil für
+       ein halb bemaßtes Maß. */
+    var e = svgEl('g', {'class': 'erklaer'}, g);
+
+    /* Wo die Last trägt: der Ring mit Umfangslast bekommt sie über den
+       ganzen Umfang ab, der andere nur an einer Stelle. Das ist die Antwort
+       und steht deshalb nur da, wo sie hingehört. */
+    if (o.zeigen) {
+      var lz = svgEl('g', {}, e);
+      if (innenUmfang) {
+        bogen(lz, M, cy, Ri + t, 0, 359.9, true);
+        bogen(lz, M, cy, Ra - t, w - 32, w + 32, true);
+      } else {
+        bogen(lz, M, cy, Ra - t, 0, 359.9, true);
+        bogen(lz, M, cy, Ri + t, w - 32, w + 32, true);
+      }
+    }
+
+    /* Die Last */
+    var ar = w * Math.PI / 180;
+    var x1 = M + (Ra + 42) * Math.cos(ar), y1 = cy - (Ra + 42) * Math.sin(ar);
+    var x2 = M + (Ra + 4) * Math.cos(ar), y2 = cy - (Ra + 4) * Math.sin(ar);
+    linie(e, x1, y1, x2, y2, BREIT);
+    pfeil(e, x2, y2, -Math.cos(ar), Math.sin(ar));
+    txt(e, x1 + 14 * Math.cos(ar), y1 - 14 * Math.sin(ar) + 5, 'F',
+      {groesse: 15, fett: true});
+
+    /* Was sich dreht - und ob die Last mitdreht */
+    var rd = drehtInnen ? Ri - 11 : Ra + 16;
+    bogen(e, M, cy, rd, 200, 330, false);
+    var ae = 330 * Math.PI / 180;
+    pfeil(e, M + rd * Math.cos(ae), cy - rd * Math.sin(ae),
+      -Math.sin(ae), -Math.cos(ae));
+    txt(e, M + (rd + 12) * Math.cos(285 * Math.PI / 180),
+      cy - (rd + 12) * Math.sin(285 * Math.PI / 180) + 5, 'n',
+      {groesse: 14, fett: true, hof: true});
+
+    /* Dreht die Last mit, bekommt ihr Pfeil einen eigenen Bogen - sonst
+       sähe das Bild aus wie der Fall daneben. */
+    if (lastDreht) {
+      var rl = Ra + 30;
+      bogen(e, M, cy, rl, w - 46, w - 6, false);
+      var al = (w - 46) * Math.PI / 180;
+      pfeil(e, M + rl * Math.cos(al), cy - rl * Math.sin(al),
+        Math.sin(al), Math.cos(al));
+    }
+
+    txt(e, M, 300, drehtInnen ? 'Innenring dreht' : 'Außenring dreht',
+      {groesse: 13, fett: true});
+    txt(e, M, 320, lastDreht ? 'die Last dreht mit'
+      : 'die Lastrichtung steht', {groesse: 12});
+    return svg;
+  }
+
+  /* Die abgewickelte Laufbahn mit dem Muster, das ein Schaden hinterlässt.
+
+     Die Laufbahn ist hier aufgerollt gedacht: links und rechts ist
+     dieselbe Stelle. Was darauf steht, ist die Spur - und die Spur sagt,
+     was passiert ist. */
+  function laufspur(zielId, muster, o) {
+    o = o || {};
+    var ziel = typeof zielId === 'string'
+      ? document.getElementById(zielId) : zielId;
+    if (!ziel) return null;
+    ziel.textContent = '';
+
+    var B = 330, H = 132;
+    var x0 = 22, x1 = B - 22, y0 = 34, y1 = 104;
+    var svg = svgEl('svg', {viewBox: '0 0 ' + B + ' ' + H, role: 'img',
+      'aria-label': o.beschreibung || ('Abgewickelte Laufbahn mit dem '
+        + 'Muster ' + muster)}, ziel);
+    var g = svgEl('g', {}, svg);
+    var z = wuerfel(muster);
+
+    kasten(g, x0, y0, x1 - x0, y1 - y0);
+    txt(g, (x0 + x1) / 2, 20, o.titel || 'Laufbahn, abgewickelt',
+      {groesse: 12, fett: true});
+
+    var e = svgEl('g', {'class': 'erklaer'}, g);
+    var i, x, y, m = (y0 + y1) / 2;
+
+    if (muster === 'brinell') {
+      /* Gleichmäßig verteilte Eindrücke im Abstand der Wälzkörper. */
+      for (i = 0; i < 9; i++) {
+        x = x0 + 24 + i * (x1 - x0 - 48) / 8;
+        svgEl('ellipse', {cx: x, cy: m, rx: 7.5, ry: 13,
+          fill: 'currentColor', opacity: 0.45}, e);
+      }
+    } else if (muster === 'riffel') {
+      /* Feine, regelmäßige Querriefen - wie ein Waschbrett. */
+      for (i = 0; i < 46; i++) {
+        x = x0 + 8 + i * (x1 - x0 - 16) / 45;
+        linie(e, x, m - 14, x, m + 14, SCHMAL);
+      }
+    } else if (muster === 'spurBreit') {
+      /* Eine Laufspur über den ganzen Umfang, und sie ist breit. */
+      svgEl('rect', {x: x0 + 3, y: m - 17, width: x1 - x0 - 6, height: 34,
+        fill: 'currentColor', opacity: 0.32}, e);
+    } else if (muster === 'spurTeil') {
+      /* Eine Laufspur nur über einen Teil des Umfangs. */
+      svgEl('rect', {x: x0 + 18, y: m - 13, width: (x1 - x0) * 0.34,
+        height: 26, fill: 'currentColor', opacity: 0.32}, e);
+    } else if (muster === 'spurSchraeg') {
+      /* Die Spur wandert über die Breite - das Lager stand schief. */
+      svgEl('path', {d: 'M' + (x0 + 4) + ',' + (y1 - 12) + ' L' + (x1 - 4)
+        + ',' + (y0 + 12) + ' L' + (x1 - 4) + ',' + (y0 + 30) + ' L'
+        + (x0 + 4) + ',' + (y1 + 6) + ' Z', fill: 'currentColor',
+        opacity: 0.3}, e);
+    } else if (muster === 'schmutz') {
+      /* Eingedrückte Fremdkörper: unregelmäßig, überall. */
+      for (i = 0; i < 38; i++) {
+        x = x0 + 8 + z() * (x1 - x0 - 16);
+        y = y0 + 8 + z() * (y1 - y0 - 16);
+        svgEl('circle', {cx: x.toFixed(1), cy: y.toFixed(1),
+          r: (1.4 + z() * 2.4).toFixed(1), fill: 'currentColor',
+          opacity: 0.5}, e);
+      }
+    } else if (muster === 'fressen') {
+      /* Längsriefen in Laufrichtung: geschmiert hat da nichts mehr. */
+      for (i = 0; i < 13; i++) {
+        y = y0 + 10 + z() * (y1 - y0 - 20);
+        var xa = x0 + 6 + z() * (x1 - x0) * 0.4;
+        linie(e, xa, y, xa + (x1 - x0) * (0.25 + z() * 0.3), y, SCHMAL);
+      }
+    } else if (muster === 'rost') {
+      /* Passungsrost auf der Sitzfläche: fleckig, nicht gerichtet. */
+      for (i = 0; i < 90; i++) {
+        x = x0 + 5 + z() * (x1 - x0 - 10);
+        y = y0 + 5 + z() * (y1 - y0 - 10);
+        svgEl('circle', {cx: x.toFixed(1), cy: y.toFixed(1),
+          r: (0.9 + z() * 1.8).toFixed(1), fill: 'currentColor',
+          opacity: 0.38}, e);
+      }
+    } else if (muster === 'ausbruch') {
+      /* Ermüdung: ausgebrochene Stellen, dort wo die Spur läuft. */
+      svgEl('rect', {x: x0 + 3, y: m - 11, width: x1 - x0 - 6, height: 22,
+        fill: 'currentColor', opacity: 0.22}, e);
+      for (i = 0; i < 5; i++) {
+        x = x0 + 30 + z() * (x1 - x0 - 60);
+        svgEl('path', {d: 'M' + x.toFixed(1) + ',' + (m - 9)
+          + ' l7,-3 l9,6 l-4,9 l-10,2 l-5,-8 Z', fill: 'currentColor',
+          opacity: 0.75}, e);
+      }
+    }
+
+    if (o.unterschrift !== false) {
+      var f = document.createElement('figcaption');
+      f.innerHTML = o.unterschrift || '';
+      if (f.innerHTML) ziel.appendChild(f);
+    }
+    return svg;
+  }
+
   global.Waelzlager = {
     QUELLEN: QUELLEN,
     LAGERART: LAGERART,
@@ -828,6 +1068,8 @@
     EMPFOHLEN: EMPFOHLEN,
     ALPHA: ALPHA,
     sitzText: sitzText,
+    umlaufBild: umlaufBild,
+    laufspur: laufspur,
     zerlegen: zerlegen,
     lager: lager,
     lebensdauer: lebensdauer,

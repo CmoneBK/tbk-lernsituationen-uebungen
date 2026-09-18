@@ -9,8 +9,14 @@
 <meta name="quellen" content="tabellenbuch fachkunde-im katalog">
 <meta name="normen" content="DIN 623-1, DIN 625-1, DIN 628-1, DIN 720, DIN 981, DIN 5406 und DIN 5418">
 <link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/zeichnen.js"></script>
+<script src="../../assets/waelzlager.js"></script>
 <style>
   /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .skizze{margin:8px 0 2px; max-width:210px}
+  .skizze svg{width:100%; height:auto; display:block; color:var(--fg)}
+  .skizze figcaption{font-size:12px; color:var(--muted); margin-top:2px}
+  table.fr td:first-child{width:52%}
   .bild{margin:16px 0 4px}
   .bild svg{width:100%; height:auto; display:block}
   .bild figcaption{font-size:13px; color:var(--muted); margin-top:6px;
@@ -94,36 +100,43 @@ function el(id){ return document.getElementById(id); }
 var FRAGEN = [
   {
     "frage": "<strong>Welle mit Gewichtsbelastung.</strong> Innenring dreht, Außenring steht, die Last kommt immer von oben. Welche Toleranz braucht der <em>Wellensitz</em>? (mittlere Last)",
+    "bild": {"drehtInnen": true, "lastDreht": false},
     "loesung": "j, k, m",
     "warum": "Der Innenring dreht sich unter der stehenden Last hindurch - die Last wandert also um seinen Umfang. Umfangslast verlangt eine feste Passung; bei mittlerer Belastung sind das j, k oder m."
   },
   {
     "frage": "Dieselbe Welle: Welche Toleranz braucht die <em>Gehäusebohrung</em>?",
+    "bild": {"drehtInnen": true, "lastDreht": false},
     "loesung": "J, H, G, F",
     "warum": "Der Außenring steht still und die Last drückt immer an dieselbe Stelle: Punktlast. Eine Spielpassung ist zulässig, und zwar beliebig groß - beim Loslager ist sie sogar nötig."
   },
   {
     "frage": "<strong>Kfz-Vorderrad.</strong> Der Außenring dreht sich mit dem Rad, die Last kommt von der Fahrbahn und steht. Welche Toleranz braucht die <em>Nabenbohrung</em>? (mittlere Last)",
+    "bild": {"drehtInnen": false, "lastDreht": false},
     "loesung": "K, M, N",
     "warum": "Jetzt hat der <em>Außenring</em> Umfangslast - er dreht sich unter der stehenden Last hindurch. Also feste Passung im Gehäuse, und der Innenring darf lose sitzen. Genau umgekehrt wie beim ersten Fall."
   },
   {
     "frage": "<strong>Zentrifuge mit großer Unwucht.</strong> Innenring dreht, und die Fliehkraft dreht mit. Welche Toleranz braucht der <em>Wellensitz</em>?",
+    "bild": {"drehtInnen": true, "lastDreht": true},
     "loesung": "j, h, g, f",
     "warum": "Die Last dreht mit dem Innenring mit, drückt also immer auf dieselbe Stelle des Innenrings: Punktlast. Spielpassung zulässig. Der Außenring steht still und bekommt die Umfangslast ab."
   },
   {
     "frage": "<strong>Nabenlagerung mit großer Unwucht.</strong> Außenring dreht, die Last dreht mit. Welcher Ring hat Umfangslast?",
+    "bild": {"drehtInnen": false, "lastDreht": true},
     "loesung": "der Innenring",
     "warum": "Die Last dreht mit dem Außenring mit - für ihn ist sie Punktlast. Der stehende Innenring bekommt sie nacheinander über seinen ganzen Umfang ab."
   },
   {
     "frage": "Ein <strong>Laufrad</strong> am Kran, schwer beladen. Der Außenring dreht unter stehender Last. Welche Toleranz braucht die <em>Bohrung</em>? (hohe Last)",
+    "bild": {"drehtInnen": false, "lastDreht": false},
     "loesung": "N, P",
     "warum": "Umfangslast am Außenring bei hoher Belastung. Je größer die Last, desto fester muss der Sitz sein - sonst wandert der Ring und frisst sich den Sitz auf."
   },
   {
     "frage": "Eine Getriebewelle, <strong>niedrige Last</strong>, Innenring dreht unter stehender Last. Welche Toleranz braucht der <em>Wellensitz</em>?",
+    "bild": {"drehtInnen": true, "lastDreht": false},
     "loesung": "h, k",
     "warum": "Umfangslast, aber niedrige Belastung: eine Übergangs- oder Übermaßpassung genügt. Mehr wäre nur teurer und beim Ausbau ärgerlich."
   },
@@ -164,6 +177,12 @@ var WAHL = [
 
     var td0 = document.createElement("td");
     td0.innerHTML = f.frage;
+    if(f.bild){
+      var b = document.createElement("figure");
+      b.className = "skizze";
+      b.id = "sk" + i;
+      td0.appendChild(b);
+    }
     tr.appendChild(td0);
 
     var td1 = document.createElement("td");
@@ -195,6 +214,13 @@ var WAHL = [
         + ")</em>" : "") + " &ndash; " + f.warum + "</p>";
   }).join("");
 }());
+
+/* Zu jedem Fall die Stirnansicht: Wer sich gegenüber wem dreht, sieht man
+   nicht im Text, sondern im Bild. */
+FRAGEN.forEach(function(f, i){
+  if(!f.bild) return;
+  Waelzlager.umlaufBild("sk" + i, f.bild);
+});
 
 el("btnPruefen").addEventListener("click", function(){
   var r = 0, offen = 0;

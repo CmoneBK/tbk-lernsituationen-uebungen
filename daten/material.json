@@ -785,7 +785,7 @@
     "kategorie": "Lager",
     "name": "Wälzlager",
     "platz": 1,
-    "untertitel": "Wiederholung mit Rückmeldung – Formelzeichen der Lebensdauerrechnung und Kurzzeichen nach DIN 623-1.",
+    "untertitel": "Formelzeichen, Kurzzeichen – und zwei Bildertrainings: Umlaufverhältnis und Schadensbefund.",
     "url": "trainings/waelzlager/index.html",
     "werkzeuge": [
       {
@@ -807,6 +807,14 @@
       {
         "titel": "Bauform und Kurzzeichen",
         "url": "trainings/waelzlager/02-bauform-und-kurzzeichen.html"
+      },
+      {
+        "titel": "Umfangslast oder Punktlast?",
+        "url": "trainings/waelzlager/03-umfangslast-oder-punktlast.html"
+      },
+      {
+        "titel": "Was ist hier schiefgegangen?",
+        "url": "trainings/waelzlager/04-was-ist-hier-schiefgegangen.html"
       }
     ]
   }

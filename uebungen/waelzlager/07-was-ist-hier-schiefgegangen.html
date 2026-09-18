@@ -4,13 +4,19 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Was ist hier schiefgegangen?</title>
-<meta name="description" content="Acht Schadensbilder an Wälzlagern und ihre Ursache – von der Brinellierung bis zum festgefressenen Loslager.">
+<meta name="description" content="Neun Befunde an ausgebauten Wälzlagern und ihre Ursache – von der Brinellierung bis zum festgefressenen Loslager.">
 <meta name="dauer" content="25 min">
 <meta name="quellen" content="tabellenbuch fachkunde-im katalog">
 <meta name="normen" content="DIN 623-1, DIN 625-1, DIN 628-1, DIN 720, DIN 981, DIN 5406 und DIN 5418">
 <link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/zeichnen.js"></script>
+<script src="../../assets/waelzlager.js"></script>
 <style>
   /* Nur was diese Übung zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .skizze{margin:8px 0 2px; max-width:210px}
+  .skizze svg{width:100%; height:auto; display:block; color:var(--fg)}
+  .skizze figcaption{font-size:12px; color:var(--muted); margin-top:2px}
+  table.fr td:first-child{width:52%}
   .bild{margin:16px 0 4px}
   .bild svg{width:100%; height:auto; display:block}
   .bild figcaption{font-size:13px; color:var(--muted); margin-top:6px;
@@ -50,14 +56,15 @@
 
     <div class="box auftrag">
       <p><strong>Ein Lager fällt selten einfach so aus.</strong> Fast immer steht am Anfang ein Fehler bei der Montage, bei der Passung oder beim Anstellen &ndash; und fast immer hinterlässt dieser Fehler ein Muster, an dem man ihn wiedererkennt.</p>
-      <p>Acht Befunde aus der Instandhaltung. Zu jedem gibt es genau eine Ursache, die das Muster erklärt. Die Auswahl enthält auch Antworten, die richtig klingen und das Bild trotzdem nicht erklären.</p>
+      <p>Neun Befunde aus der Instandhaltung, jeder mit der abgewickelten Laufbahn daneben: Links und rechts ist dieselbe Stelle, dazwischen liegt ein ganzer Umlauf.</p>
+      <p><strong>Nicht jeder Befund ist ein Schaden.</strong> Zwei der neun zeigen genau das, was dort hingehört &ndash; wer alles für einen Fehler hält, baut Lager aus, die noch gut sind.</p>
     </div>
 
-    <h2><span class="nr">1</span>Acht Befunde</h2>
+    <h2><span class="nr">1</span>Neun Befunde</h2>
 
     <div class="tabellenrahmen">
       <table class="fr">
-        <thead><tr><th>Das Schadensbild</th><th>Die Ursache</th><th></th></tr></thead>
+        <thead><tr><th>Der Befund</th><th>Die Ursache</th><th></th></tr></thead>
         <tbody id="tabFragen"></tbody>
       </table>
     </div>
@@ -92,44 +99,58 @@ function el(id){ return document.getElementById(id); }
 
 var FRAGEN = [
   {
-    "frage": "Auf der Laufbahn des Innenrings sitzen <strong>gleichmäßig verteilte Eindrücke</strong> im Abstand der Kugeln.",
+    "frage": "<strong>Gleichmäßig verteilte Eindrücke</strong> auf der Laufbahn – im Abstand der Wälzkörper.",
+    "bild": "brinell",
     "loesung": "Die Montagekraft lief über die Wälzkörper.",
-    "warum": "Jede Kugel wurde einmal in die Laufbahn gedrückt - das Muster verrät die Ursache eindeutig, denn nur beim Stillstand stehen die Kugeln in gleichem Abstand. Der Fachbegriff dafür ist Brinellierung."
+    "warum": "Jede Kugel wurde einmal in die Laufbahn gedrückt. Das Muster verrät die Ursache eindeutig: Nur beim Stillstand stehen die Wälzkörper in gleichem Abstand. Der Fachbegriff dafür ist Brinellierung."
   },
   {
-    "frage": "Der Lagersitz auf der Welle ist <strong>rotbraun und rau</strong>, das Lager sitzt lose.",
+    "frage": "Die <strong>Sitzfläche</strong> des Rings ist fleckig rotbraun und rau; das Lager saß lose.",
+    "bild": "rost",
     "loesung": "Der Ring mit Umfangslast hatte eine zu lose Passung.",
     "warum": "Passungsrost. Der Ring ist auf seinem Sitz gewandert; die Mikrobewegung reibt Werkstoff ab, der sofort oxidiert. Wer Umfangslast mit einer Spielpassung baut, bekommt das zuverlässig."
   },
   {
-    "frage": "Feine, quer verlaufende <strong>Riefen auf der Laufbahn</strong>, regelmäßig wie ein Waschbrett.",
+    "frage": "<strong>Feine, regelmäßige Querriefen</strong> über die ganze Laufbahn – wie ein Waschbrett.",
+    "bild": "riffel",
     "loesung": "Stromdurchgang durch das Lager.",
-    "warum": "Ströme suchen den Weg über die Wälzkörper, und an jeder Berührstelle schmilzt etwas Werkstoff. Typisch an Elektromotoren mit Frequenzumrichter."
+    "warum": "Ströme suchen ihren Weg über die Wälzkörper, und an jeder Berührstelle schmilzt etwas Werkstoff. Typisch an Elektromotoren mit Frequenzumrichter."
   },
   {
-    "frage": "Das Lager ist <strong>blau angelaufen</strong> und das Fett verkokt.",
+    "frage": "Die <strong>Laufspur ist auffallend breit</strong> und läuft über den ganzen Umfang. Das Lager war beim Ausbau heiß.",
+    "bild": "spurBreit",
     "loesung": "Die Vorspannung war zu hoch.",
-    "warum": "Zu kleine Lagerluft führt zu erhöhten Druckspannungen zwischen Wälzkörpern und Ringen. Daraus wird Reibung, daraus Wärme - und über 120 °C verliert der Wälzlagerstahl seine Härte."
+    "warum": "Eine breite Laufspur heißt: Die Wälzkörper tragen mit großer Kraft. Zu kleine Lagerluft führt zu erhöhten Druckspannungen, daraus wird Reibung, daraus Wärme – und über 120 °C verliert der Wälzlagerstahl seine Härte."
   },
   {
-    "frage": "Eine angestellte Lagerung läuft nach einer Stunde <strong>heiß</strong>. Kalt war sie leichtgängig.",
-    "loesung": "X-Anordnung: die Welle wurde wärmer und das Spiel verschwand.",
-    "warum": "Bei der X-Anordnung verringert sich das Lagerspiel, wenn die Welle wärmer wird als das Gehäuse. Wer ohne Reserve anstellt, hat nach der Aufwärmphase eine Vorspannung, die dort nicht hingehört."
+    "frage": "Der <strong>Außenring</strong> zeigt eine Laufspur nur über etwa ein Drittel seines Umfangs. Sein Sitz im Gehäuse ist blank und unbeschädigt.",
+    "bild": "spurTeil",
+    "loesung": "Nichts – so sieht Punktlast aus.",
+    "warum": "Nicht jeder Befund ist ein Schaden. Ein Außenring mit Punktlast bekommt die Last immer an derselben Stelle ab; die Spur läuft deshalb nur über die Lastzone. Wäre der Sitz dagegen blank gerieben, wäre es Passungsrost."
   },
   {
-    "frage": "Die Welle <strong>eiert</strong>, obwohl die Lager neu sind. Die Wälzkörper tragen ungleichmäßig.",
-    "loesung": "Die Lagerluft ist zu groß.",
-    "warum": "Bei zu großer Lagerluft tragen die Wälzkörper nicht mehr gleichmäßig über ihren Umfang. Das führt zu Ungenauigkeiten bei der Wellenführung - und zu Verschleiß, genau wie bei zu wenig Luft."
+    "frage": "Die Laufspur läuft <strong>schräg über die Breite</strong> der Laufbahn – links unten, rechts oben.",
+    "bild": "spurSchraeg",
+    "loesung": "Das Lager steht schief.",
+    "warum": "Die Lastzone wandert über die Breite, weil die Achsen von Innen- und Außenring nicht fluchten. Ursache ist meist eine schief angezogene Lagerdeckelschraube oder eine Gehäusebohrung, die nicht rechtwinklig steht. Ein Pendelrollenlager käme damit zurecht, ein Rillenkugellager nicht."
   },
   {
-    "frage": "Ein neues Lager rauscht schon nach kurzer Zeit. Im Fett stecken <strong>metallische Partikel</strong>.",
+    "frage": "<strong>Unregelmäßige Eindrücke und Vertiefungen</strong>, über die ganze Laufbahn verstreut. Im Fett stecken metallische Partikel.",
+    "bild": "schmutz",
     "loesung": "Beim Einbau kam Schmutz ins Lager.",
-    "warum": "Verunreinigungen innerhalb des Lagers setzen die Lebensdauer erheblich herab: Die Wälzbewegung presst sie in die Lauffläche ein. Deshalb wird der Montageplatz staubfrei gehalten und das Lager erst kurz vor dem Einbau ausgepackt."
+    "warum": "Verunreinigungen setzen die Lebensdauer erheblich herab: Die Wälzbewegung presst sie in die Lauffläche ein. Deshalb wird der Montageplatz staubfrei gehalten und das Lager erst kurz vor dem Einbau ausgepackt."
   },
   {
-    "frage": "Der Außenring eines <strong>Loslagers</strong> hat sich im Gehäuse festgefressen.",
-    "loesung": "Die Gehäusepassung war zu eng.",
-    "warum": "Ein Loslager muss wandern können - das ist seine ganze Aufgabe. Sitzt der Außenring fest, nimmt die Welle die Wärmedehnung auf, und dann drückt sie gegen beide Lager."
+    "frage": "<strong>Längsriefen in Laufrichtung</strong>, unterschiedlich lang. Die Oberfläche glänzt stumpf.",
+    "bild": "fressen",
+    "loesung": "Der Schmierfilm ist abgerissen.",
+    "warum": "Ohne tragenden Schmierfilm gleiten die Wälzkörper statt zu rollen, und Werkstoff wird in Laufrichtung verschmiert. Ursachen: zu wenig Schmierstoff, der falsche Schmierstoff, oder ein Lager, das mit zu wenig Last läuft und dessen Wälzkörper schlupfen."
+  },
+  {
+    "frage": "In der Laufspur sitzen einzelne <strong>ausgebrochene Stellen</strong>. Das Lager hat seine berechnete Lebensdauer erreicht.",
+    "bild": "ausbruch",
+    "loesung": "Werkstoffermüdung – das ist das normale Lebensende.",
+    "warum": "Genau dieser Ausfall liegt der Lebensdauerrechnung zugrunde: L₁₀ ist die Umdrehungszahl, die 90 von 100 Lagern ohne Ermüdungsschäden erreichen. Ein Lager, das so aussieht und seine Stunden hinter sich hat, war richtig ausgelegt."
   }
 ];
 var WAHL = [
@@ -139,14 +160,16 @@ var WAHL = [
   "Stromdurchgang durch das Lager.",
   "Die Vorspannung war zu hoch.",
   "Die Lagerluft ist zu groß.",
-  "X-Anordnung: die Welle wurde wärmer und das Spiel verschwand.",
-  "O-Anordnung: die Welle wurde wärmer und das Spiel verschwand.",
+  "Das Lager steht schief.",
   "Beim Einbau kam Schmutz ins Lager.",
+  "Der Schmierfilm ist abgerissen.",
+  "Werkstoffermüdung – das ist das normale Lebensende.",
+  "Nichts – so sieht Punktlast aus.",
+  "Nichts – so sieht Umfangslast aus.",
   "Die Gehäusepassung war zu eng.",
-  "Das Lager wurde zu stark geölt.",
   "Das Lager wurde über 120 °C erwärmt.",
-  "Die Welle war zu weich.",
-  "Das Lager lief zu langsam."
+  "Das Lager lief zu langsam.",
+  "Die Welle war zu weich."
 ];
 
 /* --------------------------------------------------------------------------
@@ -161,6 +184,12 @@ var WAHL = [
 
     var td0 = document.createElement("td");
     td0.innerHTML = f.frage;
+    if(f.bild){
+      var b = document.createElement("figure");
+      b.className = "skizze";
+      b.id = "sk" + i;
+      td0.appendChild(b);
+    }
     tr.appendChild(td0);
 
     var td1 = document.createElement("td");
@@ -192,6 +221,13 @@ var WAHL = [
         + ")</em>" : "") + " &ndash; " + f.warum + "</p>";
   }).join("");
 }());
+
+/* Die abgewickelte Laufbahn zu jedem Befund. Ein ausgebautes Lager
+   erzählt, was mit ihm gemacht wurde - man muss die Spur nur lesen. */
+FRAGEN.forEach(function(f, i){
+  if(!f.bild) return;
+  Waelzlager.laufspur("sk" + i, f.bild);
+});
 
 el("btnPruefen").addEventListener("click", function(){
   var r = 0, offen = 0;

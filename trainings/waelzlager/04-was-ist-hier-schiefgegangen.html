@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Was ist hier schiefgegangen?</title>
+<meta name="description" content="Neun Muster auf der abgewickelten Laufbahn, achtzehn Faelle: den Befund benennen, die Ursache finden - und zwei Bilder, die gar kein Schaden sind.">
+<meta name="dauer" content="12 min">
+<meta name="quellen" content="tabellenbuch fachkunde-im katalog">
+<meta name="normen" content="DIN 5425-1">
+<link rel="stylesheet" href="../../assets/uebung.css">
+<script src="../../assets/zeichnen.js"></script>
+<script src="../../assets/waelzlager.js"></script>
+<style>
+  /* Nur was dieses Training zusätzlich braucht. Alles Übrige: assets/uebung.css */
+  .frage{font-size:15px; color:var(--muted); margin:0 0 4px}
+  .gefragt{font-size:21px; font-weight:700; margin:0 0 16px; line-height:1.3}
+
+  /* Das Bild ist hier die Aufgabe, nicht die Verzierung - es steht oben
+     und bekommt den Platz, den eine Skizze zum Lesen braucht. */
+  .buehne{display:flex; justify-content:center; margin:0 0 6px}
+  .buehne figure{margin:0; width:100%; max-width:460px}
+  .buehne svg{width:100%; height:auto; display:block; color:var(--fg)}
+  .buehne figcaption{font-size:12px; color:var(--muted); text-align:center}
+
+  .auswahl{display:grid; gap:10px; grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+  .auswahl button{
+    font:600 15px/1.4 inherit; text-align:left; cursor:pointer;
+    background:var(--bg); color:var(--fg);
+    border:1px solid var(--border-stark); border-radius:10px; padding:12px 14px;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .auswahl button:hover:not(:disabled){border-color:var(--accent)}
+  .auswahl button:disabled{cursor:default}
+  .auswahl button.richtig{border-color:var(--ok); background:rgba(22,163,74,.14)}
+  .auswahl button.falsch{border-color:var(--bad); background:rgba(220,38,38,.12)}
+
+  .fortschritt{
+    height:8px; border-radius:999px; background:var(--border);
+    overflow:hidden; margin:0 0 14px;
+  }
+  .fortschritt i{display:block; height:100%; background:var(--accent); transition:width .2s ease}
+  .zaehler{display:flex; justify-content:space-between; font-size:13px;
+    color:var(--muted); margin:0 0 6px}
+  .bilanz{font-size:19px; font-weight:700; margin:0 0 8px}
+
+  /* Der Schalter ueber dem Durchgang. */
+  .stellkopf{margin:0 0 12px; font-size:15px}
+  .stellkopf .fussnote{margin-left:8px}
+
+  /* Warnschild vor der Tafel, solange der Durchgang noch laeuft. */
+  .warnschild{
+    display:flex; gap:12px; align-items:flex-start;
+    border:1px solid var(--warn); border-left-width:4px; border-radius:10px;
+    background:var(--card); padding:12px 16px; margin:0 0 14px; font-size:15px;
+  }
+  .warnschild::before{content:"\26A0"; font-size:20px; line-height:1.1; color:var(--warn)}
+  .warnschild strong{display:block}
+
+  /* Die Tafel zeigt hier Bilder statt Woerter - also Zeilen statt Spalten. */
+  .tafelzeile{
+    display:flex; gap:16px; align-items:center;
+    padding:12px 0; border-top:1px solid var(--border);
+  }
+  .tafelzeile:first-child{border-top:0}
+  .tafelzeile figure{margin:0; width:190px; flex:none}
+  .tafelzeile svg{width:100%; height:auto; display:block; color:var(--fg)}
+  .tafelzeile figcaption{font-size:11px; color:var(--muted); text-align:center}
+  .tafelzeile p{margin:0; font-size:14.5px}
+  .tafelzeile b{display:block; margin-bottom:2px}
+  @media (max-width:560px){
+    .tafelzeile{flex-direction:column; align-items:flex-start}
+    .tafelzeile figure{width:100%; max-width:460px}
+  }
+  @media (prefers-reduced-motion:reduce){.fortschritt i{transition:none}}
+</style>
+<script src="../../assets/thema.js"></script>
+</head>
+<body>
+  <header class="wrap">
+    <p class="herkunft">Training &middot; W&auml;lzlager</p>
+    <h1>Was ist hier schiefgegangen?</h1>
+    <p class="lead">Ein ausgebautes W&auml;lzlager erz&auml;hlt, was mit ihm gemacht wurde. Man muss die Spur nur lesen k&ouml;nnen.</p>
+  </header>
+
+  <main class="wrap">
+
+    <div class="box auftrag">
+      <p><strong>Worum es geht:</strong> Jedes Bild zeigt die
+        Laufbahn eines ausgebauten Lagers &ndash; aufgerollt gedacht, so
+        dass links und rechts dieselbe Stelle ist. Einmal ist es statt der
+        Laufbahn die Sitzfl&auml;che; das steht dann &uuml;ber dem Bild.</p>
+      <p><strong>Nicht jeder Befund ist ein Schaden.</strong> Wer alles
+        f&uuml;r einen Fehler h&auml;lt, baut Lager aus, die noch gut
+        sind &ndash; und wer denselben Befund an einer anderen Lagerstelle
+        sieht, bekommt eine andere Antwort. Der Text &uuml;ber der Frage
+        sagt deshalb dazu, um welchen Ring es geht.</p>
+    </div>
+
+    <h2><span class="nr">1</span>Durchgang</h2>
+
+    <div class="box">
+      <p class="stellkopf"><strong>Wie viele F&auml;lle?</strong>
+        <span class="fussnote">Jede &Auml;nderung beginnt einen neuen Durchgang.</span></p>
+      <div class="felder">
+        <label class="feld">Umfang
+          <input type="number" id="wahlUmfang" min="4" max="18" step="1" value="18">
+          <span class="fussnote">4 bis 18 F&auml;lle</span>
+        </label>
+      </div>
+      <p class="fussnote" style="margin:12px 0 0">
+        Falsch beantwortete F&auml;lle kommen am Ende noch einmal. Die
+        Reihenfolge wechselt bei jedem Durchgang &ndash; sonst &uuml;bt man
+        sie mit.
+      </p>
+    </div>
+
+    <div class="box">
+      <div class="zaehler">
+        <span id="stand">&ndash;</span>
+        <span id="punkte"></span>
+      </div>
+      <div class="fortschritt"><i id="balken" style="width:0%"></i></div>
+
+      <div class="buehne"><figure id="bild"></figure></div>
+      <p class="frage" id="frage">&ndash;</p>
+      <p class="gefragt" id="gefragt">&ndash;</p>
+      <div class="auswahl" id="auswahl"></div>
+
+      <div class="rueckmeldung" id="rueck" hidden></div>
+
+      <p style="margin-top:16px">
+        <button type="button" class="knopf" id="btnWeiter" hidden>Weiter</button>
+        <button type="button" class="knopf leise" id="btnNeu">Von vorn</button>
+      </p>
+    </div>
+
+    <div id="ende" hidden>
+      <h3>Ergebnis</h3>
+      <div class="box">
+        <p class="bilanz" id="bilanz">&ndash;</p>
+        <p id="urteil"></p>
+        <div id="fehlerliste"></div>
+        <p style="margin-top:14px">
+          <button type="button" class="knopf" id="btnFehler" hidden>Nur die Fehler wiederholen</button>
+          <button type="button" class="knopf leise" id="btnNochmal">Ganzen Durchgang wiederholen</button>
+        </p>
+      </div>
+    </div>
+
+    <h2><span class="nr">2</span>Die Tafel</h2>
+    <p>Die neun Muster nebeneinander &ndash; so sieht man, woran sie sich unterscheiden. Nach dem Durchgang steht sie von selbst offen.</p>
+
+    <p id="tafelSchalter">
+      <button type="button" class="knopf leise" id="btnTafel">Tafel einblenden</button>
+    </p>
+
+    <div id="tafelBox" hidden>
+      <div class="warnschild" id="tafelWarnung" hidden>
+        <span><strong>Der Durchgang l&auml;uft noch.</strong>
+          Wer jetzt hier nachsieht, &uuml;bt das Nachschlagen statt des
+          Erinnerns. Wenn du nicht weiterwei&szlig;t, ist es lehrreicher,
+          falsch zu tippen: Der Fall kommt am Ende noch einmal.</span>
+      </div>
+      <div id="tafel"></div>
+    </div>
+
+    <h2><span class="nr">3</span>Wie man eine Laufbahn liest</h2>
+
+    <details>
+      <summary>1. Warum ist die Laufbahn hier abgewickelt
+        gezeichnet?</summary>
+      <p>Weil es auf das <em>Muster</em> ankommt, nicht auf die Rundung.
+        Aufgerollt sieht man sofort, ob etwas &uuml;ber den ganzen Umfang
+        l&auml;uft oder nur &uuml;ber einen Teil, ob die Abst&auml;nde
+        gleich sind und in welche Richtung die Riefen zeigen. Links und
+        rechts im Bild ist dieselbe Stelle des Rings.</p>
+    </details>
+
+    <details>
+      <summary>2. Quer oder l&auml;ngs &ndash; warum entscheidet das so
+        viel?</summary>
+      <p>Weil die Richtung sagt, woher die Wirkung kam.
+        <em>Quer</em> zur Laufrichtung bedeutet: Es passierte an einer
+        Stelle, w&auml;hrend der W&auml;lzk&ouml;rper dort war &ndash;
+        Stromdurchgang oder Eindr&uuml;cke. <em>L&auml;ngs</em> bedeutet:
+        Es passierte w&auml;hrend der Bewegung, also beim Gleiten &ndash;
+        Anschmierung.</p>
+    </details>
+
+    <details>
+      <summary>3. Gleiche Abst&auml;nde oder ungleiche?</summary>
+      <p>Gleiche Abst&auml;nde k&ouml;nnen nur im <em>Stillstand</em>
+        entstehen, denn nur dann steht jeder W&auml;lzk&ouml;rper fest an
+        seinem Platz. Das ist die Brinellierung: Montagekraft &uuml;ber die
+        W&auml;lzk&ouml;rper, oder St&ouml;&szlig;e auf ein stehendes Lager
+        &ndash; auch beim Transport eines Motors auf einem LKW.
+        Ungleiche Abst&auml;nde dagegen heben sich &uuml;ber viele
+        Umdrehungen auf: Da war etwas im Lager, das mitlief.</p>
+    </details>
+
+    <details>
+      <summary>4. Und wenn das Bild nichts hergibt?</summary>
+      <p>Dann geh&ouml;rt der Rest der Lagerstelle dazu. Die
+        <em>Sitzfl&auml;chen</em> zeigen, ob ein Ring gewandert ist. Der
+        <em>K&auml;fig</em> zeigt Mangelschmierung oft fr&uuml;her als die
+        Laufbahn. Das <em>Fett</em> zeigt Fremdk&ouml;rper, Wasser und
+        &Uuml;berhitzung. Und wer das ausgebaute Lager wegwirft, bevor er
+        es angesehen hat, baut denselben Schaden wieder ein.</p>
+    </details>
+
+    <div class="merksatz">
+      <strong>Merksatz:</strong> Erst lesen, dann urteilen. Gleiche
+      Abst&auml;nde &rarr; Stillstand. Quer &rarr; Strom. L&auml;ngs &rarr;
+      Gleiten. Auf der Sitzfl&auml;che &rarr; gewandert. Und eine Teilspur
+      ist nur dann ein Schaden, wenn der Ring Umfangslast hat.
+    </div>
+
+    <h3>Weiterarbeiten</h3>
+    <p>Woher die Umfangslast kommt und welcher Sitz daraus folgt, steht
+      im Training davor &ndash; und die Passungen dazu in der Lektion.</p>
+    <p>
+      <a class="werkzeug" data-werkzeug="maschinenelemente-lager-lagerungen-gestalten.html"
+         data-fach="1">Werkzeug Lagerungen gestalten &ouml;ffnen</a>
+    </p>
+
+
+  </main>
+
+  <footer class="wrap">
+    &copy; 2026 t-bk.de &middot; <a href="/impressum.html">Impressum</a> &middot;
+    <a href="/datenschutz.html">Datenschutz</a>
+  </footer>
+
+<script>
+"use strict";
+
+function el(id){ return document.getElementById(id); }
+
+/* ==========================================================================
+   1  DIE FÄLLE
+
+   Jeder Fall bringt sein Bild mit, seine Frage und die Knöpfe, zwischen
+   denen zu entscheiden ist. Die Knöpfe stehen beim Fall und nicht ein
+   Mal für alle, weil hier nicht immer dasselbe gefragt wird: beim einen
+   nach dem Ring, beim nächsten nach dem Sitz.
+   ========================================================================== */
+var FAELLE = [
+  {
+    "kurz": "Eindrücke im Wälzkörperabstand",
+    "bild": {
+      "art": "spur",
+      "muster": "brinell",
+      "titel": "Laufbahn, abgewickelt"
+    },
+    "frage": "Gleichmäßig verteilte Eindrücke auf der Laufbahn &ndash; genau im Abstand der Wälzkörper.",
+    "gefragt": "Wie heißt dieser Befund?",
+    "wahl": [
+      "Brinellierung",
+      "Passungsrost",
+      "Riffelbildung",
+      "Ermüdungsausbruch"
+    ],
+    "loesung": "Brinellierung",
+    "grund": " Jede Kugel wurde einmal in die Laufbahn gedrückt und hat einen bleibenden Eindruck hinterlassen &ndash; wie beim Härteprüfen nach Brinell. Der gleiche Abstand verrät die Ursache: Nur im Stillstand stehen die Wälzkörper regelmäßig verteilt."
+  },
+  {
+    "kurz": "Eindrücke im Wälzkörperabstand",
+    "bild": {
+      "art": "spur",
+      "muster": "brinell",
+      "titel": "Laufbahn, abgewickelt"
+    },
+    "frage": "Dasselbe Lager, gleichmäßige Eindrücke im Wälzkörperabstand. Es wurde mit einem Hammer und einem Rohrstück auf die Welle getrieben.",
+    "gefragt": "Was machst du beim nächsten Einbau anders?",
+    "wahl": [
+      "Die Montagekraft nur am Innenring ansetzen",
+      "Die Montagekraft nur am Außenring ansetzen",
+      "Das Lager vor dem Einbau in Öl wärmen und pressen",
+      "Das Lager mit mehr Fett füllen"
+    ],
+    "loesung": "Die Montagekraft nur am Innenring ansetzen",
+    "grund": " Beim Aufziehen auf die Welle gehört die Kraft an den Ring, der gepresst wird &ndash; sonst läuft sie über die Wälzkörper. Beim Einpressen ins Gehäuse ist es umgekehrt der Außenring. Erwärmen ist ebenfalls richtig und noch schonender, aber es ersetzt die Regel nicht: Auch ein warmes Lager darf man nicht über die Wälzkörper schlagen."
+  },
+  {
+    "kurz": "Fleckige Sitzfläche",
+    "bild": {
+      "art": "spur",
+      "muster": "rost",
+      "titel": "Sitzfläche, abgewickelt"
+    },
+    "frage": "Nicht die Laufbahn, sondern die <strong>Sitzfläche</strong> des Innenrings: fleckig rotbraun und rau. Das Lager ließ sich von Hand abziehen.",
+    "gefragt": "Wie heißt dieser Befund?",
+    "wahl": [
+      "Passungsrost",
+      "Standrost",
+      "Anschmierung",
+      "Brinellierung"
+    ],
+    "loesung": "Passungsrost",
+    "grund": " Der Ring ist auf seinem Sitz gewandert. Die winzige Bewegung reibt bei jeder Umdrehung Werkstoff ab, der sofort oxidiert. Standrost dagegen entsteht ohne Bewegung, durch Feuchtigkeit im Lager."
+  },
+  {
+    "kurz": "Fleckige Sitzfläche",
+    "bild": {
+      "art": "spur",
+      "muster": "rost",
+      "titel": "Sitzfläche, abgewickelt"
+    },
+    "frage": "Passungsrost auf dem Wellensitz eines Getriebes. Der Innenring hat dort Umfangslast.",
+    "gefragt": "Was war die Ursache?",
+    "wahl": [
+      "Der Sitz war zu lose",
+      "Der Sitz war zu fest",
+      "Der Schmierstoff war zu dünn",
+      "Das Lager war zu stark vorgespannt"
+    ],
+    "loesung": "Der Sitz war zu lose",
+    "grund": " Ein Ring mit Umfangslast wird von der wandernden Lastzone bei jeder Umdrehung ein Stück weitergeschoben. Dagegen hilft nur Übermaß &ndash; k5 oder m5 statt h6. Wer Umfangslast mit einer Spielpassung baut, bekommt Passungsrost zuverlässig."
+  },
+  {
+    "kurz": "Feine Querriefen",
+    "bild": {
+      "art": "spur",
+      "muster": "riffel",
+      "titel": "Laufbahn, abgewickelt"
+    },
+    "frage": "Feine, regelmäßige Querriefen über die ganze Laufbahn &ndash; wie ein Waschbrett. Das Lager stammt aus einem Elektromotor am Frequenzumrichter.",
+    "gefragt": "Wie heißt dieser Befund?",
+    "wahl": [
+      "Riffelbildung",
+      "Brinellierung",
+      "Kavitation",
+      "Werkstoffermüdung"
+    ],
+    "loesung": "Riffelbildung",
+    "grund": " Sie entsteht durch Stromdurchgang: Der Strom sucht seinen Weg über die Wälzkörper, und an jeder Berührstelle schmilzt etwas Werkstoff auf. Aus den Kraterchen wird mit der Zeit ein regelmäßiges Muster quer zur Laufrichtung."
+  },
+  {
+    "kurz": "Feine Querriefen",
+    "bild": {
+      "art": "spur",
+      "muster": "riffel",
+      "titel": "Laufbahn, abgewickelt"
+    },
+    "frage": "Riffelbildung am Lager eines umrichtergespeisten Motors.",
+    "gefragt": "Was hilft dagegen?",
+    "wahl": [
+      "Ein isoliertes Lager oder eine Erdungsbürste an der Welle",
+      "Ein Lager mit größerer Lagerluft",
+      "Ein zäheres Fett",
+      "Eine festere Gehäusepassung"
+    ],
+    "loesung": "Ein isoliertes Lager oder eine Erdungsbürste an der Welle",
+    "grund": " Der Strom muss einen anderen Weg bekommen als den über die Wälzkörper &ndash; entweder wird ihm der Weg versperrt (keramikbeschichteter Außenring, Hybridlager mit Keramikkugeln) oder ein besserer angeboten (Erdungsbürste, Wellenerder). Am Schmierstoff liegt es nicht."
+  },
+  {
+    "kurz": "Breite Spur über den ganzen Umfang",
+    "bild": {
+      "art": "spur",
+      "muster": "spurBreit",
+      "titel": "Laufbahn, abgewickelt"
+    },
+    "frage": "Die Laufspur ist auffallend breit und läuft über den ganzen Umfang. Das Lager war beim Ausbau heiß und lief schwer.",
+    "gefragt": "Was ist die wahrscheinlichste Ursache?",
+    "wahl": [
+      "Die Vorspannung war zu hoch",
+      "Die Lagerluft war zu groß",
+      "Das Lager lief mit zu wenig Last",
+      "Der Außenring saß zu lose"
+    ],
+    "loesung": "Die Vorspannung war zu hoch",
+    "grund": " Eine breite Laufspur heißt: Die Wälzkörper tragen mit großer Kraft. Zu kleine Lagerluft bringt hohe Druckspannungen, daraus wird Reibung, daraus Wärme &ndash; und die Wärme verkleinert die Luft weiter. Ab etwa 120 °C verliert der Wälzlagerstahl seine Härte."
+  },
+  {
+    "kurz": "Breite Spur über den ganzen Umfang",
+    "bild": {
+      "art": "spur",
+      "muster": "spurBreit",
+      "titel": "Laufbahn, abgewickelt"
+    },
+    "ohne": [
+      "bfs-hs10"
+    ],
+    "frage": "Ein angestelltes Kegelrollenlagerpaar in O-Anordnung. Die Spur ist breit, das Lager lief heiß. Die Anstellung erfolgte über eine Nutmutter.",
+    "gefragt": "Was tust du?",
+    "wahl": [
+      "Die Nutmutter lösen und mit dem vorgeschriebenen Anziehmoment neu anstellen",
+      "Die Nutmutter fester anziehen",
+      "Ein Lager mit kleinerer Lagerluft einbauen",
+      "Den Außenring fester ins Gehäuse pressen"
+    ],
+    "loesung": "Die Nutmutter lösen und mit dem vorgeschriebenen Anziehmoment neu anstellen",
+    "grund": " Bei einer angestellten Lagerung stellt die Mutter das Spiel ein &ndash; zu fest angezogen heißt zu hohe Vorspannung. Angestellt wird nach Vorschrift: über das Anziehmoment, über ein gemessenes Axialspiel oder über das Reibmoment beim Drehen von Hand, nicht nach Gefühl."
+  },
+  {
+    "kurz": "Spur nur über ein Drittel",
+    "bild": {
+      "art": "spur",
+      "muster": "spurTeil",
+      "titel": "Laufbahn, abgewickelt"
+    },
+    "frage": "Der <strong>Außenring</strong> zeigt eine Laufspur nur über etwa ein Drittel seines Umfangs. Seine Sitzfläche im Gehäuse ist blank und unbeschädigt.",
+    "gefragt": "Was ist hier schiefgegangen?",
+    "wahl": [
+      "Nichts – so sieht Punktlast aus",
+      "Der Außenring saß zu lose",
+      "Das Lager stand schief",
+      "Die Lastzone war zu klein eingestellt"
+    ],
+    "loesung": "Nichts – so sieht Punktlast aus",
+    "grund": " Nicht jeder Befund ist ein Schaden. Ein Außenring mit Punktlast bekommt die Last immer an derselben Stelle ab; die Spur läuft deshalb nur über die Lastzone. Wäre der Sitz dagegen blank gerieben oder rotbraun, wäre es Passungsrost &ndash; dann hätte der Ring gewandert."
+  },
+  {
+    "kurz": "Spur nur über ein Drittel",
+    "bild": {
+      "art": "spur",
+      "muster": "spurTeil",
+      "titel": "Laufbahn, abgewickelt"
+    },
+    "frage": "Derselbe Befund, aber am <strong>Innenring</strong> einer Getriebewelle: Die Spur läuft nur über ein Drittel des Umfangs. Der Innenring hat dort Umfangslast.",
+    "gefragt": "Und jetzt?",
+    "wahl": [
+      "Jetzt stimmt etwas nicht – bei Umfangslast müsste die Spur über den ganzen Umfang laufen",
+      "Auch das ist in Ordnung, es ist dasselbe Bild",
+      "Die Vorspannung war zu hoch",
+      "Der Schmierfilm ist abgerissen"
+    ],
+    "loesung": "Jetzt stimmt etwas nicht – bei Umfangslast müsste die Spur über den ganzen Umfang laufen",
+    "grund": " Dasselbe Muster, andere Lagerstelle, andere Antwort. Wer Umfangslast hat, muss die Last über den ganzen Umfang bekommen. Eine Teilspur bedeutet hier, dass der Ring sich nicht mitgedreht hat oder die Welle stillstand &ndash; oder dass jemand den Ring verkehrt eingebaut hat. Ein Befund allein sagt nichts; man braucht dazu, welcher Ring es ist und was dort umläuft."
+  },
+  {
+    "kurz": "Spur wandert über die Breite",
+    "bild": {
+      "art": "spur",
+      "muster": "spurSchraeg",
+      "titel": "Laufbahn, abgewickelt"
+    },
+    "frage": "Die Laufspur läuft schräg über die Breite der Laufbahn &ndash; links unten, rechts oben.",
+    "gefragt": "Was ist die Ursache?",
+    "wahl": [
+      "Das Lager steht schief",
+      "Das Lager ist axial überlastet",
+      "Der Käfig ist gebrochen",
+      "Der Innenring saß zu fest"
+    ],
+    "loesung": "Das Lager steht schief",
+    "grund": " Die Lastzone wandert über die Breite, weil die Achsen von Innen- und Außenring nicht fluchten. Ursache ist meist eine schief angezogene Lagerdeckelschraube, ein verzogenes Gehäuse oder eine Bohrung, die nicht rechtwinklig zur Wellenachse steht."
+  },
+  {
+    "kurz": "Spur wandert über die Breite",
+    "bild": {
+      "art": "spur",
+      "muster": "spurSchraeg",
+      "titel": "Laufbahn, abgewickelt"
+    },
+    "frage": "Schiefstellung an einer langen, durchhängenden Welle mit zwei weit auseinanderliegenden Lagerstellen.",
+    "gefragt": "Welche Lagerbauart hätte das ausgehalten?",
+    "wahl": [
+      "Ein Pendelrollenlager",
+      "Ein Rillenkugellager",
+      "Ein Zylinderrollenlager",
+      "Ein Axialrillenkugellager"
+    ],
+    "loesung": "Ein Pendelrollenlager",
+    "grund": " Pendelrollen- und Pendelkugellager haben eine hohle Kugelfläche als Außenringlaufbahn: Der Innenring samt Wälzkörpern kann sich darin einstellen, oft um mehrere Grad. Ein Rillenkugellager verträgt wenige Winkelminuten, ein Zylinderrollenlager reagiert noch empfindlicher &ndash; bei ihm trägt dann nur noch die Rollenkante."
+  },
+  {
+    "kurz": "Unregelmäßige Eindrücke überall",
+    "bild": {
+      "art": "spur",
+      "muster": "schmutz",
+      "titel": "Laufbahn, abgewickelt"
+    },
+    "frage": "Unregelmäßige Eindrücke und Vertiefungen, über die ganze Laufbahn verstreut. Im Fett stecken metallische Partikel.",
+    "gefragt": "Was ist passiert?",
+    "wahl": [
+      "Fremdkörper sind ins Lager gelangt",
+      "Das Lager wurde über die Wälzkörper eingepresst",
+      "Der Werkstoff ist ermüdet",
+      "Es gab Stromdurchgang"
+    ],
+    "loesung": "Fremdkörper sind ins Lager gelangt",
+    "grund": " Die Wälzbewegung presst jedes Korn in die Lauffläche ein. Das Muster ist unregelmäßig &ndash; darin unterscheidet es sich von der Brinellierung, deren Eindrücke im gleichen Abstand stehen."
+  },
+  {
+    "kurz": "Unregelmäßige Eindrücke überall",
+    "bild": {
+      "art": "spur",
+      "muster": "schmutz",
+      "titel": "Laufbahn, abgewickelt"
+    },
+    "frage": "Fremdkörper im Lager, festgestellt beim Ausbau nach kurzer Laufzeit.",
+    "gefragt": "Was gehört zur Abhilfe <em>nicht</em>?",
+    "wahl": [
+      "Das neue Lager vorsorglich mit mehr Fett füllen",
+      "Das Lager erst am Montageplatz auspacken",
+      "Gehäuse und Welle vor dem Einbau reinigen",
+      "Die Dichtung prüfen und erneuern"
+    ],
+    "loesung": "Das neue Lager vorsorglich mit mehr Fett füllen",
+    "grund": " Mehr Fett hält keinen Schmutz ab &ndash; ein zu voll gepacktes Lager walkt das überschüssige Fett und wird davon warm. Gegen Fremdkörper hilft nur, sie draußen zu halten: sauberer Montageplatz, Lager spät auspacken, Dichtungen in Ordnung."
+  },
+  {
+    "kurz": "Längsriefen in Laufrichtung",
+    "bild": {
+      "art": "spur",
+      "muster": "fressen",
+      "titel": "Laufbahn, abgewickelt"
+    },
+    "frage": "Längsriefen in Laufrichtung, unterschiedlich lang. Die Oberfläche glänzt stumpf und fühlt sich verschmiert an.",
+    "gefragt": "Wie heißt dieser Befund?",
+    "wahl": [
+      "Anschmierung",
+      "Riffelbildung",
+      "Passungsrost",
+      "Brinellierung"
+    ],
+    "loesung": "Anschmierung",
+    "grund": " Der Schmierfilm ist abgerissen. Ohne ihn gleiten die Wälzkörper, statt zu rollen, und Werkstoff wird in Laufrichtung verschmiert &ndash; deshalb liegen die Riefen längs und nicht quer."
+  },
+  {
+    "kurz": "Längsriefen in Laufrichtung",
+    "bild": {
+      "art": "spur",
+      "muster": "fressen",
+      "titel": "Laufbahn, abgewickelt"
+    },
+    "frage": "Anschmierungen an einem Zylinderrollenlager, das mit sehr geringer Last lief. Schmierstoff war reichlich vorhanden und sauber.",
+    "gefragt": "Woran lag es dann?",
+    "wahl": [
+      "Die Rollen sind geschlupft, weil die Mindestlast fehlte",
+      "Der Schmierstoff war zu zäh",
+      "Das Lager war überlastet",
+      "Der Innenring saß zu fest"
+    ],
+    "loesung": "Die Rollen sind geschlupft, weil die Mindestlast fehlte",
+    "grund": " Ein Wälzlager braucht eine Mindestbelastung, damit die Wälzkörper abrollen statt zu rutschen. Zylinderrollenlager sind dafür besonders anfällig, weil ihre Rollen mehr Masse zu beschleunigen haben. Abhilfe: Vorspannung oder ein kleineres Lager."
+  },
+  {
+    "kurz": "Ausbrüche in der Laufspur",
+    "bild": {
+      "art": "spur",
+      "muster": "ausbruch",
+      "titel": "Laufbahn, abgewickelt"
+    },
+    "frage": "In der Laufspur sitzen einzelne ausgebrochene Stellen mit scharfen Rändern. Das Lager hat seine berechnete Lebensdauer erreicht.",
+    "gefragt": "Was ist hier schiefgegangen?",
+    "wahl": [
+      "Nichts – das ist das normale Lebensende",
+      "Das Lager war überlastet",
+      "Der Werkstoff war fehlerhaft",
+      "Es fehlte an Schmierstoff"
+    ],
+    "loesung": "Nichts – das ist das normale Lebensende",
+    "grund": " Werkstoffermüdung ist der Ausfall, auf dem die Lebensdauerrechnung überhaupt beruht: L<sub>10</sub> ist die Umdrehungszahl, die 90 von 100 Lagern ohne Ermüdungsschäden erreichen. Ein Lager, das so aussieht und seine Stunden hinter sich hat, war richtig ausgelegt."
+  },
+  {
+    "kurz": "Ausbrüche in der Laufspur",
+    "bild": {
+      "art": "spur",
+      "muster": "ausbruch",
+      "titel": "Laufbahn, abgewickelt"
+    },
+    "ohne": [
+      "bfs-hs10"
+    ],
+    "frage": "Dieselben Ausbrüche &ndash; aber nach einem Fünftel der berechneten Lebensdauer.",
+    "gefragt": "Wonach suchst du zuerst?",
+    "wahl": [
+      "Nach einer Belastung, die höher war als angenommen",
+      "Nach Stromdurchgang",
+      "Nach einer zu losen Gehäusepassung",
+      "Nach zu wenig Fett"
+    ],
+    "loesung": "Nach einer Belastung, die höher war als angenommen",
+    "grund": " In der Rechnung steht <em>P</em> in der dritten Potenz: Die anderthalbfache Last verkürzt die Lebensdauer auf etwa ein Drittel, die doppelte auf ein Achtel. Wer ein Fünftel der erwarteten Stunden erreicht, hat also meist nicht das falsche Lager, sondern die falsche Lastannahme &ndash; Stöße, Fehlausrichtung, ein zu straff gespannter Riemen."
+  }
+];
+
+/* Die Tafel zum Nachschlagen - dieselbe Art Bild, aber mit der Antwort. */
+var TAFEL = [
+  {
+    "bild": {
+      "art": "spur",
+      "muster": "brinell",
+      "titel": "Laufbahn, abgewickelt"
+    },
+    "name": "Brinellierung",
+    "text": "Eindrücke im <strong>Wälzkörperabstand</strong>. Die Montagekraft lief über die Wälzkörper &ndash; oder das stillstehende Lager bekam Stöße ab."
+  },
+  {
+    "bild": {
+      "art": "spur",
+      "muster": "schmutz",
+      "titel": "Laufbahn, abgewickelt"
+    },
+    "name": "Fremdkörpereindrücke",
+    "text": "Eindrücke <strong>unregelmäßig verteilt</strong>. Schmutz kam beim Einbau hinein oder die Dichtung ist hin."
+  },
+  {
+    "bild": {
+      "art": "spur",
+      "muster": "riffel",
+      "titel": "Laufbahn, abgewickelt"
+    },
+    "name": "Riffelbildung",
+    "text": "Regelmäßige Riefen <strong>quer</strong> zur Laufrichtung. Stromdurchgang &ndash; typisch am Umrichtermotor."
+  },
+  {
+    "bild": {
+      "art": "spur",
+      "muster": "fressen",
+      "titel": "Laufbahn, abgewickelt"
+    },
+    "name": "Anschmierung",
+    "text": "Riefen <strong>längs</strong> in Laufrichtung, Oberfläche verschmiert. Der Schmierfilm ist abgerissen, die Wälzkörper sind geglitten."
+  },
+  {
+    "bild": {
+      "art": "spur",
+      "muster": "rost",
+      "titel": "Sitzfläche, abgewickelt"
+    },
+    "name": "Passungsrost",
+    "text": "Auf der <strong>Sitzfläche</strong>, nicht auf der Laufbahn: fleckig rotbraun und rau. Der Ring mit Umfangslast saß zu lose und ist gewandert."
+  },
+  {
+    "bild": {
+      "art": "spur",
+      "muster": "spurBreit",
+      "titel": "Laufbahn, abgewickelt"
+    },
+    "name": "Breite Spur, ganzer Umfang",
+    "text": "Die Wälzkörper tragen mit großer Kraft: <strong>Vorspannung zu hoch</strong> oder Lagerluft zu klein. Das Lager wird heiß."
+  },
+  {
+    "bild": {
+      "art": "spur",
+      "muster": "spurTeil",
+      "titel": "Laufbahn, abgewickelt"
+    },
+    "name": "Spur nur über einen Teil",
+    "text": "<strong>Kein Schaden</strong>, wenn der Ring Punktlast hat &ndash; so sieht Punktlast eben aus. Am Ring mit Umfangslast wäre dasselbe Bild ein Befund."
+  },
+  {
+    "bild": {
+      "art": "spur",
+      "muster": "spurSchraeg",
+      "titel": "Laufbahn, abgewickelt"
+    },
+    "name": "Spur wandert über die Breite",
+    "text": "<strong>Schiefstellung</strong>: Die Achsen fluchten nicht. Gehäusebohrung, Lagerdeckel oder Wellendurchbiegung prüfen."
+  },
+  {
+    "bild": {
+      "art": "spur",
+      "muster": "ausbruch",
+      "titel": "Laufbahn, abgewickelt"
+    },
+    "name": "Ermüdungsausbruch",
+    "text": "Ausbrüche in der Laufspur. Nach der berechneten Lebensdauer das <strong>normale Lebensende</strong> &ndash; deutlich früher ein Zeichen für zu hohe Last."
+  }
+];
+
+/* ==========================================================================
+   2  DER MOTOR
+   ========================================================================== */
+function mischen(a){
+  var b = a.slice();
+  for(var i = b.length - 1; i > 0; i--){
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = b[i]; b[i] = b[j]; b[j] = t;
+  }
+  return b;
+}
+
+/* Ein Bild zeichnen - welches, sagt der Fall selbst. */
+function zeichnen(ziel, b){
+  if(b.art === "umlauf") return Waelzlager.umlaufBild(ziel, b);
+  return Waelzlager.laufspur(ziel, b.muster,
+    {titel: b.titel, unterschrift: b.unterschrift});
+}
+
+var runde = [], nr = 0, richtig = 0, fehler = [], laeuft = false;
+
+function zeigen(){
+  var f = runde[nr];
+  laeuft = true;
+  el("stand").textContent = "Fall " + (nr + 1) + " von " + runde.length;
+  el("punkte").textContent = richtig + " richtig";
+  el("balken").style.width = (nr / runde.length * 100) + "%";
+  zeichnen("bild", f.bild);
+  el("frage").innerHTML = f.frage;
+  el("gefragt").innerHTML = f.gefragt;
+  el("rueck").hidden = true;
+  el("btnWeiter").hidden = true;
+
+  var au = el("auswahl");
+  au.textContent = "";
+  mischen(f.wahl).forEach(function(w){
+    var k = document.createElement("button");
+    k.type = "button";
+    k.textContent = w;
+    k.addEventListener("click", function(){ antwort(w, k); });
+    au.appendChild(k);
+  });
+}
+
+function antwort(gesagt, knopf){
+  if(!laeuft) return;
+  laeuft = false;
+  var f = runde[nr];
+  var ok = gesagt === f.loesung;
+  if(ok) richtig++;
+  else if(fehler.indexOf(f) === -1) fehler.push(f);
+
+  var knoepfe = el("auswahl").querySelectorAll("button");
+  for(var i = 0; i < knoepfe.length; i++){
+    knoepfe[i].disabled = true;
+    if(knoepfe[i].textContent === f.loesung) knoepfe[i].className = "richtig";
+  }
+  if(!ok) knopf.className = "falsch";
+
+  var r = el("rueck");
+  r.className = "rueckmeldung " + (ok ? "ja" : "nein");
+  r.innerHTML = "<strong>" + (ok ? "Richtig: " : "") + f.loesung
+    + "</strong>" + f.grund;
+  r.hidden = false;
+  el("punkte").textContent = richtig + " richtig";
+  el("btnWeiter").hidden = false;
+  el("btnWeiter").textContent = (nr + 1 < runde.length) ? "Weiter" : "Ergebnis";
+}
+
+function weiter(){
+  nr++;
+  if(nr < runde.length){ zeigen(); return; }
+  el("balken").style.width = "100%";
+  el("stand").textContent = "fertig";
+  el("auswahl").textContent = "";
+  el("bild").textContent = "";
+  el("frage").textContent = "";
+  el("gefragt").textContent = "";
+  el("rueck").hidden = true;
+  el("btnWeiter").hidden = true;
+  el("ende").hidden = false;
+  el("tafelBox").hidden = false;
+  el("tafelWarnung").hidden = true;
+  el("btnTafel").textContent = "Tafel ausblenden";
+  el("bilanz").textContent = richtig + " von " + runde.length + " richtig.";
+  el("urteil").textContent = urteil(richtig / runde.length);
+  el("fehlerliste").innerHTML = fehler.length
+    ? "<p><strong>Diese Fälle noch einmal ansehen:</strong></p><ul>"
+      + fehler.map(function(f){
+          return "<li>" + f.kurz + " &ndash; " + f.loesung + "</li>";
+        }).join("") + "</ul>"
+    : "";
+  el("btnFehler").hidden = !fehler.length;
+  document.dispatchEvent(new CustomEvent("tbk-durchgang-ende",
+    {detail: {richtig: richtig, gesamt: runde.length}}));
+}
+
+function urteil(q){
+  if(q === 1) return "Alles richtig. Das sitzt.";
+  if(q >= 0.8) return "Gut. Die Fälle unten lohnen einen zweiten Blick.";
+  if(q >= 0.5) return "Die Hälfte sitzt. Die Tafel unten steht jetzt offen.";
+  return "Noch nicht. Sieh dir die Tafel an und fang neu an – das geht schnell.";
+}
+
+function starten(liste){
+  runde = liste;
+  nr = 0; richtig = 0; fehler = [];
+  el("ende").hidden = true;
+  el("tafelWarnung").hidden = false;
+  zeigen();
+}
+
+/* Nicht jeder Fall passt in jeden Bildungsgang: Ein Fall mit einem Feld
+   "ohne" fällt dort weg, statt die ganze Seite auszuschließen. So
+   bleibt das Bilderlesen für alle - nur die Rechenschritte dahinter
+   nicht. Der Baustein steht am Seitenende, also kann er beim ersten Lauf
+   noch fehlen; dann gilt alles. */
+function auswahl(){
+  var bg = "";
+  try {
+    bg = (window.tbkBildungsgang && window.tbkBildungsgang.lesen()) || "";
+  } catch(e){ bg = ""; }
+  if(!bg) return FAELLE;
+  return FAELLE.filter(function(f){
+    return !f.ohne || f.ohne.indexOf(bg) === -1;
+  });
+}
+
+function neuerDurchgang(){
+  var da = auswahl();
+  var feld = el("wahlUmfang");
+  if(Number(feld.max) !== da.length){
+    var voll = Number(feld.value) >= Number(feld.max);
+    feld.max = da.length;
+    if(voll || Number(feld.value) > da.length) feld.value = da.length;
+  }
+  var n = Math.max(4, Math.min(da.length, Number(feld.value) || da.length));
+  starten(mischen(da).slice(0, n));
+}
+
+/* ==========================================================================
+   3  DIE TAFEL
+
+   Sie wird einmal gebaut und danach nur noch ein- und ausgeblendet - die
+   Bilder bei jedem Klick neu zu zeichnen kostet sonst unnötig Zeit.
+   ========================================================================== */
+(function tafelBauen(){
+  var t = el("tafel");
+  TAFEL.forEach(function(e, i){
+    var z = document.createElement("div");
+    z.className = "tafelzeile";
+    var f = document.createElement("figure");
+    f.id = "tf" + i;
+    var p = document.createElement("p");
+    p.innerHTML = "<b>" + e.name + "</b>" + e.text;
+    z.appendChild(f);
+    z.appendChild(p);
+    t.appendChild(z);
+    zeichnen("tf" + i, e.bild);
+  });
+}());
+
+el("btnTafel").addEventListener("click", function(){
+  var auf = el("tafelBox").hidden;
+  el("tafelBox").hidden = !auf;
+  this.textContent = auf ? "Tafel ausblenden" : "Tafel einblenden";
+});
+el("btnWeiter").addEventListener("click", weiter);
+el("btnNeu").addEventListener("click", neuerDurchgang);
+el("btnNochmal").addEventListener("click", neuerDurchgang);
+el("btnFehler").addEventListener("click", function(){ starten(fehler.slice()); });
+el("wahlUmfang").addEventListener("change", neuerDurchgang);
+
+/* Der Wettkampf braucht nur zu wissen, wie man von vorn anfängt und wo
+   das Ergebnis steht - gezählt wird hier. */
+window.TBK_WETTKAMPF = {neu: neuerDurchgang, ergebnisAn: "ende"};
+
+neuerDurchgang();
+
+/* Und noch einmal, sobald der Bildungsgang-Baustein steht - bis dahin ist
+   noch nichts beantwortet, der Neustart kostet also nichts. */
+window.addEventListener("load", function(){
+  if(auswahl().length !== FAELLE.length) neuerDurchgang();
+});
+</script>
+
+<script src="../../assets/back-nav.js" data-ziel="./"></script>
+<script src="../../assets/werkzeug-link.js"></script>
+<script src="../../assets/qr.js"></script>
+<script src="../../assets/baukasten.js"></script>
+<script src="../../assets/pdf.js"></script>
+<script src="../../assets/export.js"></script>
+<script src="../../assets/zahlenfeld.js"></script>
+<script src="../../assets/bildungsgang.js"></script>
+<script src="../../assets/feedback.js"></script>
+<script src="../../assets/quellen.js"></script>
+<script src="../../assets/wettkampf.js"></script>
+</body>
+</html>
