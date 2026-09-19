@@ -110,11 +110,31 @@ console.log('\nWas auf dem Gerät nicht liegen bleibt');
     p(datei + ': kein sessionStorage', !/sessionStorage/.test(js));
     p(datei + ': kein Cookie', !/document\.cookie/.test(js));
   }
-  const html = lies(K, 'teilnahme.html') + lies(K, 'index.html');
-  p('beide Seiten tragen noindex',
-    (html.match(/name="robots"\s+content="noindex/g) || []).length === 2);
-  p('kein Feld für einen Namen',
-    !/id="(name|nachname|vorname|klasse|schule)"/i.test(html));
+  /* ALLE Seiten des Bereichs, nicht nur die beiden urspruenglichen. Es sind
+     inzwischen mehr geworden - Nutzungshinweise und ein AV-Vertrag zum
+     Ausdrucken -, und gerade die rechtlichen Seiten sind der Ort, an dem
+     spaeter jemand "ein Formular waere bequemer" denkt. */
+  const seiten = fs.readdirSync(K).filter((d) => d.endsWith('.html'));
+  p('mindestens vier Seiten im Bereich', seiten.length >= 4, seiten.join(' '));
+
+  seiten.forEach((datei) => {
+    const h = lies(K, datei);
+    p(datei + ': noindex', /name="robots"\s+content="noindex/.test(h));
+    p(datei + ': kein Feld für einen Namen',
+      !/id="(name|nachname|vorname|klasse|schule)"/i.test(h));
+  });
+
+  /* Der AV-Vertrag nennt Schule, Name und Anschrift - er wird ausgedruckt,
+     unterschrieben und per Post oder Mail geschickt. Auf der SEITE darf
+     davon nichts getippt und schon gar nichts gesendet werden. Dasselbe
+     gilt fuer die Hinweise. */
+  ['av-vertrag.html', 'hinweise.html'].forEach((datei) => {
+    const h = lies(K, datei);
+    if (!h) { return; }
+    p(datei + ': kein Eingabefeld', !/<input|<textarea|<select/i.test(h));
+    p(datei + ': kein Formular', !/<form/i.test(h));
+    p(datei + ': sendet nichts', !/fetch\(|XMLHttpRequest|navigator\.send/i.test(h));
+  });
 
   const robots = lies(WEBSEITE, 'public', 'robots.txt');
   p('robots.txt sperrt den Bereich', /Disallow:\s*\/klausur\//.test(robots));
