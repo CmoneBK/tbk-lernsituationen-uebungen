@@ -190,12 +190,27 @@
         <strong>250 mm</strong>.</p>
     </details>
 
-    <h2 data-bg-ohne="bfs-hs10"><span class="nr">4</span>Was das kostet</h2>
+    <h2 data-tb="noetig" data-bg-ohne="bfs-hs10"><span class="nr">4</span>Was das kostet</h2>
 
     <p>Zurück zur ersten Naht: <strong>a5</strong>, geschweißte Länge
       <strong>160 mm</strong>, MAG-Schweißen eines unlegierten Stahls in Position
       PB. Das Tabellenbuch nennt für diese Nahtdicke den Schweißzusatz je Meter
       und die Hauptnutzungszeit je Meter. Schlagt beides nach und rechnet um.</p>
+
+    <div class="tb-auszug" data-tb="auszug">
+      <h4>Auszug statt Tabellenbuch</h4>
+      <div class="tb-rahmen">
+        <table>
+          <thead><tr><th>Nahtdicke</th><th class="zahl">Draht-&Oslash; in mm</th><th class="zahl">Lagen</th><th class="zahl">Zusatz in g/m</th><th class="zahl">Zeit in min/m</th></tr></thead>
+          <tbody>
+            <tr><td>a = 4 mm</td><td class="zahl">1,0</td><td class="zahl">1</td><td class="zahl">140</td><td class="zahl">2,1</td></tr>
+            <tr><td>a = 5 mm</td><td class="zahl">1,0</td><td class="zahl">1</td><td class="zahl">215</td><td class="zahl">2,6</td></tr>
+            <tr><td>a = 6 mm</td><td class="zahl">1,0</td><td class="zahl">1</td><td class="zahl">300</td><td class="zahl">3,5</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tb-quelle">Metall-Schutzgasschweißen (MAG), unlegierter Stahl, Kehlnaht am T-Stoß in Position PB. Drahtelektrode ISO&nbsp;14341, Schutzgas M21. 3 Zeilen aus dem <em>Tabellenbuch Metall</em>, Europa-Lehrmittel &ndash; das Buch führt acht.</p>
+    </div>
 
     <div class="tabellenrahmen">
       <table class="werte">
@@ -478,5 +493,6 @@ el("btn4").addEventListener("click", function(){
 <script src="../../assets/pdf.js"></script>
 <script src="../../assets/export.js"></script>
 <script src="../../assets/quellen.js"></script>
+<script src="../../assets/tabellenbuch.js"></script>
 </body>
 </html>

@@ -12,68 +12,14 @@ Zahlen, und die Bildungsgang-Zuordnung für Drehprozess, Schweißen,
 Löten/Kleben, Fügeverfahren und die vier übrigen Lernsituationen. Damit
 trägt **jede** Einheit des Materials ihre Zuordnung.
 
-Neu offen ist Punkt 1: Der Schalter „ohne Tabellenbuch“ ist fertig gebaut und
-geprüft, das Material ist erst zum Teil daraufhin ausgezeichnet.
+Ebenso erledigt: der Schalter „ohne Tabellenbuch“ samt Auszeichnung des
+Materials — elf Seiten, die das Buch brauchen, und sechs Auszüge an
+einzelnen Aufgaben. Wie das gefunden wurde, steht in der README unter
+„Wenn kein Tabellenbuch auf dem Tisch liegt“.
 
 ---
 
-## 1. Die Auszeichnung „ohne Tabellenbuch“ auf das übrige Material ausweiten
-
-`assets/tabellenbuch.js` steht: drei Zustände, der Schalter an drei Stellen,
-die Anbindung an Baukasten und Lektion, die Prüfung
-`pruefungen/test-ohne-tabellenbuch.js` und die Doku in der README. **Offen ist
-die Auszeichnung des Materials.**
-
-Ausgezeichnet sind bisher:
-
-| Seite | Was |
-| --- | --- |
-| Übung Schrauben 3 „Wohin geht das Drehmoment?“ | Aufgabe d) `noetig` + Auszug (A s, F M,zul, M A für M8/M10/M12) |
-| Übung Drehprozess 6 „Auf welches Maß wird geschlichtet?“ | Auszug der Grenzabmaße (drei Nennmaßbereiche, H7/g6/h6/n6) |
-| Übung Drehprozess 2 „Vom Werkstoff zur Schnittgeschwindigkeit“ | ganze Seite `noetig` |
-| Übung Drehprozess 5 „Wie lange dauert das?“ | ganze Seite `noetig` |
-| Training Drehprozess 3 „Startwert ablesen“ | ganze Seite `noetig` |
-| Training Schrauben 7 „Im Tabellenbuch nachschlagen“ | ganze Seite `noetig` |
-
-### Was das Durchgehen schon ergeben hat
-
-**Die Arbeit ist kleiner, als die Zahl 86 vermuten lässt.** Von den Seiten mit
-Tabellenbuch-Bezug bringen die allermeisten ihre Zahlen selbst mit: Die
-Übung „Den Lötspalt wählen“ baut die Spaltbreitentabelle aus eigenen Daten,
-die Trainings erzeugen ihre Aufgaben samt Werten, und die „Nachschlagen:“-
-Hinweise in den Lösungswegen sagen nur, **wo** die Zahl im Buch stünde. Das
-ist kein Bedarf, das ist eine Herkunftsangabe.
-
-Wer das Buch wirklich braucht, **sagt es im Auftrag** – „Das Tabellenbuch
-gehört aufgeschlagen daneben“. Genau danach lässt sich suchen, und genau
-diese Seiten sind oben abgearbeitet. Es bleibt der zweite, feinere Durchgang:
-einzelne Teilaufgaben, die eine Zahl verlangen, die nirgends auf der Seite
-steht – so wie Aufgabe d) der Schraubenübung 3.
-
-### Zwei Lücken im Speicher, die Auszüge verhindern
-
-`tabellenbuch/daten.json` fehlen zwei Abschnitte, ohne die sich kein belegter
-Auszug bauen lässt (siehe auch Punkt 2):
-
-* die **Vergütungsstähle** mit R m nach Walzdurchmesser – gebraucht für
-  Übung Drehprozess 2, Abschnitt 1;
-* die **Messmittel-Ablesungen** – gebraucht für Übung Drehprozess 7.
-
-Solange sie fehlen, tragen diese Seiten `meta tb="noetig"` und fallen ohne
-Buch weg, statt einen Auszug anzubieten. Das ist die ehrlichere von beiden
-Möglichkeiten.
-
-### Wo ein Auszug bewusst nicht hilft
-
-Übung Drehprozess 2 geht durch **vier** Buchtabellen nacheinander. Jede davon
-als Auszug daneben wäre der Nachbau eines halben Kapitels – genau die Grenze,
-die `assets/quellen.js` zieht. Dieselbe Überlegung gilt für das Training
-„Im Tabellenbuch nachschlagen“: Dort **ist** das Suchen im Buch die Aufgabe.
-Beide Seiten fallen ohne Buch weg, und der Seitenhinweis sagt das auch.
-
----
-
-## 2. Eine Seite des Tabellenbuchs fehlt noch
+## 1. Eine Seite des Tabellenbuchs fehlt noch
 
 `tabellenbuch/daten.json` führt unter `_luecken`, wonach gesucht wurde und was
 das Buch nicht hergibt. Drei Einträge sind keine Lücke des Buches, sondern
@@ -91,7 +37,7 @@ nicht als Buchwert da, den es nicht gibt.
 
 ---
 
-## 3. Eine Ermessensfrage in der Lektion Schraubverbindungen
+## 2. Eine Ermessensfrage in der Lektion Schraubverbindungen
 
 „Warum dreht sich eine Schraube nicht von allein zurück?“ (Reiter Funktion)
 erklärt die Selbsthemmung über Anstiegswinkel und Grenzwinkel der Reibung,

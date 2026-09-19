@@ -243,7 +243,12 @@
     + '.tb-auszug table{width:100%;border-collapse:collapse;font-size:13.5px}'
     + '.tb-auszug th,.tb-auszug td{padding:4px 8px;text-align:left;'
     + 'border-bottom:1px solid var(--border,#e3e3df)}'
-    + '.tb-auszug th{font-size:12.5px;color:var(--muted,#5f5f5a)}'
+    /* Kein Grossbuchstabenzwang: Manche Seiten setzen ihre Tabellenkoepfe
+       auf uppercase, und ein griechisches Epsilon wird dabei zu etwas, das
+       wie ein E aussieht. Ein Auszug aus dem Buch schreit ausserdem nicht -
+       das Buch tut es auch nicht. */
+    + '.tb-auszug th{font-size:12.5px;color:var(--muted,#5f5f5a);'
+    + 'text-transform:none;letter-spacing:normal}'
     + '.tb-auszug td.zahl,.tb-auszug th.zahl{text-align:right;'
     + 'font-variant-numeric:tabular-nums}'
     + '.tb-auszug tr:last-child td{border-bottom:0}'

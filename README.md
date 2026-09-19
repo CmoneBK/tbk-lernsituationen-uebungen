@@ -513,6 +513,33 @@ ein paar Zeilen mit Quellenangabe, keine nachgebaute Tabelle – siehe oben,
 [`pruefungen/test-ohne-tabellenbuch.js`](pruefungen/test-ohne-tabellenbuch.js)
 prüft beides: die Mechanik und die Auszeichnung.
 
+### Woran man erkennt, dass eine Seite das Buch braucht
+
+Das ist die eigentliche Arbeit, und sie hat zwei Prüfsteine:
+
+1. **Sagt die Seite es selbst?** „Das Tabellenbuch gehört aufgeschlagen
+   daneben“ steht im Auftrag von sechs Seiten. Das ist der leichte Fall.
+2. **Verlangt eine Aufgabe eine Zahl, die nirgends auf der Seite steht?** Das
+   ist der feine Fall, und er wird über die Eingabefelder gefunden: Wo ein
+   Feld einen Wert will, der weder gegeben noch aus dem Gegebenen zu rechnen
+   ist, kommt er aus dem Buch.
+
+Zwei Stolpersteine dabei:
+
+* **Ein Hinweis ist kein Bedarf.** Die meisten Seiten erwähnen das
+  Tabellenbuch nur als Herkunft — „Nachschlagen: Tabelle Metrische Gewinde“
+  im Lösungsweg sagt, *wo* die Zahl stünde, nicht dass man sie braucht. Die
+  Übung „Den Lötspalt wählen“ baut ihre Tabelle sogar selbst auf.
+* **Werte im Skript sind nicht Werte auf der Seite.** Ein Training kennt die
+  richtige Antwort, zeigt sie aber nicht. Entscheidend ist, ob es eine
+  **Tafel** zum Nachschlagen anbietet. Die Wälzlager-Trainings tun es, die
+  Drehprozess-Trainings nicht.
+
+**Wo ein Auszug bewusst fehlt:** bei Seiten, die ihre Aufgaben zufällig
+ziehen. Ein Auszug müsste dort die ganze Tabelle sein — und genau das ist die
+Grenze aus „Woher die Zahlen stammen“. Diese Seiten fallen ohne Buch weg, und
+der Hinweis oben auf der Seite sagt, dass auch kein Auszug hilft.
+
 ## ↩️ Rücklink zur Übersicht
 
 Jede Seite bekommt oben links eine schwebende Schaltfläche **„← Übersicht“**

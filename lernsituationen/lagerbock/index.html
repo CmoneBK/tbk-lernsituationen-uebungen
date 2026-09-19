@@ -470,10 +470,26 @@
     </details>
 
     <p class="schritt">Schritt 5 &middot; Ausführen</p>
-    <h2 data-bg-ohne="bfs-hs10"><span class="nr">6</span>Wie viel Draht, wie viel Zeit?</h2>
+    <h2 data-tb="noetig" data-bg-ohne="bfs-hs10"><span class="nr">6</span>Wie viel Draht, wie viel Zeit?</h2>
 
     <p>Jetzt die Frage, die der Meister gestellt hat. Die Nahtlängen stehen in der
       Zeichnung, die Richtwerte im Tabellenbuch &ndash; für MAG, unlegierten Stahl,
+    <div class="tb-auszug" data-tb="auszug">
+      <h4>Auszug statt Tabellenbuch</h4>
+      <div class="tb-rahmen">
+        <table>
+          <thead><tr><th>Nahtdicke</th><th class="zahl">Draht-&Oslash; in mm</th><th class="zahl">Lagen</th><th class="zahl">Zusatz in g/m</th><th class="zahl">Zeit in min/m</th></tr></thead>
+          <tbody>
+            <tr><td>a = 2 mm</td><td class="zahl">0,8</td><td class="zahl">1</td><td class="zahl">45</td><td class="zahl">1,5</td></tr>
+            <tr><td>a = 3 mm</td><td class="zahl">1,0</td><td class="zahl">1</td><td class="zahl">90</td><td class="zahl">1,4</td></tr>
+            <tr><td>a = 4 mm</td><td class="zahl">1,0</td><td class="zahl">1</td><td class="zahl">140</td><td class="zahl">2,1</td></tr>
+            <tr><td>a = 5 mm</td><td class="zahl">1,0</td><td class="zahl">1</td><td class="zahl">215</td><td class="zahl">2,6</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="tb-quelle">Metall-Schutzgasschweißen (MAG), unlegierter Stahl, Kehlnaht am T-Stoß in Position PB. Drahtelektrode ISO&nbsp;14341, Schutzgas M21. 4 Zeilen aus dem <em>Tabellenbuch Metall</em>, Europa-Lehrmittel &ndash; das Buch führt acht.</p>
+    </div>
+
       Position PB.</p>
 
     <div class="daten">
@@ -1763,5 +1779,6 @@ if(document.readyState === "loading"){
 }else{ drei(); }
 </script>
 <script src="../../assets/quellen.js"></script>
+<script src="../../assets/tabellenbuch.js"></script>
 </body>
 </html>
