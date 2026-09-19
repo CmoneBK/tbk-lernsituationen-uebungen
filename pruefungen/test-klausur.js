@@ -603,6 +603,67 @@ console.log('\nDer Filter im Fragenpool');
   }
 }
 
+/* ============== 9. Die Anforderungsbereiche ============== */
+console.log('\nDie Anforderungsbereiche');
+{
+  const lk = lies(K, 'assets', 'lehrkraft.js');
+  const idx = lies(K, 'index.html');
+  const css = lies(K, 'assets', 'klausur.css');
+  const doc = lies(D, 'KLAUSUR-API.md');
+
+  p('der Filter nach Anforderungsbereich steht in der Seite',
+    idx.includes('id="fAfb"')
+    && lk.includes("el('fAfb').addEventListener"));
+  p('er wird beim Zurücksetzen mit geleert',
+    /el\('fAfb'\)\.value = ''/.test(lk));
+
+  /* Ein Poolstand ohne das Feld darf nicht zu erfundenen Zahlen
+     führen - lieber eine Zeile "ohne Einstufung". */
+  p('ein fehlendes Feld wird als solches behandelt',
+    /function afbVon\(f\)/.test(lk)
+    && /f\.afb === 1 \|\| f\.afb === 2 \|\| f\.afb === 3/.test(lk));
+  p('und hat einen eigenen Namen', /ohne Einstufung/.test(lk));
+
+  p('jede Frage trägt ihre Marke', /afbMarke/.test(lk)
+    && /\.afbMarke/.test(css));
+  /* Farbe allein reicht nicht: Wer Rot und Gelb nicht trennen kann,
+     muss die Stufe lesen können. */
+  p('die Marke trägt ihre Ziffer, nicht nur eine Farbe',
+    /marke\.textContent = AFB_NAME\[st\]/.test(lk));
+
+  p('die Auswertung steht in der Seite', idx.includes('id="afbKasten"')
+    && idx.includes('id="afbBalken"') && idx.includes('id="afbZeilen"'));
+  p('sie wird bei jeder Änderung der Auswahl neu gerechnet',
+    /afbZeichnen\(g\);/.test(lk)
+    && lk.indexOf('afbZeichnen(g);') > lk.indexOf('function poolStand'));
+  p('sie verschwindet, wenn nichts gewählt ist',
+    /if \(!gewaehlteAufgaben\.length\) \{ kasten\.hidden = true; return; \}/
+      .test(lk));
+
+  /* Der Kern: gewichtet wird in Punkten. Eine Aufgabe mit vier
+     richtigen Antworten wiegt viermal so schwer wie eine mit einer -
+     wer nach Aufgaben zählt, bekommt eine andere Klausur, als er
+     glaubt. */
+  p('gewichtet wird in Punkten, nicht in Aufgaben',
+    /punkte\[st\] \+= rich\.length/.test(lk)
+    && /100 \* punkte\[st\] \/ summe/.test(lk));
+  p('gezählt werden nur die Antworten, die auch in der Klausur stehen',
+    /e\.sel\.filter\(function \(o\) \{ return istRichtig\(e\.f, o\); \}\)/
+      .test(lk.split('function afbZeichnen')[1] || ''));
+
+  p('das Stilblatt kennt die drei Stufen',
+    /\.afb1/.test(css) && /\.afb2/.test(css) && /\.afb3/.test(css));
+
+  /* Das Beispiel ist die Vorlage für jeden weiteren Poolbeitrag. */
+  let bsp = [];
+  try { bsp = JSON.parse(lies(D, 'klausur-fragenpool.beispiel.json')); }
+  catch (e) { bsp = []; }
+  p('jede Beispielfrage trägt einen Anforderungsbereich',
+    bsp.length > 0 && bsp.every((f) => [1, 2, 3].includes(f.afb)));
+  p('das Vertragsdokument beschreibt das Feld',
+    /"afb"/.test(doc) && /Anforderungsbereich/.test(doc));
+}
+
 console.log(fehler ? '\n' + fehler + ' Fehler.'
   : '\nDer Klausurbereich hält, was er zusagt.');
 process.exitCode = fehler ? 1 : 0;
