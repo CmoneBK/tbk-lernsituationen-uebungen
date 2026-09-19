@@ -89,6 +89,32 @@ console.log('\nWas der Server nicht sieht');
   p('der Endpunkt weist verräterische Felder ab',
     /'richtig',\s*'loesung',\s*'korrekt'/.test(php));
 
+  /* Seit dem Mischen gibt es zwei erlaubte Formen des Feldes "fragen": die
+     blanke Liste und {v, mischen, aufgaben}. Beide muessen durch denselben
+     Filter - sonst waere die neue Form der Weg, einen Loesungshinweis
+     daneben zu schmuggeln. */
+  p('der Endpunkt kennt beide Formen von "fragen"',
+    /array_is_list\(\$fdec\)/.test(php) && /'aufgaben'/.test(php));
+  p('die Objektform laesst nur v, mischen und aufgaben zu',
+    /\['v',\s*'mischen',\s*'aufgaben'\]/.test(php));
+  p('mischen laesst nur fragen, optionen und teilmenge zu',
+    /\['fragen',\s*'optionen',\s*'teilmenge'\]/.test(php));
+  p('die Teilmenge muss in die Aufgabenzahl passen',
+    /\$tm\s*<\s*1\s*\|\|\s*\$tm\s*>\s*count\(\$aufgaben\)/.test(php));
+  p('der Aufgabenfilter greift bei beiden Formen',
+    php.indexOf('foreach ($aufgaben as $frage)')
+      > php.indexOf('array_is_list($fdec)'));
+
+  /* Die Lehrkraft schickt je Aufgabe genau drei Schluessel. Ein aus dem Pool
+     durchgereichtes "standard" oder "thema" stuende sonst im Klartext auf
+     dem Server - kein Leck, aber auch kein Grund. */
+  const lk = lies(K, 'assets', 'lehrkraft.js');
+  p('die Aufgabe geht mit genau drei Feldern zum Server',
+    /aufgaben\.push\(\{\s*text:[^}]*optionen:[^}]*anzahl:[^}]*\}\)/.test(lk)
+      && !/standard:/.test(lk.split('aufgaben.push')[1] || ''));
+  p('anzahl wird aus der tatsächlichen Auswahl berechnet',
+    /anzahl:\s*richtigNeu\.length/.test(lk));
+
   p('eine Meldung für falschen Code und falsche Passphrase',
     (php.match(/fail\('unbekannt', 403\)/g) || []).length >= 4);
   p('Sperre nach wenigen Fehlversuchen', /\$f >= 5/.test(php));
@@ -187,6 +213,19 @@ console.log('\nVerschlüsseln und wieder auf');
     (() => { const u = JSON.parse(umschlag);
       return !!(u.iv && u.daten && u.schluessel); })());
 
+  /* Seit dem Mischen reist die Zuordnung im Umschlag mit. Auch sie darf
+     nicht im Klartext dastehen - sonst liesse sich aus der Reihenfolge
+     zurueckschliessen, welche Aufgaben jemand gezogen hat. */
+  const mitAuswahl = await Krypto.anOeffentlich(oeff, {
+    antworten: [[1], [0, 2]],
+    auswahl: { fragen: [2, 0], optionen: [[3, 1, 0, 2], [1, 0]] }
+  });
+  const zurueck = await Krypto.mitPrivat(paar.privateKey, mitAuswahl);
+  p('die Zuordnung reist im Umschlag mit',
+    JSON.stringify(zurueck.auswahl.fragen) === '[2,0]');
+  p('und steht nicht im Klartext darin',
+    mitAuswahl.indexOf('auswahl') === -1 && mitAuswahl.indexOf('fragen') === -1);
+
   const s = Krypto.staerke('Sommer1!');
   p('eine kurze Passphrase gilt als zu schwach', s.urteil === 'zu schwach',
     s.urteil + ' / ' + s.bits + ' Bit');
@@ -234,6 +273,80 @@ console.log('\nWie aus Kreuzen Punkte werden');
   p('die Zeilen nennen das Verfahren', /Teilpunkte/.test(ganz.verfahren));
   p('Optionen werden als Buchstaben ausgegeben',
     B.buchstaben([0, 2]) === 'a c', B.buchstaben([0, 2]));
+}
+
+/* ============ 4b. Mischen: kommt die Zuordnung zurueck? ============
+   Seit die Klausur Aufgaben und Antworten je Teilnehmer mischen kann, sieht
+   jeder eine andere Reihenfolge. Was er ankreuzt, sind Positionen in SEINER
+   Ansicht; bewertet wird gegen die feste Reihenfolge des
+   Loesungsschluessels. Dazwischen liegt eine Abbildung, und ein
+   Vorzeichenfehler darin faellt niemandem auf: Die Punktzahl sieht
+   plausibel aus, sie ist nur falsch.
+
+   Der Vertrag (KLAUSUR-API.md, Abschnitt 5):
+     auswahl.fragen[p]        = welche feste Aufgabe an Anzeigeposition p steht
+     auswahl.optionen[p][pos] = welche feste Option an Anzeigeposition pos steht
+     antworten[p]             = angekreuzte Anzeigepositionen              */
+console.log('\nGemischt und zurückgerechnet');
+{
+  const w = laden('bewertung.js');
+  const B = w.Bewertung;
+
+  /* Drei Aufgaben in fester Reihenfolge. */
+  const aufgaben = [
+    { text: 'A', optionen: ['a0', 'a1', 'a2', 'a3'], anzahl: 2 },
+    { text: 'B', optionen: ['b0', 'b1', 'b2'], anzahl: 1 },
+    { text: 'C', optionen: ['c0', 'c1', 'c2', 'c3'], anzahl: 2 },
+  ];
+  const richtig = [[0, 3], [2], [1, 2]];
+
+  /* Ein Teilnehmer sieht sie in der Reihenfolge C, A, B, und in jeder
+     Aufgabe eine andere Antwortreihenfolge. */
+  const auswahl = {
+    fragen: [2, 0, 1],
+    optionen: [[3, 1, 0, 2], [2, 0, 3, 1], [1, 2, 0]],
+  };
+
+  /* Er kreuzt genau das Richtige an - ausgedrueckt in SEINEN Positionen.
+     Aufgabe C (richtig 1 und 2): in seiner Karte [3,1,0,2] steht die 1 an
+     Position 1 und die 2 an Position 3.
+     Aufgabe A (richtig 0 und 3): Karte [2,0,3,1] -> Positionen 1 und 2.
+     Aufgabe B (richtig 2):       Karte [1,2,0]   -> Position 1.            */
+  const perfekt = [[1, 3], [1, 2], [1]];
+
+  const e = B.abgabe(aufgaben, richtig, perfekt, 'teilpunkte', auswahl);
+  p('gemischt und alles richtig gibt die volle Punktzahl',
+    e.punkte === 5 && e.max === 5, e.punkte + '/' + e.max);
+  p('die Zeilen stehen in der Reihenfolge des Teilnehmers',
+    e.zeilen.map((z) => z.text).join('') === 'CAB',
+    e.zeilen.map((z) => z.text).join(''));
+  p('die Nummern zaehlen von eins',
+    e.zeilen.map((z) => z.nr).join('') === '123');
+
+  /* Der Gegenbeweis: Ohne die Zuordnung MUSS es schiefgehen. Ginge es auch
+     so durch, pruefte der Test oben gar nichts. */
+  const ohne = B.abgabe(aufgaben, richtig, perfekt, 'teilpunkte', null);
+  p('ohne die Zuordnung faellt dieselbe Abgabe durch',
+    ohne.punkte < e.punkte, ohne.punkte + '/' + ohne.max);
+
+  /* Und eine falsche Antwort bleibt falsch. */
+  const daneben = B.abgabe(aufgaben, richtig, [[0, 2], [0], [0]],
+    'teilpunkte', auswahl);
+  p('falsch bleibt falsch', daneben.punkte < 5, String(daneben.punkte));
+
+  /* Teilmenge: Wer nur zwei der drei Aufgaben gezogen hat, wird auch nur
+     ueber zwei bewertet. */
+  const teil = B.abgabe(aufgaben, richtig,
+    [[1, 3], [1]], 'teilpunkte',
+    { fragen: [2, 1], optionen: [[3, 1, 0, 2], [1, 2, 0]] });
+  p('bei einer Teilmenge zaehlt nur das Gezogene',
+    teil.max === 3 && teil.zeilen.length === 2,
+    teil.punkte + '/' + teil.max + ' aus ' + teil.zeilen.length);
+
+  /* Die Buchstaben in der Tabelle beziehen sich auf die FESTE Reihenfolge -
+     sonst stuenden in zwei Zeilen dieselben Buchstaben fuer Verschiedenes. */
+  p('die Buchstaben meinen die feste Reihenfolge',
+    e.zeilen[0].richtig.join(',') === '1,2', e.zeilen[0].richtig.join(','));
 }
 
 /* ==================== 5. Die Arbeitsmappe ==================== */
@@ -296,6 +409,27 @@ console.log('\nDer Vertrag');
 {
   const doc = lies(D, 'KLAUSUR-API.md');
   p('das Vertragsdokument ist da', doc.length > 3000);
+
+  /* Das Beispiel ist die Vorlage fuer alle Poolbeitraege - es muss die neue
+     Form zeigen, sonst schreibt der Naechste wieder fuenf Optionen. */
+  let pool = [];
+  try { pool = JSON.parse(lies(D, 'klausur-fragenpool.beispiel.json')); }
+  catch (x) { /* faellt unten auf */ }
+  p('das Pool-Beispiel ist lesbares JSON', Array.isArray(pool) && pool.length > 0);
+  p('jede Beispielfrage hat Thema, Text, Optionen und Loesung',
+    pool.every((f2) => f2.thema && f2.text && Array.isArray(f2.optionen)
+      && Array.isArray(f2.richtig)));
+  p('die Loesungsindizes liegen im Bereich der Optionen',
+    pool.every((f2) => f2.richtig.every((i) => i >= 0 && i < f2.optionen.length)));
+  p('wo "standard" steht, liegt es ebenfalls im Bereich',
+    pool.every((f2) => !f2.standard
+      || f2.standard.every((i) => i >= 0 && i < f2.optionen.length)));
+  p('mindestens eine Frage zeigt den groesseren Antwortpool',
+    pool.some((f2) => f2.optionen.length > 5),
+    pool.map((f2) => f2.optionen.length).join(','));
+  p('wo "anzahl" steht, passt es zur Loesung',
+    pool.every((f2) => f2.anzahl === undefined
+      || f2.anzahl === f2.richtig.length));
   p('es nennt die Rollen nach Art. 28', /Auftragsverarbeiter/.test(doc));
   p('es sagt, dass die Technik vor der Rechtslage steht',
     /nicht freigegeben|nicht in Betrieb/.test(doc));
