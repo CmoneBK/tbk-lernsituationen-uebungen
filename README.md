@@ -390,6 +390,11 @@ Drei Regeln, die beim Schreiben leicht untergehen:
   Begründungssätze. Dann wird die Frage zweiteilig gestellt:
   „Mit welcher Ausnutzung wird gerechnet – und wofür ist der
   Rest da?"
+* **Der Fragesatz legt sich auf keine Zahl fest.** Wie viele
+  Antworten stimmen, entscheidet die Lehrkraft beim
+  Zusammenstellen; der Teilnehmerbogen schreibt es darunter.
+  Also „Was hält eine Schraubverbindung zusammen?" statt
+  „Welcher Vorgang hält …?".
 * **Jede Frage muss allein stehen.** In der Klausur steht sie
   gemischt unter fremden; „Und bei Punktlast am Ring?" zeigt dann
   ins Leere. Nur eine Frage mit Bild darf auf das Bild zeigen.

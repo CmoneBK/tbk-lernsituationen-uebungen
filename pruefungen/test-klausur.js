@@ -819,6 +819,31 @@ console.log('\nEntwürfe weiterbearbeiten');
     doc.includes('klausur_lesen') && doc.includes('klausur_aendern'));
 }
 
+/* ============== 12. Wie viele Antworten stimmen ============== */
+console.log('\nWie viele Antworten stimmen');
+{
+  const lk = lies(K, 'assets', 'lehrkraft.js');
+  const tn = lies(K, 'assets', 'teilnahme.js');
+
+  /* Die Zahl steht nicht im Pool fest: Die Lehrkraft entscheidet beim
+     Zusammenstellen, welche Antworten erscheinen. Der Teilnehmerbogen
+     rechnet sie daraus - und seit diesem Durchgang sieht die Lehrkraft
+     denselben Satz schon beim Zusammenstellen. */
+  p('der Teilnehmerbogen nennt die Zahl und beugt sie richtig',
+    /frage.anzahl === 1 \? 'eine Antwort stimmt'/.test(tn)
+    && /frage.anzahl \+ ' Antworten stimmen'/.test(tn));
+  p('die Lehrkraftansicht zeigt denselben Satz',
+    /function zaehlZeileFuellen\(/.test(lk)
+    && /rich === 1 \? 'eine Antwort stimmt'/.test(lk));
+  p('und rechnet ihn bei jeder Änderung neu',
+    /querySelectorAll\('#pool .zaehlZeile'\)/.test(lk)
+    && lk.indexOf("querySelectorAll('#pool .zaehlZeile')")
+       > lk.indexOf('function poolStand'));
+  p('sie warnt, wenn keine richtige Antwort mehr dasteht',
+    lk.includes('nicht lösbar'));
+  p('und wenn der Ablenker fehlt', lk.includes('fehlt der Ablenker'));
+}
+
 console.log(fehler ? '\n' + fehler + ' Fehler.'
   : '\nDer Klausurbereich hält, was er zusagt.');
 process.exitCode = fehler ? 1 : 0;
