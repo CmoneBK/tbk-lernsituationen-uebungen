@@ -568,6 +568,13 @@ console.log('\nDer Filter im Fragenpool');
     /\.poolBereich/.test(css) && /\.poolThema/.test(css)
     && /\.poolFrage\.drin/.test(css));
 
+  /* Das gruene Haekchen ist nur dann etwas wert, wenn es gruen ist.
+     Es haengt deshalb am Knoten und nicht an einer Klasse - ein
+     Stilblatt von gestern soll es nicht farblos machen koennen. */
+  p('die Loesungsmarkierung traegt ihre Farbe selbst',
+    /badge\.style\.color = '#127c2f'/.test(lk)
+    && /badge\.style\.fontWeight = '600'/.test(lk));
+
   /* Ein Pool ohne "pfad" darf nicht zu einer leeren Liste führen. */
   p('ältere Poolstände fallen auf das Thema zurück',
     /Array\.isArray\(f\.pfad\) && f\.pfad\.length === 4/.test(lk)
