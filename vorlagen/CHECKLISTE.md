@@ -351,6 +351,10 @@ Stolperstellen und die Begründungen, die in der Seite stecken.
 | Mindestens eine Frage im **AFB III** | Beurteilen, entscheiden, diagnostizieren. Das ist die Ware, die im Multiple-Choice-Format immer knapp ist. |
 | `pfad` in vier Ebenen | Speist den Filter: Bereich, Unterkategorie, Einheit, Thema. |
 | Bilder als SVG, Hilfsbilder mit `bild_hilfe` | Ein Bild, das die Aufgabe nur erklärt und nicht löst, geht nur auf Wunsch mit. |
+| Jede Antwort muss auf den Fragesatz passen | Bei mehreren richtigen Antworten schreibt man leicht: erste Antwort passt, die übrigen sind Begründungssätze. „Mit welcher Ausnutzung wird gerechnet?" – „Der Rest ist für die Torsion da." Abhilfe: die Frage zweiteilig stellen („… – und wofür ist der Rest da?"). |
+| Jede Frage muss **allein stehen** | In der Klausur steht sie gemischt unter fremden. „Und bei Punktlast am Ring?" zeigt dann ins Leere – ebenso jede Angabe, die erst die Nachbarfrage nennt. Nur eine Frage **mit Bild** darf auf das Bild zeigen. |
+| Auch die **Grundlagen** fragen | Nicht nur Kennzahlen und Sonderfälle: Warum hält eine Schraubverbindung? Was unterscheidet Löten vom Schweißen? Wer das überspringt, baut einen Pool, der nur prüfen kann, wer schon alles weiß. |
+| Ablenker in der Gestalt der richtigen Antworten | Vier begründete Sätze gegen drei nackte Stichworte – das lässt sich ankreuzen, ohne die Sache zu kennen. |
 | Bei einer **Trainingsseite** dazu `quelle` | Dreiteilig: `Training · Einheit · Seite`. Die Lehrkraft sieht dann beim Zusammenstellen, was die Klasse geübt hat, und kann danach filtern. Die Einheit ist der Teil hinter dem letzten „ - " in der `info.json`, die Seite ihr `<title>`. |
 
 > Der Fragenpool liegt **nicht** in diesem Repo und nicht unter

@@ -383,6 +383,21 @@ Wo er liegt und wie eine Frage aussieht, steht im Webseiten-Repo in
   Unterscheidungen in der Hand – dieselbe Frage prüft deshalb bei
   zwei Klassen Verschiedenes.
 
+Drei Regeln, die beim Schreiben leicht untergehen:
+
+* **Jede Antwort muss auf den Fragesatz passen.** Bei mehreren
+  richtigen Antworten passt oft nur die erste, die übrigen sind
+  Begründungssätze. Dann wird die Frage zweiteilig gestellt:
+  „Mit welcher Ausnutzung wird gerechnet – und wofür ist der
+  Rest da?"
+* **Jede Frage muss allein stehen.** In der Klausur steht sie
+  gemischt unter fremden; „Und bei Punktlast am Ring?" zeigt dann
+  ins Leere. Nur eine Frage mit Bild darf auf das Bild zeigen.
+* **Auch die Grundlagen fragen.** Warum hält eine
+  Schraubverbindung? Was unterscheidet Löten vom Schweißen? Wer
+  nur Kennzahlen abfragt, baut einen Pool, der nur prüfen kann,
+  wer ohnehin schon alles weiß.
+
 Faustzahl für den Umfang: **vier bis sechs Fragen je Seite**, darunter
 mindestens eine des Anforderungsbereichs III. Wer nur wiedergibt,
 baut einen Pool, aus dem sich keine ausgewogene Klausur
