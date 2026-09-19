@@ -105,13 +105,19 @@ console.log('\nWas der Server nicht sieht');
     php.indexOf('foreach ($aufgaben as $frage)')
       > php.indexOf('array_is_list($fdec)'));
 
-  /* Die Lehrkraft schickt je Aufgabe genau drei Schluessel. Ein aus dem Pool
+  /* Die Lehrkraft schickt je Aufgabe nur, was der Teilnehmer sehen soll:
+     Text, Optionen, Anzahl - und, wenn die Frage eines hat, das Bild. Ein
      durchgereichtes "standard" oder "thema" stuende sonst im Klartext auf
      dem Server - kein Leck, aber auch kein Grund. */
   const lk = lies(K, 'assets', 'lehrkraft.js');
-  p('die Aufgabe geht mit genau drei Feldern zum Server',
-    /aufgaben\.push\(\{\s*text:[^}]*optionen:[^}]*anzahl:[^}]*\}\)/.test(lk)
-      && !/standard:/.test(lk.split('aufgaben.push')[1] || ''));
+  p('die Aufgabe geht mit genau den erlaubten Feldern zum Server',
+    /var aufgabe = \{\s*text:[^}]*optionen:[^}]*anzahl:[^}]*\}/.test(lk));
+  /* Ausser dem Bild darf nichts dazukommen - kein 'standard', kein
+     'thema', und schon gar kein 'richtig'. */
+  p('ausser dem Bild kommt nichts dazu',
+    ((((lk.split('var aufgabe =')[1] || '').split('aufgaben.push')[0])
+      .match(/aufgabe\.\w+\s*=/g)) || [])
+      .join(',') === 'aufgabe.bild =');
   p('anzahl wird aus der tatsächlichen Auswahl berechnet',
     /anzahl:\s*richtigNeu\.length/.test(lk));
 
@@ -419,6 +425,15 @@ console.log('\nDer Vertrag');
   p('jede Beispielfrage hat Thema, Text, Optionen und Loesung',
     pool.every((f2) => f2.thema && f2.text && Array.isArray(f2.optionen)
       && Array.isArray(f2.richtig)));
+  /* Das Beispiel ist die Vorlage: Wer eine Frage dazuschreibt, kopiert
+     eine von hier. Fehlt dort der Pfad, fehlt er bald ueberall - und der
+     Filter der Lehrkraft faellt auf zwei Ebenen zurueck. */
+  p('jede Beispielfrage bringt den Pfad mit, vier Ebenen tief',
+    pool.length > 0 && pool.every((f2) => Array.isArray(f2.pfad)
+      && f2.pfad.length === 4 && f2.pfad.every((x) => x && x.trim())));
+  p('die unterste Ebene des Pfads ist das Thema hinter dem Doppelpunkt',
+    pool.every((f2) => !f2.thema || !f2.pfad
+      || f2.thema.split(':').slice(1).join(':').trim() === f2.pfad[3]));
   p('die Loesungsindizes liegen im Bereich der Optionen',
     pool.every((f2) => f2.richtig.every((i) => i >= 0 && i < f2.optionen.length)));
   p('wo "standard" steht, liegt es ebenfalls im Bereich',
@@ -436,6 +451,149 @@ console.log('\nDer Vertrag');
   p('es verlangt Punkte statt Noten', /Punkte, keine Noten/.test(doc));
   p('es verlangt, den Endpunkt aus dem Protokoll zu nehmen',
     /CustomLog|Zugriffsprotokoll/.test(doc));
+}
+
+/* ================ 7. Das Bild zur Aufgabe ================ */
+console.log('\nDas Bild zur Aufgabe');
+{
+  const lk2 = lies(K, 'assets', 'lehrkraft.js');
+  const tn = lies(K, 'assets', 'teilnahme.js');
+  const php2 = lies(K, 'api', 'pruefung.php');
+  const css = lies(K, 'assets', 'klausur.css');
+
+  /* Die Kette hat vier Glieder. Reisst eines, bekommt der Teilnehmer
+     einen Fragetext ohne das Bild, von dem er handelt - und das faellt
+     erst in der Klausur auf. */
+  p('die Lehrkraft schickt das Bild mit',
+    /aufgabe\.bild = e\.f\.bild/.test(lk2));
+  p('der Teilnehmer traegt es durch das Mischen',
+    /bild: a\.bild/.test(tn));
+  p('und stellt es dar', /aufgabenbild/.test(tn)
+    && /data:image\/svg\+xml;base64,/.test(tn));
+  p('die Lehrkraft sieht es schon bei der Auswahl', /bildKnoten/.test(lk2));
+  p('das Stilblatt kennt die Klasse', /\.aufgabenbild/.test(css));
+
+  /* Ein SVG darf hier nur ein Bild sein. Im <img> laeuft ohnehin kein
+     Skript - aber der Server soll nicht weiterreichen, was er selbst
+     nicht annehmen wuerde. */
+  p('nicht eingesetzt, sondern im <img>',
+    !/innerHTML[^;]*bild/i.test(tn)
+    && /createElement\('img'\)/.test(tn));
+  p('der Server begrenzt die Bildgroesse',
+    /max_bild_bytes/.test(php2) && /\$MAX_BILD/.test(php2));
+  p('der Server prueft die Form des SVG',
+    /substr\(\$b, 0, 4\) !== '<svg'/.test(php2));
+  for (const gift of ['<script', 'javascript:', 'onload=', 'xlink:href',
+    '<foreignobject', '<use', '<image']) {
+    p('der Server weist "' + gift + '" ab',
+      php2.includes("'" + gift + "'"));
+  }
+
+  /* Umlaute und das Gradzeichen stehen in fast jedem dieser Bilder.
+     btoa allein kann nur Latin-1 - die Umrechnung muss also stimmen. */
+  const probe = '<svg xmlns="http://www.w3.org/2000/svg"><text>'
+    + 'Größe 80° ε</text></svg>';
+  const erwartet = Buffer.from(probe, 'utf8').toString('base64');
+  for (const datei of ['lehrkraft.js', 'teilnahme.js']) {
+    const quelle = lies(K, 'assets', datei);
+    const m = quelle.match(
+      /function zuBase64\(s\) \{[\s\S]*?\r?\n  \}/);
+    p(datei + ' bringt zuBase64 mit', !!m);
+    if (!m) { continue; }
+    const ctx = vm.createContext({
+      TextEncoder,
+      btoa: (x) => Buffer.from(x, 'binary').toString('base64'),
+    });
+    vm.runInContext(m[0] + '; globalThis.z = zuBase64;', ctx);
+    p(datei + ': UTF-8 kommt richtig in die data-URL',
+      ctx.z(probe) === erwartet);
+  }
+}
+
+/* ================ 8. Der Filter im Fragenpool ================ */
+console.log('\nDer Filter im Fragenpool');
+{
+  const lk = lies(K, 'assets', 'lehrkraft.js');
+  const idx = lies(K, 'index.html');
+  const css = lies(K, 'assets', 'klausur.css');
+
+  /* Vier Ebenen, in der Sprache des Materials. Fehlt eine, fällt der
+     Filter still auf die Ebene darüber zurück - und die Lehrkraft sucht
+     ihre Frage in einer Liste mit dreistelliger Länge. */
+  for (const id of ['fBereich', 'fUnter', 'fEinheit', 'fThema']) {
+    p('Ebene "' + id + '" steht in der Seite',
+      idx.includes('id="' + id + '"'));
+  }
+  p('das Skript kennt die vier Ebenen als eine Kette',
+    /EBENEN = \['fBereich', 'fUnter', 'fEinheit', 'fThema'\]/.test(lk));
+  p('jede Ebene zeigt nur, was nach der Ebene darüber bleibt',
+    /if \(wahl\[o\] && p\[o\] !== wahl\[o\]\) \{ return; \}/.test(lk));
+  p('eine ungültig gewordene Wahl fällt auf "alle" zurück',
+    /namen\.indexOf\(wahl\[e\]\) === -1/.test(lk));
+
+  /* Die übrigen Filter. */
+  for (const id of ['fSuche', 'fBild', 'fPunkte', 'fReserve']) {
+    p('Filter "' + id + '" steht in der Seite',
+      idx.includes('id="' + id + '"'));
+  }
+  p('gesucht wird auch in den Antworten, nicht nur in der Frage',
+    /function trifft\(f, such\)/.test(lk)
+    && /f\.optionen\[o\]/.test(lk.split('function trifft')[1] || ''));
+  p('die Suche ist entprellt', /clearTimeout\(suchUhr\)/.test(lk));
+  p('der Punktwert ist die Zahl der richtigen Antworten',
+    /punkte === '4' && n < 4/.test(lk));
+  p('die Reserve misst gegen die Vorauswahl',
+    /f\.optionen\.length - standardAuswahl\(f\)\.length/.test(lk));
+
+  /* Der Kern: Die Auswahl darf nicht am Filter hängen. Läge sie in den
+     Kästchen, verlöre ein Themenwechsel sie lautlos - und das merkt man
+     erst an der fertigen Klausur. */
+  p('die Auswahl liegt im Modell, nicht im Bildschirm',
+    /var gewaehlt = \{\}/.test(lk) && /var optWahl = \{\}/.test(lk));
+  p('gewaehltAufbereiten liest aus dem Modell',
+    !/querySelectorAll\('#pool \.fInc:checked'\)/.test(lk)
+    && /if \(!gewaehlt\[i\]\) \{ return; \}/.test(lk));
+  p('der Stand sagt, wie viele Gewählte der Filter verdeckt',
+    /außerhalb des Filters/.test(lk) && idx.includes('id="filterStand"'));
+
+  /* Die Knöpfe, die eine grosse Auswahl überhaupt handhabbar machen. */
+  for (const id of ['btnSichtbarAn', 'btnSichtbarAus', 'btnWahlLeeren',
+    'btnFilterWeg']) {
+    p('Knopf "' + id + '" ist da und hat einen Griff',
+      idx.includes('id="' + id + '"')
+      && lk.includes("el('" + id + "').addEventListener"));
+  }
+
+  p('das Stilblatt kennt die Überschriften des Filters',
+    /\.poolBereich/.test(css) && /\.poolThema/.test(css)
+    && /\.poolFrage\.drin/.test(css));
+
+  /* Ein Pool ohne "pfad" darf nicht zu einer leeren Liste führen. */
+  p('ältere Poolstände fallen auf das Thema zurück',
+    /Array\.isArray\(f\.pfad\) && f\.pfad\.length === 4/.test(lk)
+    && /String\(f\.thema \|\| 'Ohne Thema'\)/.test(lk));
+
+  /* Jede ID, die das Skript anfasst, muss es auch geben. Ein Tippfehler
+     hier wirft keinen sichtbaren Fehler - die Seite tut nur nichts mehr. */
+  const idsVon = (js) => {
+    const raus = new Set(), r = /\bel\(\s*'([A-Za-z0-9_]+)'\s*\)/g;
+    let m;
+    while ((m = r.exec(js))) { raus.add(m[1]); }
+    return [...raus];
+  };
+  const idsIn = (html) => {
+    const raus = new Set(), r = /id="([A-Za-z0-9_]+)"/g;
+    let m;
+    while ((m = r.exec(html))) { raus.add(m[1]); }
+    return raus;
+  };
+  for (const [datei, seite] of [['lehrkraft.js', 'index.html'],
+    ['teilnahme.js', 'teilnahme.html']]) {
+    const hat = idsIn(lies(K, seite));
+    const fehlt = idsVon(lies(K, 'assets', datei)).filter((i) => !hat.has(i));
+    p(datei + ': jede angefasste ID gibt es in ' + seite,
+      fehlt.length === 0, fehlt.join(', '));
+  }
 }
 
 console.log(fehler ? '\n' + fehler + ' Fehler.'
