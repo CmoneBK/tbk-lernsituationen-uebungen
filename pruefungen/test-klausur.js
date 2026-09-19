@@ -743,6 +743,82 @@ console.log('\nDie Herkunft einer Frage');
     /"quelle"/.test(doc) && /dreiteilig/.test(doc));
 }
 
+/* ============== 11. Entwürfe weiterbearbeiten ============== */
+console.log('\nEntwürfe weiterbearbeiten');
+{
+  const api = lies(K, 'api', 'pruefung.php');
+  const lk = lies(K, 'assets', 'lehrkraft.js');
+  const idx = lies(K, 'index.html');
+  const doc = lies(D, 'KLAUSUR-API.md');
+
+  p('der Server kann eine eigene Klausur zurückgeben',
+    api.includes("$action === 'klausur_lesen'")
+    && api.includes("'fragen'          => $k['fragen']"));
+  p('und ihren Inhalt ersetzen',
+    api.includes("$action === 'klausur_aendern'"));
+
+  /* Der Kern der Sache: Was freigegeben ist oder wofür schon Codes
+     ausgegeben sind, wird nicht mehr angefasst. Sonst tauschte man die
+     Aufgaben unter den Händen derer, die vielleicht schon schreiben -
+     und der Lösungsschlüssel passte nicht mehr zum Bogen. */
+  const aendern = api.split("$action === 'klausur_aendern'")[1] || '';
+  p('nur ein Entwurf ist änderbar',
+    /status.*!== 'entwurf'.*fail\('nicht_entwurf'/s.test(aendern));
+  p('und nur, solange keine Teilnehmercodes bestehen',
+    /COUNT\(\*\) AS n FROM pr_teilnahme WHERE klausur=\?/.test(aendern)
+    && aendern.includes("fail('hat_codes'"));
+  p('die Aufbewahrungsfrist wird dabei nicht verlängert',
+    !/UPDATE pr_klausur SET[^;]*loeschen_ab/s.test(aendern));
+
+  /* Anlegen und Ändern prüfen denselben Inhalt - abgeschrieben wäre die
+     Prüfung die Hälfte wert. */
+  p('beide Wege prüfen den Inhalt mit derselben Funktion',
+    (api.match(/inhaltPruefen\(/g) || []).length === 3);
+  p('der Titelumschlag und der Lösungsschlüssel haben eigene Grenzen',
+    /function inhaltPruefen\(int \$maxMeta, int \$maxChiffre/.test(api)
+    && api.includes('inhaltPruefen(16384, $MAX_CHIFFRE'));
+
+  /* Der Fehler, der das Ganze ausgelöst hat: Der Titel wurde
+     symmetrisch geschrieben und asymmetrisch gelesen. In der Liste stand
+     deshalb bei jeder Klausur "(nicht lesbar)". */
+  p('der Titel wird gelesen, wie er geschrieben wurde',
+    lk.includes("Krypto.aufMachen(ich.wrapKey, k.meta_chiffre)")
+    && !lk.includes("Krypto.mitPrivat(ich.privKey, k.meta_chiffre)"));
+
+  p('der Arbeitsstand wandert in den verschlüsselten Titelumschlag',
+    /async function entwurfPacken\(/.test(lk)
+    && /entwurf: await entwurfPacken\(g, mischen\)/.test(lk));
+  p('und wird beim Wiederaufnehmen ausgepackt',
+    /async function entwurfAuspacken\(/.test(lk)
+    && /async function entwurfLaden\(/.test(lk));
+
+  /* Der Poolindex taugt nicht als Merkmal: Der Pool wird neu gebaut.
+     Gemerkt wird eine Kennung aus Fragetext UND Bild - acht Bildfragen
+     tragen denselben Text. */
+  p('eine Aufgabe wird an Text und Bild wiedererkannt, nicht am Index',
+    /async function kennung\(f\)/.test(lk)
+    && /String\(f.text\)/.test(lk) && /String\(f.bild \|\| ''\)/.test(lk));
+  p('was sich nicht mehr findet, wird benannt statt verschwiegen',
+    lk.includes('fehlend.push(weg)')
+    && lk.includes('stehen so nicht mehr'));
+
+  p('der Knopf steht nur an Entwürfen ohne Codes',
+    /k.status === 'entwurf' && Number\(k.codes\) === 0/.test(lk)
+    && lk.includes("w.textContent = 'weiterbearbeiten'"));
+  p('„neu zusammenstellen" räumt den geladenen Entwurf ab',
+    /entwurfId = null;\s*gewaehlt = \{\};/.test(lk));
+  p('gespeichert wird je nach Lage mit anlegen oder ändern',
+    /ruf\(entwurfId \? \{\s*action: 'klausur_aendern'/.test(lk)
+    && lk.includes("action: 'klausur_anlegen'"));
+
+  p('die Seite sagt, was ein Entwurf ist', idx.includes('id="entwurfHinweis"')
+    && idx.includes('id="anlegenKopf"'));
+  p('die Fehlertexte nennen beide Gründe',
+    lk.includes('nicht_entwurf:') && lk.includes('hat_codes:'));
+  p('das Vertragsdokument beschreibt beide Aktionen',
+    doc.includes('klausur_lesen') && doc.includes('klausur_aendern'));
+}
+
 console.log(fehler ? '\n' + fehler + ' Fehler.'
   : '\nDer Klausurbereich hält, was er zusagt.');
 process.exitCode = fehler ? 1 : 0;
