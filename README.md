@@ -351,8 +351,42 @@ die Information, die in gefärbten Balken und Bändern steckt.
 2. Titel setzen – bei einer Lernsituation nach der Konvention unten, in einem
    Paket nur den Namen der Übung.
 3. Inhalt schreiben — mit der [Checkliste](vorlagen/CHECKLISTE.md) daneben.
-4. `node build/build.mjs` ausführen.
-5. Committen und pushen – fertig.
+4. **Klausurfragen dazuschreiben** – siehe unten.
+5. `node build/build.mjs` ausführen.
+6. Committen und pushen – fertig.
+
+### Klausurfragen gehören dazu
+
+Wer eine Lektion, ein Training, eine Übung oder eine Lernsituation
+anlegt, schreibt die passenden Klausurfragen **im selben Zug** dazu.
+Nicht später: Später kennt niemand mehr die Zahlen, die Stolperstellen
+und die Begründungen, die in der Seite stecken – und der Fragenpool
+bleibt hinter dem Material zurück.
+
+Der Pool liegt **nicht** in diesem Repo: Er enthält die richtigen
+Antworten und hat weder hier noch unter `public/` etwas zu suchen.
+Wo er liegt und wie eine Frage aussieht, steht im Webseiten-Repo in
+`docs/KLAUSUR-API.md`; die Vorlage ist
+`docs/klausur-fragenpool.beispiel.json`. Eine Frage braucht:
+
+* `thema` und `pfad` – wohin sie im Material gehört (vier Ebenen),
+* `optionen` – **mindestens sieben**, damit die Lehrkraft beim
+  Zusammenstellen wirklich etwas auszuwählen hat,
+* `richtig` und optional `standard`,
+* `afb` – 1 Wiedergeben, 2 Anwenden, 3 Beurteilen,
+* bei Bedarf `bild` (SVG) und `bild_hilfe`, wenn das Bild nur
+  erklärt und nichts löst,
+* bei einer **Trainingsseite** `quelle` – dreiteilig
+  `Training · Einheit · Seite`. Daraus wird in der
+  Lehrkraftansicht eine Marke an der Frage und ein Filter
+  „Herkunft": Wer ein Training durchgearbeitet hat, hatte diese
+  Unterscheidungen in der Hand – dieselbe Frage prüft deshalb bei
+  zwei Klassen Verschiedenes.
+
+Faustzahl für den Umfang: **vier bis sechs Fragen je Seite**, darunter
+mindestens eine des Anforderungsbereichs III. Wer nur wiedergibt,
+baut einen Pool, aus dem sich keine ausgewogene Klausur
+zusammenstellen lässt.
 
 Eine Lernsituation darf weitere Seiten und Bilder neben ihrer `index.html`
 haben; in der Übersicht erscheint sie trotzdem als eine Karte. Optional kann

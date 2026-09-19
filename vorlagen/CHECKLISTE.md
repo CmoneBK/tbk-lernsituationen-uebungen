@@ -27,7 +27,11 @@ zum Abhaken.
 7. Nur, was **nicht** überall hingehört, bekommt `data-bg-ohne`.
 8. Keine festen Farben — die drei Themenregeln nutzen.
 9. Keine externen Ressourcen. Keine Ausnahme.
-10. `node build/build.mjs`, dann `--check`, dann committen.
+10. **Klausurfragen im selben Zug schreiben** — vier bis sechs je
+    Seite, jede mit mindestens sieben Antworten und einem
+    Anforderungsbereich, mindestens eine davon AFB III. Bei einer
+    Trainingsseite dazu die `quelle`.
+11. `node build/build.mjs`, dann `--check`, dann committen.
 
 ---
 
@@ -330,3 +334,26 @@ eigenen, aber verwandten Aufbau: Reiterleiste, `<section class="panel">` je
 Reiter, `<div class="karte">` mit `h2`, darin Abschnitte unter `h3`. Drei
 Stufen sind wählbar. Einzelheiten stehen im README dort; `data-bg-ohne`,
 `data-druck` und die Themenregeln gelten wortgleich.
+
+---
+
+## Klausurfragen
+
+Gehören zu jeder neuen Seite und werden **mit ihr zusammen**
+geschrieben — nicht später. Später kennt niemand mehr die Zahlen, die
+Stolperstellen und die Begründungen, die in der Seite stecken.
+
+| Muss | Warum |
+| --- | --- |
+| Vier bis sechs Fragen je Seite | Weniger trägt keine Klausur, mehr schreibt sich nicht mehr mit der nötigen Sorgfalt. |
+| Mindestens **sieben** Antworten je Frage | Die Lehrkraft wählt beim Zusammenstellen aus, welche erscheinen. Bei sechs bleibt ihr nichts zu entscheiden. |
+| `afb` je Frage: 1, 2 oder 3 | Ohne Einstufung lässt sich keine ausgewogene Klausur bauen. |
+| Mindestens eine Frage im **AFB III** | Beurteilen, entscheiden, diagnostizieren. Das ist die Ware, die im Multiple-Choice-Format immer knapp ist. |
+| `pfad` in vier Ebenen | Speist den Filter: Bereich, Unterkategorie, Einheit, Thema. |
+| Bilder als SVG, Hilfsbilder mit `bild_hilfe` | Ein Bild, das die Aufgabe nur erklärt und nicht löst, geht nur auf Wunsch mit. |
+| Bei einer **Trainingsseite** dazu `quelle` | Dreiteilig: `Training · Einheit · Seite`. Die Lehrkraft sieht dann beim Zusammenstellen, was die Klasse geübt hat, und kann danach filtern. Die Einheit ist der Teil hinter dem letzten „ - " in der `info.json`, die Seite ihr `<title>`. |
+
+> Der Fragenpool liegt **nicht** in diesem Repo und nicht unter
+> `public/` — er enthält die richtigen Antworten. Format und Ablage:
+> `docs/KLAUSUR-API.md` im Webseiten-Repo, Vorlage
+> `docs/klausur-fragenpool.beispiel.json`.

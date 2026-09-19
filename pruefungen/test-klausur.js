@@ -688,6 +688,61 @@ console.log('\nDie Anforderungsbereiche');
     /"afb"/.test(doc) && /Anforderungsbereich/.test(doc));
 }
 
+/* ============== 10. Die Herkunft einer Frage ============== */
+console.log('\nDie Herkunft einer Frage');
+{
+  const lk = lies(K, 'assets', 'lehrkraft.js');
+  const idx = lies(K, 'index.html');
+  const css = lies(K, 'assets', 'klausur.css');
+  const doc = lies(D, 'KLAUSUR-API.md');
+
+  p('der Herkunftsfilter steht in der Seite',
+    idx.includes('id="fQuelle"')
+    && lk.includes("el('fQuelle').addEventListener"));
+  p('er wird beim Zurücksetzen mit geleert',
+    /el\('fQuelle'\)\.value = ''/.test(lk));
+  p('die Liste wird aus dem Pool gefüllt, nicht abgeschrieben',
+    /function quellenFuellen\(\)/.test(lk)
+    && /quellenFuellen\(\);/.test(lk));
+  p('sie trennt Trainings von Lektionen und kennt jede Einheit einzeln',
+    /aus Trainings/.test(lk) && /aus Lektionen/.test(lk)
+    && lk.includes("'t:' + e"));
+
+  /* Ein älterer Poolstand kennt das Feld nicht. Dann darf der Filter
+     nicht ins Leere greifen, sondern muss stillstehen. */
+  p('ein fehlendes Feld lässt den Filter stillstehen',
+    /function quelleVon\(f\)/.test(lk)
+    && /q\.length === 3 \? q : null/.test(lk));
+
+  /* Die Marke ist der Grund für das ganze Feld: Beim Zusammenstellen
+     soll zu sehen sein, was die Klasse geübt hat. */
+  p('jede Frage aus einem Training trägt ihre Marke',
+    /quellMarke/.test(lk) && /\.quellMarke/.test(css));
+  p('und der Tooltip nennt Einheit und Seite',
+    /qm\.title = qu\[1\]/.test(lk));
+
+  p('die Suche findet ein Training an seinem Namen',
+    lk.includes("String(f.quelle || '').toLowerCase()"));
+
+  /* In die Klausur geht die Herkunft nicht mit - sie geht die
+     Teilnehmer nichts an und wäre nur ein weiterer Hinweis. */
+  p('die Herkunft geht nicht mit in die Klausur',
+    !/quelle/.test(lk.split('function gewaehltAufbereiten')[1]
+      .split('function poolStand')[0]));
+
+  /* Das Beispiel ist die Vorlage für jeden weiteren Poolbeitrag. */
+  let bsp = [];
+  try { bsp = JSON.parse(lies(D, 'klausur-fragenpool.beispiel.json')); }
+  catch (e) { bsp = []; }
+  const mitQ = bsp.filter((f) => typeof f.quelle === 'string');
+  p('das Beispiel zeigt eine Frage aus einem Training', mitQ.length > 0);
+  p('und ihre Quelle ist dreiteilig',
+    mitQ.length > 0 && mitQ.every((f) => f.quelle.split(' · ').length === 3),
+    mitQ.map((f) => f.quelle).join(' | '));
+  p('das Vertragsdokument beschreibt das Feld',
+    /"quelle"/.test(doc) && /dreiteilig/.test(doc));
+}
+
 console.log(fehler ? '\n' + fehler + ' Fehler.'
   : '\nDer Klausurbereich hält, was er zusagt.');
 process.exitCode = fehler ? 1 : 0;
