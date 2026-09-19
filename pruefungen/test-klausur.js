@@ -620,16 +620,40 @@ console.log('\nDie Anforderungsbereiche');
   /* Ein Poolstand ohne das Feld darf nicht zu erfundenen Zahlen
      führen - lieber eine Zeile "ohne Einstufung". */
   p('ein fehlendes Feld wird als solches behandelt',
-    /function afbVon\(f\)/.test(lk)
+    /function afbVon\(f, i\)/.test(lk)
     && /f\.afb === 1 \|\| f\.afb === 2 \|\| f\.afb === 3/.test(lk));
   p('und hat einen eigenen Namen', /ohne Einstufung/.test(lk));
 
   p('jede Frage trägt ihre Marke', /afbMarke/.test(lk)
     && /\.afbMarke/.test(css));
-  /* Farbe allein reicht nicht: Wer Rot und Gelb nicht trennen kann,
-     muss die Stufe lesen können. */
+  /* Farbe allein reicht nicht: Wer Blau, Violett und Gelb nicht
+     auseinanderhält, muss die Stufe lesen können. */
   p('die Marke trägt ihre Ziffer, nicht nur eine Farbe',
-    /marke\.textContent = AFB_NAME\[st\]/.test(lk));
+    /neueOption\(String\(st\), AFB_NAME\[st\]\)/.test(lk));
+
+  /* Die Einstufung ist eine Einschätzung. Wer sie anders sieht, muss
+     sie ändern können - und die Statistik muss dann mitgehen, sonst
+     zeigt sie etwas anderes an als der Bildschirm. */
+  p('die Stufe lässt sich je Aufgabe ändern',
+    /var afbWahl = \{\}/.test(lk)
+    && /marke\.addEventListener\('change'/.test(lk));
+  p('die Änderung gilt nur für diesen Durchgang, nicht für den Pool',
+    /afbWahl\[i\] = st/.test(lk) && !/f\.afb = /.test(lk));
+  p('Filter und Auswertung rechnen mit der geänderten Stufe',
+    /afbVon\(f, i\)/.test(lk) && /afbVon\(e\.f, e\.i\)/.test(lk));
+
+  /* Ein Bild, das die Frage nur erklärt, darf nicht ungefragt
+     mitgehen - sonst ist es keine Hilfe, sondern ein Geschenk. */
+  p('Hilfsbilder sind nicht vorausgewählt',
+    /function bildMit\(f, i\)/.test(lk)
+    && /!!f\.bild && !f\.bild_hilfe/.test(lk));
+  p('jedes Bild hat einen Schalter', /bInc/.test(lk)
+    && /bildSchalter/.test(lk) && /\.bildSchalter/.test(css));
+  p('und nur das eingeschaltete Bild geht in die Klausur',
+    /if \(e\.f\.bild && e\.bild\) \{ aufgabe\.bild = e\.f\.bild; \}/
+      .test(lk));
+  p('der Schalter sagt, worum es sich handelt',
+    /Hilfsbild mitgeben/.test(lk) && /gehört zur Frage/.test(lk));
 
   p('die Auswertung steht in der Seite', idx.includes('id="afbKasten"')
     && idx.includes('id="afbBalken"') && idx.includes('id="afbZeilen"'));
